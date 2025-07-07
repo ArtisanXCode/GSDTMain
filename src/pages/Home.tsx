@@ -133,7 +133,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold mb-2 text-orange-500">{currency.code}</h3>
-                    <p className="text-orange-500 text-base font-medium">{currency.name}</p>
+                    <p className="text-white text-base font-medium">{currency.name}</p>
                   </div>
                 </div>
               </motion.div>
