@@ -132,7 +132,7 @@ export default function Home() {
                     <span className="text-white font-bold text-2xl">{currency.symbol}</span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 text-white">{currency.code}</h3>
+                    <h3 className="text-2xl font-bold mb-2 text-orange-500">{currency.code}</h3>
                     <p className="text-white text-base font-medium">{currency.name}</p>
                   </div>
                 </div>
