@@ -35,6 +35,7 @@
     "react-dom": "18.2.0",
     "react-router-dom": "6.16.0",
     "slugify": "^1.6.6",
+    "swiper": "^11.2.10",
     "swr": "2.2.2",
     "uuid": "9.0.1",
     "wagmi": "1.4.13"

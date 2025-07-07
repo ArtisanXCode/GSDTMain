@@ -2,6 +2,11 @@ import { motion } from 'framer-motion';
 import { ArrowPathIcon, CloudArrowUpIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, ShieldCheckIcon, GlobeAltIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import ExchangeRatesList from '../components/ExchangeRatesList';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const features = [
   {
@@ -155,23 +160,67 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white"
-              >
-                <div className="mb-4">
-                  <feature.icon className="h-8 w-8 text-white" aria-hidden="true" />
-                </div>
-                <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
-                <p className="text-orange-100 text-sm leading-relaxed">{feature.description}</p>
-              </motion.div>
-            ))}
+          <div className="relative">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1}
+              navigation={{
+                prevEl: '.swiper-button-prev-custom',
+                nextEl: '.swiper-button-next-custom',
+              }}
+              pagination={{
+                clickable: true,
+                bulletClass: 'swiper-pagination-bullet bg-orange-500 opacity-50',
+                bulletActiveClass: 'swiper-pagination-bullet-active opacity-100',
+              }}
+              autoplay={{
+                delay: 4000,
+                disableOnInteraction: false,
+              }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 3,
+                },
+                1280: {
+                  slidesPerView: 4,
+                },
+              }}
+              className="benefits-swiper"
+            >
+              {features.map((feature, index) => (
+                <SwiperSlide key={feature.name}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white h-full"
+                  >
+                    <div className="mb-4">
+                      <feature.icon className="h-8 w-8 text-white" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
+                    <p className="text-orange-100 text-sm leading-relaxed">{feature.description}</p>
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Custom Navigation Buttons */}
+            <button className="swiper-button-prev-custom absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button className="swiper-button-next-custom absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

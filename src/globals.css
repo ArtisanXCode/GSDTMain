@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Swiper Styles for Benefits Section */
+.benefits-swiper .swiper-pagination {
+  bottom: -50px !important;
+}
+
+.benefits-swiper .swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background: #ea580c !important;
+  opacity: 0.5 !important;
+  margin: 0 6px !important;
+}
+
+.benefits-swiper .swiper-pagination-bullet-active {
+  opacity: 1 !important;
+  transform: scale(1.2);
+}
+
+.benefits-swiper .swiper-slide {
+  height: auto;
+}
+
+/* Hide default navigation buttons */
+.benefits-swiper .swiper-button-next,
+.benefits-swiper .swiper-button-prev {
+  display: none;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
