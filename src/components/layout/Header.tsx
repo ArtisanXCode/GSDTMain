@@ -48,10 +48,7 @@ export default function Header() {
     <nav 
       className="text-white relative"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(124, 45, 18, 0.95) 100%), url('/AdobeStock_1267437218_1751881690391.jpeg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        background: 'linear-gradient(135deg, #4a6fa5 0%, #2c5282 100%)',
       }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
