@@ -57,10 +57,9 @@ export default function Header() {
           <div className="flex">
             <Link to="/" className="flex flex-shrink-0 items-center">
               <img
-                src="/logo.png"
+                src="/logo-transparent.png"
                 alt="GSDT Logo"
                 className="h-16 w-auto"
-                /*style={{ filter: 'brightness(0) invert(1)' }} // Make logo white*/
               />
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
