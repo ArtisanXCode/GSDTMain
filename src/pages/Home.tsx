@@ -111,8 +111,9 @@ export default function Home() {
             <p className="text-3xl font-bold tracking-tight text-orange-500 sm:text-4xl mb-4">
               BACKED BY GSDC CURRENCIES
             </p>
-            <p className="text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              GSDC is pegged to a basket of global south currencies, providing stability and diversification
+            <p className="text-base leading-6 text-gray-500 max-w-2xl mx-auto font-normal">
+              GSDC is pegged to a basket of global south currencies,<br />
+              providing stability and diversification
             </p>
           </div>
 
@@ -131,8 +132,8 @@ export default function Home() {
                     <span className="text-white font-bold text-2xl">{currency.symbol}</span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{currency.code}</h3>
-                    <p className="text-gray-800 text-base font-medium">{currency.name}</p>
+                    <h3 className="text-2xl font-bold mb-2 text-white">{currency.code}</h3>
+                    <p className="text-white text-base font-medium">{currency.name}</p>
                   </div>
                 </div>
               </motion.div>
