@@ -57,7 +57,7 @@ export default function Header() {
           <div className="flex">
             <Link to="/" className="flex flex-shrink-0 items-center">
               <img
-                src="/logo-transparent.png"
+                src="/logo_gsdc_white.png"
                 alt="GSDT Logo"
                 className="h-16 w-auto"
               />

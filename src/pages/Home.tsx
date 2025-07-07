@@ -1,68 +1,90 @@
-import { motion } from 'framer-motion';
-import { ArrowPathIcon, CloudArrowUpIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, ShieldCheckIcon, GlobeAltIcon, BanknotesIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import ExchangeRatesList from '../components/ExchangeRatesList';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import { motion } from "framer-motion";
+import {
+  ArrowPathIcon,
+  CloudArrowUpIcon,
+  LockClosedIcon,
+  ChartBarIcon,
+  CurrencyDollarIcon,
+  ShieldCheckIcon,
+  GlobeAltIcon,
+  BanknotesIcon,
+} from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+import ExchangeRatesList from "../components/ExchangeRatesList";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const features = [
   {
-    name: 'Global Accessibility',
-    description: 'Access GSDC markets from anywhere in the world with minimal barriers to entry.',
+    name: "Global Accessibility",
+    description:
+      "Access GSDC markets from anywhere in the world with minimal barriers to entry.",
     icon: GlobeAltIcon,
   },
   {
-    name: 'Cost-Effective',
-    description: 'Reduce transaction costs and eliminate traditional banking fees.',
+    name: "Cost-Effective",
+    description:
+      "Reduce transaction costs and eliminate traditional banking fees.",
     icon: BanknotesIcon,
   },
   {
-    name: 'Instant Settlement',
-    description: 'Experience near-instantaneous cross-border settlements.',
+    name: "Instant Settlement",
+    description: "Experience near-instantaneous cross-border settlements.",
     icon: ChartBarIcon,
   },
   {
-    name: 'Regulatory Compliance',
-    description: 'Built with compliance at its core, following all relevant regulations.',
+    name: "Regulatory Compliance",
+    description:
+      "Built with compliance at its core, following all relevant regulations.",
     icon: ShieldCheckIcon,
   },
 ];
 
 const currencies = [
-  { code: 'CNH', name: 'Chinese Yuan', symbol: '¥', color: 'bg-orange-500' },
-  { code: 'THB', name: 'Thailand Baht', symbol: '฿', color: 'bg-orange-500' },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹', color: 'bg-orange-500' },
-  { code: 'BRL', name: 'Brazilian Real', symbol: 'R$', color: 'bg-orange-500' },
-  { code: 'ZAR', name: 'South African Rand', symbol: 'R', color: 'bg-orange-500' },
-  { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'Rp', color: 'bg-orange-500' },
+  { code: "CNH", name: "Chinese Yuan", symbol: "¥", color: "bg-orange-500" },
+  { code: "THB", name: "Thailand Baht", symbol: "฿", color: "bg-orange-500" },
+  { code: "INR", name: "Indian Rupee", symbol: "₹", color: "bg-orange-500" },
+  { code: "BRL", name: "Brazilian Real", symbol: "R$", color: "bg-orange-500" },
+  {
+    code: "ZAR",
+    name: "South African Rand",
+    symbol: "R",
+    color: "bg-orange-500",
+  },
+  {
+    code: "IDR",
+    name: "Indonesian Rupiah",
+    symbol: "Rp",
+    color: "bg-orange-500",
+  },
 ];
 
 const metrics = [
-  { id: 1, stat: '10M+', emphasis: 'GSDC', rest: 'in circulation' },
-  { id: 2, stat: '50+', emphasis: 'Countries', rest: 'supported' },
-  { id: 3, stat: '99.9%', emphasis: 'Uptime', rest: 'guaranteed' },
-  { id: 4, stat: '24/7', emphasis: 'Support', rest: 'available' },
+  { id: 1, stat: "10M+", emphasis: "GSDC", rest: "in circulation" },
+  { id: 2, stat: "50+", emphasis: "Countries", rest: "supported" },
+  { id: 3, stat: "99.9%", emphasis: "Uptime", rest: "guaranteed" },
+  { id: 4, stat: "24/7", emphasis: "Support", rest: "available" },
 ];
 
 export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero section */}
-      <div 
+      <div
         className="relative isolate text-white min-h-[80vh] flex items-center"
         style={{
           backgroundImage: `url('/AdobeStock_1180220151_1751887222070.jpeg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: '#1a0f0a',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "#1a0f0a",
         }}
       >
         <div className="absolute inset-0 bg-gradient-radial from-orange-500/30 via-red-600/50 to-black/90"></div>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -71,11 +93,14 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-                Global South<br />
+                Global South
+                <br />
                 Digital Currency
               </h1>
               <p className="text-lg leading-8 text-gray-200 mb-10">
-                GSDC is a revolutionary stablecoin offering enhanced financial accessibility with innovative blockchain technology and real-world asset backing.
+                GSDC is a revolutionary stablecoin offering enhanced financial
+                accessibility with innovative blockchain technology and
+                real-world asset backing.
               </p>
               <div className="flex items-center gap-x-6">
                 <motion.button
@@ -89,7 +114,9 @@ export default function Home() {
                   whileHover={{ x: 5 }}
                   className="text-sm font-semibold leading-6 text-white"
                 >
-                  <Link to="/about">Learn more <span aria-hidden="true">→</span></Link>
+                  <Link to="/about">
+                    Learn more <span aria-hidden="true">→</span>
+                  </Link>
                 </motion.button>
               </div>
             </div>
@@ -101,7 +128,9 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="bg-white/10 backdrop-blur-sm rounded-2xl p-6"
             >
-              <h3 className="text-lg font-semibold text-white mb-4">Live Exchange Rates</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Live Exchange Rates
+              </h3>
               <ExchangeRatesList refreshInterval={30000} />
             </motion.div>
           </div>
@@ -112,12 +141,15 @@ export default function Home() {
       <div className="bg-gray-50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-gray-500 uppercase tracking-wide mb-2">CURRENCIES BASKET</h2>
+            <h2 className="text-sm font-semibold leading-7 text-gray-500 uppercase tracking-wide mb-2">
+              CURRENCIES BASKET
+            </h2>
             <p className="text-3xl font-bold tracking-tight text-orange-500 sm:text-4xl mb-4">
               BACKED BY GSDC CURRENCIES
             </p>
             <p className="text-base leading-6 text-gray-500 max-w-2xl mx-auto font-normal">
-              GSDC is pegged to a basket of global south currencies,<br />
+              GSDC is pegged to a basket of global south currencies,
+              <br />
               providing stability and diversification
             </p>
           </div>
@@ -134,11 +166,17 @@ export default function Home() {
               >
                 <div className="flex items-center space-x-6 w-full">
                   <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-2xl">{currency.symbol}</span>
+                    <span className="text-white font-bold text-2xl">
+                      {currency.symbol}
+                    </span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 text-orange-500">{currency.code}</h3>
-                    <p className="text-white text-base font-medium">{currency.name}</p>
+                    <h3 className="text-2xl font-bold mb-2 text-orange-500">
+                      {currency.code}
+                    </h3>
+                    <p className="text-white text-base font-medium">
+                      {currency.name}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -151,12 +189,15 @@ export default function Home() {
       <div className="bg-slate-800 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-orange-400 uppercase tracking-wide mb-2">BENEFITS</h2>
+            <h2 className="text-sm font-semibold leading-7 text-orange-400 uppercase tracking-wide mb-2">
+              BENEFITS
+            </h2>
             <p className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
               Why Choose GSDC?
             </p>
             <p className="text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
-              GSDC combines innovation with security, providing unmatched advantages for global financial operations.
+              GSDC combines innovation with security, providing unmatched
+              advantages for global financial operations.
             </p>
           </div>
 
@@ -166,13 +207,15 @@ export default function Home() {
               spaceBetween={24}
               slidesPerView={1}
               navigation={{
-                prevEl: '.swiper-button-prev-custom',
-                nextEl: '.swiper-button-next-custom',
+                prevEl: ".swiper-button-prev-custom",
+                nextEl: ".swiper-button-next-custom",
               }}
               pagination={{
                 clickable: true,
-                bulletClass: 'swiper-pagination-bullet bg-orange-500 opacity-50',
-                bulletActiveClass: 'swiper-pagination-bullet-active opacity-100',
+                bulletClass:
+                  "swiper-pagination-bullet bg-orange-500 opacity-50",
+                bulletActiveClass:
+                  "swiper-pagination-bullet-active opacity-100",
               }}
               autoplay={{
                 delay: 4000,
@@ -201,10 +244,17 @@ export default function Home() {
                     className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white h-full"
                   >
                     <div className="mb-4">
-                      <feature.icon className="h-8 w-8 text-white" aria-hidden="true" />
+                      <feature.icon
+                        className="h-8 w-8 text-white"
+                        aria-hidden="true"
+                      />
                     </div>
-                    <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
-                    <p className="text-orange-100 text-sm leading-relaxed">{feature.description}</p>
+                    <h3 className="text-lg font-semibold mb-3">
+                      {feature.name}
+                    </h3>
+                    <p className="text-orange-100 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
                   </motion.div>
                 </SwiperSlide>
               ))}
@@ -212,13 +262,33 @@ export default function Home() {
 
             {/* Custom Navigation Buttons */}
             <button className="swiper-button-prev-custom absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
             <button className="swiper-button-next-custom absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>
@@ -229,9 +299,12 @@ export default function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-lg font-bold leading-7 text-orange-500 uppercase tracking-wider mb-4">TRUSTED BY USERS WORLDWIDE</h2>
+            <h2 className="text-lg font-bold leading-7 text-orange-500 uppercase tracking-wider mb-4">
+              TRUSTED BY USERS WORLDWIDE
+            </h2>
             <p className="text-base leading-6 text-gray-600 max-w-lg mx-auto">
-              Join the growing community of GSDC<br />
+              Join the growing community of GSDC
+              <br />
               users and experience the future of digital currency.
             </p>
           </div>
@@ -246,9 +319,15 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-5xl font-bold text-orange-500 mb-3">{metric.stat}</div>
-                <div className="text-lg font-bold text-gray-900 mb-1">{metric.emphasis}</div>
-                <div className="text-sm text-gray-600 font-normal">{metric.rest}</div>
+                <div className="text-5xl font-bold text-orange-500 mb-3">
+                  {metric.stat}
+                </div>
+                <div className="text-lg font-bold text-gray-900 mb-1">
+                  {metric.emphasis}
+                </div>
+                <div className="text-sm text-gray-600 font-normal">
+                  {metric.rest}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -256,54 +335,66 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div 
-        className="relative py-24 sm:py-32"
+      <div
+        className="relative isolate text-white min-h-[80vh] flex items-center"
         style={{
-          background: 'linear-gradient(135deg, #ea580c 0%, #dc2626 100%)',
+          backgroundImage: "linear-gradient(135deg, #EA580C, #FBBF24)", // Adjusting the gradient
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-          <motion.div
+        <motion.div
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 text-center" // Centering text
+        >
+          <motion.h1
+            className="text-4xl font-bold tracking-tight mb-6"
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-6">
-              Ready to get started?
-            </h2>
-            <p className="text-lg leading-8 text-orange-100 max-w-2xl mx-auto mb-10">
-              Join the GSDC ecosystem today and experience the future of digital currency.
-            </p>
-            <div className="flex items-center justify-center gap-x-6">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-orange-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <Link to="/dashboard">Get Started</Link>
-              </motion.button>
-              <motion.button
-                whileHover={{ x: 5 }}
-                className="text-sm font-semibold leading-6 text-white"
-              >
-                <Link to="/contact">Contact us <span aria-hidden="true">→</span></Link>
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
+            Ready to get started?
+          </motion.h1>
+          <motion.p
+            className="text-lg leading-8 mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            Join the GSDC ecosystem today and experience the future of digital
+            currency.
+          </motion.p>
+          <div className="flex items-center justify-center gap-x-6">
+            <motion.button
+              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-orange-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link to="/dashboard">Get started</Link>
+            </motion.button>
+            <motion.button
+              className="text-sm font-semibold leading-6 text-white"
+              whileHover={{ x: 5 }}
+            >
+              <Link to="/about">
+                Learn more <span aria-hidden="true">→</span>
+              </Link>
+            </motion.button>
+          </div>
+        </motion.div>
       </div>
       {/* Footer CTA */}
-      <div 
+      {/*
+      <div
         className="relative text-white py-16"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%), url('/AdobeStock_1318098135_1751881690402.jpeg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
-      >
-      </div>
+      ></div>
+      */}
     </div>
   );
 }
