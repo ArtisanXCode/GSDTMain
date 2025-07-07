@@ -45,7 +45,15 @@ export default function Header() {
   };
 
   return (
-    <nav className="bg-primary-900 text-white">
+    <nav 
+      className="text-white relative"
+      style={{
+        backgroundImage: `linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(124, 45, 18, 0.95) 100%), url('/AdobeStock_1267437218_1751881690391.jpeg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           {/* Logo and Main Navigation */}

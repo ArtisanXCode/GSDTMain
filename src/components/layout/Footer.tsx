@@ -2,7 +2,15 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-primary-900">
+    <footer 
+      className="text-white relative"
+      style={{
+        backgroundImage: `linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(124, 45, 18, 0.9) 100%), url('/AdobeStock_1292744897_1751881690400.jpeg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-12 lg:px-8">
         <div className="flex flex-col items-center">
           <Link to="/" className="mb-10">

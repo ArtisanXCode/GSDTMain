@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { ArrowPathIcon, CloudArrowUpIcon, LockClosedIcon, ChartBarIcon, CurrencyDollarIcon, ShieldCheckIcon, GlobeAltIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
@@ -112,7 +111,7 @@ export default function Home() {
               GSDC is backed by a basket of global south currencies, providing stability and diversification for enhanced financial security.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {currencies.map((currency, index) => (
               <motion.div
@@ -149,7 +148,7 @@ export default function Home() {
               GSDC combines innovation with security, providing unmatched advantages for global financial operations.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <motion.div
@@ -180,7 +179,7 @@ export default function Home() {
               Join the growing community of GSDC users and experience the future of digital currency
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {metrics.map((metric, index) => (
               <motion.div
@@ -237,6 +236,17 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+      </div>
+      {/* Footer CTA */}
+      <div 
+        className="relative text-white py-16"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%), url('/AdobeStock_1318098135_1751881690402.jpeg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
       </div>
     </div>
   );
