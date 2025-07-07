@@ -229,13 +229,14 @@ export default function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-orange-600 uppercase tracking-wide mb-2">TRUSTED BY USERS WORLDWIDE</h2>
-            <p className="text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              Join the growing community of GSDC users and experience the future of digital currency
+            <h2 className="text-lg font-bold leading-7 text-orange-500 uppercase tracking-wider mb-4">TRUSTED BY USERS WORLDWIDE</h2>
+            <p className="text-base leading-6 text-gray-600 max-w-lg mx-auto">
+              Join the growing community of GSDC<br />
+              users and experience the future of digital currency.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {metrics.map((metric, index) => (
               <motion.div
                 key={metric.id}
@@ -245,9 +246,9 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-4xl font-bold text-orange-500 mb-2">{metric.stat}</div>
-                <div className="text-lg font-semibold text-gray-900 mb-1">{metric.emphasis}</div>
-                <div className="text-gray-600">{metric.rest}</div>
+                <div className="text-5xl font-bold text-orange-500 mb-3">{metric.stat}</div>
+                <div className="text-lg font-bold text-gray-900 mb-1">{metric.emphasis}</div>
+                <div className="text-sm text-gray-600 font-normal">{metric.rest}</div>
               </motion.div>
             ))}
           </div>
