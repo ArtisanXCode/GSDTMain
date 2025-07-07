@@ -1,24 +1,24 @@
-import { Fragment } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, Transition } from '@headlessui/react';
-import { 
-  Bars3Icon, 
+import { Fragment } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, Transition } from "@headlessui/react";
+import {
+  Bars3Icon,
   XMarkIcon,
   ChevronDownIcon,
   WalletIcon,
   ArrowRightOnRectangleIcon,
   DocumentTextIcon,
   PlusCircleIcon,
-  ShieldCheckIcon
-} from '@heroicons/react/24/outline';
-import { useWallet } from '../../hooks/useWallet';
-import { useAdmin } from '../../hooks/useAdmin';
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
+import { useWallet } from "../../hooks/useWallet";
+import { useAdmin } from "../../hooks/useAdmin";
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Dashboard', href: '/dashboard' },
-  { name: 'Contact', href: '/contact' },
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
@@ -28,27 +28,27 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminRole');
-      localStorage.removeItem('adminAddress');
+      localStorage.removeItem("adminAuth");
+      localStorage.removeItem("adminRole");
+      localStorage.removeItem("adminAddress");
       await disconnect();
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
     }
   };
 
   const isActivePath = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(path);
   };
 
   return (
-    <nav 
+    <nav
       className="text-white relative"
       style={{
-        background: 'linear-gradient(135deg, #4a6fa5 0%, #2c5282 100%)',
+        background: "linear-gradient(135deg, #2A4661 0%, #6D97BF 100%)",
       }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -56,9 +56,9 @@ export default function Header() {
           {/* Logo and Main Navigation */}
           <div className="flex">
             <Link to="/" className="flex flex-shrink-0 items-center">
-              <img 
-                src="/logo.png" 
-                alt="GSDT Logo" 
+              <img
+                src="/logo.png"
+                alt="GSDT Logo"
                 className="h-16 w-auto"
                 /*style={{ filter: 'brightness(0) invert(1)' }} // Make logo white*/
               />
@@ -70,8 +70,8 @@ export default function Header() {
                   to={item.href}
                   className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200 ${
                     isActivePath(item.href)
-                      ? 'border-secondary-400 text-white'
-                      : 'border-transparent text-primary-100 hover:border-secondary-400/50 hover:text-white'
+                      ? "border-secondary-400 text-white"
+                      : "border-transparent text-primary-100 hover:border-secondary-400/50 hover:text-white"
                   }`}
                 >
                   {item.name}
@@ -115,7 +115,7 @@ export default function Header() {
                         <Link
                           to="/transactions"
                           className={`${
-                            active ? 'bg-gray-100' : ''
+                            active ? "bg-gray-100" : ""
                           } flex px-4 py-2 text-sm text-gray-700 items-center`}
                         >
                           <DocumentTextIcon className="h-5 w-5 mr-2" />
@@ -128,7 +128,7 @@ export default function Header() {
                         <Link
                           to="/token-minting"
                           className={`${
-                            active ? 'bg-gray-100' : ''
+                            active ? "bg-gray-100" : ""
                           } flex px-4 py-2 text-sm text-gray-700 items-center`}
                         >
                           <PlusCircleIcon className="h-5 w-5 mr-2" />
@@ -142,7 +142,7 @@ export default function Header() {
                           <Link
                             to="/admin/dashboard"
                             className={`${
-                              active ? 'bg-gray-100' : ''
+                              active ? "bg-gray-100" : ""
                             } flex px-4 py-2 text-sm text-gray-700 items-center`}
                           >
                             <ShieldCheckIcon className="h-5 w-5 mr-2" />
@@ -157,7 +157,7 @@ export default function Header() {
                         <button
                           onClick={handleLogout}
                           className={`${
-                            active ? 'bg-gray-100' : ''
+                            active ? "bg-gray-100" : ""
                           } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                         >
                           <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
@@ -207,7 +207,7 @@ export default function Header() {
                         <Link
                           to={item.href}
                           className={`${
-                            active ? 'bg-gray-100' : ''
+                            active ? "bg-gray-100" : ""
                           } block px-4 py-2 text-sm text-gray-700`}
                         >
                           {item.name}
@@ -223,7 +223,7 @@ export default function Header() {
                           <Link
                             to="/transactions"
                             className={`${
-                              active ? 'bg-gray-100' : ''
+                              active ? "bg-gray-100" : ""
                             } flex px-4 py-2 text-sm text-gray-700 items-center`}
                           >
                             <DocumentTextIcon className="h-5 w-5 mr-2" />
@@ -236,7 +236,7 @@ export default function Header() {
                           <Link
                             to="/token-minting"
                             className={`${
-                              active ? 'bg-gray-100' : ''
+                              active ? "bg-gray-100" : ""
                             } flex px-4 py-2 text-sm text-gray-700 items-center`}
                           >
                             <PlusCircleIcon className="h-5 w-5 mr-2" />
@@ -250,7 +250,7 @@ export default function Header() {
                             <Link
                               to="/admin/dashboard"
                               className={`${
-                                active ? 'bg-gray-100' : ''
+                                active ? "bg-gray-100" : ""
                               } flex px-4 py-2 text-sm text-gray-700 items-center`}
                             >
                               <ShieldCheckIcon className="h-5 w-5 mr-2" />
@@ -265,7 +265,7 @@ export default function Header() {
                           <button
                             onClick={handleLogout}
                             className={`${
-                              active ? 'bg-gray-100' : ''
+                              active ? "bg-gray-100" : ""
                             } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                           >
                             <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
@@ -280,7 +280,7 @@ export default function Header() {
                         <button
                           onClick={connect}
                           className={`${
-                            active ? 'bg-gray-100' : ''
+                            active ? "bg-gray-100" : ""
                           } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                         >
                           <WalletIcon className="h-5 w-5 mr-2" />
