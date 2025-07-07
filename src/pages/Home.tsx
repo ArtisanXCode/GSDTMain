@@ -27,12 +27,12 @@ const features = [
 ];
 
 const currencies = [
-  { code: 'CNH', name: 'Chinese Yuan', weight: '30%', color: 'bg-orange-500' },
-  { code: 'RUB', name: 'Russian Ruble', weight: '20%', color: 'bg-orange-500' },
-  { code: 'INR', name: 'Indian Rupee', weight: '20%', color: 'bg-orange-500' },
-  { code: 'BRL', name: 'Brazilian Real', weight: '15%', color: 'bg-orange-500' },
-  { code: 'ZAR', name: 'South African Rand', weight: '10%', color: 'bg-orange-500' },
-  { code: 'IDR', name: 'Indonesian Rupiah', weight: '5%', color: 'bg-orange-500' },
+  { code: 'CNH', name: 'Chinese Yuan', symbol: '¥', color: 'bg-orange-500' },
+  { code: 'THB', name: 'Thailand Baht', symbol: '฿', color: 'bg-orange-500' },
+  { code: 'INR', name: 'Indian Rupee', symbol: '₹', color: 'bg-orange-500' },
+  { code: 'BRL', name: 'Brazilian Real', symbol: 'R$', color: 'bg-orange-500' },
+  { code: 'ZAR', name: 'South African Rand', symbol: 'R', color: 'bg-orange-500' },
+  { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'Rp', color: 'bg-orange-500' },
 ];
 
 const metrics = [
@@ -107,16 +107,16 @@ export default function Home() {
       <div className="bg-gray-50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-orange-600 uppercase tracking-wide mb-2">CURRENCIES BASKET</h2>
-            <p className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
+            <h2 className="text-sm font-semibold leading-7 text-gray-500 uppercase tracking-wide mb-2">CURRENCIES BASKET</h2>
+            <p className="text-3xl font-bold tracking-tight text-orange-500 sm:text-4xl mb-4">
               BACKED BY GSDC CURRENCIES
             </p>
             <p className="text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              GSDC is backed by a basket of global south currencies, providing stability and diversification for enhanced financial security.
+              GSDC is pegged to a basket of global south currencies, providing stability and diversification
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {currencies.map((currency, index) => (
               <motion.div
                 key={currency.code}
@@ -124,16 +124,17 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-8 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">{currency.code.slice(0, 2)}</span>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-lg">{currency.symbol}</span>
                   </div>
-                  <span className="text-2xl font-bold">{currency.weight}</span>
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">{currency.code}</h3>
+                    <p className="text-blue-100 text-sm">{currency.name}</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-1">{currency.code}</h3>
-                <p className="text-blue-100 text-sm">{currency.name}</p>
               </motion.div>
             ))}
           </div>
