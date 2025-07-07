@@ -49,10 +49,13 @@ export default function Home() {
       <div 
         className="relative isolate text-white min-h-[80vh] flex items-center"
         style={{
-          background: 'linear-gradient(135deg, #1e3a8a 0%, #7c2d12 50%, #ea580c 100%)',
+          backgroundImage: `linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(124, 45, 18, 0.8) 50%, rgba(234, 88, 12, 0.8) 100%), url('/AdobeStock_1180220151_1751887222070.jpeg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
