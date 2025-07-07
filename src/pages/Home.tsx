@@ -124,15 +124,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-8 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-12 min-h-[180px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
               >
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-lg">{currency.symbol}</span>
+                <div className="flex items-center space-x-6 w-full">
+                  <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-2xl">{currency.symbol}</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-1">{currency.code}</h3>
-                    <p className="text-blue-100 text-sm">{currency.name}</p>
+                    <h3 className="text-2xl font-bold mb-2 text-gray-900">{currency.code}</h3>
+                    <p className="text-gray-800 text-base font-medium">{currency.name}</p>
                   </div>
                 </div>
               </motion.div>
