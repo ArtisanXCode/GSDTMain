@@ -56,7 +56,7 @@ export default function Home() {
           backgroundColor: '#1a0f0a',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/40 to-black/90"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-orange-500/30 via-red-600/50 to-black/90"></div>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
