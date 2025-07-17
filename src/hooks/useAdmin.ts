@@ -134,7 +134,7 @@ export const useAdmin = () => {
         // Fallback to hardcoded admin addresses for testing
         if (
           address.toLowerCase() ===
-          "0x3Cc0Ea0D2DFb1F1625a2967DF224861cB50648d3".toLowerCase()
+          "0x1234567890123456789012345678901234567890".toLowerCase()
         ) {
           setIsAdmin(true);
           setAdminRole(AdminRole.SUPER_ADMIN);
