@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import {
   GlobeAltIcon,
@@ -53,33 +54,41 @@ const metrics = [
 export default function Home() {
   return (
     <div className="bg-white">
-      {/* Hero section with Globe Background */}
+      {/* Hero section with exact background from screenshot */}
       <div
-        className="relative isolate text-white min-h-screen flex items-center"
+        className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 107, 0, 0.95) 0%, rgba(229, 62, 62, 0.95) 100%)',
+          background: 'linear-gradient(135deg, rgba(20, 30, 48, 0.95) 0%, rgba(139, 69, 19, 0.8) 50%, rgba(255, 140, 0, 0.6) 100%)',
         }}
       >
-        {/* Globe pattern overlay */}
+        {/* 3D Globe Pattern Overlay */}
         <div 
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='globe-pattern' x='0' y='0' width='50' height='50' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M5,25 Q25,5 45,25 Q25,45 5,25' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M25,5 L25,45 M5,25 L45,25' stroke='%23ffffff' stroke-width='0.3'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23globe-pattern)'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CradialGradient id='globe-gradient' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF8C00;stop-opacity:0.8'/%3E%3Cstop offset='70%25' style='stop-color:%23FF4500;stop-opacity:0.4'/%3E%3Cstop offset='100%25' style='stop-color:%23000000;stop-opacity:0.1'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='80' fill='url(%23globe-gradient)' stroke='%23FF6B00' stroke-width='1'/%3E%3Cpath d='M20,100 Q100,20 180,100 Q100,180 20,100' fill='none' stroke='%23FF8C00' stroke-width='1.5'/%3E%3Cpath d='M100,20 Q180,100 100,180 Q20,100 100,20' fill='none' stroke='%23FF8C00' stroke-width='1.5'/%3E%3Cline x1='100' y1='20' x2='100' y2='180' stroke='%23FF6B00' stroke-width='1'/%3E%3Cline x1='20' y1='100' x2='180' y2='100' stroke='%23FF6B00' stroke-width='1'/%3E%3C/svg%3E")`,
           }}
         />
+
+        {/* Floating particles effect */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-orange-400 rounded-full opacity-60 animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-red-400 rounded-full opacity-80 animate-pulse delay-1000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-70 animate-pulse delay-2000"></div>
+          <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-orange-300 rounded-full opacity-60 animate-pulse delay-3000"></div>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-24 lg:py-32"
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-24 lg:py-32 z-10"
         >
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
                 Global South
                 <br />
-                Digital Currency
+                <span className="text-brand-orange">Digital Currency</span>
               </h1>
               <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
                 GSDC is a revolutionary stablecoin offering enhanced financial
@@ -90,9 +99,9 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-orange shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
+                  className="rounded-full bg-white px-8 py-4 text-base font-semibold text-gray-900 shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
                 >
-                  <Link to="/dashboard">Get Started</Link>
+                  <Link to="/dashboard">Get started</Link>
                 </motion.button>
                 <motion.button
                   whileHover={{ x: 5 }}
@@ -122,14 +131,26 @@ export default function Home() {
             </motion.div>
           </div>
         </motion.div>
+
+        {/* 3D Globe Icon - Right Center */}
+        <div className="absolute right-12 top-1/2 transform -translate-y-1/2 opacity-20">
+          <div className="w-96 h-96 relative">
+            <div className="absolute inset-0 rounded-full border-4 border-orange-400/30 animate-spin-slow"></div>
+            <div className="absolute inset-4 rounded-full border-2 border-orange-500/40 animate-pulse"></div>
+            <div className="absolute inset-8 rounded-full border border-red-400/50"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-32 h-32 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-60"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Currency Basket section */}
       <div className="bg-gray-50 py-24 sm:py-32 relative">
-        {/* The Global South Logo */}
+        {/* The Global South Logo/Icon */}
         <div className="absolute top-12 right-12">
           <img 
-            src="/logo_gsdc.png" 
+            src="/logo_gsdc_icon.png" 
             alt="The Global South" 
             className="h-32 w-auto opacity-80"
           />
@@ -266,10 +287,10 @@ export default function Home() {
 
       {/* CTA Section */}
       <div className="relative isolate text-white min-h-[60vh] flex items-center bg-gradient-to-r from-brand-orange to-yellow-500">
-        {/* The Global South Logo */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-30">
+        {/* The Global South Logo/Icon Background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-20">
           <img 
-            src="/logo_gsdc_white.png" 
+            src="/logo_gsdc_icon.png" 
             alt="The Global South" 
             className="h-64 w-auto"
           />

@@ -41,6 +41,11 @@ module.exports = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+
+      animation: {
+        'spin-slow': 'spin 20s linear infinite',
+      },
+
         'hero-gradient': 'linear-gradient(135deg, #FF6B00 0%, #E53E3E 100%)',
         'cta-gradient': 'linear-gradient(135deg, #FF6B00 0%, #FFA500 100%)',
         'benefits-gradient': 'linear-gradient(135deg, #FF6B00 0%, #E53E3E 100%)',

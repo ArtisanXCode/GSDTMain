@@ -45,7 +45,7 @@ export default function Header() {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-700 text-white relative shadow-lg">
+    <nav className="bg-gradient-to-r from-blue-700 to-blue-800 text-white relative shadow-lg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
@@ -167,7 +167,7 @@ export default function Header() {
             ) : (
               <button
                 onClick={connect}
-                className="flex items-center rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200"
+                className="flex items-center rounded-full bg-white/10 backdrop-blur-sm border border-white/30 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200"
               >
                 <WalletIcon className="h-4 w-4 mr-2" />
                 WALLET
