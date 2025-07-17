@@ -139,13 +139,13 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* Right-aligned Phoenix Icon */}
-      <div className="relative -my-12 z-10 flex justify-end pr-6 lg:pr-8">
-        <div className="">
+      {/* Centered Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48"
+            className="w-24 h-24 sm:w-32 sm:h-32"
           />
         </div>
       </div>
