@@ -356,7 +356,12 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="relative isolate text-white min-h-[60vh] flex items-center bg-gradient-to-r from-brand-orange to-yellow-500">
+      <div 
+        className="relative isolate text-white min-h-[60vh] flex items-center"
+        style={{
+          background: "radial-gradient(circle, #e74134 0%, #f6b62e 100%)"
+        }}
+      >
         {/* The Global South Logo/Icon Background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-20">
           <img
