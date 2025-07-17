@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../../hooks/useWallet';
 import { useAdmin } from '../../hooks/useAdmin';
 import { KYCStatus, fetchKYCRequests, KYCRequest, approveKYCRequest, rejectKYCRequest, getKYCStats } from '../../services/kyc';
@@ -9,6 +10,7 @@ import KYCDetailModal from '../../components/admin/kyc/KYCDetailModal';
 export default function KYCRequests() {
   const { isConnected } = useWallet();
   const { isAdmin, isSuperAdmin } = useAdmin();
+  const navigate = useNavigate();
   const [kycRequests, setKycRequests] = useState<KYCRequest[]>([]);
   const [kycStats, setKycStats] = useState({
     total: 0,
@@ -206,19 +208,34 @@ export default function KYCRequests() {
               <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
                 KYC Requests
               </button>
-              <button className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10">
+              <button 
+                onClick={() => navigate('/admin/contact-messages')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
                 Contact Messages
               </button>
-              <button className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10">
+              <button 
+                onClick={() => navigate('/admin/role-management')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
                 Role Management
               </button>
-              <button className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10">
+              <button 
+                onClick={() => navigate('/admin/fiat-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
                 Fiat Mint Requests
               </button>
-              <button className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10">
+              <button 
+                onClick={() => navigate('/admin/reserves')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
                 Proof of Reserves
               </button>
-              <button className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10">
+              <button 
+                onClick={() => navigate('/admin/exchange-rates')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
                 Exchange Rates
               </button>
             </div>
