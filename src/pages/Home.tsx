@@ -203,22 +203,29 @@ export default function Home() {
       </div>
 
       {/* Benefits section */}
-      <div className="bg-gradient-to-br from-blue-700 to-blue-800 py-24 sm:py-32">
+      <div 
+        className="py-24 sm:py-32"
+        style={{
+          background: 'linear-gradient(to bottom, #446c93, #2a4661)'
+        }}
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-orange-300 uppercase tracking-wide mb-2">
+            <h2 className="text-sm font-semibold leading-7 text-white uppercase tracking-wide mb-2">
               BENEFITS
             </h2>
             <p className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl mb-4">
               Why Choose GSDC?
             </p>
-            <p className="text-lg leading-8 text-blue-100 max-w-2xl mx-auto">
-              GSDC combines innovation with security, providing unmatched
-              advantages for global financial operations.
+            <p className="text-lg leading-8 text-white max-w-2xl mx-auto">
+              GSDC is backed by a basket of real-world assets (RWAs)
+              <br />
+              providing stability and diversification
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Desktop Grid */}
+          <div className="hidden lg:grid lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.name}
@@ -226,20 +233,57 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300"
+                className="rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center"
+                style={{
+                  background: 'linear-gradient(to bottom, #f6b62e, #e74134)'
+                }}
               >
-                <div className="mb-4">
+                <div className="mb-4 flex justify-center">
                   <feature.icon
-                    className="h-8 w-8 text-white"
+                    className="h-12 w-12 text-white"
                     aria-hidden="true"
                   />
                 </div>
                 <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
-                <p className="text-orange-100 text-sm leading-relaxed">
+                <p className="text-white text-sm leading-relaxed">
                   {feature.description}
                 </p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Mobile/Tablet Slider */}
+          <div className="lg:hidden">
+            <div className="overflow-x-auto">
+              <div className="flex space-x-4 pb-4" style={{ width: 'max-content' }}>
+                {features.map((feature, index) => (
+                  <motion.div
+                    key={feature.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300 text-center flex-shrink-0"
+                    style={{
+                      background: 'linear-gradient(to bottom, #f6b62e, #e74134)',
+                      width: '280px',
+                      minHeight: '200px'
+                    }}
+                  >
+                    <div className="mb-4 flex justify-center">
+                      <feature.icon
+                        className="h-12 w-12 text-white"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
+                    <p className="text-white text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
