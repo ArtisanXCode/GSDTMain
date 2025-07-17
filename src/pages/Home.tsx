@@ -203,10 +203,10 @@ export default function Home() {
       </div>
 
       {/* Benefits section */}
-      <div 
+      <div
         className="py-24 sm:py-32"
         style={{
-          background: 'linear-gradient(to bottom, #446c93, #2a4661)'
+          background: "linear-gradient(to bottom, #446c93, #2a4661)",
         }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -235,7 +235,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center"
                 style={{
-                  background: 'linear-gradient(to bottom, #f6b62e, #e74134)'
+                  background: "linear-gradient(to bottom, #f6b62e, #e74134)",
                 }}
               >
                 <div className="mb-4 flex justify-center">
@@ -255,7 +255,10 @@ export default function Home() {
           {/* Mobile/Tablet Slider */}
           <div className="lg:hidden">
             <div className="overflow-x-auto">
-              <div className="flex space-x-4 pb-4" style={{ width: 'max-content' }}>
+              <div
+                className="flex space-x-4 pb-4"
+                style={{ width: "max-content" }}
+              >
                 {features.map((feature, index) => (
                   <motion.div
                     key={feature.name}
@@ -265,9 +268,10 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300 text-center flex-shrink-0"
                     style={{
-                      background: 'linear-gradient(to bottom, #f6b62e, #e74134)',
-                      width: '280px',
-                      minHeight: '200px'
+                      background:
+                        "linear-gradient(to bottom, #f6b62e, #e74134)",
+                      width: "280px",
+                      minHeight: "200px",
                     }}
                   >
                     <div className="mb-4 flex justify-center">
@@ -276,7 +280,9 @@ export default function Home() {
                         aria-hidden="true"
                       />
                     </div>
-                    <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
+                    <h3 className="text-lg font-semibold mb-3">
+                      {feature.name}
+                    </h3>
                     <p className="text-white text-sm leading-relaxed">
                       {feature.description}
                     </p>
@@ -303,7 +309,10 @@ export default function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold leading-7 uppercase tracking-wider mb-4" style={{ color: "#ed9030" }}>
+            <h2
+              className="text-3xl font-bold leading-7 uppercase tracking-wider mb-4"
+              style={{ color: "#ed9030" }}
+            >
               TRUSTED BY USERS WORLDWIDE
             </h2>
             <p className="text-lg leading-6 text-gray-600 max-w-lg mx-auto">
@@ -323,13 +332,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div 
+                <div
                   className="text-5xl font-extrabold mb-3"
                   style={{
                     background: "linear-gradient(to bottom, #f6b62e, #e95533)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
-                    backgroundClip: "text"
+                    backgroundClip: "text",
                   }}
                 >
                   {metric.stat}
