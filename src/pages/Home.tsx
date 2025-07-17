@@ -139,8 +139,8 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* Centered Phoenix Icon */}
-      <div className="relative -my-12 z-10 flex justify-center">
+      {/* Right-aligned Phoenix Icon */}
+      <div className="relative -my-12 z-10 flex justify-end pr-6 lg:pr-8">
         <div className="">
           <img
             src="/logo_gsdc_icon.png"
