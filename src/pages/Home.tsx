@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import {
   GlobeAltIcon,
@@ -59,39 +58,28 @@ export default function Home() {
         className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
         {/* Dark overlay for left and right sides, lighter in center */}
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-        
+
         {/* Additional dark overlay for sky area */}
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
 
         {/* Orange globe/sphere pattern overlay */}
-        <div 
+        <div
           className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CradialGradient id='globe-gradient' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF8C00;stop-opacity:0.9'/%3E%3Cstop offset='40%25' style='stop-color:%23FF6B00;stop-opacity:0.7'/%3E%3Cstop offset='70%25' style='stop-color:%23FF4500;stop-opacity:0.5'/%3E%3Cstop offset='100%25' style='stop-color:%23000000;stop-opacity:0.2'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23globe-gradient)' stroke='%23FF6B00' stroke-width='2'/%3E%3Cpath d='M30,150 Q150,30 270,150 Q150,270 30,150' fill='none' stroke='%23FF8C00' stroke-width='2'/%3E%3Cpath d='M150,30 Q270,150 150,270 Q30,150 150,30' fill='none' stroke='%23FF8C00' stroke-width='2'/%3E%3Cline x1='150' y1='30' x2='150' y2='270' stroke='%23FF6B00' stroke-width='1.5'/%3E%3Cline x1='30' y1='150' x2='270' y2='150' stroke='%23FF6B00' stroke-width='1.5'/%3E%3C/svg%3E")`,
-            backgroundPosition: 'right center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '600px 600px',
+            backgroundPosition: "right center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "600px 600px",
           }}
         />
 
         {/* Orange and yellow floating dots */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full opacity-80 animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-90 animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-2.5 h-2.5 bg-gradient-to-r from-orange-300 to-yellow-300 rounded-full opacity-70 animate-pulse delay-2000"></div>
-          <div className="absolute top-2/3 right-1/4 w-2 h-2 bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full opacity-85 animate-pulse delay-3000"></div>
-          <div className="absolute top-1/2 left-1/5 w-1.5 h-1.5 bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full opacity-75 animate-pulse delay-1500"></div>
-          <div className="absolute bottom-1/3 right-1/5 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-300 rounded-full opacity-80 animate-pulse delay-2500"></div>
-          <div className="absolute top-3/4 left-2/3 w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full opacity-70 animate-pulse delay-500"></div>
-          <div className="absolute top-1/6 right-2/3 w-2.5 h-2.5 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full opacity-85 animate-pulse delay-3500"></div>
-        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -141,33 +129,23 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-white">
                   Live Exchange Rates
                 </h3>
-                <span className="text-sm text-white/70">Last updated: Just now</span>
+                <span className="text-sm text-white/70">
+                  Last updated: Just now
+                </span>
               </div>
               <ExchangeRatesList refreshInterval={30000} />
             </motion.div>
           </div>
         </motion.div>
-
-        {/* 3D Globe Icon - Right Center */}
-        <div className="absolute right-12 top-1/2 transform -translate-y-1/2 opacity-20">
-          <div className="w-96 h-96 relative">
-            <div className="absolute inset-0 rounded-full border-4 border-orange-400/30 animate-spin-slow"></div>
-            <div className="absolute inset-4 rounded-full border-2 border-orange-500/40 animate-pulse"></div>
-            <div className="absolute inset-8 rounded-full border border-red-400/50"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="w-32 h-32 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-60"></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Currency Basket section */}
       <div className="bg-gray-50 py-24 sm:py-32 relative">
         {/* The Global South Logo/Icon */}
         <div className="absolute top-12 right-12">
-          <img 
-            src="/logo_gsdc_icon.png" 
-            alt="The Global South" 
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="The Global South"
             className="h-32 w-auto opacity-80"
           />
         </div>
@@ -250,9 +228,7 @@ export default function Home() {
                     aria-hidden="true"
                   />
                 </div>
-                <h3 className="text-lg font-semibold mb-3">
-                  {feature.name}
-                </h3>
+                <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
                 <p className="text-orange-100 text-sm leading-relaxed">
                   {feature.description}
                 </p>
@@ -305,16 +281,14 @@ export default function Home() {
       <div className="relative isolate text-white min-h-[60vh] flex items-center bg-gradient-to-r from-brand-orange to-yellow-500">
         {/* The Global South Logo/Icon Background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <img 
-            src="/logo_gsdc_icon.png" 
-            alt="The Global South" 
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="The Global South"
             className="h-64 w-auto"
           />
         </div>
 
-        <motion.div
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 text-center z-10"
-        >
+        <motion.div className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 text-center z-10">
           <motion.h1
             className="text-4xl font-extrabold tracking-tight mb-6 sm:text-5xl"
             initial={{ opacity: 0, y: 20 }}
