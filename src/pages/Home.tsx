@@ -146,7 +146,10 @@ export default function Home() {
             <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
               CURRENCIES BASKET
             </h2>
-            <p className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4" style={{ color: '#ed9030' }}>
+            <p
+              className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
+              style={{ color: "#ed9030" }}
+            >
               BACKED BY GSDC CURRENCIES
             </p>
             <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
@@ -166,14 +169,15 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
                 style={{
-                  background: 'linear-gradient(to bottom, #6d97bf, #446c93)'
+                  background: "linear-gradient(to bottom, #6d97bf, #446c93)",
                 }}
               >
                 <div className="flex items-center space-x-4 w-full">
-                  <div 
+                  <div
                     className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
                     style={{
-                      background: 'linear-gradient(to bottom, #f6b62e, #ed9030)'
+                      background:
+                        "linear-gradient(to bottom, #f6b62e, #d46c00)",
                     }}
                   >
                     <span className="text-white font-bold text-lg">
@@ -181,7 +185,10 @@ export default function Home() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold mb-1" style={{ color: '#ed9030' }}>
+                    <h3
+                      className="text-xl font-extrabold mb-1"
+                      style={{ color: "#ed9030" }}
+                    >
                       {currency.code}
                     </h3>
                     <p className="text-white text-sm font-medium opacity-90">
@@ -240,9 +247,9 @@ export default function Home() {
       {/* Centered Phoenix Icon */}
       <div className="relative -my-12 z-10 flex justify-center">
         <div className="bg-white p-4 rounded-full border-4 border-red-500 shadow-lg">
-          <img 
-            src="/phoenix-icon.svg" 
-            alt="Phoenix Icon" 
+          <img
+            src="/phoenix-icon.svg"
+            alt="Phoenix Icon"
             className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
           />
         </div>
