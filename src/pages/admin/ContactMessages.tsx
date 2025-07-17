@@ -23,7 +23,7 @@ export default function ContactMessages() {
   const [actionLoading, setActionLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [messageSuccess, setMessageSuccess] = useState<string | null>(null);
-  
+
   // Contact message view/reply state
   const [selectedMessage, setSelectedMessage] = useState<ContactSubmission | null>(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -34,7 +34,7 @@ export default function ContactMessages() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const data = await getContactSubmissions();
         setContactSubmissions(data);
       } catch (err: any) {
@@ -57,7 +57,7 @@ export default function ContactMessages() {
     try {
       setActionLoading(true);
       const success = await updateContactStatus(id, status);
-      
+
       if (success) {
         // Update UI optimistically
         setContactSubmissions(prev => 
@@ -67,7 +67,7 @@ export default function ContactMessages() {
               : s
           )
         );
-        
+
         // If we're viewing this message, update its status in the modal too
         if (selectedMessage && selectedMessage.id === id) {
           setSelectedMessage({
@@ -75,7 +75,7 @@ export default function ContactMessages() {
             status
           });
         }
-        
+
         setMessageSuccess('Status updated successfully');
         setTimeout(() => setMessageSuccess(null), 3000);
       }
@@ -96,18 +96,18 @@ export default function ContactMessages() {
     try {
       setActionLoading(true);
       const success = await deleteContactSubmission(id);
-      
+
       if (success) {
         // Remove from UI
         setContactSubmissions(prev => prev.filter(s => s.id !== id));
         setShowDeleteConfirm(null);
-        
+
         // If we're viewing this message, close the modal
         if (selectedMessage && selectedMessage.id === id) {
           setShowMessageModal(false);
           setSelectedMessage(null);
         }
-        
+
         setMessageSuccess('Message deleted successfully');
         setTimeout(() => setMessageSuccess(null), 3000);
       } else {
@@ -125,7 +125,7 @@ export default function ContactMessages() {
     setSelectedMessage(message);
     setShowMessageModal(true);
     setReplyText('');
-    
+
     // If message is new, mark it as read
     if (message.status === 'new') {
       await handleStatusChange(message.id, 'read');
@@ -134,20 +134,20 @@ export default function ContactMessages() {
 
   const handleSendReply = async () => {
     if (!selectedMessage || !replyText) return;
-    
+
     try {
       setActionLoading(true);
-      
+
       // Send reply
       const success = await sendContactReply(selectedMessage, replyText);
-      
+
       if (success) {
         // Update status to replied
         await handleStatusChange(selectedMessage.id, 'replied');
-        
+
         setMessageSuccess('Reply sent successfully');
         setReplyText('');
-        
+
         // Close modal after a delay
         setTimeout(() => {
           setShowMessageModal(false);
@@ -365,7 +365,7 @@ export default function ContactMessages() {
                           >
                             <EyeIcon className="h-5 w-5" />
                           </button>
-                          
+
                           {isSuperAdmin && (
                             <>
                               {submission.status === 'archived' ? (
@@ -387,7 +387,7 @@ export default function ContactMessages() {
                                   <ArchiveBoxIcon className="h-5 w-5" />
                                 </button>
                               )}
-                              
+
                               <button
                                 onClick={() => setShowDeleteConfirm(submission.id)}
                                 disabled={actionLoading}
@@ -410,7 +410,6 @@ export default function ContactMessages() {
           </div>
         </div>
       </div>
-    </div>
 
       {/* View/Reply Message Modal */}
       {showMessageModal && selectedMessage && (
@@ -436,14 +435,14 @@ export default function ContactMessages() {
                 </span>
               </div>
             </div>
-            
+
             <div className="p-6 bg-gray-50 border-b border-gray-200 overflow-y-auto flex-grow">
               <h4 className="text-sm font-medium text-gray-500 mb-2">Message</h4>
               <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <p className="text-gray-900 whitespace-pre-wrap">{selectedMessage.message}</p>
               </div>
             </div>
-            
+
             {messageSuccess ? (
               <div className="p-6">
                 <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
@@ -464,13 +463,13 @@ export default function ContactMessages() {
                     />
                   </>
                 )}
-                
+
                 {error && (
                   <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
                     {error}
                   </div>
                 )}
-                
+
                 <div className="mt-6 flex justify-between">
                   <div className="flex space-x-3">
                     <button
@@ -481,7 +480,7 @@ export default function ContactMessages() {
                       <TrashIcon className="h-5 w-5 mr-2" />
                       Delete
                     </button>
-                    
+
                     {selectedMessage.status === 'archived' ? (
                       <button
                         onClick={() => handleStatusChange(selectedMessage.id, 'read')}
@@ -502,7 +501,7 @@ export default function ContactMessages() {
                       </button>
                     )}
                   </div>
-                  
+
                   <div className="flex space-x-3">
                     <button
                       onClick={() => {
@@ -513,7 +512,7 @@ export default function ContactMessages() {
                     >
                       Close
                     </button>
-                    
+
                     {selectedMessage.status !== 'archived' && (
                       <button
                         onClick={handleSendReply}
@@ -590,6 +589,6 @@ export default function ContactMessages() {
           </motion.div>
         </div>
       )}
-    </AdminLayout>
+    
   );
 }
