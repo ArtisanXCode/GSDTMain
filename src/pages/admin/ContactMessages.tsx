@@ -204,16 +204,36 @@ export default function ContactMessages() {
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Contact Messages
+              Admin Dashboard
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl">
+            <p className="text-lg leading-8 text-white/90 font-regular">
               Super Admin Dashboard – Full Access
             </p>
           </div>
+        </motion.div>
+      </div>
 
-          {/* Admin Navigation */}
-          <div className="mt-12 flex flex-wrap gap-4">
-            <div className="flex flex-wrap gap-4">
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-24 h-24 sm:w-32 sm:h-32"
+          />
+        </div>
+      </div>
+
+      {/* Main content section */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          
+          {/* Navigation Tabs */}
+          <div className="mb-8">
+            <div 
+              className="flex flex-wrap gap-1 p-2 rounded-lg"
+              style={{ backgroundColor: '#5a7a96' }}
+            >
               <button 
                 onClick={() => navigate('/admin/kyc-requests')}
                 className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
@@ -249,23 +269,26 @@ export default function ContactMessages() {
               </button>
             </div>
           </div>
-        </motion.div>
-      </div>
 
-      {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-center">
-        <div className="absolute -top-16">
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="w-24 h-24 sm:w-32 sm:h-32"
-          />
-        </div>
-      </div>
+          {/* Contact Messages Section */}
+          <div 
+            className="rounded-lg p-6"
+            style={{ backgroundColor: '#5a7a96' }}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1">Contact Messages</h3>
+                <p className="text-sm text-white/70">View and respond to messages from users</p>
+              </div>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 rounded-lg text-white font-medium"
+                style={{ backgroundColor: '#ed9030' }}
+              >
+                Refresh
+              </button>
+            </div>
 
-      {/* Main content section */}
-      <div className="bg-gray-200 py-24 sm:py-32 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <div className="sm:flex sm:items-center">
@@ -407,6 +430,7 @@ export default function ContactMessages() {
             </div>
           )}
             </div>
+          </div>
           </div>
         </div>
       </div>
