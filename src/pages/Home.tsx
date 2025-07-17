@@ -145,11 +145,11 @@ export default function Home() {
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
+            className="w-50 h-50 sm:w-50 sm:h-50 lg:w-24 lg:h-24"
           />
         </div>
       </div>
-      
+
       {/* Currency Basket section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
