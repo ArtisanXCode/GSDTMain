@@ -145,7 +145,7 @@ export default function Home() {
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-50 h-50 sm:w-50 sm:h-50 lg:w-24 lg:h-24"
+            className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48"
           />
         </div>
       </div>
