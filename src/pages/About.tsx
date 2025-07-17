@@ -1,5 +1,4 @@
-
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export default function About() {
   return (
@@ -8,7 +7,7 @@ export default function About() {
       <div
         className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/header_section.jpeg')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -57,9 +56,11 @@ export default function About() {
               GLOBAL SOUTH DIGITAL CURRENCY
             </p>
             <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
-              GSDC is a revolutionary stablecoin that represents a basket of GSDC currencies,
+              GSDC is a revolutionary stablecoin that represents a basket of
+              GSDC currencies,
               <br />
-              providing a stable and efficient means of cross-border transactions while promoting economic
+              providing a stable and efficient means of cross-border
+              transactions while promoting economic
               <br />
               cooperation among GSDC nations.
             </p>
@@ -80,9 +81,9 @@ export default function About() {
             >
               <h3 className="text-2xl font-bold mb-6">Our Mission</h3>
               <p className="text-white/90 leading-relaxed">
-                We aim to facilitate seamless international trade and investment among GSDC nations
-                by providing a digital currency that reflects the collective economic strength of
-                these emerging markets.
+                We aim to facilitate seamless international trade and investment
+                among GSDC nations by providing a digital currency that reflects
+                the collective economic strength of these emerging markets.
               </p>
             </motion.div>
 
@@ -94,7 +95,9 @@ export default function About() {
               transition={{ duration: 0.8 }}
               className="bg-white rounded-2xl p-8 shadow-lg"
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">What's included</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                What's included
+              </h3>
               <ul className="space-y-4">
                 <li className="flex items-center gap-x-3">
                   <div
@@ -115,7 +118,9 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">Stable Value Backed by GSDC</span>
+                  <span className="text-gray-700 font-medium">
+                    Stable Value Backed by GSDC
+                  </span>
                 </li>
                 <li className="flex items-center gap-x-3">
                   <div
@@ -136,7 +141,9 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">Real-time Exchange Rates</span>
+                  <span className="text-gray-700 font-medium">
+                    Real-time Exchange Rates
+                  </span>
                 </li>
                 <li className="flex items-center gap-x-3">
                   <div
@@ -157,7 +164,9 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">Stable Value Backed by GSDC</span>
+                  <span className="text-gray-700 font-medium">
+                    Stable Value Backed by GSDC
+                  </span>
                 </li>
                 <li className="flex items-center gap-x-3">
                   <div
@@ -178,7 +187,9 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">Real-time Exchange Rates</span>
+                  <span className="text-gray-700 font-medium">
+                    Real-time Exchange Rates
+                  </span>
                 </li>
               </ul>
             </motion.div>
