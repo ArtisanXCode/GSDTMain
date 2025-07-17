@@ -238,6 +238,17 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Centered Phoenix Icon */}
+      <div className="relative -my-12 z-10 flex justify-center">
+        <div className="bg-white p-4 rounded-full border-4 border-red-500 shadow-lg">
+          <img 
+            src="/phoenix-icon.svg" 
+            alt="Phoenix Icon" 
+            className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
+          />
+        </div>
+      </div>
+
       {/* Metrics section */}
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
