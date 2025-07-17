@@ -302,11 +302,11 @@ export default function Home() {
       {/* Metrics section */}
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-lg font-bold leading-7 uppercase tracking-wider mb-4" style={{ color: "#ed9030" }}>
+          <div className="text-left mb-16">
+            <h2 className="text-3xl font-bold leading-7 uppercase tracking-wider mb-4" style={{ color: "#ed9030" }}>
               TRUSTED BY USERS WORLDWIDE
             </h2>
-            <p className="text-base leading-6 text-gray-600 max-w-lg mx-auto">
+            <p className="text-lg leading-6 text-gray-600 max-w-lg">
               Join the growing community of GSDC
               <br />
               users and experience the future of digital currency.
@@ -323,13 +323,21 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-5xl font-extrabold mb-3" style={{ color: "#ed9030" }}>
+                <div 
+                  className="text-5xl font-extrabold mb-3"
+                  style={{
+                    background: "linear-gradient(to bottom, #f6b62e, #e95533)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text"
+                  }}
+                >
                   {metric.stat}
                 </div>
-                <div className="text-lg font-bold text-gray-900 mb-1">
+                <div className="text-xl font-bold text-gray-900 mb-1">
                   {metric.emphasis}
                 </div>
-                <div className="text-sm text-gray-600 font-regular">
+                <div className="text-base text-gray-600 font-regular">
                   {metric.rest}
                 </div>
               </motion.div>
