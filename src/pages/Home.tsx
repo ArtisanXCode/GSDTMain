@@ -367,7 +367,7 @@ export default function Home() {
           <img
             src="/logo_gsdc_icon.png"
             alt="The Global South"
-            className="h-64 w-auto"
+            className="h-[30rem] w-auto"
           />
         </div>
 
