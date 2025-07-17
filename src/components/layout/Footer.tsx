@@ -6,13 +6,19 @@ export default function Footer() {
     <footer
       className="text-white relative"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(43, 105, 176, 0.95) 0%, rgba(44, 82, 130, 0.95) 100%), url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=2000')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        background: "radial-gradient(circle, #e74134 0%, #f6b62e 100%)",
       }}
     >
-      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+      {/* The Global South Logo/Icon Background */}
+      <div className="absolute inset-0 flex items-center justify-end opacity-20">
+        <img
+          src="/logo_gsdc_icon.png"
+          alt="The Global South"
+          className="h-64 w-auto"
+        />
+      </div>
+
+      <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8 relative z-10">
         <div className="flex flex-col items-center">
           <Link to="/" className="mb-10">
             <img
@@ -28,7 +34,7 @@ export default function Footer() {
             <div className="pb-6">
               <Link
                 to="/about"
-                className="text-sm leading-6 text-gray-300 font-semibold hover:text-white transition-colors duration-200"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 ABOUT
               </Link>
@@ -36,7 +42,7 @@ export default function Footer() {
             <div className="pb-6">
               <Link
                 to="/terms"
-                className="text-sm leading-6 text-gray-300 font-semibold hover:text-white transition-colors duration-200"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 TERMS
               </Link>
@@ -44,7 +50,7 @@ export default function Footer() {
             <div className="pb-6">
               <Link
                 to="/privacy"
-                className="text-sm leading-6 text-gray-300 font-semibold hover:text-white transition-colors duration-200"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 PRIVACY
               </Link>
@@ -52,16 +58,15 @@ export default function Footer() {
             <div className="pb-6">
               <Link
                 to="/contact"
-                className="text-sm leading-6 text-gray-300 font-semibold hover:text-white transition-colors duration-200"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 CONTACT
               </Link>
             </div>
           </nav>
         </div>
-        <p className="mt-10 text-center text-xs leading-5 font-semibold text-gray-300">
-          &copy; {new Date().getFullYear()} The Global South SAS. All rights
-          reserved.
+        <p className="mt-10 text-center text-xs leading-5 font-semibold text-white">
+          Copyright {new Date().getFullYear()} The Global South SAS. All rights reserved.
         </p>
       </div>
     </footer>
