@@ -139,6 +139,17 @@ export default function Home() {
         </motion.div>
       </div>
 
+      {/* Centered Phoenix Icon */}
+      <div className="relative -my-12 z-10 flex justify-center">
+        <div className="">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
+          />
+        </div>
+      </div>
+      
       {/* Currency Basket section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -291,17 +302,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Centered Phoenix Icon */}
-      <div className="relative -my-12 z-10 flex justify-center">
-        <div className="bg-white p-4 rounded-full border-4 border-red-500 shadow-lg">
-          <img
-            src="/phoenix-icon.svg"
-            alt="Phoenix Icon"
-            className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
-          />
         </div>
       </div>
 

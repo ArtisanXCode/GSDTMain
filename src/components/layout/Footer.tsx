@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -6,7 +5,7 @@ export default function Footer() {
     <footer
       className="text-white relative"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(231, 65, 52, 0.8) 0%, rgba(246, 182, 46, 0.8) 100%), url('/attached_assets/footer_bg_1752747448967.jpeg')`,
+        backgroundImage: `linear-gradient(135deg, #0a1217c7 0%, #132536d4 100%), url(/attached_assets/footer_bg_1752747448967.jpeg)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -69,7 +68,8 @@ export default function Footer() {
           </nav>
         </div>
         <p className="mt-10 text-center text-xs leading-5 font-semibold text-white">
-          Copyright {new Date().getFullYear()} The Global South SAS. All rights reserved.
+          Copyright {new Date().getFullYear()} The Global South SAS. All rights
+          reserved.
         </p>
       </div>
     </footer>
