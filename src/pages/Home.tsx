@@ -140,19 +140,10 @@ export default function Home() {
       </div>
 
       {/* Currency Basket section */}
-      <div className="bg-gray-50 py-24 sm:py-32 relative">
-        {/* The Global South Logo/Icon */}
-        <div className="absolute top-12 right-12">
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="The Global South"
-            className="h-32 w-auto opacity-80"
-          />
-        </div>
-
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-gray-500 uppercase tracking-wide mb-2">
+            <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
               CURRENCIES BASKET
             </h2>
             <p className="text-4xl font-extrabold tracking-tight text-brand-orange sm:text-5xl mb-4">
@@ -173,19 +164,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
+                className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
               >
                 <div className="flex items-center space-x-4 w-full">
                   <div className="w-12 h-12 bg-brand-orange rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-white font-bold text-lg">
-                      {currency.symbol}
+                      {currency.code.charAt(0)}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold mb-1 text-brand-orange">
+                    <h3 className="text-xl font-extrabold mb-1 text-white">
                       {currency.code}
                     </h3>
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-white text-sm font-medium opacity-90">
                       {currency.name}
                     </p>
                   </div>
