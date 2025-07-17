@@ -1,3 +1,4 @@
+
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, Transition } from "@headlessui/react";
@@ -15,10 +16,9 @@ import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 
 const navigation = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Contact", href: "/contact" },
+  { name: "ABOUT", href: "/about" },
+  { name: "DASHBOARD", href: "/dashboard" },
+  { name: "CONTACT", href: "/contact" },
 ];
 
 export default function Header() {
@@ -45,58 +45,55 @@ export default function Header() {
   };
 
   return (
-    <nav
-      className="text-white relative"
-      style={{
-        background: "linear-gradient(135deg, #2A4661 0%, #6D97BF 100%)",
-      }}
-    >
+    <nav className="bg-gradient-to-r from-blue-600 to-blue-700 text-white relative shadow-lg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between">
-          {/* Logo and Main Navigation */}
-          <div className="flex">
+        <div className="flex h-16 justify-between items-center">
+          {/* Logo */}
+          <div className="flex items-center">
             <Link to="/" className="flex flex-shrink-0 items-center">
               <img
                 src="/logo_gsdc_white.png"
-                alt="GSDT Logo"
-                className="h-16 w-auto"
+                alt="The Global South"
+                className="h-10 w-auto"
               />
             </Link>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200 ${
-                    isActivePath(item.href)
-                      ? "border-secondary-400 text-white"
-                      : "border-transparent text-primary-100 hover:border-secondary-400/50 hover:text-white"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
           </div>
 
-          {/* Wallet and Actions Menu */}
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          {/* Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-orange-300 ${
+                  isActivePath(item.href)
+                    ? "text-orange-300"
+                    : "text-white"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Wallet Button */}
+          <div className="hidden md:flex items-center">
             {isConnected ? (
-              <Menu as="div" className="relative ml-3">
-                <Menu.Button className="flex items-center rounded-md bg-secondary-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-600">
-                  <WalletIcon className="h-5 w-5 mr-2" />
-                  <span className="hidden md:inline">
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200">
+                  <WalletIcon className="h-4 w-4 mr-2" />
+                  <span className="hidden lg:inline">
                     {`${address?.slice(0, 6)}...${address?.slice(-4)}`}
                   </span>
-                  <span className="md:hidden">
+                  <span className="lg:hidden">
                     {`${address?.slice(0, 4)}...`}
                   </span>
                   {adminRole && (
-                    <span className="ml-2 text-xs bg-white text-secondary-700 px-1.5 py-0.5 rounded">
+                    <span className="ml-2 text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded">
                       {adminRole}
                     </span>
                   )}
-                  <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5" />
+                  <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
                 </Menu.Button>
 
                 <Transition
@@ -170,24 +167,20 @@ export default function Header() {
             ) : (
               <button
                 onClick={connect}
-                className="flex items-center rounded-md bg-secondary-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-600 transition-colors duration-200"
+                className="flex items-center rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200"
               >
-                <WalletIcon className="h-5 w-5 mr-2" />
-                Connect Wallet
+                <WalletIcon className="h-4 w-4 mr-2" />
+                WALLET
               </button>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden">
+          <div className="flex items-center md:hidden">
             <Menu as="div" className="relative">
-              <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-primary-100 hover:bg-primary-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+              <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                 <span className="sr-only">Open main menu</span>
-                {open ? (
-                  <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                ) : (
-                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                )}
+                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
               </Menu.Button>
 
               <Transition
@@ -207,7 +200,7 @@ export default function Header() {
                           to={item.href}
                           className={`${
                             active ? "bg-gray-100" : ""
-                          } block px-4 py-2 text-sm text-gray-700`}
+                          } block px-4 py-2 text-sm text-gray-700 font-medium`}
                         >
                           {item.name}
                         </Link>
@@ -283,7 +276,7 @@ export default function Header() {
                           } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                         >
                           <WalletIcon className="h-5 w-5 mr-2" />
-                          Connect Wallet
+                          WALLET
                         </button>
                       )}
                     </Menu.Item>

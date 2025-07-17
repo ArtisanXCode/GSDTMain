@@ -1,21 +1,12 @@
 import { motion } from "framer-motion";
 import {
-  ArrowPathIcon,
-  CloudArrowUpIcon,
-  LockClosedIcon,
-  ChartBarIcon,
-  CurrencyDollarIcon,
-  ShieldCheckIcon,
   GlobeAltIcon,
   BanknotesIcon,
+  ChartBarIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import ExchangeRatesList from "../components/ExchangeRatesList";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 const features = [
   {
@@ -44,22 +35,12 @@ const features = [
 ];
 
 const currencies = [
-  { code: "CNH", name: "Chinese Yuan", symbol: "¥", color: "bg-orange-500" },
-  { code: "THB", name: "Thailand Baht", symbol: "฿", color: "bg-orange-500" },
-  { code: "INR", name: "Indian Rupee", symbol: "₹", color: "bg-orange-500" },
-  { code: "BRL", name: "Brazilian Real", symbol: "R$", color: "bg-orange-500" },
-  {
-    code: "ZAR",
-    name: "South African Rand",
-    symbol: "R",
-    color: "bg-orange-500",
-  },
-  {
-    code: "IDR",
-    name: "Indonesian Rupiah",
-    symbol: "Rp",
-    color: "bg-orange-500",
-  },
+  { code: "CNH", name: "Chinese Yuan", symbol: "¥" },
+  { code: "THB", name: "Thailand Baht", symbol: "฿" },
+  { code: "INR", name: "Indian Rupee", symbol: "₹" },
+  { code: "BRL", name: "Brazilian Real", symbol: "R$" },
+  { code: "ZAR", name: "South African Rand", symbol: "R" },
+  { code: "IDR", name: "Indonesian Rupiah", symbol: "Rp" },
 ];
 
 const metrics = [
@@ -72,18 +53,21 @@ const metrics = [
 export default function Home() {
   return (
     <div className="bg-white">
-      {/* Hero section */}
+      {/* Hero section with Globe Background */}
       <div
-        className="relative isolate text-white min-h-[80vh] flex items-center"
+        className="relative isolate text-white min-h-screen flex items-center"
         style={{
-          backgroundImage: `url('/AdobeStock_1180220151_1751887222070.jpeg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundColor: "#1a0f0a",
+          background: 'linear-gradient(135deg, rgba(255, 107, 0, 0.95) 0%, rgba(229, 62, 62, 0.95) 100%)',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-radial from-orange-500/30 via-red-600/50 to-black/90"></div>
+        {/* Globe pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='globe-pattern' x='0' y='0' width='50' height='50' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M5,25 Q25,5 45,25 Q25,45 5,25' fill='none' stroke='%23ffffff' stroke-width='0.3'/%3E%3Cpath d='M25,5 L25,45 M5,25 L45,25' stroke='%23ffffff' stroke-width='0.3'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23globe-pattern)'/%3E%3C/svg%3E")`,
+          }}
+        />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,12 +76,12 @@ export default function Home() {
         >
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
                 Global South
                 <br />
                 Digital Currency
               </h1>
-              <p className="text-lg leading-8 text-gray-200 mb-10">
+              <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
                 GSDC is a revolutionary stablecoin offering enhanced financial
                 accessibility with innovative blockchain technology and
                 real-world asset backing.
@@ -106,13 +90,13 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+                  className="rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-orange shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
                 >
                   <Link to="/dashboard">Get Started</Link>
                 </motion.button>
                 <motion.button
                   whileHover={{ x: 5 }}
-                  className="text-sm font-semibold leading-6 text-white"
+                  className="text-base font-semibold leading-6 text-white"
                 >
                   <Link to="/about">
                     Learn more <span aria-hidden="true">→</span>
@@ -126,11 +110,14 @@ export default function Home() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20"
             >
-              <h3 className="text-lg font-semibold text-white mb-4">
-                Live Exchange Rates
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                  Live Exchange Rates
+                </h3>
+                <span className="text-sm text-white/70">Last updated: Just now</span>
+              </div>
               <ExchangeRatesList refreshInterval={30000} />
             </motion.div>
           </div>
@@ -138,23 +125,32 @@ export default function Home() {
       </div>
 
       {/* Currency Basket section */}
-      <div className="bg-gray-50 py-24 sm:py-32">
+      <div className="bg-gray-50 py-24 sm:py-32 relative">
+        {/* The Global South Logo */}
+        <div className="absolute top-12 right-12">
+          <img 
+            src="/logo_gsdc.png" 
+            alt="The Global South" 
+            className="h-32 w-auto opacity-80"
+          />
+        </div>
+
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-sm font-semibold leading-7 text-gray-500 uppercase tracking-wide mb-2">
               CURRENCIES BASKET
             </h2>
-            <p className="text-3xl font-bold tracking-tight text-orange-500 sm:text-4xl mb-4">
+            <p className="text-4xl font-extrabold tracking-tight text-brand-orange sm:text-5xl mb-4">
               BACKED BY GSDC CURRENCIES
             </p>
-            <p className="text-base leading-6 text-gray-500 max-w-2xl mx-auto font-normal">
+            <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
               GSDC is pegged to a basket of global south currencies,
               <br />
               providing stability and diversification
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {currencies.map((currency, index) => (
               <motion.div
                 key={currency.code}
@@ -162,19 +158,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl p-12 min-h-[180px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
+                className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
               >
-                <div className="flex items-center space-x-6 w-full">
-                  <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white font-bold text-2xl">
+                <div className="flex items-center space-x-4 w-full">
+                  <div className="w-12 h-12 bg-brand-orange rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-lg">
                       {currency.symbol}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 text-orange-500">
+                    <h3 className="text-xl font-extrabold mb-1 text-brand-orange">
                       {currency.code}
                     </h3>
-                    <p className="text-white text-base font-medium">
+                    <p className="text-white text-sm font-medium">
                       {currency.name}
                     </p>
                   </div>
@@ -186,111 +182,45 @@ export default function Home() {
       </div>
 
       {/* Benefits section */}
-      <div className="bg-slate-800 py-24 sm:py-32">
+      <div className="bg-gradient-to-br from-blue-700 to-blue-800 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-orange-400 uppercase tracking-wide mb-2">
+            <h2 className="text-sm font-semibold leading-7 text-orange-300 uppercase tracking-wide mb-2">
               BENEFITS
             </h2>
-            <p className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
+            <p className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl mb-4">
               Why Choose GSDC?
             </p>
-            <p className="text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg leading-8 text-blue-100 max-w-2xl mx-auto">
               GSDC combines innovation with security, providing unmatched
               advantages for global financial operations.
             </p>
           </div>
 
-          <div className="relative">
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={24}
-              slidesPerView={1}
-              navigation={{
-                prevEl: ".swiper-button-prev-custom",
-                nextEl: ".swiper-button-next-custom",
-              }}
-              pagination={{
-                clickable: true,
-                bulletClass:
-                  "swiper-pagination-bullet bg-orange-500 opacity-50",
-                bulletActiveClass:
-                  "swiper-pagination-bullet-active opacity-100",
-              }}
-              autoplay={{
-                delay: 4000,
-                disableOnInteraction: false,
-              }}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 3,
-                },
-                1280: {
-                  slidesPerView: 4,
-                },
-              }}
-              className="benefits-swiper"
-            >
-              {features.map((feature, index) => (
-                <SwiperSlide key={feature.name}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white h-full"
-                  >
-                    <div className="mb-4">
-                      <feature.icon
-                        className="h-8 w-8 text-white"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-3">
-                      {feature.name}
-                    </h3>
-                    <p className="text-orange-100 text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </motion.div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-
-            {/* Custom Navigation Buttons */}
-            <button className="swiper-button-prev-custom absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-gradient-to-br from-brand-orange to-brand-red rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <button className="swiper-button-next-custom absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full p-3 shadow-lg transition-all duration-300">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                <div className="mb-4">
+                  <feature.icon
+                    className="h-8 w-8 text-white"
+                    aria-hidden="true"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">
+                  {feature.name}
+                </h3>
+                <p className="text-orange-100 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
@@ -299,7 +229,7 @@ export default function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-lg font-bold leading-7 text-orange-500 uppercase tracking-wider mb-4">
+            <h2 className="text-lg font-bold leading-7 text-brand-orange uppercase tracking-wider mb-4">
               TRUSTED BY USERS WORLDWIDE
             </h2>
             <p className="text-base leading-6 text-gray-600 max-w-lg mx-auto">
@@ -319,13 +249,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-5xl font-bold text-orange-500 mb-3">
+                <div className="text-5xl font-extrabold text-brand-orange mb-3">
                   {metric.stat}
                 </div>
                 <div className="text-lg font-bold text-gray-900 mb-1">
                   {metric.emphasis}
                 </div>
-                <div className="text-sm text-gray-600 font-normal">
+                <div className="text-sm text-gray-600 font-regular">
                   {metric.rest}
                 </div>
               </motion.div>
@@ -335,20 +265,21 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div
-        className="relative isolate text-white min-h-[80vh] flex items-center"
-        style={{
-          backgroundImage: "linear-gradient(135deg, #EA580C, #FBBF24)", // Adjusting the gradient
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
+      <div className="relative isolate text-white min-h-[60vh] flex items-center bg-gradient-to-r from-brand-orange to-yellow-500">
+        {/* The Global South Logo */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-30">
+          <img 
+            src="/logo_gsdc_white.png" 
+            alt="The Global South" 
+            className="h-64 w-auto"
+          />
+        </div>
+
         <motion.div
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 text-center" // Centering text
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 text-center z-10"
         >
           <motion.h1
-            className="text-4xl font-bold tracking-tight mb-6"
+            className="text-4xl font-extrabold tracking-tight mb-6 sm:text-5xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -366,14 +297,14 @@ export default function Home() {
           </motion.p>
           <div className="flex items-center justify-center gap-x-6">
             <motion.button
-              className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-orange-600 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-orange shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Link to="/dashboard">Get started</Link>
             </motion.button>
             <motion.button
-              className="text-sm font-semibold leading-6 text-white"
+              className="text-base font-semibold leading-6 text-white"
               whileHover={{ x: 5 }}
             >
               <Link to="/about">
@@ -383,18 +314,6 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-      {/* Footer CTA */}
-      {/*
-      <div
-        className="relative text-white py-16"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%), url('/AdobeStock_1318098135_1751881690402.jpeg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      ></div>
-      */}
     </div>
   );
 }

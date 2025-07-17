@@ -1,41 +1,50 @@
-/** @type {import('tailwindcss').Config} */
-export default {
+
+module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['DM Sans', 'sans-serif'],
+      },
       colors: {
         primary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#FE9A00',
-          500: '#FE9A00',
-          600: '#EC4513',
-          700: '#EC4513',
-          800: '#5b21b6',
-          /*900: '#FE9A01',*/
-          900: '#000000',
+          orange: '#FF6B00',
+          red: '#E53E3E',
+          blue: {
+            1: '#4299E1',
+            2: '#3182CE', 
+            3: '#2B6CB0',
+            4: '#2C5282'
+          }
         },
-        secondary: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#FE9A00',
-          500: '#FE9A00',
-          600: '#EC4513',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
-        },
-        indigo: {
-          600: '#EC4513'
+        brand: {
+          orange: '#FF6B00',
+          red: '#E53E3E',
+          'orange-light': '#FFA500',
+          'orange-dark': '#FF4500',
+          gray: {
+            50: '#F9FAFB',
+            100: '#F3F4F6',
+            200: '#E5E7EB',
+            300: '#D1D5DB',
+            400: '#9CA3AF',
+            500: '#6B7280',
+            600: '#4B5563',
+            700: '#374151',
+            800: '#1F2937',
+            900: '#111827'
+          }
         }
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'hero-gradient': 'linear-gradient(135deg, #FF6B00 0%, #E53E3E 100%)',
+        'cta-gradient': 'linear-gradient(135deg, #FF6B00 0%, #FFA500 100%)',
+        'benefits-gradient': 'linear-gradient(135deg, #FF6B00 0%, #E53E3E 100%)',
+      }
     },
   },
   plugins: [],
