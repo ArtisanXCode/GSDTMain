@@ -55,7 +55,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 href={`${bscscan_explorer_link}address/${tx.fromAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-600 hover:text-primary-900"
+                className="text-orange-600 hover:text-orange-900"
               >
                 {tx.fromAddress.slice(0, 6)}...{tx.fromAddress.slice(-4)}
               </a>
@@ -65,7 +65,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 href={`${bscscan_explorer_link}address/${tx.toAddress}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-600 hover:text-primary-900"
+                className="text-orange-600 hover:text-orange-900"
               >
                 {tx.toAddress.slice(0, 6)}...{tx.toAddress.slice(-4)}
               </a>
@@ -83,7 +83,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 href={`${bscscan_explorer_link}tx/${tx.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-600 hover:text-primary-900"
+                className="text-orange-600 hover:text-orange-900"
               >
                 {tx.txHash.slice(0, 6)}...{tx.txHash.slice(-4)}
               </a>

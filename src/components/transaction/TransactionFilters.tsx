@@ -66,7 +66,7 @@ export default function TransactionFilters({
             <select
               value={selectedStatus || ''}
               onChange={(e) => onStatusChange(e.target.value ? e.target.value as TransactionStatus : undefined)}
-              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
             >
               <option value="">All Statuses</option>
               {Object.values(TransactionStatus).map((status) => (
@@ -99,7 +99,7 @@ export default function TransactionFilters({
             <select
               value={selectedType || ''}
               onChange={(e) => onTypeChange(e.target.value ? e.target.value as TransactionType : undefined)}
-              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
             >
               <option value="">All Types</option>
               {Object.values(TransactionType).map((type) => (

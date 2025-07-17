@@ -56,7 +56,7 @@ export default function TransactionPagination({
                 onClick={() => onPageChange(i + 1)}
                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium
                   ${currentPage === i + 1
-                    ? 'z-10 bg-primary-50 border-primary-500 text-primary-600'
+                    ? 'z-10 bg-orange-50 border-orange-500 text-orange-600'
                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                   }`}
               >
