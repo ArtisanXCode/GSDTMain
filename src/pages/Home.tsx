@@ -170,13 +170,18 @@ export default function Home() {
                 }}
               >
                 <div className="flex items-center space-x-4 w-full">
-                  <div className="w-12 h-12 bg-brand-orange rounded-full flex items-center justify-center shadow-lg">
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+                    style={{
+                      background: 'linear-gradient(to bottom, #f6b62e, #ed9030)'
+                    }}
+                  >
                     <span className="text-white font-bold text-lg">
                       {currency.code.charAt(0)}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold mb-1 text-white">
+                    <h3 className="text-xl font-extrabold mb-1" style={{ color: '#ed9030' }}>
                       {currency.code}
                     </h3>
                     <p className="text-white text-sm font-medium opacity-90">
