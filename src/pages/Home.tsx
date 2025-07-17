@@ -303,7 +303,7 @@ export default function Home() {
       <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-lg font-bold leading-7 text-brand-orange uppercase tracking-wider mb-4">
+            <h2 className="text-lg font-bold leading-7 uppercase tracking-wider mb-4" style={{ color: "#ed9030" }}>
               TRUSTED BY USERS WORLDWIDE
             </h2>
             <p className="text-base leading-6 text-gray-600 max-w-lg mx-auto">
@@ -323,7 +323,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-5xl font-extrabold text-brand-orange mb-3">
+                <div className="text-5xl font-extrabold mb-3" style={{ color: "#ed9030" }}>
                   {metric.stat}
                 </div>
                 <div className="text-lg font-bold text-gray-900 mb-1">
