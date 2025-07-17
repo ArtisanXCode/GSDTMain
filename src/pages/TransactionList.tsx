@@ -15,16 +15,19 @@ export default function TransactionListPage() {
 
   return (
     <div className="bg-white">
-      {/* Hero section with orange/red gradient background */}
+      {/* Hero section with tech background */}
       <div
-        className="relative isolate text-white min-h-[50vh] flex items-center overflow-hidden"
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, rgba(255, 140, 0, 0.9) 0%, rgba(255, 69, 0, 0.9) 50%, rgba(220, 20, 60, 0.9) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

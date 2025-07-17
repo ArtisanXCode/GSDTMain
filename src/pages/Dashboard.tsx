@@ -13,9 +13,9 @@ export default function Dashboard() {
 
   return (
     <div className="bg-white">
-      {/* Hero section with background image */}
+      {/* Hero section with tech background */}
       <div
-        className="relative isolate text-white min-h-[60vh] flex items-center overflow-hidden"
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
           backgroundSize: "cover",
@@ -37,7 +37,7 @@ export default function Dashboard() {
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
               Dashboard
             </h1>
-            <p className="text-lg leading-8 text-white/90 mb-6 font-regular">
+            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
               Manage your GSDC tokens and view market information
             </p>
           </div>
@@ -45,15 +45,12 @@ export default function Dashboard() {
       </div>
 
       {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-end">
-        <div
-          className=""
-          style={{ position: "absolute", right: "10%", top: "-60px" }}
-        >
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-32 h-32 sm:w-40 sm:h-40"
+            className="w-24 h-24 sm:w-32 sm:h-32"
           />
         </div>
       </div>
