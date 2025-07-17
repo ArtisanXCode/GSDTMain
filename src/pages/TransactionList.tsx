@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
@@ -16,32 +15,28 @@ export default function TransactionListPage() {
 
   return (
     <div className="bg-white">
-      {/* Hero section with background image */}
+      {/* Hero section with orange/red gradient background */}
       <div
-        className="relative isolate text-white min-h-[60vh] flex items-center overflow-hidden"
+        className="relative isolate text-white min-h-[50vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          background: `linear-gradient(135deg, rgba(255, 140, 0, 0.9) 0%, rgba(255, 69, 0, 0.9) 50%, rgba(220, 20, 60, 0.9) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-24 z-10"
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
               Transaction History
             </h1>
             <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              View and manage your GSDC transaction history
+              View and manage your GSDC token transactions
             </p>
           </div>
         </motion.div>
@@ -58,26 +53,14 @@ export default function TransactionListPage() {
         </div>
       </div>
 
-      {/* Main content section */}
-      <div className="bg-gray-200 py-24 sm:py-32 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
-              TRANSACTION
-            </h2>
-            <p
-              className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
-              style={{ color: "#ed9030" }}
-            >
-              HISTORY & DETAILS
-            </p>
-            <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
-              Monitor all your GSDC transactions with detailed information
-              <br />
-              including timestamps, amounts, and transaction status
-            </p>
-          </div>
-
+      {/* Main content section with blue gradient background */}
+      <div 
+        className="py-24 sm:py-32 relative"
+        style={{
+          background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+        }}
+      >
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
           {/* Transaction List Component */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -1,3 +1,4 @@
+
 import { TransactionStatus, TransactionType } from '../../services/admin';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
@@ -55,27 +56,27 @@ export default function TransactionFilters({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Filter Transactions</h2>
+    <div className="p-6">
+      <h2 className="text-lg font-semibold text-white mb-4">Filter Transactions</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-white mb-2">
             Status
           </label>
           <div className="relative">
             <select
               value={selectedStatus || ''}
               onChange={(e) => onStatusChange(e.target.value ? e.target.value as TransactionStatus : undefined)}
-              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="appearance-none block w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
             >
-              <option value="">All Statuses</option>
+              <option value="" className="text-gray-900">All Statuses</option>
               {Object.values(TransactionStatus).map((status) => (
-                <option key={status} value={status}>
+                <option key={status} value={status} className="text-gray-900">
                   {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
               <ChevronDownIcon className="h-5 w-5" />
             </div>
           </div>
@@ -92,23 +93,23 @@ export default function TransactionFilters({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-white mb-2">
             Type
           </label>
           <div className="relative">
             <select
               value={selectedType || ''}
               onChange={(e) => onTypeChange(e.target.value ? e.target.value as TransactionType : undefined)}
-              className="appearance-none block w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="appearance-none block w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-150 ease-in-out"
             >
-              <option value="">All Types</option>
+              <option value="" className="text-gray-900">All Types</option>
               {Object.values(TransactionType).map((type) => (
-                <option key={type} value={type}>
+                <option key={type} value={type} className="text-gray-900">
                   {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase().replace('_', ' ')}
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
               <ChevronDownIcon className="h-5 w-5" />
             </div>
           </div>

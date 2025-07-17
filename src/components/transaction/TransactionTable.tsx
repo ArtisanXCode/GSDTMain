@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Transaction, TransactionStatus } from '../../services/admin';
 import { format } from 'date-fns';
@@ -23,74 +24,84 @@ export default function TransactionTable({ transactions }: TransactionTableProps
     }
   };
 
+  if (transactions.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-white/80">No transactions found</p>
+      </div>
+    );
+  }
+
   return (
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction Hash</th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {transactions.map((tx) => (
-          <motion.tr
-            key={tx.txHash}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="hover:bg-gray-50"
-          >
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {tx.type}
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {parseFloat(utils.formatEther(tx.amount)).toFixed(2)} GSDT
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <a
-                href={`${bscscan_explorer_link}address/${tx.fromAddress}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-600 hover:text-orange-900"
-              >
-                {tx.fromAddress.slice(0, 6)}...{tx.fromAddress.slice(-4)}
-              </a>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <a
-                href={`${bscscan_explorer_link}address/${tx.toAddress}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-600 hover:text-orange-900"
-              >
-                {tx.toAddress.slice(0, 6)}...{tx.toAddress.slice(-4)}
-              </a>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {format(tx.timestamp, 'MMM d, yyyy HH:mm')}
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(tx.status)}`}>
-                {tx.status}
-              </span>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <a
-                href={`${bscscan_explorer_link}tx/${tx.txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-600 hover:text-orange-900"
-              >
-                {tx.txHash.slice(0, 6)}...{tx.txHash.slice(-4)}
-              </a>
-            </td>
-          </motion.tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-white/20">
+        <thead>
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Type</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Amount</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">From</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">To</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Transaction Hash</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-white/10">
+          {transactions.map((tx) => (
+            <motion.tr
+              key={tx.txHash}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="hover:bg-white/5"
+            >
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                {tx.type}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                {parseFloat(utils.formatEther(tx.amount)).toFixed(2)} GSDC
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                <a
+                  href={`${bscscan_explorer_link}address/${tx.fromAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-300 hover:text-orange-100"
+                >
+                  {tx.fromAddress.slice(0, 6)}...{tx.fromAddress.slice(-4)}
+                </a>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                <a
+                  href={`${bscscan_explorer_link}address/${tx.toAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-300 hover:text-orange-100"
+                >
+                  {tx.toAddress.slice(0, 6)}...{tx.toAddress.slice(-4)}
+                </a>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                {format(tx.timestamp, 'MMM d, yyyy HH:mm')}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(tx.status)}`}>
+                  {tx.status}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
+                <a
+                  href={`${bscscan_explorer_link}tx/${tx.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-300 hover:text-orange-100"
+                >
+                  {tx.txHash.slice(0, 6)}...{tx.txHash.slice(-4)}
+                </a>
+              </td>
+            </motion.tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
