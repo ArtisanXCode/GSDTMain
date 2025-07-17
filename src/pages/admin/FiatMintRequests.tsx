@@ -1,3 +1,4 @@
+
 import { BigNumber } from 'ethers';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -20,7 +21,6 @@ import {
   EyeIcon,
   DocumentMagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
-import AdminLayout from './layout/AdminLayout';
 
 export default function FiatMintRequests() {
   const { address, isConnected } = useWallet();
@@ -149,179 +149,346 @@ export default function FiatMintRequests() {
 
   if (!isSuperAdmin) {
     return (
-      <AdminLayout activeTab="fiat">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="text-center py-8">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-              <XCircleIcon className="h-6 w-6 text-red-600" />
+      <div className="bg-white">
+        {/* Hero section with tech background */}
+        <div
+          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          >
+            <div className="text-left">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+                Admin Dashboard
+              </h1>
+              <p className="text-xl text-white/90 max-w-2xl leading-8">
+                Super Admin Dashboard – Full Access
+              </p>
             </div>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Only Super Admins can manage fiat mint requests.
-            </p>
+          </motion.div>
+        </div>
+
+        {/* Phoenix Icon overlapping sections */}
+        <div className="relative z-20 flex justify-center">
+          <div className="absolute -top-16">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="w-24 h-24 sm:w-32 sm:h-32"
+            />
           </div>
         </div>
-      </AdminLayout>
+
+        {/* Main content section */}
+        <div className="bg-gray-200 py-24 sm:py-32 relative">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {/* Navigation Tabs */}
+            <div className="flex flex-wrap gap-2 mb-8 bg-slate-700 p-2 rounded-lg">
+              <button
+                onClick={() => navigate('/admin/kyc-requests')}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+              >
+                KYC Requests
+              </button>
+              <button
+                onClick={() => navigate('/admin/contact-messages')}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+              >
+                Contact Messages
+              </button>
+              <button
+                onClick={() => navigate('/admin/role-management')}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+              >
+                Role Management
+              </button>
+              <button
+                className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md"
+              >
+                Fiat Mint Requests
+              </button>
+              <button
+                onClick={() => navigate('/admin/proof-of-reserves')}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+              >
+                Proof of Reserves
+              </button>
+              <button
+                onClick={() => navigate('/admin/exchange-rates')}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+              >
+                Exchange Rates
+              </button>
+            </div>
+
+            {/* Access Denied Content */}
+            <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
+              <h3 className="text-2xl font-bold text-white mb-6">Access Denied</h3>
+              <div className="text-center py-8">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                  <XCircleIcon className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="mt-2 text-lg font-medium text-white">Access Denied</h3>
+                <p className="mt-1 text-sm text-gray-300">
+                  Only Super Admins can manage fiat mint requests.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout activeTab="fiat">
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">Fiat Mint Requests</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Review and process fiat payment requests for token minting
-              </p>
-            </div>
-            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+    <div className="bg-white">
+      {/* Hero section with tech background */}
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Admin Dashboard
+            </h1>
+            <p className="text-xl text-white/90 max-w-2xl leading-8">
+              Super Admin Dashboard – Full Access
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-24 h-24 sm:w-32 sm:h-32"
+          />
+        </div>
+      </div>
+
+      {/* Main content section */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          {/* Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 mb-8 bg-slate-700 p-2 rounded-lg">
+            <button
+              onClick={() => navigate('/admin/kyc-requests')}
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            >
+              KYC Requests
+            </button>
+            <button
+              onClick={() => navigate('/admin/contact-messages')}
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            >
+              Contact Messages
+            </button>
+            <button
+              onClick={() => navigate('/admin/role-management')}
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            >
+              Role Management
+            </button>
+            <button
+              className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md"
+            >
+              Fiat Mint Requests
+            </button>
+            <button
+              onClick={() => navigate('/admin/proof-of-reserves')}
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            >
+              Proof of Reserves
+            </button>
+            <button
+              onClick={() => navigate('/admin/exchange-rates')}
+              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            >
+              Exchange Rates
+            </button>
+          </div>
+
+          {/* Fiat Mint Requests Content */}
+          <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">Fiat Mint Requests</h3>
+                <p className="text-gray-300">Review and manage KYC verification requests</p>
+              </div>
               <button
                 onClick={() => window.location.reload()}
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+                className="px-4 py-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-md transition-colors"
               >
                 Refresh
               </button>
             </div>
-          </div>
 
-          {/* Filters */}
-          <div className="mt-4 flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
-            <div>
-              <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="status-filter"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as FiatMintStatus | 'ALL')}
-                className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value={FiatMintStatus.PENDING}>Pending</option>
-                <option value={FiatMintStatus.APPROVED}>Approved</option>
-                <option value={FiatMintStatus.REJECTED}>Rejected</option>
-              </select>
+            {/* Filters */}
+            <div className="mb-6 bg-slate-600 p-4 rounded-lg">
+              <div>
+                <label htmlFor="status-filter" className="block text-sm font-medium text-white mb-2">
+                  Status
+                </label>
+                <select
+                  id="status-filter"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value as FiatMintStatus | 'ALL')}
+                  className="block w-full md:w-48 rounded-md border-0 bg-slate-500 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value={FiatMintStatus.PENDING}>Pending</option>
+                  <option value={FiatMintStatus.APPROVED}>Approved</option>
+                  <option value={FiatMintStatus.REJECTED}>Rejected</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Loading requests...</p>
-            </div>
-          ) : requests.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No fiat mint requests found</p>
-            </div>
-          ) : (
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Currency
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Reference
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Submitted
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {requests.map((request) => (
-                    <motion.tr
-                      key={request.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-gray-50"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {request.user_address.slice(0, 6)}...{request.user_address.slice(-4)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {request.amount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {request.currency}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(request.status)}`}>
-                          {request.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {request.payment_reference}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {format(new Date(request.created_at), 'MMM d, yyyy HH:mm')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex justify-center space-x-3">
-                          {request.payment_proof_url && (
-                            <a
-                              href={request.payment_proof_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-600 hover:text-primary-900"
-                              title="View Payment Proof"
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+                <p className="mt-4 text-gray-300">Loading requests...</p>
+              </div>
+            ) : requests.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-300">No fiat mint requests found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto bg-slate-600 rounded-lg">
+                <table className="min-w-full">
+                  <thead className="bg-slate-800">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        USER
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        AMOUNT
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        CURRENCY
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        STATUS
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        REFERENCE
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        SUBMITTED
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        ACTIONS
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-500">
+                    {requests.map((request) => (
+                      <motion.tr
+                        key={request.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="hover:bg-slate-500"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {request.user_address.slice(0, 6)}...{request.user_address.slice(-4)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {request.amount}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {request.currency}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(request.status)}`}>
+                            {request.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {request.payment_reference}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {format(new Date(request.created_at), 'MMM d, yyyy HH:mm')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex justify-center space-x-3">
+                            {request.payment_proof_url && (
+                              <a
+                                href={request.payment_proof_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300"
+                                title="View Payment Proof"
+                              >
+                                <DocumentMagnifyingGlassIcon className="h-5 w-5" />
+                              </a>
+                            )}
+                            
+                            <button
+                              onClick={() => {
+                                setSelectedRequest(request);
+                                setShowApproveModal(true);
+                              }}
+                              disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
+                              className="text-green-400 hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Approve Request"
                             >
-                              <DocumentMagnifyingGlassIcon className="h-5 w-5" />
-                            </a>
-                          )}
-                          
-                          <button
-                            onClick={() => {
-                              setSelectedRequest(request);
-                              setShowApproveModal(true);
-                            }}
-                            disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
-                            className="text-green-600 hover:text-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Approve Request"
-                          >
-                            <CheckCircleIcon className="h-5 w-5" />
-                          </button>
-                          
-                          <button
-                            onClick={() => {
-                              setSelectedRequest(request);
-                              setShowRejectModal(true);
-                            }}
-                            disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
-                            className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Reject Request"
-                          >
-                            <XCircleIcon className="h-5 w-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                              <CheckCircleIcon className="h-5 w-5" />
+                            </button>
+                            
+                            <button
+                              onClick={() => {
+                                setSelectedRequest(request);
+                                setShowRejectModal(true);
+                              }}
+                              disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
+                              className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Reject Request"
+                            >
+                              <XCircleIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -449,6 +616,6 @@ export default function FiatMintRequests() {
           </motion.div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
 }
