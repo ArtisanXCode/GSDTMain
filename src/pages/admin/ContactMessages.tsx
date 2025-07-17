@@ -12,7 +12,6 @@ import {
   TrashIcon,
   PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
-import AdminLayout from './layout/AdminLayout';
 
 export default function ContactMessages() {
   const { isConnected } = useWallet();
@@ -182,25 +181,109 @@ export default function ContactMessages() {
   };
 
   return (
-    <AdminLayout activeTab="contacts">
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">Contact Messages</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                View and respond to messages from users
-              </p>
-            </div>
-            <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-              <button
-                onClick={() => window.location.reload()}
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+    <div className="bg-white">
+      {/* Hero section with tech background */}
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Contact Messages
+            </h1>
+            <p className="text-xl text-white/90 max-w-2xl">
+              Super Admin Dashboard – Full Access
+            </p>
+          </div>
+
+          {/* Admin Navigation */}
+          <div className="mt-12 flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4">
+              <button 
+                onClick={() => navigate('/admin/kyc-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
               >
-                Refresh
+                KYC Requests
+              </button>
+              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                Contact Messages
+              </button>
+              <button 
+                onClick={() => navigate('/admin/role-management')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Role Management
+              </button>
+              <button 
+                onClick={() => navigate('/admin/fiat-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Fiat Mint Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/reserves')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Proof of Reserves
+              </button>
+              <button 
+                onClick={() => navigate('/admin/exchange-rates')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Exchange Rates
               </button>
             </div>
           </div>
+        </motion.div>
+      </div>
+
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-24 h-24 sm:w-32 sm:h-32"
+          />
+        </div>
+      </div>
+
+      {/* Main content section */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">Contact Messages</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    View and respond to messages from users
+                  </p>
+                </div>
+                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              </div>
 
           {error && (
             <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
@@ -323,8 +406,11 @@ export default function ContactMessages() {
               </table>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
       {/* View/Reply Message Modal */}
       {showMessageModal && selectedMessage && (
