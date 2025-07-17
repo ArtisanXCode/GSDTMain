@@ -146,7 +146,7 @@ export default function Home() {
             <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
               CURRENCIES BASKET
             </h2>
-            <p className="text-4xl font-extrabold tracking-tight text-brand-orange sm:text-5xl mb-4">
+            <p className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4" style={{ color: '#ed9030' }}>
               BACKED BY GSDC CURRENCIES
             </p>
             <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
@@ -164,7 +164,10 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
+                className="rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center"
+                style={{
+                  background: 'linear-gradient(to bottom, #6d97bf, #446c93)'
+                }}
               >
                 <div className="flex items-center space-x-4 w-full">
                   <div className="w-12 h-12 bg-brand-orange rounded-full flex items-center justify-center shadow-lg">
