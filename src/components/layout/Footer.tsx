@@ -6,7 +6,10 @@ export default function Footer() {
     <footer
       className="text-white relative"
       style={{
-        background: "radial-gradient(circle, #e74134 0%, #f6b62e 100%)",
+        backgroundImage: `linear-gradient(135deg, rgba(231, 65, 52, 0.8) 0%, rgba(246, 182, 46, 0.8) 100%), url('/attached_assets/footer_bg_1752747448967.jpeg')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* The Global South Logo/Icon Background */}
