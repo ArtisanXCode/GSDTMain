@@ -45,7 +45,7 @@ export default function Header() {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 to-blue-800 text-white relative shadow-lg">
+    <nav className="bg-gradient-to-r from-blue-700 via-blue-800 to-orange-600 text-white relative shadow-lg"></nav>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
