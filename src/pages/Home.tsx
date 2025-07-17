@@ -54,27 +54,43 @@ const metrics = [
 export default function Home() {
   return (
     <div className="bg-white">
-      {/* Hero section with exact background from screenshot */}
+      {/* Hero section with background image and color combination */}
       <div
         className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(20, 30, 48, 0.95) 0%, rgba(139, 69, 19, 0.8) 50%, rgba(255, 140, 0, 0.6) 100%)',
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/AdobeStock_1180220151_1751887222070.jpeg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        {/* 3D Globe Pattern Overlay */}
+        {/* Dark overlay for left and right sides, lighter in center */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        
+        {/* Additional dark overlay for sky area */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+        {/* Orange globe/sphere pattern overlay */}
         <div 
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CradialGradient id='globe-gradient' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF8C00;stop-opacity:0.8'/%3E%3Cstop offset='70%25' style='stop-color:%23FF4500;stop-opacity:0.4'/%3E%3Cstop offset='100%25' style='stop-color:%23000000;stop-opacity:0.1'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='80' fill='url(%23globe-gradient)' stroke='%23FF6B00' stroke-width='1'/%3E%3Cpath d='M20,100 Q100,20 180,100 Q100,180 20,100' fill='none' stroke='%23FF8C00' stroke-width='1.5'/%3E%3Cpath d='M100,20 Q180,100 100,180 Q20,100 100,20' fill='none' stroke='%23FF8C00' stroke-width='1.5'/%3E%3Cline x1='100' y1='20' x2='100' y2='180' stroke='%23FF6B00' stroke-width='1'/%3E%3Cline x1='20' y1='100' x2='180' y2='100' stroke='%23FF6B00' stroke-width='1'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3CradialGradient id='globe-gradient' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF8C00;stop-opacity:0.9'/%3E%3Cstop offset='40%25' style='stop-color:%23FF6B00;stop-opacity:0.7'/%3E%3Cstop offset='70%25' style='stop-color:%23FF4500;stop-opacity:0.5'/%3E%3Cstop offset='100%25' style='stop-color:%23000000;stop-opacity:0.2'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='150' r='120' fill='url(%23globe-gradient)' stroke='%23FF6B00' stroke-width='2'/%3E%3Cpath d='M30,150 Q150,30 270,150 Q150,270 30,150' fill='none' stroke='%23FF8C00' stroke-width='2'/%3E%3Cpath d='M150,30 Q270,150 150,270 Q30,150 150,30' fill='none' stroke='%23FF8C00' stroke-width='2'/%3E%3Cline x1='150' y1='30' x2='150' y2='270' stroke='%23FF6B00' stroke-width='1.5'/%3E%3Cline x1='30' y1='150' x2='270' y2='150' stroke='%23FF6B00' stroke-width='1.5'/%3E%3C/svg%3E")`,
+            backgroundPosition: 'right center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '600px 600px',
           }}
         />
 
-        {/* Floating particles effect */}
+        {/* Orange and yellow floating dots */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-orange-400 rounded-full opacity-60 animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-red-400 rounded-full opacity-80 animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-70 animate-pulse delay-2000"></div>
-          <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-orange-300 rounded-full opacity-60 animate-pulse delay-3000"></div>
+          <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full opacity-80 animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-90 animate-pulse delay-1000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-2.5 h-2.5 bg-gradient-to-r from-orange-300 to-yellow-300 rounded-full opacity-70 animate-pulse delay-2000"></div>
+          <div className="absolute top-2/3 right-1/4 w-2 h-2 bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full opacity-85 animate-pulse delay-3000"></div>
+          <div className="absolute top-1/2 left-1/5 w-1.5 h-1.5 bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full opacity-75 animate-pulse delay-1500"></div>
+          <div className="absolute bottom-1/3 right-1/5 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-300 rounded-full opacity-80 animate-pulse delay-2500"></div>
+          <div className="absolute top-3/4 left-2/3 w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-yellow-400 rounded-full opacity-70 animate-pulse delay-500"></div>
+          <div className="absolute top-1/6 right-2/3 w-2.5 h-2.5 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full opacity-85 animate-pulse delay-3500"></div>
         </div>
 
         <motion.div
