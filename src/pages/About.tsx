@@ -1,123 +1,189 @@
+
 import { motion } from 'framer-motion';
 
 export default function About() {
   return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-base font-semibold leading-7 text-indigo-600"
-          >
-            About GSDT
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
-          >
-            The Future of Global South Digital Token
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 text-lg leading-8 text-gray-600"
-          >
-            GSDT is a revolutionary stablecoin that represents a basket of GSDT currencies,
-            providing a stable and efficient means of cross-border transactions while promoting
-            economic cooperation among GSDT nations.
-          </motion.p>
-        </div>
+    <div className="bg-white">
+      {/* Hero section with digital tree background */}
+      <div
+        className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
 
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
         >
-          <div className="p-8 sm:p-10 lg:flex-auto">
-            <h3 className="text-2xl font-bold tracking-tight text-gray-900">Our Mission</h3>
-            <p className="mt-6 text-base leading-7 text-gray-600">
-              We aim to facilitate seamless international trade and investment among GSDT nations
-              by providing a digital currency that reflects the collective economic strength of
-              these emerging markets.
-            </p>
-            <div className="mt-10 flex items-center gap-x-4">
-              <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">
-                What's included
-              </h4>
-              <div className="h-px flex-auto bg-gray-100"></div>
-            </div>
-            <ul
-              role="list"
-              className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 sm:grid-cols-2 sm:gap-6"
-            >
-              <li className="flex gap-x-3">
-                <svg
-                  className="h-6 w-5 flex-none text-indigo-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Stable Value Backed by GSDT
-              </li>
-              <li className="flex gap-x-3">
-                <svg
-                  className="h-6 w-5 flex-none text-indigo-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Smart Contract Security
-              </li>
-              <li className="flex gap-x-3">
-                <svg
-                  className="h-6 w-5 flex-none text-indigo-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Real-time Exchange Rates
-              </li>
-              <li className="flex gap-x-3">
-                <svg
-                  className="h-6 w-5 flex-none text-indigo-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Transparent Operations
-              </li>
-            </ul>
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              About GSDC
+            </h1>
           </div>
         </motion.div>
+      </div>
+
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-24 h-24 sm:w-32 sm:h-32"
+          />
+        </div>
+      </div>
+
+      {/* Main content section */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
+              THE FUTURE OF
+            </h2>
+            <p
+              className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
+              style={{ color: "#ed9030" }}
+            >
+              GLOBAL SOUTH DIGITAL CURRENCY
+            </p>
+            <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
+              GSDC is a revolutionary stablecoin that represents a basket of GSDC currencies,
+              <br />
+              providing a stable and efficient means of cross-border transactions while promoting economic
+              <br />
+              cooperation among GSDC nations.
+            </p>
+          </div>
+
+          {/* Two column layout */}
+          <div className="grid lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+            {/* Our Mission Card */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="rounded-2xl p-8 text-white shadow-lg"
+              style={{
+                background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+              }}
+            >
+              <h3 className="text-2xl font-bold mb-6">Our Mission</h3>
+              <p className="text-white/90 leading-relaxed">
+                We aim to facilitate seamless international trade and investment among GSDC nations
+                by providing a digital currency that reflects the collective economic strength of
+                these emerging markets.
+              </p>
+            </motion.div>
+
+            {/* What's Included */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-white rounded-2xl p-8 shadow-lg"
+            >
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">What's included</h3>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-x-3">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#ed9030" }}
+                  >
+                    <svg
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-gray-700 font-medium">Stable Value Backed by GSDC</span>
+                </li>
+                <li className="flex items-center gap-x-3">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#ed9030" }}
+                  >
+                    <svg
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-gray-700 font-medium">Real-time Exchange Rates</span>
+                </li>
+                <li className="flex items-center gap-x-3">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#ed9030" }}
+                  >
+                    <svg
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-gray-700 font-medium">Stable Value Backed by GSDC</span>
+                </li>
+                <li className="flex items-center gap-x-3">
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#ed9030" }}
+                  >
+                    <svg
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-gray-700 font-medium">Real-time Exchange Rates</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
