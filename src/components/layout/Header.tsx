@@ -1,4 +1,3 @@
-
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, Transition } from "@headlessui/react";
@@ -45,7 +44,7 @@ export default function Header() {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 via-blue-800 to-orange-600 text-white relative shadow-lg"></nav>
+    <nav className="bg-gradient-to-r from-gray-800 to-blue-300 text-white relative ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
@@ -66,9 +65,7 @@ export default function Header() {
                 key={item.name}
                 to={item.href}
                 className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-orange-300 ${
-                  isActivePath(item.href)
-                    ? "text-orange-300"
-                    : "text-white"
+                  isActivePath(item.href) ? "text-orange-300" : "text-white"
                 }`}
               >
                 {item.name}
