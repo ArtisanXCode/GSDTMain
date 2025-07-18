@@ -58,7 +58,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 {tx.type}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {parseFloat(utils.formatEther(tx.amount)).toFixed(2)} GSDC
+                {parseFloat(tx.amount).toFixed(2)} GSDC
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
                 <a
