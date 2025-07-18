@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
-import { AdminRole, AdminUser } from '../../../services/admin';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { getRoleIcon, getRoleBadgeClass } from './RoleCard';
+import { motion } from "framer-motion";
+import { AdminRole, AdminUser } from "../../../services/admin";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { getRoleIcon, getRoleBadgeClass } from "./RoleCard";
 
 interface RoleTableProps {
   adminUsers: AdminUser[];
@@ -10,27 +10,32 @@ interface RoleTableProps {
   onRemove: (user: AdminUser) => void;
 }
 
-export default function RoleTable({ adminUsers, currentUserAddress, onEdit, onRemove }: RoleTableProps) {
+export default function RoleTable({
+  adminUsers,
+  currentUserAddress,
+  onEdit,
+  onRemove,
+}: RoleTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+        <thead className="" style={{ backgroundColor: "#5a7a96" }}>
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
               Address
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
               Role
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
               Created At
             </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-5 text-center text-xs text-white uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="text-white">
           {adminUsers.map((user) => (
             <motion.tr
               key={user.id}
@@ -40,7 +45,8 @@ export default function RoleTable({ adminUsers, currentUserAddress, onEdit, onRe
             >
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {user.user_address.slice(0, 6)}...{user.user_address.slice(-4)}
-                {user.user_address.toLowerCase() === currentUserAddress?.toLowerCase() && (
+                {user.user_address.toLowerCase() ===
+                  currentUserAddress?.toLowerCase() && (
                   <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     You
                   </span>
@@ -49,7 +55,9 @@ export default function RoleTable({ adminUsers, currentUserAddress, onEdit, onRe
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   {getRoleIcon(user.role)}
-                  <span className={`ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}>
+                  <span
+                    className={`ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}
+                  >
                     {user.role}
                   </span>
                 </div>
@@ -59,7 +67,8 @@ export default function RoleTable({ adminUsers, currentUserAddress, onEdit, onRe
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex justify-center space-x-3">
-                  {user.user_address.toLowerCase() !== currentUserAddress?.toLowerCase() && (
+                  {user.user_address.toLowerCase() !==
+                    currentUserAddress?.toLowerCase() && (
                     <>
                       <button
                         onClick={() => onEdit(user)}

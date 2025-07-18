@@ -1,25 +1,25 @@
-import { BigNumber } from 'ethers';
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { useWallet } from '../../hooks/useWallet';
-import { useAdmin } from '../../hooks/useAdmin';
-import { useGSDTContract } from '../../hooks/useContract';
+import { BigNumber } from "ethers";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useWallet } from "../../hooks/useWallet";
+import { useAdmin } from "../../hooks/useAdmin";
+import { useGSDTContract } from "../../hooks/useContract";
 
-import { 
-  FiatMintRequest, 
-  FiatMintStatus, 
+import {
+  FiatMintRequest,
+  FiatMintStatus,
   getFiatMintRequests,
   approveFiatMintRequest,
-  rejectFiatMintRequest 
-} from '../../services/fiatMinting';
-import { format } from 'date-fns';
-import { 
+  rejectFiatMintRequest,
+} from "../../services/fiatMinting";
+import { format } from "date-fns";
+import {
   CheckCircleIcon,
   XCircleIcon,
   EyeIcon,
-  DocumentMagnifyingGlassIcon
-} from '@heroicons/react/24/outline';
+  DocumentMagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 
 export default function FiatMintRequests() {
   const { address, isConnected } = useWallet();
@@ -29,24 +29,29 @@ export default function FiatMintRequests() {
   const [requests, setRequests] = useState<FiatMintRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRequest, setSelectedRequest] = useState<FiatMintRequest | null>(null);
+  const [selectedRequest, setSelectedRequest] =
+    useState<FiatMintRequest | null>(null);
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
-  const [adminNotes, setAdminNotes] = useState('');
+  const [adminNotes, setAdminNotes] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<FiatMintStatus | 'ALL'>('ALL');
-  const [minMintAmount, setMinMintAmount] = useState<string>('100'); // Default min amount
+  const [filterStatus, setFilterStatus] = useState<FiatMintStatus | "ALL">(
+    "ALL",
+  );
+  const [minMintAmount, setMinMintAmount] = useState<string>("100"); // Default min amount
 
   useEffect(() => {
     const loadRequests = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getFiatMintRequests(filterStatus === 'ALL' ? undefined : filterStatus);
+        const data = await getFiatMintRequests(
+          filterStatus === "ALL" ? undefined : filterStatus,
+        );
         setRequests(data);
       } catch (err: any) {
-        console.error('Error loading fiat mint requests:', err);
-        setError(err.message || 'Error loading requests');
+        console.error("Error loading fiat mint requests:", err);
+        setError(err.message || "Error loading requests");
       } finally {
         setLoading(false);
       }
@@ -63,46 +68,56 @@ export default function FiatMintRequests() {
 
       const minMintAmt = await contract.MIN_MINT_AMOUNT();
       const decimals = await contract.decimals();
-      const minMintAmnt = await minMintAmt.div(BigNumber.from(10).pow(decimals));  // Dividing by 10^18 for ERC20 tokens
+      const minMintAmnt = await minMintAmt.div(
+        BigNumber.from(10).pow(decimals),
+      ); // Dividing by 10^18 for ERC20 tokens
       await setMinMintAmount(minMintAmnt.toNumber());
 
       await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
 
       // Update the local state
-      setRequests(prev => prev.map(req => 
-        req.id === selectedRequest.id 
-          ? { ...req, status: FiatMintStatus.APPROVED, admin_notes: adminNotes, processed_by: address }
-          : req
-      ));
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.id === selectedRequest.id
+            ? {
+                ...req,
+                status: FiatMintStatus.APPROVED,
+                admin_notes: adminNotes,
+                processed_by: address,
+              }
+            : req,
+        ),
+      );
 
       setShowApproveModal(false);
       setSelectedRequest(null);
-      setAdminNotes('');
+      setAdminNotes("");
     } catch (error: any) {
-      console.error('Error approving request:', error);
+      console.error("Error approving request:", error);
       //setError(err.message || 'Error approving request');
 
-      if (error.message?.includes('missing role')) {
-        setError('You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.');
-      } else if (error.message?.includes('execution reverted')) {
+      if (error.message?.includes("missing role")) {
+        setError(
+          "You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.",
+        );
+      } else if (error.message?.includes("execution reverted")) {
         const revertReason = error.data?.message || error.message;
-        if (revertReason.includes('KYC')) {
-          setError('KYC verification required before minting tokens.');
-        } else if (revertReason.includes('amount below minimum')) {
+        if (revertReason.includes("KYC")) {
+          setError("KYC verification required before minting tokens.");
+        } else if (revertReason.includes("amount below minimum")) {
           setError(`Amount must be at least ${minMintAmount} GSDT.`);
-        } else if (revertReason.includes('amount above maximum')) {
-          setError('Amount exceeds maximum minting limit.');
-        } else if (revertReason.includes('daily mint limit')) {
-          setError('Daily minting limit exceeded. Please try again tomorrow.');
+        } else if (revertReason.includes("amount above maximum")) {
+          setError("Amount exceeds maximum minting limit.");
+        } else if (revertReason.includes("daily mint limit")) {
+          setError("Daily minting limit exceeded. Please try again tomorrow.");
         } else {
-          setError(revertReason || 'Transaction failed. Please try again.');
+          setError(revertReason || "Transaction failed. Please try again.");
         }
-      } else if (error.code === 'ACTION_REJECTED') {
-        setError('Transaction was rejected by user.');
+      } else if (error.code === "ACTION_REJECTED") {
+        setError("Transaction was rejected by user.");
       } else {
-        setError('Error minting tokens. Please try again.');
+        setError("Error minting tokens. Please try again.");
       }
-
     } finally {
       setActionLoading(false);
     }
@@ -116,18 +131,25 @@ export default function FiatMintRequests() {
       await rejectFiatMintRequest(selectedRequest.id, address, adminNotes);
 
       // Update the local state
-      setRequests(prev => prev.map(req => 
-        req.id === selectedRequest.id 
-          ? { ...req, status: FiatMintStatus.REJECTED, admin_notes: adminNotes, processed_by: address }
-          : req
-      ));
+      setRequests((prev) =>
+        prev.map((req) =>
+          req.id === selectedRequest.id
+            ? {
+                ...req,
+                status: FiatMintStatus.REJECTED,
+                admin_notes: adminNotes,
+                processed_by: address,
+              }
+            : req,
+        ),
+      );
 
       setShowRejectModal(false);
       setSelectedRequest(null);
-      setAdminNotes('');
+      setAdminNotes("");
     } catch (err: any) {
-      console.error('Error rejecting request:', err);
-      setError(err.message || 'Error rejecting request');
+      console.error("Error rejecting request:", err);
+      setError(err.message || "Error rejecting request");
     } finally {
       setActionLoading(false);
     }
@@ -136,13 +158,13 @@ export default function FiatMintRequests() {
   const getStatusBadgeClass = (status: FiatMintStatus) => {
     switch (status) {
       case FiatMintStatus.APPROVED:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       case FiatMintStatus.PENDING:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
       case FiatMintStatus.REJECTED:
-        return 'bg-red-100 text-red-800';
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -193,63 +215,63 @@ export default function FiatMintRequests() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            
-          {/* Navigation Menu */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="rounded-lg p-2 mb-8"
-            style={{ backgroundColor: '#446c93' }}
-          >
-            <div className="flex flex-wrap gap-1">
-              <button 
-                onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+            {/* Navigation Menu */}
+            <div className="mb-8">
+              <div
+                className="mb-8 shadow rounded-lg p-8"
+                style={{ backgroundColor: "#2a4661" }}
               >
-                KYC Requests
-              </button>
-              <button 
-                onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Contact Messages
-              </button>
-              <button 
-                onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Role Management
-              </button>
-              <button 
-                style={{ backgroundColor: '#ed9030' }}
-                className="px-6 py-3 rounded-lg font-medium text-white"
-              >
-                Fiat Mint Requests
-              </button>
-              <button 
-                onClick={() => navigate('/admin/proof-of-reserves')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Proof of Reserves
-              </button>
-              <button 
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Exchange Rates
-              </button>
+                <button
+                  onClick={() => navigate("/admin/kyc-requests")}
+                  className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  KYC Requests
+                </button>
+                <button
+                  onClick={() => navigate("/admin/contact-messages")}
+                  className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Contact Messages
+                </button>
+                <button
+                  onClick={() => navigate("/admin/role-management")}
+                  className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Role Management
+                </button>
+                <button
+                  style={{ backgroundColor: "#ed9030" }}
+                  className="px-6 py-2 rounded-lg font-medium text-white"
+                >
+                  Fiat Mint Requests
+                </button>
+                <button
+                  onClick={() => navigate("/admin/proof-of-reserves")}
+                  className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Proof of Reserves
+                </button>
+                <button
+                  onClick={() => navigate("/admin/exchange-rates")}
+                  className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Exchange Rates
+                </button>
+              </div>
             </div>
-          </motion.div>
 
             {/* Access Denied Content */}
             <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-white mb-6">Access Denied</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">
+                Access Denied
+              </h3>
               <div className="text-center py-8">
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                   <XCircleIcon className="h-6 w-6 text-red-600" />
                 </div>
-                <h3 className="mt-2 text-lg font-medium text-white">Access Denied</h3>
+                <h3 className="mt-2 text-lg font-medium text-white">
+                  Access Denied
+                </h3>
                 <p className="mt-1 text-sm text-gray-300">
                   Only Super Admins can manage fiat mint requests.
                 </p>
@@ -307,61 +329,61 @@ export default function FiatMintRequests() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
           {/* Navigation Menu */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="rounded-lg p-2 mb-8"
-            style={{ backgroundColor: '#446c93' }}
-          >
-            <div className="flex flex-wrap gap-1">
-              <button 
-                onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+          <div className="mb-8">
+            <div
+              className="mb-8 shadow rounded-lg p-8"
+              style={{ backgroundColor: "#2a4661" }}
+            >
+              <button
+                onClick={() => navigate("/admin/kyc-requests")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
-              <button 
-                onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/contact-messages")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
-              <button 
-                onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/role-management")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
-              <button 
-                style={{ backgroundColor: '#ed9030' }}
-                className="px-6 py-3 rounded-lg font-medium text-white"
+              <button
+                style={{ backgroundColor: "#ed9030" }}
+                className="px-6 py-2 rounded-lg font-medium text-white"
               >
                 Fiat Mint Requests
               </button>
-              <button 
-                onClick={() => navigate('/admin/proof-of-reserves')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/reserves")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Proof of Reserves
               </button>
-              <button 
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/exchange-rates")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>
             </div>
-          </motion.div>
+          </div>
 
           {/* Fiat Mint Requests Content */}
           <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Fiat Mint Requests</h3>
-                <p className="text-gray-300">Review and manage KYC verification requests</p>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  Fiat Mint Requests
+                </h3>
+                <p className="text-gray-300">
+                  Review and manage KYC verification requests
+                </p>
               </div>
               <button
                 onClick={() => window.location.reload()}
@@ -374,13 +396,18 @@ export default function FiatMintRequests() {
             {/* Filters */}
             <div className="mb-6 bg-slate-600 p-4 rounded-lg">
               <div>
-                <label htmlFor="status-filter" className="block text-sm font-medium text-white mb-2">
+                <label
+                  htmlFor="status-filter"
+                  className="block text-sm font-medium text-white mb-2"
+                >
                   Status
                 </label>
                 <select
                   id="status-filter"
                   value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as FiatMintStatus | 'ALL')}
+                  onChange={(e) =>
+                    setFilterStatus(e.target.value as FiatMintStatus | "ALL")
+                  }
                   className="block w-full md:w-48 rounded-md border-0 bg-slate-500 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm"
                 >
                   <option value="ALL">All Statuses</option>
@@ -443,7 +470,8 @@ export default function FiatMintRequests() {
                         className="hover:bg-slate-500"
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                          {request.user_address.slice(0, 6)}...{request.user_address.slice(-4)}
+                          {request.user_address.slice(0, 6)}...
+                          {request.user_address.slice(-4)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                           {request.amount}
@@ -452,7 +480,9 @@ export default function FiatMintRequests() {
                           {request.currency}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(request.status)}`}>
+                          <span
+                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(request.status)}`}
+                          >
                             {request.status}
                           </span>
                         </td>
@@ -460,7 +490,10 @@ export default function FiatMintRequests() {
                           {request.payment_reference}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {format(new Date(request.created_at), 'MMM d, yyyy HH:mm')}
+                          {format(
+                            new Date(request.created_at),
+                            "MMM d, yyyy HH:mm",
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex justify-center space-x-3">
@@ -481,7 +514,10 @@ export default function FiatMintRequests() {
                                 setSelectedRequest(request);
                                 setShowApproveModal(true);
                               }}
-                              disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
+                              disabled={
+                                request.status !== FiatMintStatus.PENDING ||
+                                actionLoading
+                              }
                               className="text-green-400 hover:text-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Approve Request"
                             >
@@ -493,7 +529,10 @@ export default function FiatMintRequests() {
                                 setSelectedRequest(request);
                                 setShowRejectModal(true);
                               }}
-                              disabled={request.status !== FiatMintStatus.PENDING || actionLoading}
+                              disabled={
+                                request.status !== FiatMintStatus.PENDING ||
+                                actionLoading
+                              }
                               className="text-red-400 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Reject Request"
                             >
@@ -514,7 +553,7 @@ export default function FiatMintRequests() {
       {/* Approve Modal */}
       {showApproveModal && selectedRequest && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-lg p-6 max-w-md w-full"
@@ -542,7 +581,7 @@ export default function FiatMintRequests() {
                 onClick={() => {
                   setShowApproveModal(false);
                   setSelectedRequest(null);
-                  setAdminNotes('');
+                  setAdminNotes("");
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
@@ -555,9 +594,25 @@ export default function FiatMintRequests() {
               >
                 {actionLoading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Processing...
                   </>
@@ -576,7 +631,7 @@ export default function FiatMintRequests() {
       {/* Reject Modal */}
       {showRejectModal && selectedRequest && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-lg p-6 max-w-md w-full"
@@ -605,7 +660,7 @@ export default function FiatMintRequests() {
                 onClick={() => {
                   setShowRejectModal(false);
                   setSelectedRequest(null);
-                  setAdminNotes('');
+                  setAdminNotes("");
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
@@ -618,9 +673,25 @@ export default function FiatMintRequests() {
               >
                 {actionLoading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Processing...
                   </>

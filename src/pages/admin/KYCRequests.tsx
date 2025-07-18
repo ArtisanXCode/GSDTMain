@@ -218,41 +218,41 @@ export default function KYCRequests() {
           <div className="mb-8">
             <div
               className="mb-8 shadow rounded-lg p-8"
-              style={{ "background-color": "#2a4661" }}
+              style={{ backgroundColor: "#2a4661" }}
             >
               <button
                 style={{ backgroundColor: "#ed9030" }}
-                className="px-6 py-3 rounded-lg font-medium text-white"
+                className="px-6 py-2 rounded-lg font-medium text-white"
               >
                 KYC Requests
               </button>
               <button
                 onClick={() => navigate("/admin/contact-messages")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
               <button
                 onClick={() => navigate("/admin/role-management")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
               <button
                 onClick={() => navigate("/admin/fiat-requests")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Fiat Mint Requests
               </button>
               <button
                 onClick={() => navigate("/admin/reserves")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Proof of Reserves
               </button>
               <button
                 onClick={() => navigate("/admin/exchange-rates")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>

@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useWallet } from '../../hooks/useWallet';
-import { useAdmin } from '../../hooks/useAdmin';
-import { ReserveAsset } from '../../services/reserves';
-import ReserveSummary from '../../components/admin/reserves/ReserveSummary';
-import ReserveList from '../../components/admin/reserves/ReserveList';
-import ReserveForm from '../../components/admin/reserves/ReserveForm';
-import DeleteConfirmModal from '../../components/admin/reserves/DeleteConfirmModal';
-import { useReserves } from '../../hooks/useReserves';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useWallet } from "../../hooks/useWallet";
+import { useAdmin } from "../../hooks/useAdmin";
+import { ReserveAsset } from "../../services/reserves";
+import ReserveSummary from "../../components/admin/reserves/ReserveSummary";
+import ReserveList from "../../components/admin/reserves/ReserveList";
+import ReserveForm from "../../components/admin/reserves/ReserveForm";
+import DeleteConfirmModal from "../../components/admin/reserves/DeleteConfirmModal";
+import { useReserves } from "../../hooks/useReserves";
+import { motion } from "framer-motion";
 
 export default function ProofOfReserves() {
   const { isConnected } = useWallet();
@@ -17,7 +17,9 @@ export default function ProofOfReserves() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedReserve, setSelectedReserve] = useState<ReserveAsset | null>(null);
+  const [selectedReserve, setSelectedReserve] = useState<ReserveAsset | null>(
+    null,
+  );
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
@@ -29,30 +31,33 @@ export default function ProofOfReserves() {
     handleCreate,
     handleUpdate,
     handleDelete,
-    refresh
+    refresh,
   } = useReserves();
 
-  const handleCreateSubmit = async (data: Omit<ReserveAsset, 'id'>) => {
+  const handleCreateSubmit = async (data: Omit<ReserveAsset, "id">) => {
     try {
       await handleCreate(data);
-      setSuccessMessage('Reserve asset created successfully');
+      setSuccessMessage("Reserve asset created successfully");
       setShowAddModal(false);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
-      console.error('Error creating reserve asset:', err);
+      console.error("Error creating reserve asset:", err);
       throw err;
     }
   };
 
-  const handleUpdateSubmit = async (id: string, data: Partial<ReserveAsset>) => {
+  const handleUpdateSubmit = async (
+    id: string,
+    data: Partial<ReserveAsset>,
+  ) => {
     try {
       await handleUpdate(id, data);
-      setSuccessMessage('Reserve asset updated successfully');
+      setSuccessMessage("Reserve asset updated successfully");
       setShowEditModal(false);
       setSelectedReserve(null);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
-      console.error('Error updating reserve asset:', err);
+      console.error("Error updating reserve asset:", err);
       throw err;
     }
   };
@@ -62,12 +67,12 @@ export default function ProofOfReserves() {
 
     try {
       await handleDelete(selectedReserve);
-      setSuccessMessage('Reserve asset deleted successfully');
+      setSuccessMessage("Reserve asset deleted successfully");
       setShowDeleteModal(false);
       setSelectedReserve(null);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
-      console.error('Error deleting reserve asset:', err);
+      console.error("Error deleting reserve asset:", err);
       throw err;
     }
   };
@@ -120,43 +125,42 @@ export default function ProofOfReserves() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-
             {/* Navigation Tabs */}
             <div className="mb-8">
-              <div 
-                className="flex flex-wrap gap-1 p-2 rounded-lg"
-                style={{ backgroundColor: '#5a7a96' }}
+              <div
+                className="mb-8 shadow rounded-lg p-8"
+                style={{ backgroundColor: "#2a4661" }}
               >
-                <button 
-                  onClick={() => navigate('/admin/kyc-requests')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                <button
+                  onClick={() => navigate("/admin/kyc-requests")}
+                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
                 >
                   KYC Requests
                 </button>
-                <button 
-                  onClick={() => navigate('/admin/contact-messages')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                <button
+                  onClick={() => navigate("/admin/contact-messages")}
+                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Contact Messages
                 </button>
-                <button 
-                  onClick={() => navigate('/admin/role-management')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                <button
+                  onClick={() => navigate("/admin/role-management")}
+                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Role Management
                 </button>
-                <button 
-                  onClick={() => navigate('/admin/fiat-requests')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                <button
+                  onClick={() => navigate("/admin/fiat-requests")}
+                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Fiat Mint Requests
                 </button>
-                <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                <button className="px-6 py-2 rounded-lg text-white font-medium bg-orange-500">
                   Proof of Reserves
                 </button>
-                <button 
-                  onClick={() => navigate('/admin/exchange-rates')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                <button
+                  onClick={() => navigate("/admin/exchange-rates")}
+                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Exchange Rates
                 </button>
@@ -166,11 +170,24 @@ export default function ProofOfReserves() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-center py-8">
                 <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                  <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <svg
+                    className="h-6 w-6 text-red-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
                   </svg>
                 </div>
-                <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
+                <h3 className="mt-2 text-lg font-medium text-gray-900">
+                  Access Denied
+                </h3>
                 <p className="mt-1 text-sm text-gray-500">
                   Only Super Admins can manage proof of reserves.
                 </p>
@@ -229,61 +246,57 @@ export default function ProofOfReserves() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-
           {/* Navigation Menu */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="rounded-lg p-2 mb-8"
-            style={{ backgroundColor: '#446c93' }}
-          >
-            <div className="flex flex-wrap gap-1">
-              <button 
-                onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+          <div className="mb-8">
+            <div
+              className="mb-8 shadow rounded-lg p-8"
+              style={{ backgroundColor: "#2a4661" }}
+            >
+              <button
+                onClick={() => navigate("/admin/kyc-requests")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
-              <button 
-                onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/contact-messages")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
-              <button 
-                onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/role-management")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
-              <button 
-                onClick={() => navigate('/admin/fiat-requests')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/fiat-requests")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Fiat Mint Requests
               </button>
-              <button 
-                style={{ backgroundColor: '#ed9030' }}
-                className="px-6 py-3 rounded-lg font-medium text-white"
+              <button
+                style={{ backgroundColor: "#ed9030" }}
+                className="px-6 py-2 rounded-lg font-medium text-white"
               >
                 Proof of Reserves
               </button>
-              <button 
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              <button
+                onClick={() => navigate("/admin/exchange-rates")}
+                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>
             </div>
-          </motion.div>
+          </div>
 
           <div className="space-y-6">
             {/* Summary Section */}
-            <ReserveSummary 
-              summary={summary} 
-              loading={loading} 
-              error={error} 
+            <ReserveSummary
+              summary={summary}
+              loading={loading}
+              error={error}
               onRetry={refresh}
             />
 
@@ -295,11 +308,16 @@ export default function ProofOfReserves() {
             )}
 
             {/* Reserves List */}
-            <div className="shadow rounded-lg" style={{ backgroundColor: '#2a4661' }}>
+            <div
+              className="shadow rounded-lg"
+              style={{ backgroundColor: "#2a4661" }}
+            >
               <div className="px-4 py-5 sm:p-6">
                 <div className="sm:flex sm:items-center">
                   <div className="sm:flex-auto">
-                    <h3 className="text-lg font-medium leading-6 text-white">Proof of Reserves</h3>
+                    <h3 className="text-lg font-medium leading-6 text-white">
+                      Proof of Reserves
+                    </h3>
                     <p className="mt-1 text-sm text-white/70">
                       Manage and update reserve assets and their allocations
                     </p>
@@ -308,7 +326,7 @@ export default function ProofOfReserves() {
                     <button
                       onClick={() => setShowAddModal(true)}
                       className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 sm:w-auto"
-                      style={{ backgroundColor: '#ed9030' }}
+                      style={{ backgroundColor: "#ed9030" }}
                     >
                       Add Reserve Asset
                     </button>
@@ -354,7 +372,9 @@ export default function ProofOfReserves() {
       {showAddModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Add Reserve Asset</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Add Reserve Asset
+            </h3>
             <ReserveForm
               onSubmit={handleCreateSubmit}
               onCancel={() => setShowAddModal(false)}
@@ -368,7 +388,9 @@ export default function ProofOfReserves() {
       {showEditModal && selectedReserve && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Reserve Asset</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Edit Reserve Asset
+            </h3>
             <ReserveForm
               initialData={selectedReserve}
               onSubmit={(data) => handleUpdateSubmit(selectedReserve.id, data)}
