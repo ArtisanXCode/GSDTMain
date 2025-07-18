@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { AdminRole, AdminUser } from "../../../services/admin";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -17,81 +18,78 @@ export default function RoleTable({
   onRemove,
 }: RoleTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="" style={{ backgroundColor: "#5a7a96" }}>
-          <tr>
-            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
-              Address
-            </th>
-            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
-              Role
-            </th>
-            <th className="px-6 py-5 text-left text-xs text-white uppercase tracking-wider">
-              Created At
-            </th>
-            <th className="px-6 py-5 text-center text-xs text-white uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="text-white">
-          {adminUsers.map((user) => (
-            <motion.tr
-              key={user.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="hover:bg-gray-50"
-            >
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    <div className="space-y-0">
+      {/* Header */}
+      <div className="grid grid-cols-4 gap-6 px-6 py-4 text-xs text-white/70 uppercase tracking-wider font-medium" style={{ backgroundColor: "#5a7a96" }}>
+        <div>Address</div>
+        <div>Role</div>
+        <div>Created At</div>
+        <div className="text-center">Actions</div>
+      </div>
+
+      {/* Rows */}
+      <div className="space-y-0">
+        {adminUsers.map((user, index) => (
+          <motion.div
+            key={user.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`grid grid-cols-4 gap-6 px-6 py-4 items-center text-white hover:bg-gray-700/30 transition-colors ${
+              index < adminUsers.length - 1 ? 'border-b border-gray-600/30' : ''
+            }`}
+            style={{ backgroundColor: "#446c93" }}
+          >
+            {/* Address */}
+            <div className="flex items-center">
+              <span className="text-sm text-white">
                 {user.user_address.slice(0, 6)}...{user.user_address.slice(-4)}
-                {user.user_address.toLowerCase() ===
-                  currentUserAddress?.toLowerCase() && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    You
-                  </span>
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center">
-                  {getRoleIcon(user.role)}
-                  <span
-                    className={`ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}
+              </span>
+              {user.user_address.toLowerCase() === currentUserAddress?.toLowerCase() && (
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                  You
+                </span>
+              )}
+            </div>
+
+            {/* Role */}
+            <div className="flex items-center">
+              {getRoleIcon(user.role)}
+              <span
+                className={`ml-2 px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}
+              >
+                {user.role}
+              </span>
+            </div>
+
+            {/* Created At */}
+            <div className="text-sm text-white/80">
+              {new Date(user.created_at).toLocaleDateString()}
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-center space-x-3">
+              {user.user_address.toLowerCase() !== currentUserAddress?.toLowerCase() && (
+                <>
+                  <button
+                    onClick={() => onEdit(user)}
+                    className="text-blue-400 hover:text-blue-300 flex items-center transition-colors"
+                    title="Edit Role"
                   >
-                    {user.role}
-                  </span>
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {new Date(user.created_at).toLocaleDateString()}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex justify-center space-x-3">
-                  {user.user_address.toLowerCase() !==
-                    currentUserAddress?.toLowerCase() && (
-                    <>
-                      <button
-                        onClick={() => onEdit(user)}
-                        className="text-indigo-600 hover:text-indigo-900 flex items-center"
-                        title="Edit Role"
-                      >
-                        <PencilSquareIcon className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => onRemove(user)}
-                        className="text-red-600 hover:text-red-900 flex items-center"
-                        title="Remove Role"
-                      >
-                        <TrashIcon className="h-5 w-5" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </td>
-            </motion.tr>
-          ))}
-        </tbody>
-      </table>
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => onRemove(user)}
+                    className="text-red-400 hover:text-red-300 flex items-center transition-colors"
+                    title="Remove Role"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
