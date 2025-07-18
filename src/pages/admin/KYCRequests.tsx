@@ -157,13 +157,13 @@ export default function KYCRequests() {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case KYCStatus.APPROVED:
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-300";
       case KYCStatus.PENDING:
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-orange-100 text-orange-800 border-orange-300";
       case KYCStatus.REJECTED:
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border-red-300";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-300";
     }
   };
 
@@ -383,25 +383,25 @@ export default function KYCRequests() {
               <table className="w-full">
                 <thead style={{ backgroundColor: "#5a7a96" }}>
                   <tr className="border-b border-white/20">
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       USER
                     </th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       NAME
                     </th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       DOCUMENT TYPE
                     </th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       STATUS
                     </th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       SUBMITTED
                     </th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                    <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       VERIFICATION
                     </th>
-                    <th className="text-center py-3 px-4 text-white/70 font-medium">
+                    <th className="text-right py-3 px-4 text-white/70 font-medium uppercase text-xs">
                       ACTIONS
                     </th>
                   </tr>
@@ -442,7 +442,7 @@ export default function KYCRequests() {
                         </td>
                         <td className="py-4 px-4">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(request.status)}`}
+                            className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadgeClass(request.status)}`}
                           >
                             {request.status}
                           </span>
@@ -459,14 +459,15 @@ export default function KYCRequests() {
                             <span>Manual</span>
                           )}
                         </td>
-                        <td className="py-4 px-4 text-center">
-                          <div className="flex justify-center space-x-2">
+                        <td className="py-4 px-4 text-right">
+                          <div className="flex justify-end items-center space-x-3">
                             <button
                               onClick={() => {
                                 setSelectedRequest(request);
                                 setShowDetailModal(true);
                               }}
-                              className="p-2 text-blue-400 hover:text-blue-300"
+                              className="text-blue-400 hover:text-blue-300"
+                              title="View Details"
                             >
                               <svg
                                 className="w-4 h-4"
@@ -494,14 +495,14 @@ export default function KYCRequests() {
                                   <button
                                     onClick={() => handleApprove(request)}
                                     disabled={actionLoading}
-                                    className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                    className="text-green-400 hover:text-green-300 disabled:opacity-50 text-sm font-medium"
                                   >
                                     Approve
                                   </button>
                                   <button
                                     onClick={() => handleReject(request)}
                                     disabled={actionLoading}
-                                    className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                                    className="text-red-400 hover:text-red-300 disabled:opacity-50 text-sm font-medium"
                                   >
                                     Reject
                                   </button>
