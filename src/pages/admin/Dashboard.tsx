@@ -1,17 +1,16 @@
-
-import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useWallet } from '../../hooks/useWallet';
-import { useAdmin } from '../../hooks/useAdmin';
-import AdminStats from '../../components/admin/AdminStats';
-import { 
-  UserGroupIcon, 
-  ChatBubbleLeftIcon, 
-  ShieldCheckIcon, 
+import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useWallet } from "../../hooks/useWallet";
+import { useAdmin } from "../../hooks/useAdmin";
+import AdminStats from "../../components/admin/AdminStats";
+import {
+  UserGroupIcon,
+  ChatBubbleLeftIcon,
+  ShieldCheckIcon,
   BanknotesIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline';
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 
 export default function AdminDashboard() {
   const { isConnected } = useWallet();
@@ -20,18 +19,18 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // Check if admin auth is in localStorage
-    const isAdminAuth = localStorage.getItem('adminAuth') === 'true';
-    
+    const isAdminAuth = localStorage.getItem("adminAuth") === "true";
+
     // If we're not admin and not in localStorage, redirect to login
     if (!isAdminAuth && !isAdmin) {
-      navigate('/admin/login', { replace: true });
+      navigate("/admin/login", { replace: true });
     }
   }, [isAdmin, isConnected, navigate]);
 
   // Check if we're admin from localStorage as a fallback
-  const isAdminAuth = localStorage.getItem('adminAuth') === 'true';
-  const storedRole = localStorage.getItem('adminRole');
-  
+  const isAdminAuth = localStorage.getItem("adminAuth") === "true";
+  const storedRole = localStorage.getItem("adminRole");
+
   // If we're not admin and not in localStorage, show loading until redirect happens
   if (!isAdmin && !isAdminAuth) {
     return (
@@ -43,7 +42,7 @@ export default function AdminDashboard() {
 
   // Use stored role if adminRole is not available yet
   const displayRole = adminRole || storedRole;
-  const isSuperAdminUser = isSuperAdmin || displayRole === 'SUPER_ADMIN';
+  const isSuperAdminUser = isSuperAdmin || displayRole === "SUPER_ADMIN";
 
   return (
     <div className="bg-white">
@@ -72,13 +71,20 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
             <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              {displayRole === 'SUPER_ADMIN' && "Super Admin Dashboard - Full Access"}
-              {displayRole === 'ADMIN' && "Admin Dashboard - Manage Content and Users"}
-              {displayRole === 'MODERATOR' && "Moderator Dashboard - Content Management"}
-              {displayRole === 'MINTER' && "Minter Dashboard - Token Minting Access"}
-              {displayRole === 'BURNER' && "Burner Dashboard - Token Burning Access"}
-              {displayRole === 'PAUSER' && "Pauser Dashboard - Contract Pause Access"}
-              {displayRole === 'PRICE_UPDATER' && "Price Updater Dashboard - Token Price Management"}
+              {displayRole === "SUPER_ADMIN" &&
+                "Super Admin Dashboard - Full Access"}
+              {displayRole === "ADMIN" &&
+                "Admin Dashboard - Manage Content and Users"}
+              {displayRole === "MODERATOR" &&
+                "Moderator Dashboard - Content Management"}
+              {displayRole === "MINTER" &&
+                "Minter Dashboard - Token Minting Access"}
+              {displayRole === "BURNER" &&
+                "Burner Dashboard - Token Burning Access"}
+              {displayRole === "PAUSER" &&
+                "Pauser Dashboard - Contract Pause Access"}
+              {displayRole === "PRICE_UPDATER" &&
+                "Price Updater Dashboard - Token Price Management"}
             </p>
           </div>
         </motion.div>
@@ -99,15 +105,19 @@ export default function AdminDashboard() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Admin Navigation */}
-          <div className="mb-8 bg-gray-600 shadow rounded-lg p-4">
+          <div
+            className="mb-8 shadow rounded-lg p-8"
+            style={{ "background-color": "#2a4661" }}
+          >
             <nav className="flex flex-wrap gap-4">
-              <Link 
+              <Link
                 to="/admin/kyc-requests"
-                className="px-4 py-2 rounded-md text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+                className="px-4 py-2 rounded-md text-sm font-medium text-white "
+                style={{ "background-color": "#ed9030" }}
               >
                 KYC Requests
               </Link>
-              <Link 
+              <Link
                 to="/admin/contact-messages"
                 className="px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-700 transition-colors"
               >
@@ -115,19 +125,19 @@ export default function AdminDashboard() {
               </Link>
               {isSuperAdminUser && (
                 <>
-                  <Link 
+                  <Link
                     to="/admin/role-management"
                     className="px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-700 transition-colors"
                   >
                     Role Management
                   </Link>
-                  <Link 
+                  <Link
                     to="/admin/fiat-requests"
                     className="px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-700 transition-colors"
                   >
                     Fiat Mint Requests
                   </Link>
-                  <Link 
+                  <Link
                     to="/admin/reserves"
                     className="px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-700 transition-colors"
                   >
@@ -151,18 +161,24 @@ export default function AdminDashboard() {
           </div>
 
           {/* Admin Dashboard Overview */}
-          <div style={{ backgroundColor: '#2a4661' }} className="rounded-lg shadow p-6 mb-8">
-            <h2 className="text-xl font-semibold text-white mb-2">Admin Dashboard Overview</h2>
+          <div
+            style={{ backgroundColor: "#2a4661" }}
+            className="rounded-lg shadow p-6 mb-8"
+          >
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Admin Dashboard Overview
+            </h2>
             <p className="text-gray-300">
-              Welcome to the GSDC Admin Dashboard. Here you can manage KYC requests, contact messages, and admin roles.
+              Welcome to the GSDC Admin Dashboard. Here you can manage KYC
+              requests, contact messages, and admin roles.
             </p>
           </div>
-          
+
           {/* Stats Section */}
           <div className="mb-8">
             <AdminStats />
           </div>
-          
+
           {/* Action Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <motion.div
@@ -170,14 +186,22 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Link to="/admin/kyc-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
+              <Link
+                to="/admin/kyc-requests"
+                className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+                style={{ backgroundColor: "#446c93" }}
+              >
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <UserGroupIcon className="h-8 w-8 text-orange-400" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-white">KYC Requests</h3>
-                    <p className="text-sm text-gray-300">Manage user verification requests</p>
+                    <h3 className="text-lg font-medium text-white">
+                      KYC Requests
+                    </h3>
+                    <p className="text-sm text-gray-300">
+                      Manage user verification requests
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -188,14 +212,22 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Link to="/admin/contact-messages" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
+              <Link
+                to="/admin/contact-messages"
+                className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+                style={{ backgroundColor: "#446c93" }}
+              >
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <ChatBubbleLeftIcon className="h-8 w-8 text-orange-400" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-white">Contact Messages</h3>
-                    <p className="text-sm text-gray-300">View and respond to user inquiries</p>
+                    <h3 className="text-lg font-medium text-white">
+                      Contact Messages
+                    </h3>
+                    <p className="text-sm text-gray-300">
+                      View and respond to user inquiries
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -207,14 +239,22 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Link to="/admin/role-management" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
+                <Link
+                  to="/admin/role-management"
+                  className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: "#446c93" }}
+                >
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ShieldCheckIcon className="h-8 w-8 text-orange-400" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="text-lg font-medium text-white">Role Management</h3>
-                      <p className="text-sm text-gray-300">Manage admin roles and permissions</p>
+                      <h3 className="text-lg font-medium text-white">
+                        Role Management
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        Manage admin roles and permissions
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -230,14 +270,22 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <Link to="/admin/fiat-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
+                <Link
+                  to="/admin/fiat-requests"
+                  className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: "#446c93" }}
+                >
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <BanknotesIcon className="h-8 w-8 text-orange-400" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="text-lg font-medium text-white">Fiat Mint Requests</h3>
-                      <p className="text-sm text-gray-300">Process fiat payment requests</p>
+                      <h3 className="text-lg font-medium text-white">
+                        Fiat Mint Requests
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        Process fiat payment requests
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -248,14 +296,22 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <Link to="/admin/reserves" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
+                <Link
+                  to="/admin/reserves"
+                  className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow"
+                  style={{ backgroundColor: "#446c93" }}
+                >
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ChartBarIcon className="h-8 w-8 text-orange-400" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="text-lg font-medium text-white">Proof of Reserves</h3>
-                      <p className="text-sm text-gray-300">Manage and update reserve assets</p>
+                      <h3 className="text-lg font-medium text-white">
+                        Proof of Reserves
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        Manage and update reserve assets
+                      </p>
                     </div>
                   </div>
                 </Link>

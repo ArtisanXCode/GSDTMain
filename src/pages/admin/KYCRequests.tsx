@@ -1,10 +1,17 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { useWallet } from '../../hooks/useWallet';
-import { useAdmin } from '../../hooks/useAdmin';
-import { KYCStatus, fetchKYCRequests, KYCRequest, approveKYCRequest, rejectKYCRequest, getKYCStats } from '../../services/kyc';
-import KYCDetailModal from '../../components/admin/kyc/KYCDetailModal';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useWallet } from "../../hooks/useWallet";
+import { useAdmin } from "../../hooks/useAdmin";
+import {
+  KYCStatus,
+  fetchKYCRequests,
+  KYCRequest,
+  approveKYCRequest,
+  rejectKYCRequest,
+  getKYCStats,
+} from "../../services/kyc";
+import KYCDetailModal from "../../components/admin/kyc/KYCDetailModal";
 
 export default function KYCRequests() {
   const { isConnected } = useWallet();
@@ -15,16 +22,20 @@ export default function KYCRequests() {
     total: 0,
     pending: 0,
     approved: 0,
-    rejected: 0
+    rejected: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRequest, setSelectedRequest] = useState<KYCRequest | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
+  const [selectedRequest, setSelectedRequest] = useState<KYCRequest | null>(
+    null,
+  );
+  const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<KYCStatus | 'ALL'>('ALL');
-  const [filterMethod, setFilterMethod] = useState<'manual' | 'sumsub' | 'ALL'>('ALL');
+  const [filterStatus, setFilterStatus] = useState<KYCStatus | "ALL">("ALL");
+  const [filterMethod, setFilterMethod] = useState<"manual" | "sumsub" | "ALL">(
+    "ALL",
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,23 +46,27 @@ export default function KYCRequests() {
         // Load KYC requests and stats
         const [allKycData, stats] = await Promise.all([
           fetchKYCRequests(),
-          getKYCStats()
+          getKYCStats(),
         ]);
 
         // Apply filters
         let filteredData = [...allKycData];
-        if (filterStatus !== 'ALL') {
-          filteredData = filteredData.filter(req => req.status === filterStatus);
+        if (filterStatus !== "ALL") {
+          filteredData = filteredData.filter(
+            (req) => req.status === filterStatus,
+          );
         }
-        if (filterMethod !== 'ALL') {
-          filteredData = filteredData.filter(req => req.verification_method === filterMethod);
+        if (filterMethod !== "ALL") {
+          filteredData = filteredData.filter(
+            (req) => req.verification_method === filterMethod,
+          );
         }
 
         setKycRequests(filteredData);
         setKycStats(stats);
       } catch (error: any) {
-        console.error('Error loading KYC data:', error);
-        setError(error.message || 'Error loading KYC data');
+        console.error("Error loading KYC data:", error);
+        setError(error.message || "Error loading KYC data");
       } finally {
         setLoading(false);
       }
@@ -62,7 +77,7 @@ export default function KYCRequests() {
 
   const handleApprove = async (request: KYCRequest) => {
     if (!isSuperAdmin) {
-      setError('Only Super Admins can approve KYC requests');
+      setError("Only Super Admins can approve KYC requests");
       return;
     }
 
@@ -71,25 +86,23 @@ export default function KYCRequests() {
       await approveKYCRequest(request.id, request.user_address);
 
       // Update UI
-      setKycRequests(prev => 
-        prev.map(r => 
-          r.id === request.id 
-            ? {...r, status: KYCStatus.APPROVED} 
-            : r
-        )
+      setKycRequests((prev) =>
+        prev.map((r) =>
+          r.id === request.id ? { ...r, status: KYCStatus.APPROVED } : r,
+        ),
       );
 
-      setKycStats(prev => ({
+      setKycStats((prev) => ({
         ...prev,
         pending: prev.pending - 1,
-        approved: prev.approved + 1
+        approved: prev.approved + 1,
       }));
     } catch (error: any) {
-      console.error('Error approving request:', error);
-      if (error.code === 'ACTION_REJECTED') {
-        setError('Transaction was rejected by user.');
+      console.error("Error approving request:", error);
+      if (error.code === "ACTION_REJECTED") {
+        setError("Transaction was rejected by user.");
       } else {
-        setError('Error approving kyc request. Please try again.');
+        setError("Error approving kyc request. Please try again.");
       }
     } finally {
       setActionLoading(false);
@@ -106,31 +119,35 @@ export default function KYCRequests() {
 
     try {
       setActionLoading(true);
-      await rejectKYCRequest(selectedRequest.id, selectedRequest.user_address, rejectReason);
-
-      // Update UI
-      setKycRequests(prev => 
-        prev.map(r => 
-          r.id === selectedRequest.id 
-            ? {...r, status: KYCStatus.REJECTED} 
-            : r
-        )
+      await rejectKYCRequest(
+        selectedRequest.id,
+        selectedRequest.user_address,
+        rejectReason,
       );
 
-      setKycStats(prev => ({
+      // Update UI
+      setKycRequests((prev) =>
+        prev.map((r) =>
+          r.id === selectedRequest.id
+            ? { ...r, status: KYCStatus.REJECTED }
+            : r,
+        ),
+      );
+
+      setKycStats((prev) => ({
         ...prev,
         pending: prev.pending - 1,
-        rejected: prev.rejected + 1
+        rejected: prev.rejected + 1,
       }));
 
       setSelectedRequest(null);
-      setRejectReason('');
+      setRejectReason("");
     } catch (error: any) {
-      console.error('Error rejecting request:', error);
-      if (error.code === 'ACTION_REJECTED') {
-        setError('Transaction was rejected by user.');
+      console.error("Error rejecting request:", error);
+      if (error.code === "ACTION_REJECTED") {
+        setError("Transaction was rejected by user.");
       } else {
-        setError('Error rejecting kyc request. Please try again.');
+        setError("Error rejecting kyc request. Please try again.");
       }
     } finally {
       setActionLoading(false);
@@ -140,13 +157,13 @@ export default function KYCRequests() {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case KYCStatus.APPROVED:
-        return 'bg-green-100 text-green-800';
+        return "bg-green-100 text-green-800";
       case KYCStatus.PENDING:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
       case KYCStatus.REJECTED:
-        return 'bg-red-100 text-red-800';
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -197,116 +214,132 @@ export default function KYCRequests() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-
           {/* Navigation Tabs */}
-            <div className="mb-8">
-              <div 
-                className="flex flex-wrap gap-1 p-2 rounded-lg"
-                style={{ backgroundColor: '#446c93' }}
+          <div className="mb-8">
+            <div
+              className="mb-8 shadow rounded-lg p-8"
+              style={{ "background-color": "#2a4661" }}
+            >
+              <button
+                style={{ backgroundColor: "#ed9030" }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
               >
-                <button 
-                  style={{ backgroundColor: '#ed9030' }}
-                  className="px-6 py-3 rounded-lg font-medium text-white"
-                >
-                  KYC Requests
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/contact-messages')}
-                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-                >
-                  Contact Messages
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/role-management')}
-                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-                >
-                  Role Management
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/fiat-requests')}
-                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-                >
-                  Fiat Mint Requests
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/reserves')}
-                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-                >
-                  Proof of Reserves
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/exchange-rates')}
-                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-                >
-                  Exchange Rates
-                </button>
-              </div>
+                KYC Requests
+              </button>
+              <button
+                onClick={() => navigate("/admin/contact-messages")}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Contact Messages
+              </button>
+              <button
+                onClick={() => navigate("/admin/role-management")}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Role Management
+              </button>
+              <button
+                onClick={() => navigate("/admin/fiat-requests")}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Fiat Mint Requests
+              </button>
+              <button
+                onClick={() => navigate("/admin/reserves")}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Proof of Reserves
+              </button>
+              <button
+                onClick={() => navigate("/admin/exchange-rates")}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Exchange Rates
+              </button>
             </div>
+          </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div 
+            <div
               className="rounded-lg p-6 text-white"
-              style={{ backgroundColor: '#5a7a96' }}
+              style={{ backgroundColor: "#5a7a96" }}
             >
-              <div className="text-sm text-white/70 mb-2">Total KYC Requests</div>
+              <div className="text-sm text-white/70 mb-2">
+                Total KYC Requests
+              </div>
               <div className="text-3xl font-bold">{kycStats.total}</div>
               <div className="text-xs text-green-400 mt-1">+100%</div>
             </div>
 
-            <div 
+            <div
               className="rounded-lg p-6 text-white"
-              style={{ backgroundColor: '#5a7a96' }}
+              style={{ backgroundColor: "#5a7a96" }}
             >
               <div className="text-sm text-white/70 mb-2">Pending Requests</div>
               <div className="text-3xl font-bold">{kycStats.pending}</div>
               <div className="text-xs text-red-400 mt-1">-2%</div>
             </div>
 
-            <div 
+            <div
               className="rounded-lg p-6 text-white"
-              style={{ backgroundColor: '#5a7a96' }}
+              style={{ backgroundColor: "#5a7a96" }}
             >
-              <div className="text-sm text-white/70 mb-2">Approved Requests</div>
+              <div className="text-sm text-white/70 mb-2">
+                Approved Requests
+              </div>
               <div className="text-3xl font-bold">{kycStats.approved}</div>
               <div className="text-xs text-green-400 mt-1">+100%</div>
             </div>
 
-            <div 
+            <div
               className="rounded-lg p-6 text-white"
-              style={{ backgroundColor: '#5a7a96' }}
+              style={{ backgroundColor: "#5a7a96" }}
             >
-              <div className="text-sm text-white/70 mb-2">Rejected Requests</div>
+              <div className="text-sm text-white/70 mb-2">
+                Rejected Requests
+              </div>
               <div className="text-3xl font-bold">{kycStats.rejected}</div>
               <div className="text-xs text-red-400 mt-1">+0.18%</div>
             </div>
           </div>
 
           {/* KYC Requests Section */}
-          <div 
+          <div
             className="rounded-lg p-6"
-            style={{ backgroundColor: '#5a7a96' }}
+            style={{ backgroundColor: "#2a4661" }}
           >
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">KYC Requests</h3>
-                <p className="text-sm text-white/70">Review and manage user KYC verification requests</p>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  KYC Requests
+                </h3>
+                <p className="text-sm text-white/70">
+                  Review and manage user KYC verification requests
+                </p>
               </div>
-              <button 
+              <button
                 className="px-4 py-2 rounded-lg text-white font-medium"
-                style={{ backgroundColor: '#ed9030' }}
+                style={{ backgroundColor: "#ed9030" }}
               >
                 Settings
               </button>
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6"
+              style={{ backgroundColor: "#5a7a96" }}
+            >
               <div>
-                <label className="block text-sm text-white/70 mb-2">Status</label>
+                <label className="block text-sm text-white/70 mb-2">
+                  Status
+                </label>
                 <select
                   value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as KYCStatus | 'ALL')}
+                  onChange={(e) =>
+                    setFilterStatus(e.target.value as KYCStatus | "ALL")
+                  }
                   className="w-full px-3 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:outline-none"
                 >
                   <option value="ALL">All Statuses</option>
@@ -317,10 +350,16 @@ export default function KYCRequests() {
               </div>
 
               <div>
-                <label className="block text-sm text-white/70 mb-2">Verification Method</label>
+                <label className="block text-sm text-white/70 mb-2">
+                  Verification Method
+                </label>
                 <select
                   value={filterMethod}
-                  onChange={(e) => setFilterMethod(e.target.value as 'manual' | 'sumsub' | 'ALL')}
+                  onChange={(e) =>
+                    setFilterMethod(
+                      e.target.value as "manual" | "sumsub" | "ALL",
+                    )
+                  }
                   className="w-full px-3 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:outline-none"
                 >
                   <option value="ALL">All Methods</option>
@@ -337,17 +376,34 @@ export default function KYCRequests() {
             )}
 
             {/* KYC Requests Table */}
-            <div className="overflow-x-auto">
+            <div
+              className="overflow-x-auto"
+              style={{ "background-color": "#2a4661" }}
+            >
               <table className="w-full">
-                <thead>
+                <thead style={{ backgroundColor: "#5a7a96" }}>
                   <tr className="border-b border-white/20">
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">USER</th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">NAME</th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">DOCUMENT TYPE</th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">STATUS</th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">SUBMITTED</th>
-                    <th className="text-left py-3 px-4 text-white/70 font-medium">VERIFICATION</th>
-                    <th className="text-center py-3 px-4 text-white/70 font-medium">ACTIONS</th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      USER
+                    </th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      NAME
+                    </th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      DOCUMENT TYPE
+                    </th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      STATUS
+                    </th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      SUBMITTED
+                    </th>
+                    <th className="text-left py-3 px-4 text-white/70 font-medium">
+                      VERIFICATION
+                    </th>
+                    <th className="text-center py-3 px-4 text-white/70 font-medium">
+                      ACTIONS
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -355,7 +411,9 @@ export default function KYCRequests() {
                     <tr>
                       <td colSpan={7} className="text-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-                        <p className="mt-4 text-white/70">Loading KYC requests...</p>
+                        <p className="mt-4 text-white/70">
+                          Loading KYC requests...
+                        </p>
                       </td>
                     </tr>
                   ) : kycRequests.length === 0 ? (
@@ -373,7 +431,8 @@ export default function KYCRequests() {
                         className="border-b border-white/10 hover:bg-white/5"
                       >
                         <td className="py-4 px-4 text-white text-sm">
-                          {request.user_address.slice(0, 6)}...{request.user_address.slice(-4)}
+                          {request.user_address.slice(0, 6)}...
+                          {request.user_address.slice(-4)}
                         </td>
                         <td className="py-4 px-4 text-white text-sm">
                           {request.first_name} {request.last_name}
@@ -382,7 +441,7 @@ export default function KYCRequests() {
                           {request.document_type}
                         </td>
                         <td className="py-4 px-4">
-                          <span 
+                          <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(request.status)}`}
                           >
                             {request.status}
@@ -392,8 +451,10 @@ export default function KYCRequests() {
                           {new Date(request.submitted_at).toLocaleDateString()}
                         </td>
                         <td className="py-4 px-4 text-white text-sm">
-                          {request.verification_method === 'sumsub' ? (
-                            <span className="text-blue-400">Automated (Sumsub)</span>
+                          {request.verification_method === "sumsub" ? (
+                            <span className="text-blue-400">
+                              Automated (Sumsub)
+                            </span>
                           ) : (
                             <span>Manual</span>
                           )}
@@ -407,29 +468,45 @@ export default function KYCRequests() {
                               }}
                               className="p-2 text-blue-400 hover:text-blue-300"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                />
                               </svg>
                             </button>
-                            {request.status === KYCStatus.PENDING && isSuperAdmin && (
-                              <>
-                                <button
-                                  onClick={() => handleApprove(request)}
-                                  disabled={actionLoading}
-                                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() => handleReject(request)}
-                                  disabled={actionLoading}
-                                  className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                                >
-                                  Reject
-                                </button>
-                              </>
-                            )}
+                            {request.status === KYCStatus.PENDING &&
+                              isSuperAdmin && (
+                                <>
+                                  <button
+                                    onClick={() => handleApprove(request)}
+                                    disabled={actionLoading}
+                                    className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    onClick={() => handleReject(request)}
+                                    disabled={actionLoading}
+                                    className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                                  >
+                                    Reject
+                                  </button>
+                                </>
+                              )}
                           </div>
                         </td>
                       </motion.tr>
@@ -467,7 +544,9 @@ export default function KYCRequests() {
       {selectedRequest && !showDetailModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Reject KYC Request</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Reject KYC Request
+            </h3>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Reason for Rejection
@@ -484,7 +563,7 @@ export default function KYCRequests() {
               <button
                 onClick={() => {
                   setSelectedRequest(null);
-                  setRejectReason('');
+                  setRejectReason("");
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
               >
@@ -495,7 +574,7 @@ export default function KYCRequests() {
                 disabled={actionLoading || !rejectReason}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
               >
-                {actionLoading ? 'Rejecting...' : 'Reject Request'}
+                {actionLoading ? "Rejecting..." : "Reject Request"}
               </button>
             </div>
           </div>
