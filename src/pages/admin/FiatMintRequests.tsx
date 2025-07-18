@@ -195,42 +195,45 @@ export default function FiatMintRequests() {
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             {/* Navigation Tabs */}
-            <div className="flex flex-wrap gap-2 mb-8 bg-slate-700 p-2 rounded-lg">
-              <button
-                onClick={() => navigate('/admin/kyc-requests')}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+            <div className="mb-8">
+              <div 
+                className="flex flex-wrap gap-1 p-2 rounded-lg"
+                style={{ backgroundColor: '#5a7a96' }}
               >
-                KYC Requests
-              </button>
-              <button
-                onClick={() => navigate('/admin/contact-messages')}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-              >
-                Contact Messages
-              </button>
-              <button
-                onClick={() => navigate('/admin/role-management')}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-              >
-                Role Management
-              </button>
-              <button
-                className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md"
-              >
-                Fiat Mint Requests
-              </button>
-              <button
-                onClick={() => navigate('/admin/proof-of-reserves')}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-              >
-                Proof of Reserves
-              </button>
-              <button
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-              >
-                Exchange Rates
-              </button>
+                <button 
+                  onClick={() => navigate('/admin/kyc-requests')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  KYC Requests
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/contact-messages')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Contact Messages
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/role-management')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Role Management
+                </button>
+                <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                  Fiat Mint Requests
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/proof-of-reserves')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Proof of Reserves
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/exchange-rates')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Exchange Rates
+                </button>
+              </div>
             </div>
 
             {/* Access Denied Content */}
@@ -299,42 +302,45 @@ export default function FiatMintRequests() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Navigation Tabs */}
-          <div className="flex flex-wrap gap-2 mb-8 bg-slate-700 p-2 rounded-lg">
-            <button
-              onClick={() => navigate('/admin/kyc-requests')}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
+          <div className="mb-8">
+            <div 
+              className="flex flex-wrap gap-1 p-2 rounded-lg"
+              style={{ backgroundColor: '#5a7a96' }}
             >
-              KYC Requests
-            </button>
-            <button
-              onClick={() => navigate('/admin/contact-messages')}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-            >
-              Contact Messages
-            </button>
-            <button
-              onClick={() => navigate('/admin/role-management')}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-            >
-              Role Management
-            </button>
-            <button
-              className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md"
-            >
-              Fiat Mint Requests
-            </button>
-            <button
-              onClick={() => navigate('/admin/proof-of-reserves')}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-            >
-              Proof of Reserves
-            </button>
-            <button
-              onClick={() => navigate('/admin/exchange-rates')}
-              className="px-4 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-slate-500 rounded-md transition-colors"
-            >
-              Exchange Rates
-            </button>
+              <button 
+                onClick={() => navigate('/admin/kyc-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                KYC Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/contact-messages')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Contact Messages
+              </button>
+              <button 
+                onClick={() => navigate('/admin/role-management')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Role Management
+              </button>
+              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                Fiat Mint Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/proof-of-reserves')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Proof of Reserves
+              </button>
+              <button 
+                onClick={() => navigate('/admin/exchange-rates')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Exchange Rates
+              </button>
+            </div>
           </div>
 
           {/* Fiat Mint Requests Content */}
