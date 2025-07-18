@@ -436,7 +436,7 @@ export default function ContactMessages() {
             </div>
             </div>
           </div>
-        </div>
+        
 
       {/* View/Reply Message Modal */}
       {showMessageModal && selectedMessage && (
@@ -615,7 +615,6 @@ export default function ContactMessages() {
             </div>
           </motion.div>
         </div>
-      )}
-    </div>
+      
   );
 }
