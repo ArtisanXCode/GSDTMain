@@ -42,56 +42,56 @@ export default function ReserveList({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+    <div className="overflow-x-auto rounded-lg" style={{ backgroundColor: '#2a4661' }}>
+      <table className="min-w-full divide-y divide-white/20">
+        <thead style={{ backgroundColor: '#2a4661' }}>
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USD Value</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Custodian</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Symbol</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Amount</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">USD Value</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Custodian</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Last Updated</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-white/20" style={{ backgroundColor: '#2a4661' }}>
           {reserves.map((reserve) => (
             <motion.tr
               key={reserve.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="hover:bg-gray-50"
+              className="hover:bg-white/10"
             >
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                 {reserve.symbol}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
                 {reserve.name}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                 {parseFloat(reserve.amount).toLocaleString()}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                 ${parseFloat(reserve.value_usd).toLocaleString()}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
                 {reserve.custodian}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
                 {format(new Date(reserve.last_updated), 'MMM d, yyyy HH:mm')}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex space-x-3">
                   <button
                     onClick={() => onEdit(reserve)}
-                    className="text-indigo-600 hover:text-indigo-900"
+                    className="text-orange-400 hover:text-orange-300"
                   >
                     <PencilIcon className="h-5 w-5" />
                   </button>
                   <button
                     onClick={() => onDelete(reserve)}
-                    className="text-red-600 hover:text-red-900"
+                    className="text-red-400 hover:text-red-300"
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>

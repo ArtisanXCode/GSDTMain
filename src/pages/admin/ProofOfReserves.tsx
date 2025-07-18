@@ -290,19 +290,20 @@ export default function ProofOfReserves() {
             )}
 
             {/* Reserves List */}
-            <div className="bg-white shadow rounded-lg">
+            <div className="shadow rounded-lg" style={{ backgroundColor: '#2a4661' }}>
               <div className="px-4 py-5 sm:p-6">
                 <div className="sm:flex sm:items-center">
                   <div className="sm:flex-auto">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">Proof of Reserves</h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h3 className="text-lg font-medium leading-6 text-white">Proof of Reserves</h3>
+                    <p className="mt-1 text-sm text-white/70">
                       Manage and update reserve assets and their allocations
                     </p>
                   </div>
                   <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <button
                       onClick={() => setShowAddModal(true)}
-                      className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+                      className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 sm:w-auto"
+                      style={{ backgroundColor: '#ed9030' }}
                     >
                       Add Reserve Asset
                     </button>
@@ -310,15 +311,15 @@ export default function ProofOfReserves() {
                 </div>
 
                 {error && (
-                  <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+                  <div className="mt-4 bg-red-500/20 border border-red-400 text-red-300 px-4 py-3 rounded-lg">
                     {error}
                   </div>
                 )}
 
                 {loading ? (
                   <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-500">Loading reserves...</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto"></div>
+                    <p className="mt-4 text-white/70">Loading reserves...</p>
                   </div>
                 ) : (
                   <div className="mt-8">
