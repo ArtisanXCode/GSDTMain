@@ -289,24 +289,26 @@ export default function ContactMessages() {
               </button>
             </div>
 
-          <div className="bg-white shadow rounded-lg">
+          <div className="shadow rounded-lg" style={{ backgroundColor: '#2a4661' }}>
             <div className="px-4 py-5 sm:p-6">
               <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">Contact Messages</h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <h3 className="text-lg font-medium leading-6 text-white">Contact Messages</h3>
+                  <p className="mt-1 text-sm text-white/70">
                     View and respond to messages from users
                   </p>
                 </div>
                 <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                   <button
                     onClick={() => window.location.reload()}
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
+                    className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 sm:w-auto"
+                    style={{ backgroundColor: '#ed9030' }}
                   >
                     Refresh
                   </button>
                 </div>
-              </div>
+              </div></div>
+          </div>
 
           {error && (
             <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
@@ -331,44 +333,44 @@ export default function ContactMessages() {
             </div>
           ) : (
             <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/20">
+                <thead style={{ backgroundColor: '#1e3a5f' }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                       Subject
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                       Submitted
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white/80 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-white/20" style={{ backgroundColor: '#2a4661' }}>
                   {contactSubmissions.map((submission) => (
                     <motion.tr
                       key={submission.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="hover:bg-gray-50"
+                      className="hover:bg-white/5"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {submission.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {submission.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {submission.subject}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -376,14 +378,14 @@ export default function ContactMessages() {
                           {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                         {format(new Date(submission.submitted_at), 'MMM d, yyyy HH:mm')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex justify-center space-x-3">
                           <button
                             onClick={() => handleViewMessage(submission)}
-                            className="text-indigo-600 hover:text-indigo-900 flex items-center"
+                            className="text-blue-400 hover:text-blue-300 flex items-center"
                             title="View Message"
                           >
                             <EyeIcon className="h-5 w-5" />
@@ -395,7 +397,7 @@ export default function ContactMessages() {
                                 <button
                                   onClick={() => handleStatusChange(submission.id, 'read')}
                                   disabled={actionLoading}
-                                  className="text-green-600 hover:text-green-900 disabled:opacity-50 flex items-center"
+                                  className="text-green-400 hover:text-green-300 disabled:opacity-50 flex items-center"
                                   title="Unarchive Message"
                                 >
                                   <ArchiveBoxXMarkIcon className="h-5 w-5" />
@@ -404,7 +406,7 @@ export default function ContactMessages() {
                                 <button
                                   onClick={() => handleStatusChange(submission.id, 'archived')}
                                   disabled={actionLoading}
-                                  className="text-gray-600 hover:text-gray-900 disabled:opacity-50 flex items-center"
+                                  className="text-gray-400 hover:text-gray-300 disabled:opacity-50 flex items-center"
                                   title="Archive Message"
                                 >
                                   <ArchiveBoxIcon className="h-5 w-5" />
@@ -414,7 +416,7 @@ export default function ContactMessages() {
                               <button
                                 onClick={() => setShowDeleteConfirm(submission.id)}
                                 disabled={actionLoading}
-                                className="text-red-600 hover:text-red-900 disabled:opacity-50 flex items-center"
+                                className="text-red-400 hover:text-red-300 disabled:opacity-50 flex items-center"
                                 title="Delete Message"
                               >
                                 <TrashIcon className="h-5 w-5" />
