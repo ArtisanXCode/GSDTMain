@@ -1,12 +1,11 @@
+
 import { ethers } from 'ethers';
 import { Transaction, TransactionStatus, TransactionType } from './types';
-import { getContract } from '../../lib/web3';
 
+// Use the same contract address as defined in useContract.ts
+const GSDT_ADDRESS = '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804';
 const BSC_SCAN_API_KEY = import.meta.env.VITE_BSC_SCAN_API_KEY;
-const BSC_SCAN_API_LINK = import.meta.env.VITE_BSC_SCAN_API_LINK;
-
-const contract = getContract();
-const CONTRACT_ADDRESS = contract.address;
+const BSC_SCAN_API_LINK = import.meta.env.VITE_BSC_SCAN_API_LINK || 'https://api-testnet.bscscan.com/';
 
 interface BscScanTransaction {
   blockNumber: string;
@@ -19,6 +18,8 @@ interface BscScanTransaction {
   txreceipt_status: string;
   functionName: string;
   input: string;
+  gasUsed: string;
+  gasPrice: string;
 }
 
 const extractMintBurnAmount = (transaction: BscScanTransaction): string => {
@@ -28,15 +29,36 @@ const extractMintBurnAmount = (transaction: BscScanTransaction): string => {
     return '0';
   }
 
-  const amountHex = input.slice(-64);
-  return BigInt("0x" + amountHex).toString();
+  try {
+    // Extract amount from input data - typically the second parameter after address
+    const amountHex = input.slice(74, 138); // Skip function selector (4 bytes) + address (32 bytes)
+    return BigInt("0x" + amountHex).toString();
+  } catch {
+    return '0';
+  }
 };
 
 const mapBscScanTransaction = (tx: BscScanTransaction): Transaction => {
   let type = TransactionType.TRANSFER;
-  if (tx.to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()) {
+  
+  // Determine transaction type based on function name
+  if (tx.functionName.toLowerCase().includes("mint")) {
     type = TransactionType.MINT;
-  } else if (tx.from.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()) {
+  } else if (tx.functionName.toLowerCase().includes("burn")) {
+    type = TransactionType.BURN;
+  } else if (tx.functionName.toLowerCase().includes("updatekycstatus")) {
+    type = TransactionType.UPDATE_KYC;
+  } else if (tx.functionName.toLowerCase().includes("requestredemption")) {
+    type = TransactionType.REQUEST_REDEEM;
+  } else if (tx.functionName.toLowerCase().includes("processredemption")) {
+    type = TransactionType.PROCESS_REDEEM;
+  } else if (tx.functionName.toLowerCase().includes("grantrole")) {
+    type = TransactionType.GRANT_ROLE;
+  } else if (tx.functionName.toLowerCase().includes("revokerole")) {
+    type = TransactionType.REVOKE_ROLE;
+  } else if (tx.to.toLowerCase() === GSDT_ADDRESS.toLowerCase()) {
+    type = TransactionType.MINT;
+  } else if (tx.from.toLowerCase() === GSDT_ADDRESS.toLowerCase()) {
     type = TransactionType.REDEEM;
   }
 
@@ -46,22 +68,6 @@ const mapBscScanTransaction = (tx: BscScanTransaction): Transaction => {
   }
 
   const value = extractMintBurnAmount(tx);
-
-  if(tx.functionName.includes("mint")){
-    type = TransactionType.MINT;
-  } else if(tx.functionName.includes("burn")){
-    type = TransactionType.BURN;
-  } else if(tx.functionName.includes("updateKYCStatus")){
-    type = TransactionType.UPDATE_KYC;
-  } else if(tx.functionName.includes("requestRedemption")){
-    type = TransactionType.REQUEST_REDEEM;
-  } else if(tx.functionName.includes("processRedemption")){
-    type = TransactionType.PROCESS_REDEEM;
-  } else if(tx.functionName.includes("grantRole")){
-    type = TransactionType.GRANT_ROLE;
-  } else if(tx.functionName.includes("revokeRole")){
-    type = TransactionType.REVOKE_ROLE;
-  }
 
   return {
     id: tx.hash,
@@ -87,16 +93,22 @@ export const fetchTransactions = async (
 }> => {
   try {
     if (!BSC_SCAN_API_KEY) {
-      throw new Error('BscScan API key is missing');
+      throw new Error('BSCScan API key is missing. Please add VITE_BSC_SCAN_API_KEY to your environment variables.');
     }
 
-    const url = `${BSC_SCAN_API_LINK}api?module=account&action=txlist&address=${CONTRACT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSC_SCAN_API_KEY}`;
+    const url = `${BSC_SCAN_API_LINK}api?module=account&action=txlist&address=${GSDT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSC_SCAN_API_KEY}`;
     
     const response = await fetch(url);
     const data = await response.json();
     
     if (data.status === '1' && Array.isArray(data.result)) {
-      let txs = data.result.map(mapBscScanTransaction);
+      let txs = data.result
+        .filter((tx: BscScanTransaction) => 
+          // Only include transactions that interact with our contract
+          tx.to.toLowerCase() === GSDT_ADDRESS.toLowerCase() || 
+          tx.from.toLowerCase() === GSDT_ADDRESS.toLowerCase()
+        )
+        .map(mapBscScanTransaction);
       
       // Apply filters
       if (status) {
@@ -116,20 +128,13 @@ export const fetchTransactions = async (
       };
     }
     
-    throw new Error(data.message || 'Failed to fetch transactions');
+    // Return empty result if no transactions found
+    return {
+      transactions: [],
+      totalItems: 0
+    };
   } catch (error) {
     console.error('Error fetching transactions:', error);
     throw error;
-  }
-};
-
-export const flagTransaction = async (txId: string, reason: string): Promise<boolean> => {
-  try {
-    // In a real implementation, this would update a database
-    console.log('Flagging transaction:', txId, 'Reason:', reason);
-    return true;
-  } catch (error) {
-    console.error('Error flagging transaction:', error);
-    return false;
   }
 };

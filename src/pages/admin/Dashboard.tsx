@@ -139,6 +139,12 @@ export default function AdminDashboard() {
                   >
                     Exchange Rates
                   </Link>
+                  <Link
+                    to="/transactions"
+                    className="px-4 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-700 transition-colors"
+                  >
+                    Transaction History
+                  </Link>
                 </>
               )}
             </nav>
