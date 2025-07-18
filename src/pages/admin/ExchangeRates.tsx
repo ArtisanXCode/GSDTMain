@@ -1,10 +1,10 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../../hooks/useWallet';
 import { useAdmin } from '../../hooks/useAdmin';
 import { ExchangeRate, createExchangeRate, updateExchangeRate, deleteExchangeRate } from '../../services/exchangeRates';
-import AdminLayout from './layout/AdminLayout';
 import ExchangeRatesList from '../../components/admin/exchange-rates/ExchangeRatesList';
 import AddRateModal from '../../components/admin/exchange-rates/AddRateModal';
 import EditRateModal from '../../components/admin/exchange-rates/EditRateModal';
@@ -82,59 +82,199 @@ export default function ExchangeRates() {
 
   if (!isSuperAdmin && !isPriceUpdater) {
     return (
-      <AdminLayout activeTab="rates">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="text-center py-8">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
+      <div className="bg-white">
+        {/* Hero section with tech background */}
+        <div
+          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          >
+            <div className="text-left">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+                Admin Dashboard
+              </h1>
+              <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
+                Super Admin Dashboard - Full Access
+              </p>
             </div>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Only Super Admins and Price Updaters can manage exchange rates.
-            </p>
+          </motion.div>
+        </div>
+
+        {/* Phoenix Icon overlapping sections */}
+        <div className="relative z-20 flex justify-center">
+          <div className="absolute -top-16">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="w-24 h-24 sm:w-32 sm:h-32"
+            />
           </div>
         </div>
-      </AdminLayout>
+
+        <div className="bg-gray-200 py-24 sm:py-32 relative">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="text-center py-8">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Only Super Admins and Price Updaters can manage exchange rates.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout activeTab="rates">
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-4 py-5 sm:p-6">
-            <div className="sm:flex sm:items-center">
-              <div className="sm:flex-auto">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">Exchange Rates</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Manage currency exchange rates
-                </p>
+    <div className="bg-white">
+      {/* Hero section with tech background */}
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Admin Dashboard
+            </h1>
+            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
+              Super Admin Dashboard - Full Access
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-center">
+        <div className="absolute -top-16">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="w-24 h-24 sm:w-32 sm:h-32"
+          />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          {/* Navigation Menu */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="rounded-xl p-6 mb-8"
+            style={{ backgroundColor: '#2a4661' }}
+          >
+            <div className="flex flex-wrap justify-center gap-4">
+              <button 
+                onClick={() => navigate('/admin/kyc-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                KYC Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/contact-messages')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Contact Messages
+              </button>
+              <button 
+                onClick={() => navigate('/admin/role-management')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Role Management
+              </button>
+              <button 
+                onClick={() => navigate('/admin/fiat-mint-requests')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Fiat Mint Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/proof-of-reserves')}
+                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Proof of Reserves
+              </button>
+              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                Exchange Rates
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Exchange Rates Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-xl p-8 text-white shadow-lg"
+            style={{ backgroundColor: '#2a4661' }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Exchange Rates</h3>
+                  <p className="text-white/70 text-sm">Manage currency exchange rates</p>
+                </div>
               </div>
-              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto"
-                >
-                  Add Rate
-                </button>
-              </div>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500 hover:bg-orange-600 transition-colors"
+              >
+                Add Rate
+              </button>
             </div>
 
             {error && (
-              <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mt-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+              <div className="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
                 {success}
               </div>
             )}
 
-            <div className="mt-8">
+            <div className="bg-white/5 rounded-lg p-6">
               <ExchangeRatesList 
                 refreshInterval={30000}
                 onEdit={(rate) => {
@@ -144,7 +284,7 @@ export default function ExchangeRates() {
                 onDelete={handleDelete}
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -167,6 +307,6 @@ export default function ExchangeRates() {
           loading={loading}
         />
       )}
-    </AdminLayout>
+    </div>
   );
 }

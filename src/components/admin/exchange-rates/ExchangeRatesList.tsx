@@ -76,47 +76,47 @@ const ExchangeRatesList = ({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-white/20">
+        <thead>
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              From
+            <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+              FROM
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              To
+            <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+              TO
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Rate
+            <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+              RATE
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Last Updated
+            <th className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+              LAST UPDATED
             </th>
             {(onEdit || onDelete) && (
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+              <th className="px-6 py-3 text-right text-xs font-medium text-white/70 uppercase tracking-wider">
+                ACTIONS
               </th>
             )}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="divide-y divide-white/10">
           {rates.map((rate) => (
             <motion.tr
               key={rate.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="hover:bg-gray-50"
+              className="hover:bg-white/5"
             >
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
                 {rate.currency_from}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
                 {rate.currency_to}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                 {rate.rate.toFixed(6)}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                 {format(new Date(rate.last_updated), 'MMM d, yyyy HH:mm:ss')}
               </td>
               {(onEdit || onDelete) && (
@@ -125,7 +125,7 @@ const ExchangeRatesList = ({
                     {onEdit && (
                       <button
                         onClick={() => onEdit(rate)}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        className="text-orange-400 hover:text-orange-300"
                       >
                         <PencilIcon className="h-5 w-5" />
                       </button>
@@ -133,7 +133,7 @@ const ExchangeRatesList = ({
                     {onDelete && (
                       <button
                         onClick={() => onDelete(rate)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-400 hover:text-red-300"
                       >
                         <TrashIcon className="h-5 w-5" />
                       </button>
@@ -146,7 +146,7 @@ const ExchangeRatesList = ({
         </tbody>
       </table>
       {lastUpdated && (
-        <div className="mt-4 text-right text-sm text-gray-500">
+        <div className="mt-4 text-right text-sm text-white/50">
           Last updated: {format(lastUpdated, 'HH:mm:ss')}
         </div>
       )}
