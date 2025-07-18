@@ -34,15 +34,16 @@ export default function AdminStats() {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat, index) => (
-        <motion.div
-          key={stat.name}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-white overflow-hidden shadow rounded-lg"
-        >
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.name}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="rounded-lg p-6 shadow-lg"
+            style={{ backgroundColor: '#2a4661' }}
+          >
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-1">

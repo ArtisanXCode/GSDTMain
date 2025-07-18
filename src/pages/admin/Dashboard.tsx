@@ -151,7 +151,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Admin Dashboard Overview */}
-          <div className="bg-gray-600 rounded-lg shadow p-6 mb-8">
+          <div style={{ backgroundColor: '#2a4661' }} className="rounded-lg shadow p-6 mb-8">
             <h2 className="text-xl font-semibold text-white mb-2">Admin Dashboard Overview</h2>
             <p className="text-gray-300">
               Welcome to the GSDC Admin Dashboard. Here you can manage KYC requests, contact messages, and admin roles.
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Link to="/admin/kyc-requests" className="block bg-gray-600 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+              <Link to="/admin/kyc-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <UserGroupIcon className="h-8 w-8 text-orange-400" />
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Link to="/admin/contact-messages" className="block bg-gray-600 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+              <Link to="/admin/contact-messages" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <ChatBubbleLeftIcon className="h-8 w-8 text-orange-400" />
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Link to="/admin/role-management" className="block bg-gray-600 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+                <Link to="/admin/role-management" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ShieldCheckIcon className="h-8 w-8 text-orange-400" />
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <Link to="/admin/fiat-requests" className="block bg-gray-600 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+                <Link to="/admin/fiat-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <BanknotesIcon className="h-8 w-8 text-orange-400" />
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <Link to="/admin/reserves" className="block bg-gray-600 p-6 rounded-lg shadow hover:shadow-md transition-shadow">
+                <Link to="/admin/reserves" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ChartBarIcon className="h-8 w-8 text-orange-400" />
