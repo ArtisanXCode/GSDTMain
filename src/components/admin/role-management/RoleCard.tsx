@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { AdminRole } from "../../../services/admin";
 import {
@@ -6,6 +7,8 @@ import {
   KeyIcon,
   PauseCircleIcon,
   CurrencyDollarIcon,
+  UserIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 
 interface RoleCardProps {
@@ -15,34 +18,42 @@ interface RoleCardProps {
 export const getRoleIcon = (role: AdminRole) => {
   switch (role) {
     case AdminRole.SUPER_ADMIN:
-      return <ShieldCheckIcon className="h-5 w-5 text-purple-600" />;
+      return <ShieldCheckIcon className="h-4 w-4" />;
+    case AdminRole.ADMIN:
+      return <ShieldCheckIcon className="h-4 w-4" />;
+    case AdminRole.MODERATOR:
+      return <EyeIcon className="h-4 w-4" />;
     case AdminRole.MINTER:
-      return <BanknotesIcon className="h-5 w-5 text-green-600" />;
+      return <BanknotesIcon className="h-4 w-4" />;
     case AdminRole.BURNER:
-      return <KeyIcon className="h-5 w-5 text-red-600" />;
+      return <KeyIcon className="h-4 w-4" />;
     case AdminRole.PAUSER:
-      return <PauseCircleIcon className="h-5 w-5 text-yellow-600" />;
+      return <PauseCircleIcon className="h-4 w-4" />;
     case AdminRole.PRICE_UPDATER:
-      return <CurrencyDollarIcon className="h-5 w-5 text-blue-600" />;
+      return <CurrencyDollarIcon className="h-4 w-4" />;
     default:
-      return <ShieldCheckIcon className="h-5 w-5 text-gray-600" />;
+      return <UserIcon className="h-4 w-4" />;
   }
 };
 
 export const getRoleBadgeClass = (role: AdminRole) => {
   switch (role) {
     case AdminRole.SUPER_ADMIN:
-      return "bg-purple-100 text-purple-800";
+      return "border-2 border-orange-400 text-orange-400 bg-transparent";
+    case AdminRole.ADMIN:
+      return "border-2 border-blue-400 text-blue-400 bg-transparent";
+    case AdminRole.MODERATOR:
+      return "border-2 border-gray-400 text-gray-400 bg-transparent";
     case AdminRole.MINTER:
-      return "bg-green-100 text-green-800";
+      return "border-2 border-green-400 text-green-400 bg-transparent";
     case AdminRole.BURNER:
-      return "bg-red-100 text-red-800";
+      return "border-2 border-red-400 text-red-400 bg-transparent";
     case AdminRole.PAUSER:
-      return "bg-yellow-100 text-yellow-800";
+      return "border-2 border-yellow-400 text-yellow-400 bg-transparent";
     case AdminRole.PRICE_UPDATER:
-      return "bg-blue-100 text-blue-800";
+      return "border-2 border-blue-500 text-blue-500 bg-transparent";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "border-2 border-gray-400 text-gray-400 bg-transparent";
   }
 };
 
@@ -50,6 +61,10 @@ export const getRoleDescription = (role: AdminRole) => {
   switch (role) {
     case AdminRole.SUPER_ADMIN:
       return "Full admin access to all functions";
+    case AdminRole.ADMIN:
+      return "Admin access to most functions";
+    case AdminRole.MODERATOR:
+      return "Moderate content and users";
     case AdminRole.MINTER:
       return "Can mint new tokens";
     case AdminRole.BURNER:
@@ -65,18 +80,18 @@ export const getRoleDescription = (role: AdminRole) => {
 
 export default function RoleCard({ role }: RoleCardProps) {
   return (
-    <div className="flex items-start space-x-2 ">
-      {getRoleIcon(role)}
-      <div>
+    <div className="flex flex-col space-y-2">
+      <div className="flex items-center space-x-2">
+        {getRoleIcon(role)}
         <span
-          className={`inline-flex text-xs leading-5 font-semibold rounded-full px-2 py-1 ${getRoleBadgeClass(role)}`}
+          className={`inline-flex items-center text-sm font-medium rounded-full px-4 py-2 ${getRoleBadgeClass(role)}`}
         >
           {role}
         </span>
-        <p className="text-white text-xs text-gray-600 mt-1">
-          {getRoleDescription(role)}
-        </p>
       </div>
+      <p className="text-white/70 text-xs ml-6">
+        {getRoleDescription(role)}
+      </p>
     </div>
   );
 }
