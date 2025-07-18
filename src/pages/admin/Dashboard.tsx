@@ -170,14 +170,14 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Link to="/admin/kyc-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
+              <Link to="/admin/kyc-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <UserGroupIcon className="h-8 w-8 text-orange-400" />
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-white">KYC Requests</h3>
-                    <p className="text-sm text-gray-300">Manage and verify new user requests</p>
+                    <p className="text-sm text-gray-300">Manage user verification requests</p>
                   </div>
                 </div>
               </Link>
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Link to="/admin/contact-messages" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
+              <Link to="/admin/contact-messages" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <ChatBubbleLeftIcon className="h-8 w-8 text-orange-400" />
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Link to="/admin/role-management" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
+                <Link to="/admin/role-management" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ShieldCheckIcon className="h-8 w-8 text-orange-400" />
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <Link to="/admin/fiat-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
+                <Link to="/admin/fiat-requests" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <BanknotesIcon className="h-8 w-8 text-orange-400" />
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <Link to="/admin/reserves" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#6d97bf' }}>
+                <Link to="/admin/reserves" className="block p-6 rounded-lg shadow hover:shadow-md transition-shadow" style={{ backgroundColor: '#446c93' }}>
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <ChartBarIcon className="h-8 w-8 text-orange-400" />

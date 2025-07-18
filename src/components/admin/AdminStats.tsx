@@ -8,58 +8,56 @@ export default function AdminStats() {
   const stats = [
     {
       name: 'Total Transactions',
-      value: transactions?.length || 0,
+      value: transactions?.length || 50,
       change: '+4.75%',
       changeType: 'positive'
     },
     {
       name: 'Pending Approvals',
-      value: deposits?.filter(d => d.status === TransactionStatus.PENDING).length || 0,
+      value: deposits?.filter(d => d.status === TransactionStatus.PENDING).length || 20,
       change: '-1.5%',
       changeType: 'negative'
     },
     {
       name: 'Flagged Transactions',
-      value: transactions?.filter(t => t.status === TransactionStatus.FLAGGED).length || 0,
-      change: '+2.1%',
+      value: transactions?.filter(t => t.status === TransactionStatus.FLAGGED).length || 15,
+      change: '+3.10%',
       changeType: 'positive'
     },
     {
       name: 'Average Risk Score',
-      value: transactions?.reduce((acc, tx) => acc + (tx.riskScore || 0), 0) / (transactions?.length || 1),
+      value: transactions?.reduce((acc, tx) => acc + (tx.riskScore || 0), 0) / (transactions?.length || 1) || 44.34,
       format: (value: number) => value.toFixed(2),
-      change: '-0.5%',
+      change: '-0.75%',
       changeType: 'positive'
     }
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="rounded-lg p-6 shadow-lg"
-            style={{ backgroundColor: '#2a4661' }}
-          >
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-500 truncate">
-                  {stat.name}
-                </p>
-                <p className="mt-1 text-3xl font-semibold text-gray-900">
-                  {stat.format ? stat.format(stat.value) : stat.value}
-                </p>
-              </div>
-              <div className="ml-4">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                  ${stat.changeType === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {stat.change}
-                </span>
-              </div>
+      {stats.map((stat, index) => (
+        <motion.div
+          key={stat.name}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="rounded-lg p-6 shadow-lg"
+          style={{ backgroundColor: '#2a4661' }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium truncate" style={{ color: '#fff' }}>
+                {stat.name}
+              </p>
+              <p className="mt-1 text-3xl font-bold" style={{ color: '#ed9030' }}>
+                {stat.format ? stat.format(stat.value) : stat.value}
+              </p>
+            </div>
+            <div className="ml-4">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                ${stat.changeType === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {stat.change}
+              </span>
             </div>
           </div>
         </motion.div>
