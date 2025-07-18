@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -32,13 +31,13 @@ export default function KYCRequests() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Load KYC requests and stats
         const [allKycData, stats] = await Promise.all([
           fetchKYCRequests(),
           getKYCStats()
         ]);
-        
+
         // Apply filters
         let filteredData = [...allKycData];
         if (filterStatus !== 'ALL') {
@@ -47,7 +46,7 @@ export default function KYCRequests() {
         if (filterMethod !== 'ALL') {
           filteredData = filteredData.filter(req => req.verification_method === filterMethod);
         }
-        
+
         setKycRequests(filteredData);
         setKycStats(stats);
       } catch (error: any) {
@@ -66,11 +65,11 @@ export default function KYCRequests() {
       setError('Only Super Admins can approve KYC requests');
       return;
     }
-    
+
     try {
       setActionLoading(true);
       await approveKYCRequest(request.id, request.user_address);
-      
+
       // Update UI
       setKycRequests(prev => 
         prev.map(r => 
@@ -79,7 +78,7 @@ export default function KYCRequests() {
             : r
         )
       );
-      
+
       setKycStats(prev => ({
         ...prev,
         pending: prev.pending - 1,
@@ -104,11 +103,11 @@ export default function KYCRequests() {
 
   const handleConfirmReject = async () => {
     if (!selectedRequest || !rejectReason) return;
-    
+
     try {
       setActionLoading(true);
       await rejectKYCRequest(selectedRequest.id, selectedRequest.user_address, rejectReason);
-      
+
       // Update UI
       setKycRequests(prev => 
         prev.map(r => 
@@ -117,13 +116,13 @@ export default function KYCRequests() {
             : r
         )
       );
-      
+
       setKycStats(prev => ({
         ...prev,
         pending: prev.pending - 1,
         rejected: prev.rejected + 1
       }));
-      
+
       setSelectedRequest(null);
       setRejectReason('');
     } catch (error: any) {
@@ -198,48 +197,51 @@ export default function KYCRequests() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
+
           {/* Navigation Tabs */}
-          <div className="mb-8">
-            <div 
-              className="flex flex-wrap gap-1 p-2 rounded-lg"
-              style={{ backgroundColor: '#5a7a96' }}
-            >
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
-                KYC Requests
-              </button>
-              <button 
-                onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+            <div className="mb-8">
+              <div 
+                className="flex flex-wrap gap-1 p-2 rounded-lg"
+                style={{ backgroundColor: '#446c93' }}
               >
-                Contact Messages
-              </button>
-              <button 
-                onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Role Management
-              </button>
-              <button 
-                onClick={() => navigate('/admin/fiat-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Fiat Mint Requests
-              </button>
-              <button 
-                onClick={() => navigate('/admin/reserves')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Proof of Reserves
-              </button>
-              <button 
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Exchange Rates
-              </button>
+                <button 
+                  style={{ backgroundColor: '#ed9030' }}
+                  className="px-6 py-3 rounded-lg font-medium text-white"
+                >
+                  KYC Requests
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/contact-messages')}
+                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Contact Messages
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/role-management')}
+                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Role Management
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/fiat-requests')}
+                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Fiat Mint Requests
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/reserves')}
+                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Proof of Reserves
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/exchange-rates')}
+                  className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+                >
+                  Exchange Rates
+                </button>
+              </div>
             </div>
-          </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -251,7 +253,7 @@ export default function KYCRequests() {
               <div className="text-3xl font-bold">{kycStats.total}</div>
               <div className="text-xs text-green-400 mt-1">+100%</div>
             </div>
-            
+
             <div 
               className="rounded-lg p-6 text-white"
               style={{ backgroundColor: '#5a7a96' }}
@@ -260,7 +262,7 @@ export default function KYCRequests() {
               <div className="text-3xl font-bold">{kycStats.pending}</div>
               <div className="text-xs text-red-400 mt-1">-2%</div>
             </div>
-            
+
             <div 
               className="rounded-lg p-6 text-white"
               style={{ backgroundColor: '#5a7a96' }}
@@ -269,7 +271,7 @@ export default function KYCRequests() {
               <div className="text-3xl font-bold">{kycStats.approved}</div>
               <div className="text-xs text-green-400 mt-1">+100%</div>
             </div>
-            
+
             <div 
               className="rounded-lg p-6 text-white"
               style={{ backgroundColor: '#5a7a96' }}
@@ -313,7 +315,7 @@ export default function KYCRequests() {
                   <option value={KYCStatus.REJECTED}>Rejected</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm text-white/70 mb-2">Verification Method</label>
                 <select

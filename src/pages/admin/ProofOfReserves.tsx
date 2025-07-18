@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../../hooks/useWallet';
@@ -60,7 +59,7 @@ export default function ProofOfReserves() {
 
   const handleDeleteConfirm = async () => {
     if (!selectedReserve) return;
-    
+
     try {
       await handleDelete(selectedReserve);
       setSuccessMessage('Reserve asset deleted successfully');
@@ -121,7 +120,7 @@ export default function ProofOfReserves() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            
+
             {/* Navigation Tabs */}
             <div className="mb-8">
               <div 
@@ -230,48 +229,54 @@ export default function ProofOfReserves() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
-          {/* Navigation Tabs */}
-          <div className="mb-8">
-            <div 
-              className="flex flex-wrap gap-1 p-2 rounded-lg"
-              style={{ backgroundColor: '#5a7a96' }}
-            >
+
+          {/* Navigation Menu */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="rounded-lg p-2 mb-8"
+            style={{ backgroundColor: '#446c93' }}
+          >
+            <div className="flex flex-wrap gap-1">
               <button 
                 onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
               <button 
                 onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
               <button 
                 onClick={() => navigate('/admin/fiat-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Fiat Mint Requests
               </button>
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+              <button 
+                style={{ backgroundColor: '#ed9030' }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
+              >
                 Proof of Reserves
               </button>
               <button 
                 onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>
             </div>
-          </div>
+          </motion.div>
 
           <div className="space-y-6">
             {/* Summary Section */}

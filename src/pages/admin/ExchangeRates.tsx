@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -24,16 +23,16 @@ export default function ExchangeRates() {
     try {
       setLoading(true);
       setError(null);
-      
+
       await createExchangeRate(
         data.currency_from.toUpperCase(),
         data.currency_to.toUpperCase(),
         data.rate
       );
-      
+
       setSuccess('Exchange rate created successfully');
       setShowAddModal(false);
-      
+
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error('Error creating rate:', err);
@@ -47,13 +46,13 @@ export default function ExchangeRates() {
     try {
       setLoading(true);
       setError(null);
-      
+
       await updateExchangeRate(id, data.rate!);
-      
+
       setSuccess('Exchange rate updated successfully');
       setShowEditModal(false);
       setSelectedRate(null);
-      
+
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error('Error updating rate:', err);
@@ -67,10 +66,10 @@ export default function ExchangeRates() {
     try {
       setLoading(true);
       setError(null);
-      
+
       await deleteExchangeRate(rate.id);
       setSuccess('Exchange rate deleted successfully');
-      
+
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error('Error deleting rate:', err);
@@ -194,41 +193,44 @@ export default function ExchangeRates() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="rounded-xl p-6 mb-8"
-            style={{ backgroundColor: '#2a4661' }}
+            className="rounded-lg p-2 mb-8"
+            style={{ backgroundColor: '#446c93' }}
           >
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap gap-1">
               <button 
                 onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
               <button 
                 onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
               <button 
-                onClick={() => navigate('/admin/fiat-mint-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                onClick={() => navigate('/admin/fiat-requests')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Fiat Mint Requests
               </button>
               <button 
-                onClick={() => navigate('/admin/proof-of-reserves')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                onClick={() => navigate('/admin/reserves')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Proof of Reserves
               </button>
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+              <button 
+                style={{ backgroundColor: '#ed9030' }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
+              >
                 Exchange Rates
               </button>
             </div>

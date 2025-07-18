@@ -1,4 +1,3 @@
-
 import { BigNumber } from 'ethers';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -68,14 +67,14 @@ export default function FiatMintRequests() {
       await setMinMintAmount(minMintAmnt.toNumber());
 
       await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
-      
+
       // Update the local state
       setRequests(prev => prev.map(req => 
         req.id === selectedRequest.id 
           ? { ...req, status: FiatMintStatus.APPROVED, admin_notes: adminNotes, processed_by: address }
           : req
       ));
-      
+
       setShowApproveModal(false);
       setSelectedRequest(null);
       setAdminNotes('');
@@ -103,7 +102,7 @@ export default function FiatMintRequests() {
       } else {
         setError('Error minting tokens. Please try again.');
       }
-      
+
     } finally {
       setActionLoading(false);
     }
@@ -115,14 +114,14 @@ export default function FiatMintRequests() {
     try {
       setActionLoading(true);
       await rejectFiatMintRequest(selectedRequest.id, address, adminNotes);
-      
+
       // Update the local state
       setRequests(prev => prev.map(req => 
         req.id === selectedRequest.id 
           ? { ...req, status: FiatMintStatus.REJECTED, admin_notes: adminNotes, processed_by: address }
           : req
       ));
-      
+
       setShowRejectModal(false);
       setSelectedRequest(null);
       setAdminNotes('');
@@ -194,47 +193,54 @@ export default function FiatMintRequests() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Navigation Tabs */}
-            <div className="mb-8">
-              <div 
-                className="flex flex-wrap gap-1 p-2 rounded-lg"
-                style={{ backgroundColor: '#5a7a96' }}
+            
+          {/* Navigation Menu */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="rounded-lg p-2 mb-8"
+            style={{ backgroundColor: '#446c93' }}
+          >
+            <div className="flex flex-wrap gap-1">
+              <button 
+                onClick={() => navigate('/admin/kyc-requests')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
-                <button 
-                  onClick={() => navigate('/admin/kyc-requests')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  KYC Requests
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/contact-messages')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Contact Messages
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/role-management')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Role Management
-                </button>
-                <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
-                  Fiat Mint Requests
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/proof-of-reserves')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Proof of Reserves
-                </button>
-                <button 
-                  onClick={() => navigate('/admin/exchange-rates')}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Exchange Rates
-                </button>
-              </div>
+                KYC Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/contact-messages')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Contact Messages
+              </button>
+              <button 
+                onClick={() => navigate('/admin/role-management')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Role Management
+              </button>
+              <button 
+                style={{ backgroundColor: '#ed9030' }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
+              >
+                Fiat Mint Requests
+              </button>
+              <button 
+                onClick={() => navigate('/admin/proof-of-reserves')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Proof of Reserves
+              </button>
+              <button 
+                onClick={() => navigate('/admin/exchange-rates')}
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+              >
+                Exchange Rates
+              </button>
             </div>
+          </motion.div>
 
             {/* Access Denied Content */}
             <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
@@ -301,47 +307,54 @@ export default function FiatMintRequests() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {/* Navigation Tabs */}
-          <div className="mb-8">
-            <div 
-              className="flex flex-wrap gap-1 p-2 rounded-lg"
-              style={{ backgroundColor: '#5a7a96' }}
-            >
+          
+          {/* Navigation Menu */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="rounded-lg p-2 mb-8"
+            style={{ backgroundColor: '#446c93' }}
+          >
+            <div className="flex flex-wrap gap-1">
               <button 
                 onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
               <button 
                 onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Role Management
               </button>
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+              <button 
+                style={{ backgroundColor: '#ed9030' }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
+              >
                 Fiat Mint Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/proof-of-reserves')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Proof of Reserves
               </button>
               <button 
                 onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Fiat Mint Requests Content */}
           <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
@@ -462,7 +475,7 @@ export default function FiatMintRequests() {
                                 <DocumentMagnifyingGlassIcon className="h-5 w-5" />
                               </a>
                             )}
-                            
+
                             <button
                               onClick={() => {
                                 setSelectedRequest(request);
@@ -474,7 +487,7 @@ export default function FiatMintRequests() {
                             >
                               <CheckCircleIcon className="h-5 w-5" />
                             </button>
-                            
+
                             <button
                               onClick={() => {
                                 setSelectedRequest(request);

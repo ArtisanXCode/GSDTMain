@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -101,14 +100,14 @@ export default function RoleManagement() {
 
   const handleAddUser = async () => {
     if (!address || !isSuperAdmin || !validateForm()) return;
-    
+
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-      
+
       await assignUserRole(formData.userAddress, formData.role as AdminRole, address);
-      
+
       setSuccess(`Successfully assigned ${formData.role} role to ${formData.userAddress}`);
       await loadAdminUsers();
       handleCloseModal('add');
@@ -120,7 +119,7 @@ export default function RoleManagement() {
       } else {
         setError('Error adding user. Please try again.');
       }
-      
+
     } finally {
       setActionLoading(false);
     }
@@ -128,14 +127,14 @@ export default function RoleManagement() {
 
   const handleEditUser = async () => {
     if (!address || !selectedUser || !isSuperAdmin || !validateForm()) return;
-    
+
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-      
+
       await assignUserRole(selectedUser.user_address, formData.role as AdminRole, address);
-      
+
       setSuccess(`Successfully updated role for ${selectedUser.user_address}`);
       await loadAdminUsers();
       handleCloseModal('edit');
@@ -153,14 +152,14 @@ export default function RoleManagement() {
 
   const handleRemoveUser = async () => {
     if (!address || !selectedUser || !isSuperAdmin) return;
-    
+
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-      
+
       await removeUserRole(selectedUser.user_address, address);
-      
+
       setSuccess(`Successfully removed role from ${selectedUser.user_address}`);
       await loadAdminUsers();
       handleCloseModal('remove');
@@ -172,7 +171,7 @@ export default function RoleManagement() {
       } else {
         setError('Error removing user. Please try again.');
       }
-      
+
     } finally {
       setActionLoading(false);
     }
@@ -225,7 +224,7 @@ export default function RoleManagement() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            
+
             {/* Navigation Tabs */}
             <div className="mb-8">
               <div 
@@ -339,48 +338,54 @@ export default function RoleManagement() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
-          {/* Navigation Tabs */}
-          <div className="mb-8">
-            <div 
-              className="flex flex-wrap gap-1 p-2 rounded-lg"
-              style={{ backgroundColor: '#5a7a96' }}
-            >
+
+          {/* Navigation Menu */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="rounded-lg p-2 mb-8"
+            style={{ backgroundColor: '#446c93' }}
+          >
+            <div className="flex flex-wrap gap-1">
               <button 
                 onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 KYC Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/contact-messages')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Contact Messages
               </button>
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+              <button 
+                style={{ backgroundColor: '#ed9030' }}
+                className="px-6 py-3 rounded-lg font-medium text-white"
+              >
                 Role Management
               </button>
               <button 
                 onClick={() => navigate('/admin/fiat-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Fiat Mint Requests
               </button>
               <button 
                 onClick={() => navigate('/admin/reserves')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Proof of Reserves
               </button>
               <button 
                 onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
               >
                 Exchange Rates
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Role Management Section */}
           <div 
