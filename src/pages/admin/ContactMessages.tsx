@@ -181,261 +181,262 @@ export default function ContactMessages() {
   };
 
   return (
-    <div className="bg-white">
-      {/* Hero section with tech background */}
-      <div
-        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+    <>
+      <div className="bg-white">
+        {/* Hero section with tech background */}
+        <div
+          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
         >
-          <div className="text-left">
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Admin Dashboard
-            </h1>
-            <p className="text-lg leading-8 text-white/90 font-regular">
-              Super Admin Dashboard – Full Access
-            </p>
-          </div>
-        </motion.div>
-      </div>
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
 
-      {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-center">
-        <div className="absolute -top-16">
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="w-24 h-24 sm:w-32 sm:h-32"
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          >
+            <div className="text-left">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+                Admin Dashboard
+              </h1>
+              <p className="text-lg leading-8 text-white/90 font-regular">
+                Super Admin Dashboard – Full Access
+              </p>
+            </div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Main content section */}
-      <div className="bg-gray-200 py-24 sm:py-32 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
-          {/* Navigation Tabs */}
-          <div className="mb-8">
+        {/* Phoenix Icon overlapping sections */}
+        <div className="relative z-20 flex justify-center">
+          <div className="absolute -top-16">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="w-24 h-24 sm:w-32 sm:h-32"
+            />
+          </div>
+        </div>
+
+        {/* Main content section */}
+        <div className="bg-gray-200 py-24 sm:py-32 relative">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            
+            {/* Navigation Tabs */}
+            <div className="mb-8">
+              <div 
+                className="flex flex-wrap gap-1 p-2 rounded-lg"
+                style={{ backgroundColor: '#5a7a96' }}
+              >
+                <button 
+                  onClick={() => navigate('/admin/kyc-requests')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  KYC Requests
+                </button>
+                <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
+                  Contact Messages
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/role-management')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Role Management
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/fiat-requests')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Fiat Mint Requests
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/reserves')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Proof of Reserves
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/exchange-rates')}
+                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  Exchange Rates
+                </button>
+              </div>
+            </div>
+
+            {/* Contact Messages Section */}
             <div 
-              className="flex flex-wrap gap-1 p-2 rounded-lg"
+              className="rounded-lg p-6"
               style={{ backgroundColor: '#5a7a96' }}
             >
-              <button 
-                onClick={() => navigate('/admin/kyc-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                KYC Requests
-              </button>
-              <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
-                Contact Messages
-              </button>
-              <button 
-                onClick={() => navigate('/admin/role-management')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Role Management
-              </button>
-              <button 
-                onClick={() => navigate('/admin/fiat-requests')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Fiat Mint Requests
-              </button>
-              <button 
-                onClick={() => navigate('/admin/reserves')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Proof of Reserves
-              </button>
-              <button 
-                onClick={() => navigate('/admin/exchange-rates')}
-                className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-              >
-                Exchange Rates
-              </button>
-            </div>
-          </div>
-
-          {/* Contact Messages Section */}
-          <div 
-            className="rounded-lg p-6"
-            style={{ backgroundColor: '#5a7a96' }}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1">Contact Messages</h3>
-                <p className="text-sm text-white/70">View and respond to messages from users</p>
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">Contact Messages</h3>
+                  <p className="text-sm text-white/70">View and respond to messages from users</p>
+                </div>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 rounded-lg text-white font-medium"
+                  style={{ backgroundColor: '#ed9030' }}
+                >
+                  Refresh
+                </button>
               </div>
-              <button 
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 rounded-lg text-white font-medium"
-                style={{ backgroundColor: '#ed9030' }}
-              >
-                Refresh
-              </button>
-            </div>
 
-          <div className="shadow rounded-lg" style={{ backgroundColor: '#2a4661' }}>
-            <div className="px-4 py-5 sm:p-6">
-              <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto">
-                  <h3 className="text-lg font-medium leading-6 text-white">Contact Messages</h3>
-                  <p className="mt-1 text-sm text-white/70">
-                    View and respond to messages from users
-                  </p>
-                </div>
-                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 sm:w-auto"
-                    style={{ backgroundColor: '#ed9030' }}
-                  >
-                    Refresh
-                  </button>
-                </div>
-              </div></div>
-          </div>
-
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
-              {error}
-            </div>
-          )}
-
-          {messageSuccess && (
-            <div className="mt-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
-              {messageSuccess}
-            </div>
-          )}
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-              <p className="mt-4 text-gray-500">Loading contact submissions...</p>
-            </div>
-          ) : contactSubmissions.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No contact submissions found</p>
-            </div>
-          ) : (
-            <div className="mt-8 overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/20">
-                <thead style={{ backgroundColor: '#1e3a5f' }}>
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Subject
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Submitted
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-white/80 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/20" style={{ backgroundColor: '#2a4661' }}>
-                  {contactSubmissions.map((submission) => (
-                    <motion.tr
-                      key={submission.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-white/5"
+            <div className="shadow rounded-lg" style={{ backgroundColor: '#2a4661' }}>
+              <div className="px-4 py-5 sm:p-6">
+                <div className="sm:flex sm:items-center">
+                  <div className="sm:flex-auto">
+                    <h3 className="text-lg font-medium leading-6 text-white">Contact Messages</h3>
+                    <p className="mt-1 text-sm text-white/70">
+                      View and respond to messages from users
+                    </p>
+                  </div>
+                  <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 sm:w-auto"
+                      style={{ backgroundColor: '#ed9030' }}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                        {submission.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                        {submission.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                        {submission.subject}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(submission.status)}`}>
-                          {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
-                        {format(new Date(submission.submitted_at), 'MMM d, yyyy HH:mm')}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex justify-center space-x-3">
-                          <button
-                            onClick={() => handleViewMessage(submission)}
-                            className="text-blue-400 hover:text-blue-300 flex items-center"
-                            title="View Message"
-                          >
-                            <EyeIcon className="h-5 w-5" />
-                          </button>
-
-                          {isSuperAdmin && (
-                            <>
-                              {submission.status === 'archived' ? (
-                                <button
-                                  onClick={() => handleStatusChange(submission.id, 'read')}
-                                  disabled={actionLoading}
-                                  className="text-green-400 hover:text-green-300 disabled:opacity-50 flex items-center"
-                                  title="Unarchive Message"
-                                >
-                                  <ArchiveBoxXMarkIcon className="h-5 w-5" />
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleStatusChange(submission.id, 'archived')}
-                                  disabled={actionLoading}
-                                  className="text-gray-400 hover:text-gray-300 disabled:opacity-50 flex items-center"
-                                  title="Archive Message"
-                                >
-                                  <ArchiveBoxIcon className="h-5 w-5" />
-                                </button>
-                              )}
-
-                              <button
-                                onClick={() => setShowDeleteConfirm(submission.id)}
-                                disabled={actionLoading}
-                                className="text-red-400 hover:text-red-300 disabled:opacity-50 flex items-center"
-                                title="Delete Message"
-                              >
-                                <TrashIcon className="h-5 w-5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+                      Refresh
+                    </button>
+                  </div>
+                </div></div>
             </div>
-          )}
+
+            {error && (
+              <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
+                {error}
+              </div>
+            )}
+
+            {messageSuccess && (
+              <div className="mt-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
+                {messageSuccess}
+              </div>
+            )}
+
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                <p className="mt-4 text-gray-500">Loading contact submissions...</p>
+              </div>
+            ) : contactSubmissions.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No contact submissions found</p>
+              </div>
+            ) : (
+              <div className="mt-8 overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/20">
+                  <thead style={{ backgroundColor: '#1e3a5f' }}>
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Subject
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Submitted
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-white/80 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/20" style={{ backgroundColor: '#2a4661' }}>
+                    {contactSubmissions.map((submission) => (
+                      <motion.tr
+                        key={submission.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="hover:bg-white/5"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {submission.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {submission.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                          {submission.subject}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(submission.status)}`}>
+                            {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
+                          {format(new Date(submission.submitted_at), 'MMM d, yyyy HH:mm')}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex justify-center space-x-3">
+                            <button
+                              onClick={() => handleViewMessage(submission)}
+                              className="text-blue-400 hover:text-blue-300 flex items-center"
+                              title="View Message"
+                            >
+                              <EyeIcon className="h-5 w-5" />
+                            </button>
+
+                            {isSuperAdmin && (
+                              <>
+                                {submission.status === 'archived' ? (
+                                  <button
+                                    onClick={() => handleStatusChange(submission.id, 'read')}
+                                    disabled={actionLoading}
+                                    className="text-green-400 hover:text-green-300 disabled:opacity-50 flex items-center"
+                                    title="Unarchive Message"
+                                  >
+                                    <ArchiveBoxXMarkIcon className="h-5 w-5" />
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => handleStatusChange(submission.id, 'archived')}
+                                    disabled={actionLoading}
+                                    className="text-gray-400 hover:text-gray-300 disabled:opacity-50 flex items-center"
+                                    title="Archive Message"
+                                  >
+                                    <ArchiveBoxIcon className="h-5 w-5" />
+                                  </button>
+                                )}
+
+                                <button
+                                  onClick={() => setShowDeleteConfirm(submission.id)}
+                                  disabled={actionLoading}
+                                  className="text-red-400 hover:text-red-300 disabled:opacity-50 flex items-center"
+                                  title="Delete Message"
+                                >
+                                  <TrashIcon className="h-5 w-5" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+              </div>
             </div>
-          </div>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* View/Reply Message Modal */}
       {showMessageModal && selectedMessage && (
