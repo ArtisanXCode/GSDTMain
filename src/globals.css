@@ -63,3 +63,47 @@ body {
 .bg-gradient-radial {
   background: radial-gradient(circle at center, var(--tw-gradient-stops));
 }
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  /* Ensure all buttons have proper visibility and spacing */
+  button {
+    min-height: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Fix modal button container */
+  .modal-buttons {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
+
+  /* Fix for overlapping elements */
+  .modal-content {
+    position: relative;
+    z-index: 50;
+  }
+
+  /* Ensure form buttons are visible */
+  form button[type="submit"],
+  form button[type="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+}
