@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useWallet } from '../hooks/useWallet';
 import { useTransactions } from '../hooks/useTransactions';
@@ -6,7 +5,23 @@ import { TransactionStatus, TransactionType } from '../services/admin';
 import TransactionFilters from './transaction/TransactionFilters';
 import TransactionTable from './transaction/TransactionTable';
 import TransactionPagination from './transaction/TransactionPagination';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
+
+const GSDC_DECIMALS = parseInt(import.meta.env.VITE_GSDC_DECIMALS || '18');
+
+// Helper function to format token amount
+const formatTokenAmount = (amount: string): string => {
+  try {
+    if (!amount || amount === '0') return '0.00';
+    const divisor = Math.pow(10, GSDC_DECIMALS);
+    const formattedAmount = (parseFloat(amount) / divisor).toFixed(2);
+    return formattedAmount;
+  } catch (error) {
+    console.error('Error formatting token amount:', error);
+    return '0.00';
+  }
+};
 
 export default function TransactionList() {
   const { account } = useWallet();

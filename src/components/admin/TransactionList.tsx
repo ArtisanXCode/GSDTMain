@@ -4,6 +4,21 @@ import { Transaction, TransactionStatus, TransactionType, flagTransaction } from
 import { format } from 'date-fns';
 import { utils } from 'ethers';
 
+const GSDC_DECIMALS = parseInt(import.meta.env.VITE_GSDC_DECIMALS || '18');
+
+// Helper function to format token amount
+const formatTokenAmount = (amount: string): string => {
+  try {
+    if (!amount || amount === '0') return '0.00';
+    const divisor = Math.pow(10, GSDC_DECIMALS);
+    const formattedAmount = (parseFloat(amount) / divisor).toFixed(2);
+    return formattedAmount;
+  } catch (error) {
+    console.error('Error formatting token amount:', error);
+    return '0.00';
+  }
+};
+
 interface Props {
   transactions: Transaction[];
   isLoading: boolean;
@@ -138,7 +153,7 @@ export default function TransactionList({
                       {tx.type}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {parseFloat(utils.formatEther(tx.amount)).toFixed(2)} GSDT
+                      {formatTokenAmount(tx.amount)} GSDC
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {tx.fromAddress.slice(0, 6)}...{tx.fromAddress.slice(-4)} </td>

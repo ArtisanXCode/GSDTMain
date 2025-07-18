@@ -5,6 +5,20 @@ import { format } from 'date-fns';
 import { utils } from 'ethers';
 
 const bscscan_explorer_link = import.meta.env.VITE_BSC_SCAN_EXPLORER_LINK;
+const GSDC_DECIMALS = parseInt(import.meta.env.VITE_GSDC_DECIMALS || '18');
+
+// Helper function to format token amount
+const formatTokenAmount = (amount: string): string => {
+  try {
+    if (!amount || amount === '0') return '0.00';
+    const divisor = Math.pow(10, GSDC_DECIMALS);
+    const formattedAmount = (parseFloat(amount) / divisor).toFixed(2);
+    return formattedAmount;
+  } catch (error) {
+    console.error('Error formatting token amount:', error);
+    return '0.00';
+  }
+};
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -58,7 +72,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                 {tx.type}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {parseFloat(tx.amount).toFixed(2)} GSDC
+                {formatTokenAmount(tx.amount)} GSDC
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
                 <a
