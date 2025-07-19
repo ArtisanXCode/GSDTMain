@@ -1,28 +1,30 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useWallet } from '../hooks/useWallet';
-import { KYCStatus, submitKYCRequest, getUserKYCStatus } from '../services/kyc';
-import { supabase } from '../lib/supabase';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useWallet } from "../hooks/useWallet";
+import { KYCStatus, submitKYCRequest, getUserKYCStatus } from "../services/kyc";
+import { supabase } from "../lib/supabase";
 
 const documentTypes = [
-  { id: 'passport', name: 'Passport' },
-  { id: 'national_id', name: 'National ID' },
-  { id: 'drivers_license', name: "Driver's License" }
+  { id: "passport", name: "Passport" },
+  { id: "national_id", name: "National ID" },
+  { id: "drivers_license", name: "Driver's License" },
 ];
 
 export default function KYCVerification() {
   const { address, isConnected } = useWallet();
-  const [kycStatus, setKYCStatus] = useState<KYCStatus>(KYCStatus.NOT_SUBMITTED);
+  const [kycStatus, setKYCStatus] = useState<KYCStatus>(
+    KYCStatus.NOT_SUBMITTED,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    date_of_birth: '',
-    nationality: '',
-    document_type: 'passport',
-    document_file: null as File | null
+    first_name: "",
+    last_name: "",
+    date_of_birth: "",
+    nationality: "",
+    document_type: "passport",
+    document_file: null as File | null,
   });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function KYCVerification() {
           setKYCStatus(response.status);
         }
       } catch (error) {
-        console.error('Error fetching KYC status:', error);
+        console.error("Error fetching KYC status:", error);
       }
     };
 
@@ -48,12 +50,12 @@ export default function KYCVerification() {
       const file = e.target.files[0];
       // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
-        setError('File size must be less than 5MB');
+        setError("File size must be less than 5MB");
         return;
       }
       // Check file type
-      if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
-        setError('Only JPEG, PNG, and PDF files are allowed');
+      if (!["image/jpeg", "image/png", "application/pdf"].includes(file.type)) {
+        setError("Only JPEG, PNG, and PDF files are allowed");
         return;
       }
       setFormData({ ...formData, document_file: file });
@@ -64,35 +66,35 @@ export default function KYCVerification() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address || !formData.document_file) return;
-    
+
     setIsSubmitting(true);
     setError(null);
     setUploadProgress(0);
-    
+
     try {
       // Create a unique file name
-      const fileExt = formData.document_file.name.split('.').pop();
+      const fileExt = formData.document_file.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
       const filePath = `${address}/${fileName}`;
-      
+
       // Upload document to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('kyc-documents')
+        .from("kyc-documents")
         .upload(filePath, formData.document_file, {
-          cacheControl: '3600',
+          cacheControl: "3600",
           upsert: false,
-          contentType: formData.document_file.type
+          contentType: formData.document_file.type,
         });
 
       if (uploadError) throw uploadError;
 
       // Get the public URL of the uploaded document
       const { data: urlData } = await supabase.storage
-        .from('kyc-documents')
+        .from("kyc-documents")
         .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days expiry
 
       if (!urlData?.signedUrl) {
-        throw new Error('Failed to generate document URL');
+        throw new Error("Failed to generate document URL");
       }
 
       // Submit KYC request to database
@@ -103,28 +105,29 @@ export default function KYCVerification() {
         nationality: formData.nationality,
         document_type: formData.document_type,
         document_url: urlData.signedUrl,
-        user_address: address
+        user_address: address,
       });
 
       setKYCStatus(KYCStatus.PENDING);
-      
+
       // Reset form
       setFormData({
-        first_name: '',
-        last_name: '',
-        date_of_birth: '',
-        nationality: '',
-        document_type: 'passport',
-        document_file: null
+        first_name: "",
+        last_name: "",
+        date_of_birth: "",
+        nationality: "",
+        document_type: "passport",
+        document_file: null,
       });
-      
+
       // Reset file input
-      const fileInput = document.getElementById('document_file') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-      
+      const fileInput = document.getElementById(
+        "document_file",
+      ) as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
     } catch (err: any) {
-      console.error('Error submitting KYC:', err);
-      setError(err.message || 'Error submitting KYC verification');
+      console.error("Error submitting KYC:", err);
+      setError(err.message || "Error submitting KYC verification");
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
@@ -133,31 +136,40 @@ export default function KYCVerification() {
 
   if (!isConnected) {
     return (
-      <div className="bg-white rounded-xl p-8 shadow-lg">
+      <div className="rounded-xl p-8 shadow-lg">
         <div className="text-center">
-          <p className="text-gray-600">Connect your wallet to start KYC verification</p>
+          <p className="text-gray-600">
+            Connect your wallet to start KYC verification
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl p-8 shadow-lg">
+    <div className="rounded-xl p-8 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">KYC Verification</h3>
+        <h3 className="text-xl font-semibold text-gray-900">
+          KYC Verification
+        </h3>
       </div>
 
       {kycStatus === KYCStatus.APPROVED && (
         <div className="text-green-700 bg-green-50 rounded-lg p-4">
           <p className="font-medium">KYC Verified</p>
-          <p className="text-sm mt-1">Your identity has been verified. You can now use all features.</p>
+          <p className="text-sm mt-1">
+            Your identity has been verified. You can now use all features.
+          </p>
         </div>
       )}
 
       {kycStatus === KYCStatus.REJECTED && (
         <div className="text-red-700 bg-red-50 rounded-lg p-4">
           <p className="font-medium">Verification Failed</p>
-          <p className="text-sm mt-1">Your KYC verification was rejected. Please submit again with correct information.</p>
+          <p className="text-sm mt-1">
+            Your KYC verification was rejected. Please submit again with correct
+            information.
+          </p>
         </div>
       )}
 
@@ -168,7 +180,8 @@ export default function KYCVerification() {
         </div>
       )}
 
-      {(kycStatus === KYCStatus.NOT_SUBMITTED || kycStatus === KYCStatus.REJECTED) && (
+      {(kycStatus === KYCStatus.NOT_SUBMITTED ||
+        kycStatus === KYCStatus.REJECTED) && (
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -177,79 +190,109 @@ export default function KYCVerification() {
         >
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="first_name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 First Name
               </label>
               <input
                 type="text"
                 id="first_name"
                 value={formData.first_name}
-                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, first_name: e.target.value })
+                }
                 className="block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors duration-200"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="last_name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Last Name
               </label>
               <input
                 type="text"
                 id="last_name"
                 value={formData.last_name}
-                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, last_name: e.target.value })
+                }
                 className="block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors duration-200"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="date_of_birth" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="date_of_birth"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Date of Birth
               </label>
               <input
                 type="date"
                 id="date_of_birth"
                 value={formData.date_of_birth}
-                onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, date_of_birth: e.target.value })
+                }
                 className="block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors duration-200"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="nationality" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="nationality"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Nationality
               </label>
               <input
                 type="text"
                 id="nationality"
                 value={formData.nationality}
-                onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, nationality: e.target.value })
+                }
                 className="block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors duration-200"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="document_type" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="document_type"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Document Type
               </label>
               <select
                 id="document_type"
                 value={formData.document_type}
-                onChange={(e) => setFormData({ ...formData, document_type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, document_type: e.target.value })
+                }
                 className="block w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors duration-200"
               >
-                {documentTypes.map(doc => (
-                  <option key={doc.id} value={doc.id}>{doc.name}</option>
+                {documentTypes.map((doc) => (
+                  <option key={doc.id} value={doc.id}>
+                    {doc.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label htmlFor="document_file" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="document_file"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Upload Document
               </label>
               <input
@@ -273,7 +316,7 @@ export default function KYCVerification() {
 
           {uploadProgress > 0 && uploadProgress < 100 && (
             <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
+              <div
                 className="bg-primary-600 h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
@@ -295,14 +338,30 @@ export default function KYCVerification() {
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Submitting...
               </span>
             ) : (
-              'Submit Verification'
+              "Submit Verification"
             )}
           </motion.button>
         </motion.form>

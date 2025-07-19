@@ -1,15 +1,14 @@
-
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import ExchangeRates from '../components/ExchangeRates';
-import ProofOfReserves from '../components/ProofOfReserves';
-import KYCVerification from '../components/KYCVerification';
-import SumsubKYC from '../components/SumsubKYC';
-import TokenInfo from '../components/TokenInfo';
-import { Link } from 'react-router-dom';
+import { motion } from "framer-motion";
+import { useState } from "react";
+import ExchangeRates from "../components/ExchangeRates";
+import ProofOfReserves from "../components/ProofOfReserves";
+import KYCVerification from "../components/KYCVerification";
+import SumsubKYC from "../components/SumsubKYC";
+import TokenInfo from "../components/TokenInfo";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
-  const [kycMethod, setKycMethod] = useState<'manual' | 'sumsub'>('sumsub');
+  const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
 
   return (
     <div className="bg-white">
@@ -58,20 +57,23 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
           {/* Top Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Balance Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl p-6 text-white shadow-lg"
+              className="rounded-3xl p-16 text-white shadow-lg"
               style={{
-                background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+                backgroundColor: "#2a4661",
               }}
             >
-              <h3 className="text-sm font-medium text-white/80 mb-2">Balance</h3>
-              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>0 GSDC</div>
+              <h3 className="text-lg font-medium text-white/80 mb-5">
+                Balance
+              </h3>
+              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>
+                0 GSDC
+              </div>
             </motion.div>
 
             {/* Current Price Card */}
@@ -79,13 +81,17 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="rounded-2xl p-6 text-white shadow-lg"
+              className="rounded-3xl p-16 text-white shadow-lg"
               style={{
-                background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+                backgroundColor: "#2a4661",
               }}
             >
-              <h3 className="text-sm font-medium text-white/80 mb-2">Current Price</h3>
-              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>0 GSDC</div>
+              <h3 className="text-lg font-medium text-white/80 mb-5">
+                Current Price
+              </h3>
+              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>
+                0 GSDC
+              </div>
             </motion.div>
 
             {/* KYC Status Card */}
@@ -93,12 +99,14 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="rounded-2xl p-6 text-white shadow-lg"
+              className="rounded-3xl p-16 text-white shadow-lg"
               style={{
-                background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+                backgroundColor: "#3f763a",
               }}
             >
-              <h3 className="text-sm font-medium text-white/80 mb-2">KYC Status</h3>
+              <h3 className="text-lg font-medium text-white/80 mb-5">
+                KYC Status
+              </h3>
               <div className="text-xl font-bold text-white">Approved</div>
             </motion.div>
           </div>
@@ -110,58 +118,51 @@ export default function Dashboard() {
             transition={{ delay: 0.3 }}
             className="rounded-2xl p-8 text-white shadow-lg mb-8"
             style={{
-              background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+              backgroundColor: "#2a4661",
             }}
           >
-            <h3 className="text-xl font-semibold text-white mb-6">KYC Verification</h3>
-            
+            <h3 className="text-xl font-semibold text-white mb-6">
+              KYC Verification
+            </h3>
+
             <div className="flex space-x-4 mb-6">
               <button
                 data-kyc-method="sumsub"
-                onClick={() => setKycMethod('sumsub')}
+                onClick={() => setKycMethod("sumsub")}
                 className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  kycMethod === 'sumsub'
-                    ? 'text-white shadow-lg'
-                    : 'bg-white/20 text-white/80 hover:bg-white/30'
+                  kycMethod === "sumsub"
+                    ? "text-white shadow-lg"
+                    : "bg-white/20 text-white/80 hover:bg-white/30"
                 }`}
                 style={{
-                  background: kycMethod === 'sumsub' 
-                    ? 'linear-gradient(to bottom, #f6b62e, #e74134)' 
-                    : undefined
+                  background:
+                    kycMethod === "sumsub"
+                      ? "linear-gradient(to bottom, #f6b62e, #e74134)"
+                      : undefined,
                 }}
               >
                 Automated Verification
               </button>
               <button
                 data-kyc-method="manual"
-                onClick={() => setKycMethod('manual')}
+                onClick={() => setKycMethod("manual")}
                 className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  kycMethod === 'manual'
-                    ? 'text-white shadow-lg'
-                    : 'bg-white/20 text-white/80 hover:bg-white/30'
+                  kycMethod === "manual"
+                    ? "text-white shadow-lg"
+                    : "bg-white/20 text-white/80 hover:bg-white/30"
                 }`}
                 style={{
-                  background: kycMethod === 'manual' 
-                    ? 'linear-gradient(to bottom, #f6b62e, #e74134)' 
-                    : undefined
+                  background:
+                    kycMethod === "manual"
+                      ? "linear-gradient(to bottom, #f6b62e, #e74134)"
+                      : undefined,
                 }}
               >
                 Manual Verification
               </button>
             </div>
             
-            {/* KYC Status Display */}
-            <div className="rounded-lg p-4 mb-4" style={{ background: "rgba(34, 197, 94, 0.2)" }}>
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                <span className="text-white font-medium">KYC Verified</span>
-              </div>
-              <p className="text-white/80 text-sm mt-2">
-                Your identity has been verified and you can now access all features.
-              </p>
-            </div>
-            
-            {kycMethod === 'sumsub' ? <SumsubKYC /> : <KYCVerification />}
+            {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
           </motion.div>
 
           {/* Exchange Rates Section */}
@@ -171,25 +172,31 @@ export default function Dashboard() {
             transition={{ delay: 0.4 }}
             className="rounded-2xl p-8 text-white shadow-lg mb-8"
             style={{
-              background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+              background: "linear-gradient(to bottom, #2a4661, #6d97bf)",
             }}
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Exchange Rates</h3>
-            
+            <h3 className="text-xl font-semibold text-white mb-6">
+              Exchange Rates
+            </h3>
+
             <div className="mb-6">
               <div className="text-sm text-white/80 mb-2">GSDC Price</div>
-              <div className="text-3xl font-bold" style={{ color: "#ed9030" }}>$0.000000 USDC</div>
+              <div className="text-3xl font-bold" style={{ color: "#ed9030" }}>
+                $0.000000 USDC
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { currency: 'CNH', rate: '1.000000' },
-                { currency: 'BRL', rate: '6.000000' },
-                { currency: 'INR', rate: '84.000000' }
+                { currency: "CNH", rate: "1.000000" },
+                { currency: "BRL", rate: "6.000000" },
+                { currency: "INR", rate: "84.000000" },
               ].map((item, index) => (
                 <div key={item.currency} className="bg-white/10 rounded-lg p-4">
                   <div className="text-sm text-white/80">{item.currency}</div>
-                  <div className="text-lg font-semibold text-white">{item.rate}</div>
+                  <div className="text-lg font-semibold text-white">
+                    {item.rate}
+                  </div>
                 </div>
               ))}
             </div>
@@ -205,15 +212,27 @@ export default function Dashboard() {
               background: "linear-gradient(to bottom, #6d97bf, #446c93)",
             }}
           >
-            <h3 className="text-xl font-semibold text-white mb-6">Proof of Reserves</h3>
-            
+            <h3 className="text-xl font-semibold text-white mb-6">
+              Proof of Reserves
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>0 GSDC</div>
+                <div
+                  className="text-2xl font-bold"
+                  style={{ color: "#ed9030" }}
+                >
+                  0 GSDC
+                </div>
                 <div className="text-sm text-white/80">Total Supply</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>$96</div>
+                <div
+                  className="text-2xl font-bold"
+                  style={{ color: "#ed9030" }}
+                >
+                  $96
+                </div>
                 <div className="text-sm text-white/80">Total Value</div>
               </div>
               <div className="text-center">
@@ -223,21 +242,41 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-white">Reserve Assets</h4>
-              
+              <h4 className="text-lg font-semibold text-white">
+                Reserve Assets
+              </h4>
+
               {[
-                { asset: 'Brazilian Real', value: '$96.00000', amount: '500.00000', allocation: '50%' },
-                { asset: 'Chinese Yuan', value: '$96.00000', amount: '500.00000', allocation: '50%' }
+                {
+                  asset: "Brazilian Real",
+                  value: "$96.00000",
+                  amount: "500.00000",
+                  allocation: "50%",
+                },
+                {
+                  asset: "Chinese Yuan",
+                  value: "$96.00000",
+                  amount: "500.00000",
+                  allocation: "50%",
+                },
               ].map((reserve, index) => (
                 <div key={index} className="bg-white/10 rounded-lg p-4">
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="text-white font-medium">{reserve.asset}</div>
-                      <div className="text-white/80 text-sm">{reserve.amount}</div>
+                      <div className="text-white font-medium">
+                        {reserve.asset}
+                      </div>
+                      <div className="text-white/80 text-sm">
+                        {reserve.amount}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-medium">{reserve.value}</div>
-                      <div className="text-white/80 text-sm">{reserve.allocation}</div>
+                      <div className="text-white font-medium">
+                        {reserve.value}
+                      </div>
+                      <div className="text-white/80 text-sm">
+                        {reserve.allocation}
+                      </div>
                     </div>
                   </div>
                 </div>

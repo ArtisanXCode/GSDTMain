@@ -46,16 +46,13 @@ export default function About() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold leading-7 text-gray-600 uppercase tracking-wide mb-2">
-              THE FUTURE OF
-            </h2>
             <p
               className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
               style={{ color: "#ed9030" }}
             >
-              GLOBAL SOUTH DIGITAL CURRENCY
+              THE FUTURE OF <br/> GLOBAL SOUTH DIGITAL CURRENCY
             </p>
-            <p className="text-lg leading-6 text-gray-600 max-w-2xl mx-auto font-regular">
+            <p className="text-lg leading-6 text-black max-w-2xl mx-auto font-regular">
               GSDC is a revolutionary stablecoin that represents a basket of
               GSDC currencies,
               <br />
@@ -74,9 +71,9 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="rounded-2xl p-8 text-white shadow-lg"
+              className="rounded-2xl p-16 text-white shadow-lg"
               style={{
-                background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                background: "linear-gradient(100deg, #e74134 0%, #f6b62e 100%)",
               }}
             >
               <h3 className="text-2xl font-bold mb-6">Our Mission</h3>
@@ -93,7 +90,7 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="bg-white rounded-2xl p-8 shadow-lg"
+              className=" rounded-2xl p-10 "
             >
               <h3 className="text-2xl font-bold text-gray-900 mb-6">
                 What's included
@@ -118,7 +115,7 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">
+                  <span className="text-black text-lg">
                     Stable Value Backed by GSDC
                   </span>
                 </li>
@@ -141,7 +138,7 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">
+                  <span className="text-black text-lg">
                     Real-time Exchange Rates
                   </span>
                 </li>
@@ -164,7 +161,7 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">
+                  <span className="text-black text-lg">
                     Stable Value Backed by GSDC
                   </span>
                 </li>
@@ -187,7 +184,7 @@ export default function About() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700 font-medium">
+                  <span className="text-black text-lg">
                     Real-time Exchange Rates
                   </span>
                 </li>
