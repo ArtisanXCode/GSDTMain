@@ -223,124 +223,127 @@ export default function FiatMinting() {
 
   return (
     <div className="space-y-8">
-      {/* Main Minting Card */}
-      <div className="bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-2xl shadow-2xl overflow-hidden">
+      {/* Main Compact Card */}
+      <div 
+        className="rounded-xl shadow-lg overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #475569 0%, #64748b 100%)",
+        }}
+      >
         <div className="p-8">
-          <div className="bg-slate-600/50 rounded-xl p-6 backdrop-blur-sm">
-            <h3 className="text-xl font-semibold text-white mb-6">Mint with Fiat</h3>
-            
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFiatMint();
-              }}
-              className="space-y-6"
-            >
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                {/* Amount Input */}
-                <div>
-                  <label htmlFor="fiat-amount" className="block text-sm font-medium text-white mb-2">
-                    Amount
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      id="fiat-amount"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white placeholder:text-gray-300 focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm"
-                      placeholder="Enter amount"
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-
-                {/* Currency Selector */}
-                <div>
-                  <label htmlFor="currency" className="block text-sm font-medium text-white mb-2">
-                    Currency
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="currency"
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm"
-                      disabled={loading}
-                    >
-                      {currencies.map((curr) => (
-                        <option key={curr.code} value={curr.code} className="bg-slate-700">
-                          {curr.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Display Amount */}
-              <div className="bg-slate-500/30 rounded-lg p-4 border border-slate-400/20">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-300">You will receive:</span>
-                  <span className="text-lg font-semibold text-orange-400">{gsdtAmount} GSDC</span>
-                </div>
-                {gsdtPrice && (
-                  <p className="text-xs text-gray-400 mt-2">
-                    Current rate: 1 GSDC = ${gsdtPrice.toFixed(6)} USDC
-                  </p>
-                )}
-                <p className="text-xs text-gray-400">
-                  Minimum amount: {minMintAmount} GSDC
-                </p>
-              </div>
-
-              {error && (
-                <div className="p-4 bg-red-500/20 border border-red-500/30 text-red-200 rounded-lg text-sm">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="p-4 bg-green-500/20 border border-green-500/30 text-green-200 rounded-lg text-sm whitespace-pre-line">
-                  {success}
-                </div>
-              )}
-
-              {/* Request Mint Button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
-                className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 text-base font-semibold text-white shadow-lg hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <h3 className="text-xl font-semibold text-white mb-6 text-center">Mint with Fiat</h3>
+          
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleFiatMint();
+            }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {/* Amount Input */}
+              <div>
+                <label htmlFor="fiat-amount" className="block text-sm font-medium text-white mb-2">
+                  Amount
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    id="fiat-amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white placeholder:text-gray-300 focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm"
+                    placeholder="Enter amount"
+                    disabled={loading}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  'Request Mint'
-                )}
-              </motion.button>
-
-              {/* Footer Info */}
-              <div className="text-xs text-gray-400 space-y-1">
-                <p>Connected Wallet: <span className="font-mono">{address?.slice(0, 6)}...{address?.slice(-4)}</span></p>
-                <p>Tokens will be minted to your wallet after payment verification</p>
+                  </div>
+                </div>
               </div>
-            </motion.form>
-          </div>
+
+              {/* Currency Selector */}
+              <div>
+                <label htmlFor="currency" className="block text-sm font-medium text-white mb-2">
+                  Currency
+                </label>
+                <div className="relative">
+                  <select
+                    id="currency"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm appearance-none"
+                    disabled={loading}
+                  >
+                    {currencies.map((curr) => (
+                      <option key={curr.code} value={curr.code} className="bg-slate-700">
+                        {curr.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Display Amount - Compact */}
+            <div className="bg-slate-500/30 rounded-lg p-4 border border-slate-400/20">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-300">You will receive:</span>
+                <span className="text-lg font-semibold text-orange-400">{gsdtAmount} GSDC</span>
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                Minimum amount: {minMintAmount} GSDC
+              </div>
+            </div>
+
+            {error && (
+              <div className="p-3 bg-red-500/20 border border-red-500/30 text-red-200 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="p-3 bg-green-500/20 border border-green-500/30 text-green-200 rounded-lg text-sm whitespace-pre-line">
+                {success}
+              </div>
+            )}
+
+            {/* Request Mint Button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
+              className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                'Request Mint'
+              )}
+            </motion.button>
+
+            {/* Footer Info - Compact */}
+            <div className="text-xs text-gray-400 text-center">
+              <p>Connected Wallet: <span className="font-mono">{address?.slice(0, 6)}...{address?.slice(-4)}</span></p>
+              <p>Tokens will be minted to your wallet after payment verification</p>
+            </div>
+          </motion.form>
         </div>
       </div>
 
