@@ -312,7 +312,11 @@ export default function CryptoMinting() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading || !amount || parseFloat(amount) < minAmount}
-              className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
+              className="w-full rounded-lg px-6 py-3 text-base font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
+              style={{
+                backgroundColor: "#f6b62e",
+                color: "#fff"
+              }}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
