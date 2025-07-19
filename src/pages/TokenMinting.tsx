@@ -112,41 +112,111 @@ export default function TokenMinting() {
 
             {/* Main Content */}
             <div className="mt-8 space-y-8">
-              {/* Show KYC Required Message if not connected or KYC not approved */}
+              {/* Show KYC Required Message and Tabs if not connected or KYC not approved */}
               {(!isConnected || (isConnected && !checkingKYC && kycStatus !== KYCStatus.APPROVED)) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="rounded-xl shadow-lg overflow-hidden"
-                  style={{
-                    background: "linear-gradient(135deg, #475569 0%, #64748b 100%)",
-                  }}
-                >
-                  <div className="p-8 text-center">
-                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 mb-4">
-                      <svg className="h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
+                <>
+                  {/* KYC Required Message */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="rounded-xl shadow-lg overflow-hidden"
+                    style={{
+                      background: "linear-gradient(135deg, #475569 0%, #64748b 100%)",
+                    }}
+                  >
+                    <div className="p-8 text-center">
+                      <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                        <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2">KYC Required</h3>
+                      <p className="text-white/90 text-sm mb-6">
+                        You need to complete KYC verification before you can perform token actions.
+                        <br />
+                        Please complete your KYC verification first.
+                      </p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-full text-white shadow-lg transition-all duration-200"
+                        style={{
+                          background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                        }}
+                      >
+                        <Link to="/dashboard">Complete KYC</Link>
+                      </motion.button>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">KYC Required</h3>
-                    <p className="text-white/90 text-lg mb-6">
-                      You need to complete KYC verification before you can perform token actions.
-                      <br />
-                      Please complete your KYC verification first.
-                    </p>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white shadow-lg transition-all duration-200"
-                      style={{
-                        background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
-                      }}
-                    >
-                      <Link to="/dashboard">Complete KYC</Link>
-                    </motion.button>
-                  </div>
-                </motion.div>
+                  </motion.div>
+
+                  {/* Tabs with KYC Required Messages */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                      <div className="border-b border-gray-200">
+                        <nav className="-mb-px flex" aria-label="Tabs">
+                          <button
+                            onClick={() => setActiveTab('fiat')}
+                            className={`w-1/2 py-4 px-1 text-center border-b-2 text-sm font-medium ${
+                              activeTab === 'fiat'
+                                ? 'border-primary-500 text-primary-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            Fiat Payment
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('crypto')}
+                            className={`w-1/2 py-4 px-1 text-center border-b-2 text-sm font-medium ${
+                              activeTab === 'crypto'
+                                ? 'border-primary-500 text-primary-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            Crypto Payment
+                          </button>
+                        </nav>
+                      </div>
+
+                      <div className="p-6">
+                        <div
+                          className="rounded-xl shadow-lg overflow-hidden"
+                          style={{
+                            background: "linear-gradient(135deg, #475569 0%, #64748b 100%)",
+                          }}
+                        >
+                          <div className="p-8 text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                              </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">KYC Required</h3>
+                            <p className="text-white/90 text-sm mb-6">
+                              You need to complete KYC verification before you can mint tokens.
+                              <br />
+                              Please go to the dashboard to complete your KYC verification.
+                            </p>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-full text-white shadow-lg transition-all duration-200"
+                              style={{
+                                background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                              }}
+                            >
+                              <Link to="/dashboard">Complete KYC</Link>
+                            </motion.button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
               )}
 
               {/* Show loading state */}
