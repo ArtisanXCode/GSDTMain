@@ -196,7 +196,7 @@ export default function TokenMinting() {
                               borderBottomColor:
                                 activeTab === "fiat"
                                   ? "#ed9030"
-                                  : "transparent",
+                                  : "#ffffff",
                             }}
                           >
                             Mint with Fiat
@@ -214,11 +214,7 @@ export default function TokenMinting() {
                               borderBottomColor:
                                 activeTab === "crypto"
                                   ? "#ed9030"
-                                  : "transparent",
-                              color:
-                                activeTab === "crypto"
-                                  ? "#ed9030"
-                                  : "transparent",
+                                  : "#ffffff",                              
                             }}
                           >
                             Mint with Crypto
