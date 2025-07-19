@@ -128,7 +128,7 @@ export default function TokenMinting() {
                     transition={{ delay: 0.1 }}
                     className="rounded-xl shadow-lg overflow-hidden"
                     style={{
-                      backgroundClolor: "#446c93",
+                      backgroundColor: "#446c93",
                     }}
                   >
                     <div className="p-8 text-center">
@@ -187,33 +187,35 @@ export default function TokenMinting() {
                             onClick={() => setActiveTab("fiat")}
                             className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
                               activeTab === "fiat"
-                                ? "text-white border-b-2"
-                                : "text-white border-transparent hover:text-gray-300"
+                                ? "border-b-2"
+                                : "border-transparent hover:text-gray-300"
                             }`}
                             style={{
+                              color: activeTab === "fiat" ? "#ed9030" : "white",
                               borderBottomColor:
                                 activeTab === "fiat"
                                   ? "#ed9030"
                                   : "transparent",
                             }}
                           >
-                            Fiat Payment
+                            Mint with Fiat
                           </button>
                           <button
                             onClick={() => setActiveTab("crypto")}
                             className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
                               activeTab === "crypto"
-                                ? "text-white border-b-2"
-                                : "text-white border-transparent hover:text-gray-300"
+                                ? "border-b-2"
+                                : "border-transparent hover:text-gray-300"
                             }`}
                             style={{
+                              color: activeTab === "crypto" ? "#ed9030" : "white",
                               borderBottomColor:
                                 activeTab === "crypto"
                                   ? "#ed9030"
                                   : "transparent",
                             }}
                           >
-                            Crypto Payment
+                            Mint with Crypto
                           </button>
                         </nav>
                       </div>
