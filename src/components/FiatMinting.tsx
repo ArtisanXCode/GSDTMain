@@ -199,7 +199,7 @@ export default function FiatMinting() {
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Checking KYC status...</p>
+        <p className="mt-4">Checking KYC status...</p>
       </div>
     );
   }
@@ -355,13 +355,13 @@ export default function FiatMinting() {
               className="bg-slate-500/30 rounded-lg p-4 border border-slate-400/20"
               style={{ backgroundColor: "#2a4661" }}
             >
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-300">You will receive:</span>
-                <span className="text-lg font-semibold text-orange-400">
+              <div className="flex items-center">
+                <span className="text-sm">You will receive:</span>
+                <span className="text-lg font-semibold text-orange-400 p-1">
                   {gsdtAmount} GSDC
                 </span>
               </div>
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs mt-1">
                 Minimum amount: {minMintAmount} GSDC
               </div>
             </div>
@@ -386,7 +386,7 @@ export default function FiatMinting() {
               disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
               className="w-full rounded-lg px-6 py-3 text-base font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
               style={{
-                backgroundColor: "#f6b62e",
+                backgroundColor: "#ed9030",
                 color: "#fff",
               }}
             >
@@ -420,7 +420,7 @@ export default function FiatMinting() {
             </motion.button>
 
             {/* Footer Info - Compact */}
-            <div className="text-xs text-gray-400 text-center">
+            <div className="text-xs text-center">
               <p>
                 Connected Wallet:{" "}
                 <span className="font-mono">
@@ -437,47 +437,51 @@ export default function FiatMinting() {
 
       {/* Previous Requests */}
       {userRequests.length > 0 && (
-        <div className="bg-white rounded-xl p-8 shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            Your Previous Requests
-          </h3>
+        <div
+          className="rounded-xl p-8 shadow-lg"
+          style={{ backgroundColor: "#446c93" }}
+        >
+          <h3 className="text-xl font-semibold mb-6">Your Previous Requests</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Currency
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Reference
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                     Notes
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody
+                className="divide-y divide-gray-200"
+                style={{ backgroundColor: "#446c93" }}
+              >
                 {userRequests.map((request) => (
-                  <tr key={request.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <tr key={request.id} className="">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {format(
                         new Date(request.created_at),
                         "MMM d, yyyy HH:mm",
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {request.amount}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {request.currency}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -487,10 +491,10 @@ export default function FiatMinting() {
                         {request.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {request.payment_reference}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {request.admin_notes || "-"}
                     </td>
                   </tr>

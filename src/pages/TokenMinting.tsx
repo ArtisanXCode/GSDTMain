@@ -185,13 +185,14 @@ export default function TokenMinting() {
                         <nav className="-mb-px flex" aria-label="Tabs">
                           <button
                             onClick={() => setActiveTab("fiat")}
-                            className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
+                            className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
                               activeTab === "fiat"
                                 ? "border-b-2"
                                 : "border-transparent hover:text-gray-300"
                             }`}
                             style={{
-                              color: activeTab === "fiat" ? "#ed9030" : "white",
+                              color:
+                                activeTab === "fiat" ? "#ed9030" : "#ffffff",
                               borderBottomColor:
                                 activeTab === "fiat"
                                   ? "#ed9030"
@@ -202,14 +203,19 @@ export default function TokenMinting() {
                           </button>
                           <button
                             onClick={() => setActiveTab("crypto")}
-                            className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
+                            className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
                               activeTab === "crypto"
                                 ? "border-b-2"
                                 : "border-transparent hover:text-gray-300"
                             }`}
                             style={{
-                              color: activeTab === "crypto" ? "#ed9030" : "white",
+                              color:
+                                activeTab === "crypto" ? "#ed9030" : "#ffffff",
                               borderBottomColor:
+                                activeTab === "crypto"
+                                  ? "#ed9030"
+                                  : "transparent",
+                              color:
                                 activeTab === "crypto"
                                   ? "#ed9030"
                                   : "transparent",
@@ -298,38 +304,45 @@ export default function TokenMinting() {
                     >
                       <div
                         className="rounded-xl shadow-lg overflow-hidden"
-                        style={{ backgroundColor: "#446c93" }}
+                        style={{ backgroundColor: "#2a4661" }}
                       >
                         <div className="border-b border-gray-600">
                           <nav className="-mb-px flex" aria-label="Tabs">
                             <button
                               onClick={() => setActiveTab("fiat")}
-                              className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
+                              className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
                                 activeTab === "fiat"
                                   ? "text-white border-b-2"
                                   : "text-white border-transparent hover:text-gray-300"
                               }`}
                               style={{
+                                color:
+                                  activeTab === "fiat" ? "#ed9030" : "#ffffff",
                                 borderBottomColor:
                                   activeTab === "fiat"
                                     ? "#ed9030"
-                                    : "transparent",
+                                    : "#ffffff",
+                                
                               }}
                             >
                               Fiat Payment
                             </button>
                             <button
                               onClick={() => setActiveTab("crypto")}
-                              className={`w-1/2 py-8 px-1 text-center border-b-2 text-sm font-large ${
+                              className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
                                 activeTab === "crypto"
                                   ? "text-white border-b-2"
                                   : "text-white border-transparent hover:text-gray-300"
                               }`}
                               style={{
+                                color:
+                                  activeTab === "crypto"
+                                    ? "#ed9030"
+                                    : "#ffffff",
                                 borderBottomColor:
                                   activeTab === "crypto"
                                     ? "#ed9030"
-                                    : "transparent",
+                                    : "#ffffff",                                
                               }}
                             >
                               Crypto Payment
