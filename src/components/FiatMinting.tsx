@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from 'framer-motion';
@@ -28,13 +29,13 @@ export default function FiatMinting() {
 
   // Available currencies with their display names
   const currencies = [
-    { code: 'USD', name: 'US Dollar' },
-    { code: 'CNH', name: 'Chinese Yuan' },
-    { code: 'RUB', name: 'Russian Ruble' },
-    { code: 'INR', name: 'Indian Rupee' },
-    { code: 'BRL', name: 'Brazilian Real' },
-    { code: 'ZAR', name: 'South African Rand' },
-    { code: 'IDR', name: 'Indonesian Rupiah' }
+    { code: 'USD', name: 'US Dollar (USD)' },
+    { code: 'CNH', name: 'Chinese Yuan (CNH)' },
+    { code: 'RUB', name: 'Russian Ruble (RUB)' },
+    { code: 'INR', name: 'Indian Rupee (INR)' },
+    { code: 'BRL', name: 'Brazilian Real (BRL)' },
+    { code: 'ZAR', name: 'South African Rand (ZAR)' },
+    { code: 'IDR', name: 'Indonesian Rupiah (IDR)' }
   ];
 
   // Check KYC status
@@ -222,108 +223,125 @@ export default function FiatMinting() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-white rounded-xl p-8 shadow-lg">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Mint with Fiat</h3>
-        <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleFiatMint();
-          }}
-          className="space-y-6"
-        >
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <label htmlFor="fiat-amount" className="block text-sm font-semibold leading-6 text-gray-900">
-                Amount
-              </label>
-              <div className="mt-2.5">
-                <input
-                  type="number"
-                  id="fiat-amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"
-                  placeholder="Enter amount"
-                  disabled={loading}
-                />
+      {/* Main Minting Card */}
+      <div className="bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-8">
+          <div className="bg-slate-600/50 rounded-xl p-6 backdrop-blur-sm">
+            <h3 className="text-xl font-semibold text-white mb-6">Mint with Fiat</h3>
+            
+            <motion.form
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleFiatMint();
+              }}
+              className="space-y-6"
+            >
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {/* Amount Input */}
+                <div>
+                  <label htmlFor="fiat-amount" className="block text-sm font-medium text-white mb-2">
+                    Amount
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      id="fiat-amount"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white placeholder:text-gray-300 focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm"
+                      placeholder="Enter amount"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                {/* Currency Selector */}
+                <div>
+                  <label htmlFor="currency" className="block text-sm font-medium text-white mb-2">
+                    Currency
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="currency"
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                      className="block w-full rounded-lg border-0 bg-slate-500/50 px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:bg-slate-500/70 transition-all sm:text-sm backdrop-blur-sm"
+                      disabled={loading}
+                    >
+                      {currencies.map((curr) => (
+                        <option key={curr.code} value={curr.code} className="bg-slate-700">
+                          {curr.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="currency" className="block text-sm font-semibold leading-6 text-gray-900">
-                Currency
-              </label>
-              <div className="mt-2.5">
-                <select
-                  id="currency"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"
-                  disabled={loading}
-                >
-                  {currencies.map((curr) => (
-                    <option key={curr.code} value={curr.code}>
-                      {curr.name} ({curr.code})
-                    </option>
-                  ))}
-                </select>
+              {/* Display Amount */}
+              <div className="bg-slate-500/30 rounded-lg p-4 border border-slate-400/20">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-300">You will receive:</span>
+                  <span className="text-lg font-semibold text-orange-400">{gsdtAmount} GSDC</span>
+                </div>
+                {gsdtPrice && (
+                  <p className="text-xs text-gray-400 mt-2">
+                    Current rate: 1 GSDC = ${gsdtPrice.toFixed(6)} USDC
+                  </p>
+                )}
+                <p className="text-xs text-gray-400">
+                  Minimum amount: {minMintAmount} GSDC
+                </p>
               </div>
-            </div>
+
+              {error && (
+                <div className="p-4 bg-red-500/20 border border-red-500/30 text-red-200 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="p-4 bg-green-500/20 border border-green-500/30 text-green-200 rounded-lg text-sm whitespace-pre-line">
+                  {success}
+                </div>
+              )}
+
+              {/* Request Mint Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
+                className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 text-base font-semibold text-white shadow-lg hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  'Request Mint'
+                )}
+              </motion.button>
+
+              {/* Footer Info */}
+              <div className="text-xs text-gray-400 space-y-1">
+                <p>Connected Wallet: <span className="font-mono">{address?.slice(0, 6)}...{address?.slice(-4)}</span></p>
+                <p>Tokens will be minted to your wallet after payment verification</p>
+              </div>
+            </motion.form>
           </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm text-gray-600">
-              You will receive: <span className="font-semibold text-primary-600">{gsdtAmount} GSDT</span>
-            </p>
-            {gsdtPrice && (
-              <p className="text-xs text-gray-500 mt-1">
-                Current rate: 1 GSDT = ${gsdtPrice.toFixed(6)} USDC
-              </p>
-            )}
-            <p className="text-xs text-gray-500 mt-1">
-              Minimum amount: {minMintAmount} GSDT
-            </p>
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="p-4 bg-green-50 text-green-700 rounded-md text-sm whitespace-pre-line">
-              {success}
-            </div>
-          )}
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
-            className="w-full rounded-lg bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </span>
-            ) : (
-              'Request Mint'
-            )}
-          </motion.button>
-
-          <div className="text-xs text-gray-500">
-            <p>Connected Wallet: {address}</p>
-            <p>Tokens will be minted to your wallet after payment verification</p>
-          </div>
-        </motion.form>
+        </div>
       </div>
 
       {/* Previous Requests */}
