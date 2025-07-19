@@ -29,15 +29,16 @@ export default function TokenInfo() {
 
           const kycResponse = await getUserKYCStatus(address);
           const dbUserKYC = await getDatabaseUserKYCStatus(address);
+
           setKYCStatus(kycResponse.status);
           
-          let appId = kycResponse?.request?.sumsub_applicant_id;
+          let appId = dbUserKYC.sumsub_applicant_id; // kycResponse?.request?.sumsub_applicant_id;
           
           if (!appId) {
             appId = await createSumsubApplicant(address);
             if (appId) {
               const appIdStatus = await getSumsubApplicantStatus(address, appId);
-              //console.log(appIdStatus);
+              console.log(appIdStatus);
 
               if (appIdStatus?.reviewStatus === "completed") {
                 await saveKYCDetailsTokenInfo(address, appIdStatus, appId, "APPROVED");                

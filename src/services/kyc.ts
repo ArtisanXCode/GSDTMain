@@ -114,7 +114,7 @@ export const getUserKYCStatus = async (userAddress: string): Promise<{ status: K
     */
     
     // First check contract KYC status
-    const contract = getContract();
+    /*const contract = getContract();
     const contract_NFT = getNFTContract();
     if (contract_NFT) {
       
@@ -135,7 +135,7 @@ export const getUserKYCStatus = async (userAddress: string): Promise<{ status: K
     if (!contract) {
       throw new Error('Contract not initialized');
     }
-
+    */
     /*
     const isKYCApproved = await contract.kycApproved(userAddress);
     
@@ -167,6 +167,21 @@ export const getUserKYCStatus = async (userAddress: string): Promise<{ status: K
       request: data as KYCRequest
     };
     */
+
+
+    //const response = await getUserKYCStatus(address);
+    const dbUserKYC = await getDatabaseUserKYCStatus(userAddress);
+    
+    const sumsub_applicant_id = dbUserKYC.sumsub_applicant_id
+    
+    const appIdStatus = await getSumsubApplicantStatus(userAddress, sumsub_applicant_id);
+    
+    if(appIdStatus.reviewStatus == "completed" && appIdStatus.reviewResult.reviewAnswer == "GREEN"){
+      return { status: KYCStatus.APPROVED };      
+    } else {
+      return { status: KYCStatus.NOT_SUBMITTED };
+    }
+      
 
   } catch (error) {
     console.error('Error fetching user KYC status:', error);

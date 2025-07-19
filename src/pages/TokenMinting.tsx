@@ -5,7 +5,8 @@ import FiatMinting from '../components/FiatMinting';
 import CryptoMinting from '../components/CryptoMinting';
 import { useWallet } from '../hooks/useWallet';
 import { useState, useEffect } from 'react';
-import { getUserKYCStatus, KYCStatus } from '../services/kyc';
+import { KYCStatus, getUserKYCStatus, submitKYCRequest, getDatabaseUserKYCStatus } from '../services/kyc';
+import { getSumsubApplicantStatus } from '../services/sumsub';
 import { Link } from 'react-router-dom';
 
 export default function TokenMinting() {
@@ -18,17 +19,22 @@ export default function TokenMinting() {
     const checkKYCStatus = async () => {
       if (!address) return;
       
-      setCheckingKYC(true);
       try {
-        const response = await getUserKYCStatus(address);
-        if (response) {
-          setKycStatus(response.status);
+        const userKYCStatus = await getUserKYCStatus(address);
+        
+        if(userKYCStatus.status == KYCStatus.APPROVED){          
+          setCheckingKYC(true);
+          setKycStatus(userKYCStatus.status);
+        } else {
+          setCheckingKYC(false);
         }
       } catch (error) {
         console.error('Error checking KYC status:', error);
-      } finally {
-        setCheckingKYC(false);
       }
+
+      console.log(kycStatus);
+      console.log(checkingKYC);
+
     };
 
     if (isConnected && address) {
@@ -144,7 +150,7 @@ export default function TokenMinting() {
               )}
 
               {/* Show loading state */}
-              {isConnected && checkingKYC && (
+              {isConnected && !checkingKYC && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -157,7 +163,7 @@ export default function TokenMinting() {
               )}
 
               {/* Show minting options only if KYC is approved */}
-              {isConnected && !checkingKYC && kycStatus === KYCStatus.APPROVED && (
+              {isConnected && checkingKYC && kycStatus === KYCStatus.APPROVED && (
                 <>
                   {/* Token Actions */}
                   <motion.div
