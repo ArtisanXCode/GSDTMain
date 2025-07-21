@@ -208,7 +208,10 @@ export default function Dashboard() {
             >
               <div className="mb-6">
                 <div className="text-sm text-white/80 mb-2">GSDC Price</div>
-                <div className="text-3xl font-bold" style={{ color: "#ed9030" }}>
+                <div
+                  className="text-3xl font-bold"
+                  style={{ color: "#ed9030" }}
+                >
                   $0.000000 USDC
                 </div>
               </div>
@@ -219,11 +222,16 @@ export default function Dashboard() {
                   { currency: "BTC", label: "to USDT", rate: "10.000000" },
                   { currency: "CNH", rate: "1.000000" },
                 ].map((item, index) => (
-                  <div key={item.currency} className="bg-white/10 rounded-lg p-4">
+                  <div
+                    key={item.currency}
+                    className="bg-white/10 rounded-lg p-4"
+                  >
                     <div className="text-sm text-white/80">
                       {item.currency}
                       {item.label && (
-                        <div className="text-xs text-white/60">{item.label}</div>
+                        <div className="text-xs text-white/60">
+                          {item.label}
+                        </div>
                       )}
                     </div>
                     <div className="text-lg font-semibold text-white">
@@ -263,11 +271,10 @@ export default function Dashboard() {
             >
               {/* Top stats in boxes */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div
-                  className="rounded-lg p-4"
-                  style={{ backgroundColor: "#446c93" }}
-                >
-                  <div className="text-sm text-white/80 mb-2">Total GSDC Supply</div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-white/80 mb-2">
+                    Total GSDC Supply
+                  </div>
                   <div
                     className="text-2xl font-bold"
                     style={{ color: "#ed9030" }}
@@ -275,11 +282,10 @@ export default function Dashboard() {
                     0 GSDC
                   </div>
                 </div>
-                <div
-                  className="rounded-lg p-4"
-                  style={{ backgroundColor: "#446c93" }}
-                >
-                  <div className="text-sm text-white/80 mb-2">Total Reserves</div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-white/80 mb-2">
+                    Total Reserves
+                  </div>
                   <div
                     className="text-2xl font-bold"
                     style={{ color: "#ed9030" }}
@@ -287,12 +293,13 @@ export default function Dashboard() {
                     $96
                   </div>
                 </div>
-                <div
-                  className="rounded-lg p-4"
-                  style={{ backgroundColor: "#446c93" }}
-                >
-                  <div className="text-sm text-white/80 mb-2">Backing Ratio</div>
-                  <div className="text-2xl font-bold text-green-400">100.00%</div>
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-white/80 mb-2">
+                    Backing Ratio
+                  </div>
+                  <div className="text-2xl font-bold text-green-400">
+                    100.00%
+                  </div>
                 </div>
               </div>
 
@@ -303,63 +310,80 @@ export default function Dashboard() {
                 </h4>
 
                 {/* Account One */}
-                <div
-                  className="rounded-lg p-6"
-                  style={{ backgroundColor: "#446c93" }}
-                >
+                <div className="bg-white/10 rounded-lg rounded-lg p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <div className="text-white font-semibold text-lg">Account One</div>
-                      <div className="text-white/70 text-sm">Last Updated: 2025-03-05</div>
+                      <div className="text-white font-semibold text-lg">
+                        Account One
+                      </div>
+                      <div className="text-white/70 text-sm">
+                        Last Updated: 2025-03-05
+                      </div>
                     </div>
                     <button className="text-orange-400 hover:text-orange-300 text-sm font-medium">
                       View Audit Report →
                     </button>
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-6">
                     <div>
                       <div className="text-white/70 text-sm">USDC</div>
-                      <div className="text-white font-semibold text-lg">1,000,000</div>
+                      <div className="text-white font-semibold text-lg">
+                        1,000,000
+                      </div>
                     </div>
                     <div>
                       <div className="text-white/70 text-sm">USD Value</div>
-                      <div className="text-white font-semibold text-lg">$1,000,000</div>
+                      <div className="text-white font-semibold text-lg">
+                        $1,000,000
+                      </div>
                     </div>
                     <div>
                       <div className="text-white/70 text-sm">Custodian</div>
-                      <div className="text-white font-semibold text-lg">Fireblocks</div>
+                      <div className="text-white font-semibold text-lg">
+                        Fireblocks
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* USD Coin */}
                 <div
-                  className="rounded-lg p-6"
-                  style={{ backgroundColor: "#446c93" }}
+                  className="bg-white/10 rounded-lg p-6"
+                  /*style={{ backgroundColor: "#446c93" }}*/
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <div className="text-white font-semibold text-lg">USD Coin</div>
-                      <div className="text-white/70 text-sm">Last Updated: 2025-03-05</div>
+                      <div className="text-white font-semibold text-lg">
+                        USD Coin
+                      </div>
+                      <div className="text-white/70 text-sm">
+                        Last Updated: 2025-03-05
+                      </div>
                     </div>
                     <button className="text-orange-400 hover:text-orange-300 text-sm font-medium">
                       View Audit Report →
                     </button>
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-6">
                     <div>
                       <div className="text-white/70 text-sm">USDT</div>
-                      <div className="text-white font-semibold text-lg">10,000,000</div>
+                      <div className="text-white font-semibold text-lg">
+                        10,000,000
+                      </div>
                     </div>
                     <div>
                       <div className="text-white/70 text-sm">USD Value</div>
-                      <div className="text-white font-semibold text-lg">$10,000,000</div>
+                      <div className="text-white font-semibold text-lg">
+                        $10,000,000
+                      </div>
                     </div>
                     <div>
                       <div className="text-white/70 text-sm">Custodian</div>
-                      <div className="text-white font-semibold text-lg">Fireblocks</div>
+                      <div className="text-white font-semibold text-lg">
+                        Fireblocks
+                      </div>
                     </div>
                   </div>
                 </div>
