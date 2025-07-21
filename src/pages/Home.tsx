@@ -296,7 +296,7 @@ export default function Home() {
                           >
                             <div className="mb-6 flex justify-center">
                               <feature.icon
-                                className="h-16 w-16 lg:h-12 lg:w-12 text-white"
+                                className="h-32 w-32 lg:h-24 lg:w-24 text-white"
                                 aria-hidden="true"
                               />
                             </div>
