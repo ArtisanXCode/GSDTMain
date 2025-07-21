@@ -191,7 +191,7 @@ export default function Dashboard() {
             <div
               className="p-6"
               style={{
-                background: "linear-gradient(to bottom, #2a4661, #6d97bf)",
+                background: "linear-gradient(to bottom, #446c93, #6d97bf)",
               }}
             >
               <h3 className="text-xl font-semibold text-white">
@@ -236,19 +236,31 @@ export default function Dashboard() {
           </motion.div>
 
           {/* Proof of Reserves Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-2xl p-8 text-white shadow-lg"
-            style={{
-              background: "linear-gradient(to bottom, #6d97bf, #446c93)",
-            }}
-          >
-            <h3 className="text-xl font-semibold text-white mb-6">
-              Proof of Reserves
-            </h3>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="rounded-2xl shadow-lg mb-8 overflow-hidden"
+            >
+              {/* Header with gradient */}
+              <div
+                className="p-6"
+                style={{
+                  background: "linear-gradient(to bottom, #446c93, #6d97bf)",
+                }}
+              >
+                <h3 className="text-xl font-semibold text-white">
+                  Proof of Reserves
+                </h3>
+              </div>
 
+              {/* Body with solid background */}
+              <div
+                className="p-8"
+                style={{
+                  backgroundColor: "#2a4661",
+                }}
+              >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="text-center">
                 <div
@@ -315,6 +327,7 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
+              </div>
           </motion.div>
         </div>
       </div>
