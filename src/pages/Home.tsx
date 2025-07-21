@@ -245,7 +245,7 @@ export default function Home() {
       <div
         className="py-24 sm:py-32"
         style={{
-          background: "linear-gradient(to bottom, #446c93, #2a4661)",
+          background: "linear-gradient(to bottom, #2a4661 50%, #ffffff 50%)",
         }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
