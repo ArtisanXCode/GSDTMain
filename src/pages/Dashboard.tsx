@@ -161,7 +161,22 @@ export default function Dashboard() {
                 Manual Verification
               </button>
             </div>
-            
+
+            {/* KYC Status Display */}
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{ background: "rgba(34, 197, 94, 0.2)" }}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                <span className="text-white font-medium">KYC Verified</span>
+              </div>
+              <p className="text-white/80 text-sm mt-2">
+                Your identity has been verified and you can now access all
+                features.111
+              </p>
+            </div>
+
             {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
           </motion.div>
 
@@ -170,59 +185,35 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl shadow-lg mb-8 overflow-hidden"
+            className="rounded-2xl p-8 text-white shadow-lg mb-8"
             style={{
               background: "linear-gradient(to bottom, #6d97bf, #446c93)",
             }}
           >
-            {/* Header */}
-            <div className="p-8 pb-6">
-              <h3 className="text-xl font-semibold text-white">
-                Exchange Rates
-              </h3>
+            <h3 className="text-xl font-semibold text-white mb-6">
+              Exchange Rates
+            </h3>
+
+            <div className="mb-6">
+              <div className="text-sm text-white/80 mb-2">GSDC Price</div>
+              <div className="text-3xl font-bold" style={{ color: "#ed9030" }}>
+                $0.000000 USDC
+              </div>
             </div>
 
-            {/* Main Content */}
-            <div 
-              className="p-8 pt-6"
-              style={{
-                background: "linear-gradient(to bottom, #446c93, #2a4661)",
-              }}
-            >
-              {/* GSDC Price Section */}
-              <div className="mb-8">
-                <div className="text-sm text-white/80 mb-2">GSDC Price</div>
-                <div className="text-3xl font-bold" style={{ color: "#ed9030" }}>
-                  $0.000000 USDC
-                </div>
-              </div>
-
-              {/* Exchange Rate Cards - 2 Column Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* USD to EUR Card */}
-                <div 
-                  className="rounded-lg p-6"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                >
-                  <div className="text-sm text-white/80 mb-1">USD</div>
-                  <div className="text-xs text-white/60 mb-3">to EUR</div>
-                  <div className="text-xl font-semibold text-white text-right">
-                    1.500000
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { currency: "CNH", rate: "1.000000" },
+                { currency: "BRL", rate: "6.000000" },
+                { currency: "INR", rate: "84.000000" },
+              ].map((item, index) => (
+                <div key={item.currency} className="bg-white/10 rounded-lg p-4">
+                  <div className="text-sm text-white/80">{item.currency}</div>
+                  <div className="text-lg font-semibold text-white">
+                    {item.rate}
                   </div>
                 </div>
-
-                {/* BTC to USDT Card */}
-                <div 
-                  className="rounded-lg p-6"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-                >
-                  <div className="text-sm text-white/80 mb-1">BTC</div>
-                  <div className="text-xs text-white/60 mb-3">to USDT</div>
-                  <div className="text-xl font-semibold text-white text-right">
-                    10.000000
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </motion.div>
 
