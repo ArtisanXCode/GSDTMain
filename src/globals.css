@@ -105,4 +105,51 @@ body {
     font-weight: 500;
     transition: all 0.2s ease-in-out;
   }
+
+  /* Phoenix Icon Size Management */
+  .phoenix-icon-small {
+    width: 64px;
+    height: 64px;
+  }
+
+  .phoenix-icon-medium {
+    width: 128px;
+    height: 128px;
+  }
+
+  .phoenix-icon-large {
+    width: 256px;
+    height: 256px;
+  }
+
+  .phoenix-icon-xlarge {
+    width: 384px;
+    height: 384px;
+  }
+
+  /* Custom size class - you can modify this directly */
+  .phoenix-icon-custom {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Responsive phoenix icon */
+  .phoenix-icon-responsive {
+    width: 128px;
+    height: 128px;
+  }
+
+  @media (min-width: 640px) {
+    .phoenix-icon-responsive {
+      width: 200px;
+      height: 200px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .phoenix-icon-responsive {
+      width: 256px;
+      height: 256px;
+    }
+  }
 }

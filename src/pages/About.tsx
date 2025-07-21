@@ -40,7 +40,7 @@ export default function About() {
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-32 h-32 sm:w-50 sm:h-50"
+            className="phoenix-icon-large"
           />
         </div>
       </div>
