@@ -187,7 +187,7 @@ export default function Dashboard() {
             transition={{ delay: 0.4 }}
             className="rounded-2xl p-8 text-white shadow-lg mb-8"
             style={{
-              background: "linear-gradient(to bottom, #6d97bf, #446c93)",
+              background: "linear-gradient(to bottom, #2a4661, #6d97bf)",
             }}
           >
             <h3 className="text-xl font-semibold text-white mb-6">
