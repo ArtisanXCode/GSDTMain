@@ -60,15 +60,15 @@ const metrics = [
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % Math.ceil(features.length / getItemsPerSlide()));
   };
-  
+
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + Math.ceil(features.length / getItemsPerSlide())) % Math.ceil(features.length / getItemsPerSlide()));
   };
-  
+
   const getItemsPerSlide = () => {
     if (typeof window !== 'undefined') {
       return window.innerWidth >= 1024 ? 4 : 1;
@@ -288,19 +288,20 @@ export default function Home() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center"
+                            className="rounded-3xl p-8 lg:p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center mx-4 lg:mx-0"
                             style={{
                               background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+                              minHeight: "280px",
                             }}
                           >
-                            <div className="mb-4 flex justify-center">
+                            <div className="mb-6 flex justify-center">
                               <feature.icon
-                                className="h-12 w-12 text-white"
+                                className="h-16 w-16 lg:h-12 lg:w-12 text-white"
                                 aria-hidden="true"
                               />
                             </div>
-                            <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
-                            <p className="text-white text-sm leading-relaxed">
+                            <h3 className="text-xl lg:text-lg font-semibold mb-4 lg:mb-3">{feature.name}</h3>
+                            <p className="text-white text-base lg:text-sm leading-relaxed">
                               {feature.description}
                             </p>
                           </motion.div>

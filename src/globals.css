@@ -118,19 +118,50 @@ body {
   }
 
   .phoenix-icon-large {
-    width: 256px;
-    height: 256px;
+    width: 512px;
+    height: 512px;
   }
 
   .phoenix-icon-xlarge {
-    width: 384px;
-    height: 384px;
+    width: 768px;
+    height: 768px;
+  }
+
+  .phoenix-icon-xxlarge {
+    width: 1024px;
+    height: 1024px;
   }
 
   /* Custom size class - you can modify this directly */
   .phoenix-icon-custom {
-    width: 200px;
-    height: 200px;
+    width: 400px;
+    height: 400px;
+  }
+
+  /* Size variations for different use cases */
+  .phoenix-icon-256 {
+    width: 256px;
+    height: 256px;
+  }
+
+  .phoenix-icon-384 {
+    width: 384px;
+    height: 384px;
+  }
+
+  .phoenix-icon-512 {
+    width: 512px;
+    height: 512px;
+  }
+
+  .phoenix-icon-640 {
+    width: 640px;
+    height: 640px;
+  }
+
+  .phoenix-icon-768 {
+    width: 768px;
+    height: 768px;
   }
 
   /* Responsive phoenix icon */
