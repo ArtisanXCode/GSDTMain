@@ -341,7 +341,7 @@ export default function Home() {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                  className={`w-3 aspect-square rounded-full transition-colors duration-200 ${
                     currentSlide === index
                       ? 'bg-white'
                       : 'bg-white/40'
