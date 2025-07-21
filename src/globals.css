@@ -75,7 +75,6 @@ body {
 
   /* Ensure all buttons have proper visibility and spacing */
   button {
-    min-height: 40px;
     position: relative;
     z-index: 1;
   }
