@@ -32,12 +32,15 @@ export default function About() {
       </div>
 
       {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-center">
-        <div className="absolute -top-16">
+      <div className="relative z-20 flex justify-end">
+        <div
+          className=""
+          style={{ position: "absolute", right: "10%", top: "-60px" }}
+        >
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-24 h-24 sm:w-32 sm:h-32"
+            className="w-32 h-32 sm:w-50 sm:h-50"
           />
         </div>
       </div>
