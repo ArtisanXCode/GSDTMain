@@ -4,8 +4,10 @@ import {
   BanknotesIcon,
   ChartBarIcon,
   ShieldCheckIcon,
+  CogIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import ExchangeRatesList from "../components/ExchangeRatesList";
 
 const features = [
@@ -32,6 +34,12 @@ const features = [
       "Built with compliance at its core, following all relevant regulations.",
     icon: ShieldCheckIcon,
   },
+  {
+    name: "Advanced Technology",
+    description:
+      "Powered by cutting-edge blockchain technology for maximum security and efficiency.",
+    icon: CogIcon,
+  },
 ];
 
 const currencies = [
@@ -51,6 +59,23 @@ const metrics = [
 ];
 
 export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % Math.ceil(features.length / getItemsPerSlide()));
+  };
+  
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + Math.ceil(features.length / getItemsPerSlide())) % Math.ceil(features.length / getItemsPerSlide()));
+  };
+  
+  const getItemsPerSlide = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024 ? 4 : 1;
+    }
+    return 4;
+  };
+
   return (
     <div className="bg-white">
       {/* Hero section with background image and color combination */}
@@ -238,71 +263,91 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Desktop Grid */}
-          <div className="hidden lg:grid lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center"
+          {/* Responsive Slider */}
+          <div className="relative">
+            {/* Slider Container */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-300 ease-in-out"
                 style={{
-                  background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+                  transform: `translateX(-${currentSlide * 100}%)`,
                 }}
               >
-                <div className="mb-4 flex justify-center">
-                  <feature.icon
-                    className="h-12 w-12 text-white"
-                    aria-hidden="true"
-                  />
-                </div>
-                <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
-                <p className="text-white text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Mobile/Tablet Slider */}
-          <div className="lg:hidden">
-            <div className="overflow-x-auto">
-              <div
-                className="flex space-x-4 pb-4"
-                style={{ width: "max-content" }}
-              >
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="rounded-2xl p-6 text-white hover:scale-105 transition-transform duration-300 text-center flex-shrink-0"
-                    style={{
-                      background:
-                        "linear-gradient(to bottom, #f6b62e, #e74134)",
-                      width: "280px",
-                      minHeight: "200px",
-                    }}
-                  >
-                    <div className="mb-4 flex justify-center">
-                      <feature.icon
-                        className="h-12 w-12 text-white"
-                        aria-hidden="true"
-                      />
+                {Array.from({ length: Math.ceil(features.length / getItemsPerSlide()) }).map((_, slideIndex) => (
+                  <div key={slideIndex} className="w-full flex-shrink-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                      {features
+                        .slice(
+                          slideIndex * getItemsPerSlide(),
+                          (slideIndex + 1) * getItemsPerSlide()
+                        )
+                        .map((feature, index) => (
+                          <motion.div
+                            key={feature.name}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="rounded-2xl p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center"
+                            style={{
+                              background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+                            }}
+                          >
+                            <div className="mb-4 flex justify-center">
+                              <feature.icon
+                                className="h-12 w-12 text-white"
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <h3 className="text-lg font-semibold mb-3">{feature.name}</h3>
+                            <p className="text-white text-sm leading-relaxed">
+                              {feature.description}
+                            </p>
+                          </motion.div>
+                        ))}
                     </div>
-                    <h3 className="text-lg font-semibold mb-3">
-                      {feature.name}
-                    </h3>
-                    <p className="text-white text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
+            </div>
+
+            {/* Navigation Arrows - Desktop */}
+            <div className="hidden lg:block">
+              {Math.ceil(features.length / 4) > 1 && (
+                <>
+                  <button
+                    onClick={prevSlide}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Navigation Dots - Mobile */}
+            <div className="lg:hidden flex justify-center mt-6 space-x-2">
+              {Array.from({ length: features.length }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                    currentSlide === index
+                      ? 'bg-white'
+                      : 'bg-white/40'
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>
