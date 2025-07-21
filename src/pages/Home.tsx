@@ -62,15 +62,21 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % Math.ceil(features.length / getItemsPerSlide()));
+    setCurrentSlide(
+      (prev) => (prev + 1) % Math.ceil(features.length / getItemsPerSlide()),
+    );
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + Math.ceil(features.length / getItemsPerSlide())) % Math.ceil(features.length / getItemsPerSlide()));
+    setCurrentSlide(
+      (prev) =>
+        (prev - 1 + Math.ceil(features.length / getItemsPerSlide())) %
+        Math.ceil(features.length / getItemsPerSlide()),
+    );
   };
 
   const getItemsPerSlide = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.innerWidth >= 1024 ? 4 : 1;
     }
     return 4;
@@ -245,7 +251,7 @@ export default function Home() {
       <div
         className="py-24 sm:py-32"
         style={{
-          background: "linear-gradient(to bottom, #2a4661 50%, #ffffff 50%)",
+          background: "linear-gradient(to bottom, #2a4661 65%, #ffffff 50%)",
         }}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -267,19 +273,21 @@ export default function Home() {
           <div className="relative">
             {/* Slider Container */}
             <div className="overflow-hidden">
-              <div 
+              <div
                 className="flex transition-transform duration-300 ease-in-out"
                 style={{
                   transform: `translateX(-${currentSlide * 100}%)`,
                 }}
               >
-                {Array.from({ length: Math.ceil(features.length / getItemsPerSlide()) }).map((_, slideIndex) => (
+                {Array.from({
+                  length: Math.ceil(features.length / getItemsPerSlide()),
+                }).map((_, slideIndex) => (
                   <div key={slideIndex} className="w-full flex-shrink-0">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                       {features
                         .slice(
                           slideIndex * getItemsPerSlide(),
-                          (slideIndex + 1) * getItemsPerSlide()
+                          (slideIndex + 1) * getItemsPerSlide(),
                         )
                         .map((feature, index) => (
                           <motion.div
@@ -290,7 +298,8 @@ export default function Home() {
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                             className="rounded-3xl p-8 lg:p-6 text-white h-full hover:scale-105 transition-transform duration-300 text-center mx-4 lg:mx-0"
                             style={{
-                              background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+                              background:
+                                "linear-gradient(to bottom, #f6b62e, #e74134)",
                               minHeight: "280px",
                             }}
                           >
@@ -300,7 +309,9 @@ export default function Home() {
                                 aria-hidden="true"
                               />
                             </div>
-                            <h3 className="text-xl lg:text-lg font-semibold mb-4 lg:mb-3">{feature.name}</h3>
+                            <h3 className="text-xl lg:text-lg font-semibold mb-4 lg:mb-3">
+                              {feature.name}
+                            </h3>
                             <p className="text-white text-base lg:text-sm leading-relaxed">
                               {feature.description}
                             </p>
@@ -320,16 +331,36 @@ export default function Home() {
                     onClick={prevSlide}
                     className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200"
                   >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
                   <button
                     onClick={nextSlide}
                     className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200"
                   >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </button>
                 </>
@@ -343,9 +374,7 @@ export default function Home() {
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`w-3 aspect-square rounded-full transition-colors duration-200 ${
-                    currentSlide === index
-                      ? 'bg-white'
-                      : 'bg-white/40'
+                    currentSlide === index ? "bg-white" : "bg-white/40"
                   }`}
                 />
               ))}
