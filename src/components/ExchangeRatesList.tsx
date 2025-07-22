@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { ExchangeRate, getExchangeRates } from '../services/exchangeRates';
-import { format } from 'date-fns';
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { ExchangeRate, getExchangeRates } from "../services/exchangeRates";
+import { format } from "date-fns";
 
 interface Props {
   refreshInterval?: number;
@@ -20,8 +20,8 @@ export default function ExchangeRatesList({ refreshInterval = 60000 }: Props) {
       setLastUpdated(new Date());
       setError(null);
     } catch (err: any) {
-      console.error('Error fetching rates:', err);
-      setError(err.message || 'Error fetching exchange rates');
+      console.error("Error fetching rates:", err);
+      setError(err.message || "Error fetching exchange rates");
     } finally {
       setLoading(false);
     }
@@ -66,10 +66,10 @@ export default function ExchangeRatesList({ refreshInterval = 60000 }: Props) {
   return (
     <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-semibold text-white">Live Exchange Rates</h3>
+        {/*<h3 className="text-xl font-semibold text-white">Live Exchange Rates</h3>*/}
         {lastUpdated && (
           <p className="text-sm text-gray-300">
-            Last updated: {format(lastUpdated, 'HH:mm:ss')}
+            Last updated: {format(lastUpdated, "HH:mm:ss")}
           </p>
         )}
       </div>
@@ -77,10 +77,18 @@ export default function ExchangeRatesList({ refreshInterval = 60000 }: Props) {
         <table className="min-w-full divide-y divide-gray-200/20">
           <thead>
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">From</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">To</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Rate</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Updated</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
+                From
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
+                To
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
+                Rate
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">
+                Updated
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200/20">
@@ -93,16 +101,20 @@ export default function ExchangeRatesList({ refreshInterval = 60000 }: Props) {
                 className="hover:bg-white/5"
               >
                 <td className="px-4 py-3 text-sm">
-                  <div className="font-medium text-white">{rate.currency_from}</div>
+                  <div className="font-medium text-white">
+                    {rate.currency_from}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  <div className="font-medium text-white">{rate.currency_to}</div>
+                  <div className="font-medium text-white">
+                    {rate.currency_to}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-white">
                   {rate.rate.toFixed(6)}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-400">
-                  {format(new Date(rate.last_updated), 'HH:mm:ss')}
+                  {format(new Date(rate.last_updated), "HH:mm:ss")}
                 </td>
               </motion.tr>
             ))}
