@@ -1,9 +1,7 @@
 import { ethers } from 'ethers';
-import { GSDC_ABI } from '../contracts/GSDC';
-import { GSDC_NFT_ABI, GSDC_NFT_ADDRESS } from '../contracts/GSDT_NFT';
+import { GSDC_ABI, GSDC_ADDRESS } from '../contracts/GSDC';
+import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 import { supabase } from './supabase';
-
-export const GSDC_ADDRESS = '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804';
 
 // Create a default provider for read-only operations
 const defaultProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');

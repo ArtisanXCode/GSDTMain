@@ -3,7 +3,7 @@
 import { BigNumber } from 'ethers';
 import { useState, useEffect } from 'react';
 import { useWallet } from '../hooks/useWallet';
-import { useGSDTContract } from '../hooks/useContract';
+import { useGSDCContract } from '../hooks/useContract';
 import { motion } from 'framer-motion';
 import { parseEther } from 'ethers/lib/utils';
 import { useAdmin } from '../hooks/useAdmin';
@@ -12,7 +12,7 @@ import { getUserKYCStatus, KYCStatus } from '../services/kyc';
 export default function TokenActions() {
   const { address, isConnected } = useWallet();
   const { isMinter } = useAdmin();
-  const contract = useGSDTContract();
+  const contract = useGSDCContract();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

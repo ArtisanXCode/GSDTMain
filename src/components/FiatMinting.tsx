@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useWallet } from "../hooks/useWallet";
 import { useGSDTPrice } from "../services/exchangeRates";
-import { useGSDTContract } from "../hooks/useContract";
+import { useGSDCContract } from "../hooks/useContract";
 import {
   createFiatMintRequest,
   getUserFiatMintRequests,
@@ -17,7 +17,7 @@ import { getUserKYCStatus, KYCStatus } from "../services/kyc";
 export default function FiatMinting() {
   const { address, isConnected } = useWallet();
   const { price: gsdtPrice, rates } = useGSDTPrice();
-  const contract = useGSDTContract();
+  const contract = useGSDCContract();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);

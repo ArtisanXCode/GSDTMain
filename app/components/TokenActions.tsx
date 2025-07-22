@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
-import { useGSDTContract } from '../hooks/useContract';
+import { useGSDCContract } from '../hooks/useContract';
 import { motion } from 'framer-motion';
 import { parseEther } from 'ethers/lib/utils';
 
 export default function TokenActions() {
   const { address, isConnected } = useAccount();
-  const contract = useGSDTContract();
+  const contract = useGSDCContract();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

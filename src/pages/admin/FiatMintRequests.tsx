@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
-import { useGSDTContract } from "../../hooks/useContract";
+import { useGSDCContract } from "../../hooks/useContract";
 
 import {
   FiatMintRequest,
@@ -23,7 +23,7 @@ import {
 
 export default function FiatMintRequests() {
   const { address, isConnected } = useWallet();
-  const contract = useGSDTContract();
+  const contract = useGSDCContract();
   const { isSuperAdmin } = useAdmin();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<FiatMintRequest[]>([]);
