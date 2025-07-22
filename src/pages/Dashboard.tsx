@@ -162,6 +162,7 @@ export default function Dashboard() {
             </div>
 
             {/* KYC Status Display */}
+            {/*
             <div
               className="rounded-lg p-4 mb-4"
               style={{ background: "rgba(34, 197, 94, 0.2)" }}
@@ -171,10 +172,9 @@ export default function Dashboard() {
                 <span className="text-white font-medium">KYC Verified</span>
               </div>
               <p className="text-white/80 text-sm mt-2">
-                Your identity has been verified and you can now access all
-                features.111
+                Your identity has been verified and you can now access all features.
               </p>
-            </div>
+            </div>*/}
 
             {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
           </motion.div>

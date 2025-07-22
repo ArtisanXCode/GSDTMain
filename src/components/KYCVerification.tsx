@@ -147,7 +147,12 @@ export default function KYCVerification() {
   }
 
   return (
-    <div className="rounded-xl p-8 shadow-lg">
+    <div
+      className="rounded-xl p-8 shadow-lg"
+      style={{
+        backgroundColor: "#6d97bf",
+      }}
+    >
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-semibold text-gray-900">
           KYC Verification
