@@ -95,8 +95,7 @@ export const getUserKYCStatus = async (
   userAddress: string,
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
   try {
-
-  /*
+    // First check database status
     let query = supabase
       .from('kyc_requests')
       .select('*')
@@ -105,86 +104,36 @@ export const getUserKYCStatus = async (
 
     const { data: dataRes, error: error1 } = await query;
 
-    if(dataRes.length > 0) {
-      return { status: dataRes[0].status };
-    } else {
-      return { status: KYCStatus.NOT_SUBMITTED };
-    }
-    */
+    // Check NFT contract for KYC approval
+    const contract_NFT = getNFTContract();
+    if (contract_NFT) {
+      try {
+        console.log('Checking NFT balance for:', userAddress);
+        const userBalance = await contract_NFT.balanceOf(userAddress);
+        const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
 
-  // First check contract KYC status
-  const contract = getContract();
-  const contract_NFT = getNFTContract();
-  if (contract_NFT) {
-    console.log(contract_NFT);
-    console.log(userAddress);
-    const userBalance = await contract_NFT.balanceOf(userAddress);
-    const readableBalance = ethers.utils.formatUnits(userBalance, 18);
+        console.log('NFT Balance:', readableBalance);
 
-    console.log(contract_NFT);
-
-    if (readableBalance > 0) {
-      return { status: KYCStatus.APPROVED };
-    } else {
-      if (dataRes.length > 0) {
-        return { status: KYCStatus.PENDING };
+        if (parseInt(readableBalance) > 0) {
+          return { status: KYCStatus.APPROVED };
+        } else {
+          // If no NFTs but there's a pending request in database
+          if (dataRes && dataRes.length > 0) {
+            return { status: dataRes[0].status as KYCStatus, request: dataRes[0] as KYCRequest };
+          }
+        }
+      } catch (nftError) {
+        console.error('Error checking NFT balance:', nftError);
+        // Fall back to database check if NFT check fails
       }
     }
-  }
 
-  return { status: KYCStatus.NOT_SUBMITTED };
-
-  if (!contract) {
-    throw new Error("Contract not initialized");
-  }
-
-  /*
-    const isKYCApproved = await contract.kycApproved(userAddress);
-    
-    // If approved on contract, return approved status
-    if (isKYCApproved) {
-      return { status: KYCStatus.APPROVED };
-    }
-    */
-
-  /*
-    // Check database status
-    const { data, error } = await supabase
-      .from('kyc_requests')
-      .select('*')
-      .eq('user_address', userAddress.toLowerCase())
-      .order('submitted_at', { ascending: false })
-      .maybeSingle();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    if (!data) {
-      return { status: KYCStatus.NOT_SUBMITTED };
-    }
-
-    return {
-      status: data.status as KYCStatus,
-      request: data as KYCRequest
-    };
-    */
-
-  /* Sumsub API call KYC check */
-  /*
-    const dbUserKYC = await getDatabaseUserKYCStatus(userAddress);
-    
-    const sumsub_applicant_id = dbUserKYC.sumsub_applicant_id
-    
-    const appIdStatus = await getSumsubApplicantStatus(userAddress, sumsub_applicant_id);
-    
-    if(appIdStatus.reviewStatus == "completed" && appIdStatus.reviewResult.reviewAnswer == "GREEN"){
-      return { status: KYCStatus.APPROVED };      
+    // If no NFT contract or NFT check failed, check database
+    if (dataRes && dataRes.length > 0) {
+      return { status: dataRes[0].status as KYCStatus, request: dataRes[0] as KYCRequest };
     } else {
       return { status: KYCStatus.NOT_SUBMITTED };
     }
-    */
-  /* Sumsub API call KYC check */
 
   } catch (error) {
     console.error('Error fetching user KYC status:', error);
