@@ -93,15 +93,12 @@ export default function ExchangeRates() {
         <div
           className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
           style={{
-            backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+            backgroundImage: `url('/public/admin_dashboard_header.png')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,12 +117,14 @@ export default function ExchangeRates() {
         </div>
 
         {/* Phoenix Icon overlapping sections */}
-        <div className="relative z-20 flex justify-center">
-          <div className="absolute -top-16">
+        <div className="relative z-20 flex justify-end">
+          <div
+            className="phoenix-icon-parent"
+          >
             <img
               src="/logo_gsdc_icon.png"
               alt="Phoenix Icon"
-              className="w-24 h-24 sm:w-32 sm:h-32"
+              className="phoenix-icon-large"
             />
           </div>
         </div>
@@ -168,15 +167,12 @@ export default function ExchangeRates() {
       <div
         className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
+          backgroundImage: `url('/public/admin_dashboard_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -197,13 +193,12 @@ export default function ExchangeRates() {
       {/* Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
         <div
-          className=""
-          style={{ position: "absolute", right: "10%", top: "-60px" }}
+          className="phoenix-icon-parent"
         >
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="w-32 h-32 sm:w-50 sm:h-50"
+            className="phoenix-icon-large"
           />
         </div>
       </div>

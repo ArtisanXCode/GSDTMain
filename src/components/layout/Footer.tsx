@@ -5,7 +5,7 @@ export default function Footer() {
     <footer
       className="text-white relative"
       style={{
-        backgroundImage: `linear-gradient(135deg, #0a1217c7 0%, #132536d4 100%), url(/attached_assets/footer_bg_1752747448967.jpeg)`,
+        backgroundImage: `linear-gradient(135deg, #0a1217c7 0%, #132536d4 100%), url(/public/footer_bg.jpeg)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

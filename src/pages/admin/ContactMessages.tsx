@@ -194,19 +194,16 @@ export default function ContactMessages() {
     <>
       <div className="bg-white">
         {/* Hero section with tech background */}
-        <div
-          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `linear-gradient(135deg, rgba(10, 20, 35, 0.95) 0%, rgba(20, 30, 48, 0.85) 30%, rgba(139, 69, 19, 0.7) 60%, rgba(255, 140, 0, 0.4) 85%, rgba(255, 165, 0, 0.3) 100%), url('/attached_assets/AdobeStock_1180220151_1752737711909.jpeg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          {/* Dark overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/20 to-gray-900/90"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-transparent to-gray-900/60"></div>
-
+          <div
+            className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+            style={{
+              backgroundImage: `url('/public/admin_dashboard_header.png')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+          >
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -227,13 +224,12 @@ export default function ContactMessages() {
         {/* Phoenix Icon overlapping sections */}
         <div className="relative z-20 flex justify-end">
           <div
-            className=""
-            style={{ position: "absolute", right: "10%", top: "-60px" }}
+            className="phoenix-icon-parent"
           >
             <img
               src="/logo_gsdc_icon.png"
               alt="Phoenix Icon"
-              className="w-32 h-32 sm:w-50 sm:h-50"
+              className="phoenix-icon-large"
             />
           </div>
         </div>
@@ -307,33 +303,6 @@ export default function ContactMessages() {
                 >
                   Refresh
                 </button>
-              </div>
-
-              <div
-                className="shadow rounded-lg"
-                style={{ backgroundColor: "#2a4661" }}
-              >
-                <div className="px-4 py-5 sm:p-6">
-                  <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto">
-                      <h3 className="text-lg font-medium leading-6 text-white">
-                        Contact Messages
-                      </h3>
-                      <p className="mt-1 text-sm text-white/70">
-                        View and respond to messages from users
-                      </p>
-                    </div>
-                    <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                      <button
-                        onClick={() => window.location.reload()}
-                        className="inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 sm:w-auto"
-                        style={{ backgroundColor: "#ed9030" }}
-                      >
-                        Refresh
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {error && (

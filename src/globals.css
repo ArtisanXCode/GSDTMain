@@ -107,6 +107,11 @@ body {
   }
 
   /* Phoenix Icon Size Management */
+  .phoenix-icon-parent {
+    position: absolute; 
+    right: 10%; 
+    top: -120px;
+  }
   .phoenix-icon-small {
     width: 64px;
     height: 64px;
@@ -118,8 +123,8 @@ body {
   }
 
   .phoenix-icon-large {
-    width: 512px;
-    height: 512px;
+    width: 250px;
+    height: 250px;
   }
 
   .phoenix-icon-xlarge {
