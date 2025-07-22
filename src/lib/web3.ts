@@ -1,7 +1,32 @@
 import { ethers } from 'ethers';
-import { GSDT_ADDRESS, GSDT_ABI } from '../contracts/GSDT';
-import { GSDT_NFT_ADDRESS, GSDT_NFT_ABI } from '../contracts/GSDT_NFT';
+import { GSDC_ABI } from '../contracts/GSDC';
+import { GSDC_NFT_ABI, GSDC_NFT_ADDRESS } from '../contracts/GSDT_NFT';
 import { supabase } from './supabase';
+
+export const GSDC_ADDRESS = '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804';
+
+// Create a default provider for read-only operations
+const defaultProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');
+
+// Create read-only contract instance
+const readOnlyContract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, defaultProvider);
+
+// Track connection state
+let provider: ethers.providers.Web3Provider | null = null;
+let signer: ethers.Signer | null = null;
+let contract: ethers.Contract | null = null;
+let connectionInProgress = false;
+let connectionPromise: Promise<boolean> | null = null;
+
+export const getReadOnlyContract = () => readOnlyContract;
+
+
+let nftContract: ethers.Contract | null = null;
+const readOnlyNFTContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, defaultProvider);
+
+
+// Hardcoded DEFAULT_ADMIN_ROLE value from OpenZeppelin's AccessControl
+export const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 declare global {
   interface Window {
@@ -82,25 +107,25 @@ const createProvider = (rpcUrl: string) => {
 };
 
 // Create default provider for read-only operations
-const defaultProvider = createProvider(RPC_CONFIG.bscTestnet.url);
-const readOnlyContract = new ethers.Contract(GSDT_ADDRESS, GSDT_ABI, defaultProvider);
+// const defaultProvider = createProvider(RPC_CONFIG.bscTestnet.url);
+// const readOnlyContract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, defaultProvider);
 
 // Track connection state
-let provider: ethers.providers.Web3Provider | null = null;
-let signer: ethers.Signer | null = null;
-let contract: ethers.Contract | null = null;
-let connectionInProgress = false;
-let connectionPromise: Promise<boolean> | null = null;
+// let provider: ethers.providers.Web3Provider | null = null;
+// let signer: ethers.Signer | null = null;
+// let contract: ethers.Contract | null = null;
+// let connectionInProgress = false;
+// let connectionPromise: Promise<boolean> | null = null;
 
-export const getReadOnlyContract = () => readOnlyContract;
+// export const getReadOnlyContract = () => readOnlyContract;
 
 
-let nftContract: ethers.Contract | null = null;
-const readOnlyNFTContract = new ethers.Contract(GSDT_NFT_ADDRESS, GSDT_NFT_ABI, defaultProvider);
+// let nftContract: ethers.Contract | null = null;
+// const readOnlyNFTContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, defaultProvider);
 
 
 // Hardcoded DEFAULT_ADMIN_ROLE value from OpenZeppelin's AccessControl
-const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
+// export const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 export const initializeWeb3 = async (requestAccounts = false) => {
   try {
@@ -120,108 +145,101 @@ export const initializeWeb3 = async (requestAccounts = false) => {
     }
 
     // Set connection in progress flag
-    connectionInProgress = true;
+    // connectionInProgress = true; // Commented out because it's redefined in the edited code
 
     // Create a new connection promise
-    connectionPromise = (async () => {
-      try {
-        if (typeof window === 'undefined' || !window.ethereum) {
-          throw new Error('Please install MetaMask to connect your wallet');
-        }
-        
-        // Create provider if it doesn't exist
-        if (!provider) {
-          provider = new ethers.providers.Web3Provider(window.ethereum, {
-            name: RPC_CONFIG.bscTestnet.name,
-            chainId: RPC_CONFIG.bscTestnet.chainId
-          });
-        }
-        
-        // Only request accounts if explicitly asked to
-        if (requestAccounts) {
-          try {
-            // Check if we're already connected
-            if (!window.ethereum.selectedAddress) {
-              await provider.send("eth_requestAccounts", []);
-            }
-            
-            // Initialize signer and contract
-            signer = provider.getSigner();
-            contract = new ethers.Contract(GSDT_ADDRESS, GSDT_ABI, signer);
-          } catch (error: any) {
-            // If MetaMask is already processing a request, wait for it
-            if (error.code === -32002) {
-              console.log('MetaMask is already processing a connection request. Waiting...');
-              return false;
-            }
-            throw error;
-          }
-        } else if (window.ethereum.selectedAddress && !signer) {
-          // If already connected but signer not initialized
-          signer = provider.getSigner();
-          contract = new ethers.Contract(GSDT_ADDRESS, GSDT_ABI, signer);
-        }
-        
-        return true;
-      } catch (error) {
-        console.error('Error initializing web3:', error);
-        throw error;
-      } finally {
-        // Clear the connection state
-        connectionPromise = null;
-        connectionInProgress = false;
+    // connectionPromise = (async () => { // Commented out because it's redefined in the edited code
+    try {
+      if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Please install MetaMask to connect your wallet');
       }
-    })();
+      
+      // Create provider if it doesn't exist
+      if (!provider) {
+        provider = new ethers.providers.Web3Provider(window.ethereum, {
+          name: RPC_CONFIG.bscTestnet.name,
+          chainId: RPC_CONFIG.bscTestnet.chainId
+        });
+      }
+      
+      // Only request accounts if explicitly asked to
+      if (requestAccounts) {
+        try {
+          // Check if we're already connected
+          if (!window.ethereum.selectedAddress) {
+            await provider.send("eth_requestAccounts", []);
+          }
+          
+          // Initialize signer and contract
+          signer = provider.getSigner();
+          contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
+          nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
 
-    return connectionPromise;
+        } catch (error: any) {
+          // If MetaMask is already processing a request, wait for it
+          if (error.code === -32002) {
+            console.log('MetaMask is already processing a connection request. Waiting...');
+            return false;
+          }
+          throw error;
+        }
+      } else if (window.ethereum.selectedAddress && !signer) {
+        // If already connected but signer not initialized
+        signer = provider.getSigner();
+        contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
+        nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error initializing web3:', error);
+      throw error;
+    } finally {
+      // Clear the connection state
+      connectionPromise = null;
+      connectionInProgress = false;
+    }
+  // })(); // Commented out because it's redefined in the edited code
+
+    // return connectionPromise; // Commented out because it's redefined in the edited code
   } catch (error) {
     console.error('Error in initializeWeb3:', error);
     return false;
   }
 };
 
-export const connectWallet = async () => {
-  try {
-    // If a connection is already in progress, wait for it to complete
-    if (connectionInProgress) {
-      if (connectionPromise) {
-        await connectionPromise;
-      } else {
-        // Wait for any existing MetaMask popup to be handled
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-    }
-
-    // Check if already connected
-    if (window.ethereum && window.ethereum.selectedAddress) {
-      if (!provider || !signer) {
-        await initializeWeb3(false);
-      }
-      return window.ethereum.selectedAddress;
-    }
-    
-    // Initialize with explicit account request
-    const success = await initializeWeb3(true);
-    
-    // If initialization was successful and we have a selected address
-    if (success && window.ethereum && window.ethereum.selectedAddress) {
-      return window.ethereum.selectedAddress;
-    }
-    
-    // If we have a signer but no selected address (unlikely)
-    if (signer) {
-      try {
-        return await signer.getAddress();
-      } catch (error) {
-        throw new Error('Failed to get address. Please connect your wallet.');
-      }
-    }
-    
-    throw new Error('Wallet connection failed. Please try again.');
-  } catch (error: any) {
-    console.error('Error connecting wallet:', error);
-    throw error;
+export const connectWallet = async (): Promise<boolean> => {
+  if (connectionInProgress) {
+    return connectionPromise || Promise.resolve(false);
   }
+
+  if (typeof window.ethereum === 'undefined') {
+    console.error('Please install MetaMask to use this application');
+    return false;
+  }
+
+  connectionInProgress = true;
+  connectionPromise = (async () => {
+    try {
+      // Request account access
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
+      nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
+
+      return true;
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+      return false;
+    } finally {
+      connectionInProgress = false;
+      connectionPromise = null;
+    }
+  })();
+
+  return connectionPromise;
 };
 
 export const getContract = () => {
@@ -240,7 +258,8 @@ export const getContract = () => {
           
           // Initialize signer and contract
           signer = provider.getSigner();        
-          contract = new ethers.Contract(GSDT_ADDRESS, GSDT_ABI, signer);
+          contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
+          nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
           console.error('Error initializing contract:', error);
           return readOnlyContract;
@@ -272,7 +291,7 @@ export const getNFTContract = () => {
           
           // Initialize signer and nftContract
           signer = provider.getSigner();                  
-          nftContract = new ethers.Contract(GSDT_NFT_ADDRESS, GSDT_NFT_ABI, signer);
+          nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
           console.error('Error initializing nftContract:', error);
           return readOnlyNFTContract;
@@ -352,6 +371,55 @@ export const checkAdminRole = async (address: string): Promise<boolean> => {
     return Boolean(data?.role);
   } catch (error) {
     console.error('Error checking admin role:', error);
+    return false;
+  }
+};
+
+export const useProvider = () => provider;
+export const useSigner = () => signer;
+export const useGSDCContract = () => contract;
+export const useGSDCNFTContract = () => nftContract;
+
+export const getTokenBalance = async (address: string): Promise<string> => {
+  try {
+    if (!contract && !readOnlyContract) {
+      throw new Error('Contract not initialized');
+    }
+
+    const activeContract = contract || readOnlyContract;
+    const balance = await activeContract.balanceOf(address);
+    return ethers.utils.formatEther(balance);
+  } catch (error) {
+    console.error('Error getting token balance:', error);
+    return '0';
+  }
+};
+
+export const getCurrentPrice = async (): Promise<string> => {
+  try {
+    if (!contract && !readOnlyContract) {
+      throw new Error('Contract not initialized');
+    }
+
+    const activeContract = contract || readOnlyContract;
+    const price = await activeContract.currentPrice();
+    return ethers.utils.formatEther(price);
+  } catch (error) {
+    console.error('Error getting current price:', error);
+    return '0';
+  }
+};
+
+export const getKYCStatus = async (address: string): Promise<boolean> => {
+  try {
+    if (!contract && !readOnlyContract) {
+      throw new Error('Contract not initialized');
+    }
+
+    const activeContract = contract || readOnlyContract;
+    return await activeContract.kycApproved(address);
+  } catch (error) {
+    console.error('Error getting KYC status:', error);
     return false;
   }
 };

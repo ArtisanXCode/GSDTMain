@@ -83,7 +83,7 @@ export default function FiatMinting() {
     loadUserRequests();
   }, [address]);
 
-  // Calculate GSDT amount based on fiat amount and current rates
+  // Calculate GSDC amount based on fiat amount and current rates
   useEffect(() => {
     if (!amount || !rates || !gsdtPrice) {
       setGsdtAmount("0");
@@ -104,8 +104,8 @@ export default function FiatMinting() {
       }
 
       // Convert USDC to GSDT based on current price
-      const gsdtAmount = usdcAmount / gsdtPrice;
-      setGsdtAmount(gsdtAmount.toFixed(6));
+      const gsdcAmount = usdcAmount / gsdtPrice;
+      setGsdtAmount(gsdcAmount.toFixed(6));
     } catch (err) {
       console.error("Error calculating GSDT amount:", err);
       setGsdtAmount("0");
@@ -148,12 +148,12 @@ export default function FiatMinting() {
       // Show payment instructions
       setSuccess(`
         Please complete your payment using the following details:
-        
+
         Bank: GSDT Global Bank
         Account Number: 1234567890
         Reference: ${ref}
         Amount: ${amount} ${currency}
-        
+
         Your request has been submitted and tokens will be minted once the payment is verified.
       `);
 

@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { useGSDTContract } from '../hooks/useContract';
+import { useGSDCContract } from '../hooks/useContract';
 import { formatEther } from 'ethers/lib/utils';
 
 import { kycCheckNFT } from '../services/kycCheckNFT';
 
 export default function TokenInfo() {
   const { address, isConnected } = useAccount();
-  const contract = useGSDTContract();
+  const contract = useGSDCContract();
   const [balance, setBalance] = useState('0');
   const [price, setPrice] = useState('0');
   const [isKYCApproved, setIsKYCApproved] = useState(false);

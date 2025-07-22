@@ -1,8 +1,9 @@
-# GSDT - Global South Digital Token
 
-![GSDT Logo](https://img.shields.io/badge/GSDT-Global%20South%20Digital%20Token-4c1d95?style=for-the-badge)
+# GSDC - Global South Digital Currency
 
-GSDT is a revolutionary stablecoin backed by a basket of BRICS currencies, providing a stable and efficient means of cross-border transactions while promoting economic cooperation among BRICS nations.
+![GSDC Logo](https://img.shields.io/badge/GSDC-Global%20South%20Digital%20Currency-4c1d95?style=for-the-badge)
+
+GSDC is a revolutionary stablecoin backed by a basket of BRICS currencies, providing a stable and efficient means of cross-border transactions while promoting economic cooperation among BRICS nations.
 
 ## 🌟 Features
 
@@ -37,157 +38,153 @@ GSDT is a revolutionary stablecoin backed by a basket of BRICS currencies, provi
 ### Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/gsdt-stablecoin.git
-   cd gsdt-stablecoin
-   ```
+```bash
+git clone https://github.com/your-username/gsdc-platform.git
+cd gsdc-platform
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+```bash
+npm install
+```
 
 3. Set up environment variables:
-   Create a `.env` file in the root directory with the following variables:
-   ```
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+```bash
+cp .env.example .env
+```
+Fill in your environment variables in `.env`
 
 4. Start the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
+```bash
+npm run dev
+```
 
-5. Open [http://localhost:3000](http://localhost:3000) to view the application in your browser.
-
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
-gsdt-stablecoin/
-├── app/                  # Next.js app directory (legacy)
-├── contracts/            # Smart contract source code
-├── public/               # Static assets
-├── src/                  # Source files
-│   ├── components/       # React components
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions and libraries
-│   ├── pages/            # Page components
-│   ├── services/         # API and service functions
-│   └── App.tsx           # Main App component
-├── supabase/             # Supabase migrations and configuration
-├── .env                  # Environment variables
-├── package.json          # Project dependencies
-├── tailwind.config.js    # Tailwind CSS configuration
-└── vite.config.ts        # Vite configuration
+gsdc-platform/
+├── src/
+│   ├── components/          # React components
+│   ├── pages/              # Application pages
+│   ├── hooks/              # Custom React hooks
+│   ├── services/           # API services
+│   ├── utils/              # Utility functions
+│   ├── contracts/          # Smart contract ABIs
+│   └── lib/                # Core libraries
+├── contracts/              # Solidity smart contracts
+├── public/                 # Static assets
+└── supabase/              # Database migrations
 ```
 
 ## 📜 Available Scripts
 
-In the project directory, you can run:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm test` - Run tests
 
-- `npm run dev` - Runs the app in development mode
-- `npm run build` - Builds the app for production
-- `npm run preview` - Serves the production build locally
+## 🔑 Key Components
 
-## 🧩 Key Components
+### Smart Contract Features
+- **Minting/Burning**: Controlled token creation and destruction
+- **KYC Integration**: Built-in KYC verification system
+- **Role-based Access**: Multiple permission levels
+- **Pausable**: Emergency pause functionality
+- **Blacklist**: Address blacklisting capability
 
-### User-Facing Features
+### Frontend Features
+- **Token Dashboard**: View balances and transaction history
+- **Minting Interface**: Mint tokens using fiat or crypto
+- **KYC Verification**: Complete identity verification
+- **Admin Panel**: Comprehensive management interface
+- **Exchange Rates**: Real-time BRICS currency rates
 
-- **Dashboard**: View token balance, exchange rates, and proof of reserves
-- **Token Minting**: Mint GSDT tokens using fiat currencies or crypto
-- **KYC Verification**: Submit KYC documents for verification
-- **Transaction History**: View past transactions and their status
+## 🔗 Smart Contract
 
-### Admin Features
+The GSDC token contract is deployed on Ethereum and includes:
 
-- **KYC Management**: Approve or reject KYC requests
-- **Role Management**: Assign and manage smart contract roles
-- **Contact Message Management**: Handle user inquiries
-- **Transaction Monitoring**: Monitor and flag suspicious transactions
+- **ERC20 Compliance**: Standard token functionality
+- **Access Control**: Role-based permissions
+- **Pausable Operations**: Emergency controls
+- **KYC Integration**: Built-in verification
+- **Blacklist Functionality**: Address restriction capability
 
-## 💼 Smart Contract
+Contract Address: `0x892404Da09f3D7871C49Cd6d6C167F8EB176C804`
 
-The GSDT token is implemented as an ERC-20 token with additional features:
+## 👨‍💼 Admin Features
 
-- **Role-Based Access Control**: Different roles for minting, burning, and price updates
-- **KYC Verification**: Only KYC-approved addresses can hold and transfer tokens
-- **Redemption Mechanism**: Process for redeeming GSDT tokens
-- **Price Updates**: Mechanism to update the token price based on the currency basket
+### Dashboard
+- System overview and statistics
+- Recent transactions
+- User activity metrics
 
-### Contract Roles
+### KYC Management
+- Review verification requests
+- Approve/reject applications
+- Monitor compliance status
 
-- **SUPER_ADMIN**: Full access to all functions
-- **MINTER_ROLE**: Can mint new tokens
-- **BURNER_ROLE**: Can burn tokens and process redemptions
-- **PAUSER_ROLE**: Can pause/unpause contract operations
-- **PRICE_UPDATER_ROLE**: Can update token price
+### Role Management
+- Assign user roles
+- Manage permissions
+- Audit access controls
 
-## 🔧 Technologies Used
+### Exchange Rates
+- Update currency rates
+- Historical rate tracking
+- Automated rate feeds
 
-- **Frontend**:
-  - React
-  - Vite
-  - Tailwind CSS
-  - Framer Motion
-  - Wagmi/Web3Modal
+### Proof of Reserves
+- Reserve asset tracking
+- Transparency reports
+- Audit trail
 
-- **Backend**:
-  - Supabase (Database and Authentication)
-  - Ethers.js (Blockchain Interaction)
+## 🛠️ Technologies Used
 
-- **Smart Contract**:
-  - Solidity
-  - OpenZeppelin Contracts
-  - Hardhat
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Blockchain**: Ethereum, ethers.js
+- **Backend**: Supabase
+- **Smart Contracts**: Solidity, Hardhat
+- **Build Tool**: Vite
 
-## 🌐 Deployment
+## 🚀 Deployment
 
-The application can be deployed to various platforms:
+### Development
+1. Install dependencies: `npm install`
+2. Set up environment variables
+3. Run development server: `npm run dev`
 
-### Frontend
+### Production
+1. Build the application: `npm run build`
+2. Deploy to your hosting provider
+3. Configure environment variables
+4. Set up database migrations
 
-1. Build the application:
-   ```bash
-   npm run build
-   ```
-
-2. Deploy to Netlify, Vercel, or another hosting service.
-
-### Smart Contract
-
-1. Compile the contract:
-   ```bash
-   npx hardhat compile
-   ```
-
-2. Deploy to your chosen network:
-   ```bash
-   npx hardhat run scripts/deploy.ts --network <network-name>
-   ```
+### Smart Contract Deployment
+1. Configure Hardhat network settings
+2. Deploy contracts: `npx hardhat run scripts/deploy.ts`
+3. Verify contracts on Etherscan
+4. Update contract addresses in frontend
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Contact
+## 🆘 Support
 
-For any inquiries, please reach out through the contact form on our website or email us at support@gsdt.com.
+For support, please contact [support@gsdc.com](mailto:support@gsdc.com) or join our [Discord community](https://discord.gg/gsdc).
 
----
+## 🔗 Links
 
-&copy; 2025 Global South Digital Token. All rights reserved.
+- [Website](https://gsdc.com)
+- [Documentation](https://docs.gsdc.com)
+- [Twitter](https://twitter.com/gsdc_official)
+- [Telegram](https://t.me/gsdc_official)
