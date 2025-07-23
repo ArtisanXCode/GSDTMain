@@ -37,23 +37,28 @@ export default function KYCApproval() {
       await approveKYCRequest(request.id);
       await loadRequests();
     } catch (error: any) {
-      console.error('Error approving KYC request 111:', error);
-      //setError(err.message || 'Error approving KYC request');
-      
+      console.error('Error approving KYC request:', error);
+
       // Handle specific error messages
-      if (error.message?.includes('missing role')) {
-        setError('You do not have permission to mint tokens. Only users with SUPER_ADMIN can approving.');
+      if (error.message?.includes('missing role') || error.message?.includes('permission')) {
+        setError('You do not have permission to approve KYC. Only users with ADMIN role can approve.');
+      } else if (error.message?.includes('cannot estimate gas') || error.message?.includes('Transaction would fail')) {
+        setError('Transaction failed due to insufficient permissions or gas estimation error. Please check your role permissions.');
       } else if (error.message?.includes('execution reverted')) {
         const revertReason = error.data?.message || error.message;
         if (revertReason.includes('KYC')) {
-          setError('KYC verification required before KYC approving.');
+          setError('KYC update failed. Please check user address and try again.');
+        } else if (revertReason.includes('AccessControl')) {
+          setError('Access denied. You do not have the required role to perform this action.');
         } else {
           setError(revertReason || 'Transaction failed. Please try again.');
         }
-      } else if (error.code === 'ACTION_REJECTED') {
+      } else if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
         setError('Transaction was rejected by user.');
+      } else if (error.message?.includes('Contract not initialized')) {
+        setError('Please connect your wallet and try again.');
       } else {
-        setError('Error approving KYC request.');
+        setError(error.message || 'Error approving KYC request. Please try again.');
       }
 
     } finally {
@@ -73,7 +78,7 @@ export default function KYCApproval() {
       await loadRequests();
     } catch (error: any) {
       console.error('Error rejecting KYC request:', error);
-      
+
       // Handle specific error messages
       if (error.message?.includes('missing role')) {
         setError('You do not have permission to reject KYC. Only users with ADMIN role can reject.');

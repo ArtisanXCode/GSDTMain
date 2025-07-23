@@ -234,21 +234,56 @@ export const approveKYCRequest = async (
     // Update the blockchain KYC status
     const contract = getContract();
     if (!contract) {
-      throw new Error("Contract not initialized");
+      throw new Error("Contract not initialized. Please connect your wallet.");
     }
 
-    const kycTx = await contract.updateKYCStatus(userAddress, true);
+    // Check if the contract has the required functions
+    if (!contract.updateKYCStatus) {
+      throw new Error("Contract does not have updateKYCStatus function");
+    }
+
+    // Try to estimate gas first to catch permission errors early
+    try {
+      await contract.estimateGas.updateKYCStatus(userAddress, true);
+    } catch (gasError: any) {
+      console.error("Gas estimation failed:", gasError);
+      if (gasError.message?.includes('AccessControl') || gasError.message?.includes('missing role')) {
+        throw new Error("You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC.");
+      }
+      throw new Error("Transaction would fail. Please check your permissions and try again.");
+    }
+
+    // Execute the KYC status update
+    const kycTx = await contract.updateKYCStatus(userAddress, true, {
+      gasLimit: 150000 // Set manual gas limit
+    });
     await kycTx.wait();
 
     // For manual KYC requests, mint 1 token to the user's wallet
     if (verificationMethod === "manual") {
       console.log("Minting 1 token for manual KYC approval:", userAddress);
       try {
-        // Mint 1 token (1 * 10^18 wei)
-        const mintAmount = ethers.utils.parseEther("1");
-        const mintTx = await contract.mint(userAddress, mintAmount);
-        await mintTx.wait();
-        console.log("Successfully minted 1 token to user:", userAddress);
+        // Check minting permissions first
+        if (contract.mint) {
+          try {
+            const mintAmount = ethers.utils.parseEther("1");
+            await contract.estimateGas.mint(userAddress, mintAmount);
+            
+            // Mint 1 token (1 * 10^18 wei)
+            const mintTx = await contract.mint(userAddress, mintAmount, {
+              gasLimit: 200000 // Set manual gas limit for minting
+            });
+            await mintTx.wait();
+            console.log("Successfully minted 1 token to user:", userAddress);
+          } catch (mintGasError: any) {
+            console.error("Mint gas estimation failed:", mintGasError);
+            if (mintGasError.message?.includes('AccessControl') || mintGasError.message?.includes('missing role')) {
+              console.warn("No MINTER_ROLE permission - skipping token minting");
+            } else {
+              throw mintGasError;
+            }
+          }
+        }
       } catch (mintError) {
         console.error("Error minting tokens for manual KYC approval:", mintError);
         // Don't throw here - KYC approval succeeded, minting failed
