@@ -99,11 +99,22 @@ export default function KYCRequests() {
       }));
     } catch (error: any) {
       console.error("Error approving request:", error);
-      if (error.code === "ACTION_REJECTED") {
-        setError("Transaction was rejected by user.");
-      } else {
-        setError("Error approving kyc request. Please try again.");
+      
+      // Extract the actual error message from the contract
+      let errorMessage = "Error approving KYC request. Please try again.";
+      
+      if (error.code === "ACTION_REJECTED" || error.code === 4001) {
+        errorMessage = "Transaction was rejected by user.";
+      } else if (error.message) {
+        // Use the actual error message from the contract/service
+        errorMessage = error.message;
+      } else if (error.reason) {
+        errorMessage = error.reason;
+      } else if (error.data?.message) {
+        errorMessage = error.data.message;
       }
+      
+      setError(errorMessage);
     } finally {
       setActionLoading(false);
     }
@@ -144,11 +155,22 @@ export default function KYCRequests() {
       setRejectReason("");
     } catch (error: any) {
       console.error("Error rejecting request:", error);
-      if (error.code === "ACTION_REJECTED") {
-        setError("Transaction was rejected by user.");
-      } else {
-        setError("Error rejecting kyc request. Please try again.");
+      
+      // Extract the actual error message from the contract
+      let errorMessage = "Error rejecting KYC request. Please try again.";
+      
+      if (error.code === "ACTION_REJECTED" || error.code === 4001) {
+        errorMessage = "Transaction was rejected by user.";
+      } else if (error.message) {
+        // Use the actual error message from the contract/service
+        errorMessage = error.message;
+      } else if (error.reason) {
+        errorMessage = error.reason;
+      } else if (error.data?.message) {
+        errorMessage = error.data.message;
       }
+      
+      setError(errorMessage);
     } finally {
       setActionLoading(false);
     }
