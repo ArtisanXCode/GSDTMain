@@ -145,7 +145,6 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         notBlacklisted(to)
     {
         require(to != address(0), "GSDC: mint to the zero address");
-        require(kycApproved[to], "GSDC: recipient not KYC approved");
         require(amount >= MIN_MINT_AMOUNT, "GSDC: amount below minimum");
         require(amount <= MAX_MINT_AMOUNT, "GSDC: amount above maximum");
         
@@ -166,7 +165,6 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         notBlacklisted(from)
     {
         require(from != address(0), "GSDC: burn from the zero address");
-        require(kycApproved[from], "GSDC: user not KYC approved");
         require(balanceOf(from) >= amount, "GSDC: insufficient balance");
         
         _burn(from, amount);

@@ -99,10 +99,10 @@ export default function KYCRequests() {
       }));
     } catch (error: any) {
       console.error("Error approving request:", error);
-      
+
       // Extract the actual error message from the contract
       let errorMessage = "Error approving KYC request. Please try again.";
-      
+
       if (error.code === "ACTION_REJECTED" || error.code === 4001) {
         errorMessage = "Transaction was rejected by user.";
       } else if (error.message) {
@@ -113,7 +113,7 @@ export default function KYCRequests() {
       } else if (error.data?.message) {
         errorMessage = error.data.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setActionLoading(false);
@@ -155,10 +155,10 @@ export default function KYCRequests() {
       setRejectReason("");
     } catch (error: any) {
       console.error("Error rejecting request:", error);
-      
+
       // Extract the actual error message from the contract
       let errorMessage = "Error rejecting KYC request. Please try again.";
-      
+
       if (error.code === "ACTION_REJECTED" || error.code === 4001) {
         errorMessage = "Transaction was rejected by user.";
       } else if (error.message) {
@@ -169,7 +169,7 @@ export default function KYCRequests() {
       } else if (error.data?.message) {
         errorMessage = error.data.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setActionLoading(false);
