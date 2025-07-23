@@ -1,9 +1,8 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.29;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
@@ -31,17 +30,17 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
 
     // Current price in USDC (6 decimals)
     uint256 public currentPrice;
-    
+
     // Minimum and maximum amounts for minting/burning
     uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
     uint256 public constant MAX_MINT_AMOUNT = 1000000 * 10**18; // 1M GSDC
-    
+
     // KYC status mapping
     mapping(address => bool) public kycApproved;
-    
+
     // Blacklist mapping
     mapping(address => bool) public blacklisted;
-    
+
     // Redemption request structure
     struct RedemptionRequest {
         address user;
@@ -50,7 +49,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         bool processed;
         bool approved;
     }
-    
+
     // Redemption requests mapping
     mapping(uint256 => RedemptionRequest) public redemptionRequests;
     uint256 public nextRedemptionId;
@@ -62,7 +61,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(PRICE_UPDATER_ROLE, msg.sender);
         _grantRole(BLACKLIST_MANAGER_ROLE, msg.sender);
-        
+
         // Initialize price to 1 USDC
         currentPrice = 1_000000; // 1 USDC with 6 decimals
     }
@@ -100,7 +99,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     {
         require(account != address(0), "GSDC: cannot blacklist zero address");
         require(!hasRole(DEFAULT_ADMIN_ROLE, account), "GSDC: cannot blacklist admin");
-        
+
         blacklisted[account] = status;
         emit AddressBlacklisted(account, status);
     }
@@ -117,7 +116,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         for (uint256 i = 0; i < accounts.length; i++) {
             require(accounts[i] != address(0), "GSDC: cannot blacklist zero address");
             require(!hasRole(DEFAULT_ADMIN_ROLE, accounts[i]), "GSDC: cannot blacklist admin");
-            
+
             blacklisted[accounts[i]] = status;
             emit AddressBlacklisted(accounts[i], status);
         }
@@ -145,9 +144,10 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         notBlacklisted(to)
     {
         require(to != address(0), "GSDC: mint to the zero address");
+        require(kycApproved[to], "GSDC: recipient not KYC approved");
         require(amount >= MIN_MINT_AMOUNT, "GSDC: amount below minimum");
         require(amount <= MAX_MINT_AMOUNT, "GSDC: amount above maximum");
-        
+
         _mint(to, amount);
         emit Mint(to, amount);
     }
@@ -165,8 +165,9 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         notBlacklisted(from)
     {
         require(from != address(0), "GSDC: burn from the zero address");
+        require(kycApproved[from], "GSDC: user not KYC approved");
         require(balanceOf(from) >= amount, "GSDC: insufficient balance");
-        
+
         _burn(from, amount);
         emit Burn(from, amount);
     }
@@ -183,7 +184,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     {
         require(kycApproved[msg.sender], "GSDC: user not KYC approved");
         require(balanceOf(msg.sender) >= amount, "GSDC: insufficient balance");
-        
+
         uint256 requestId = nextRedemptionId++;
         redemptionRequests[requestId] = RedemptionRequest({
             user: msg.sender,
@@ -192,7 +193,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
             processed: false,
             approved: false
         });
-        
+
         emit RedemptionRequested(msg.sender, amount, requestId);
     }
 
@@ -210,14 +211,14 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         require(!request.processed, "GSDC: request already processed");
         require(request.user != address(0), "GSDC: invalid request");
         require(!blacklisted[request.user], "GSDC: user is blacklisted");
-        
+
         request.processed = true;
         request.approved = approved;
-        
+
         if (approved) {
             _burn(request.user, request.amount);
         }
-        
+
         emit RedemptionProcessed(requestId, approved);
     }
 
@@ -283,11 +284,11 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         uint256 amount
     ) internal virtual override {
         super._update(from, to, amount);
-        
+
         // Check blacklist status
         require(!blacklisted[from], "GSDC: sender is blacklisted");
         require(!blacklisted[to], "GSDC: recipient is blacklisted");
-        
+
         // Check KYC status for non-zero addresses (exclude minting/burning)
         if (from != address(0) && to != address(0)) {
             require(kycApproved[from] && kycApproved[to], "GSDC: KYC check failed");
