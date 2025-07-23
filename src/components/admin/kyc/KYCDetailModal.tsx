@@ -117,8 +117,8 @@ export default function KYCDetailModal({
 
         {request.document_url && request.verification_method !== "sumsub" && (
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-500 mb-2">Document</h4>
-            <div className="p-4 rounded-lg bg-gray-50">
+            <h4 className="text-sm font-medium text-gray-800 mb-2">Document</h4>
+            <div className="p-4 rounded-lg bg-gray-400">
               <a
                 href={request.document_url}
                 target="_blank"
