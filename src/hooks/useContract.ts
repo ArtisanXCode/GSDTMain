@@ -1,9 +1,7 @@
 
 import { Contract } from 'ethers';
 import { useProvider, useSigner } from '../utils/web3';
-import GSDC_ABI from '../contracts/GSDC.json';
-
-const GSDC_ADDRESS = '0x220d5864596FF5da9E361B55841299840673E32b';
+import { GSDC_ADDRESS, GSDC_ABI } from '../contracts/GSDC';
 
 export function useGSDCContract() {
   const provider = useProvider();
@@ -13,7 +11,7 @@ export function useGSDCContract() {
 
   return new Contract(
     GSDC_ADDRESS,
-    GSDC_ABI.abi,
+    GSDC_ABI,
     signer || provider
   );
 }
