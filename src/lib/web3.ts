@@ -4,10 +4,10 @@ import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 import { supabase } from './supabase';
 
 // Create a default provider for read-only operations
-const defaultProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');
+// const defaultProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/your-infura-key');
 
 // Create read-only contract instance
-const readOnlyContract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, defaultProvider);
+// const readOnlyContract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, defaultProvider);
 
 // Track connection state
 let provider: ethers.providers.Web3Provider | null = null;
@@ -16,11 +16,14 @@ let contract: ethers.Contract | null = null;
 let connectionInProgress = false;
 let connectionPromise: Promise<boolean> | null = null;
 
-export const getReadOnlyContract = () => readOnlyContract;
+export const getReadOnlyContract = () => {
+  // Return null if no proper provider is configured
+  return null;
+};
 
 
 let nftContract: ethers.Contract | null = null;
-const readOnlyNFTContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, defaultProvider);
+// const readOnlyNFTContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, defaultProvider);
 
 
 // Hardcoded DEFAULT_ADMIN_ROLE value from OpenZeppelin's AccessControl
@@ -66,7 +69,7 @@ const createProvider = (rpcUrl: string) => {
     name: RPC_CONFIG.bscTestnet.name,
     chainId: RPC_CONFIG.bscTestnet.chainId
   });
-  
+
   // Wrap provider's send method to add retry logic
   const originalSend = provider.send.bind(provider);
   provider.send = async (method: string, params: any[]) => {
@@ -79,25 +82,25 @@ const createProvider = (rpcUrl: string) => {
         return await originalSend(method, params);
       } catch (error: any) {
         lastError = error;
-        
+
         // Only retry on rate limit or timeout errors
         if (!error.message?.includes('limit exceeded') && 
             !error.message?.includes('timeout') && 
             error.code !== 'TIMEOUT') {
           throw error;
         }
-        
+
         attempt++;
         if (attempt === RPC_CONFIG.bscTestnet.retry.maxAttempts) {
           break;
         }
-        
+
         // Wait with exponential backoff
         await new Promise(resolve => setTimeout(resolve, delay));
         delay *= RPC_CONFIG.bscTestnet.retry.backoff;
       }
     }
-    
+
     throw lastError;
   };
 
@@ -151,7 +154,7 @@ export const initializeWeb3 = async (requestAccounts = false) => {
       if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Please install MetaMask to connect your wallet');
       }
-      
+
       // Create provider if it doesn't exist
       if (!provider) {
         provider = new ethers.providers.Web3Provider(window.ethereum, {
@@ -159,7 +162,7 @@ export const initializeWeb3 = async (requestAccounts = false) => {
           chainId: RPC_CONFIG.bscTestnet.chainId
         });
       }
-      
+
       // Only request accounts if explicitly asked to
       if (requestAccounts) {
         try {
@@ -167,7 +170,7 @@ export const initializeWeb3 = async (requestAccounts = false) => {
           if (!window.ethereum.selectedAddress) {
             await provider.send("eth_requestAccounts", []);
           }
-          
+
           // Initialize signer and contract
           signer = provider.getSigner();
           contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
@@ -187,7 +190,7 @@ export const initializeWeb3 = async (requestAccounts = false) => {
         contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
         nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
       }
-      
+
       return true;
     } catch (error) {
       console.error('Error initializing web3:', error);
@@ -253,23 +256,23 @@ export const getContract = () => {
               chainId: RPC_CONFIG.bscTestnet.chainId
             });
           }
-          
+
           // Initialize signer and contract
           signer = provider.getSigner();        
           contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
           nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
           console.error('Error initializing contract:', error);
-          return readOnlyContract;
+          return null;
         }
       } else {
-        return readOnlyContract;
+        return null;
       }
     }
     return contract;
   } catch (error) {
     console.error('Error in getContract:', error);
-    return readOnlyContract;
+    return null;
   }
 };
 
@@ -286,22 +289,22 @@ export const getNFTContract = () => {
               chainId: RPC_CONFIG.bscTestnet.chainId
             });
           }
-          
+
           // Initialize signer and nftContract
           signer = provider.getSigner();                  
           nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
           console.error('Error initializing nftContract:', error);
-          return readOnlyNFTContract;
+          return null;
         }
       } else {
-        return readOnlyNFTContract;
+        return null;
       }
     }
     return nftContract;
   } catch (error) {
     console.error('Error in getContract:', error);
-    return readOnlyNFTContract;
+    return null;
   }
 };
 
@@ -313,10 +316,10 @@ export const getAddress = async () => {
       if (!provider || !signer) {
         await initializeWeb3(false);
       }
-      
+
       return window.ethereum.selectedAddress;
     }
-    
+
     // No accounts connected
     return null;
   } catch (error) {
@@ -331,7 +334,7 @@ export const isConnected = async () => {
     if (window.ethereum && window.ethereum.selectedAddress) {
       return true;
     }
-    
+
     // Fallback to getting address
     const address = await getAddress();
     return Boolean(address);
@@ -348,24 +351,24 @@ export const checkAdminRole = async (address: string): Promise<boolean> => {
       .select('role')
       .eq('user_address', address.toLowerCase())
       .maybeSingle();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         // No data found
         return false;
       }
       console.error('Error fetching user role:', error);
-      
+
       // Return mock role for testing
       const mockUser = [
         '0x1234567890123456789012345678901234567890',
         '0x2345678901234567890123456789012345678901',
         '0x3456789012345678901234567890123456789012'
       ].find(addr => addr.toLowerCase() === address.toLowerCase());
-      
+
       return Boolean(mockUser);
     }
-    
+
     return Boolean(data?.role);
   } catch (error) {
     console.error('Error checking admin role:', error);
@@ -380,11 +383,11 @@ export const useGSDCNFTContract = () => nftContract;
 
 export const getTokenBalance = async (address: string): Promise<string> => {
   try {
-    if (!contract && !readOnlyContract) {
+    if (!contract) {
       throw new Error('Contract not initialized');
     }
 
-    const activeContract = contract || readOnlyContract;
+    const activeContract = contract;
     const balance = await activeContract.balanceOf(address);
     return ethers.utils.formatEther(balance);
   } catch (error) {
@@ -395,11 +398,11 @@ export const getTokenBalance = async (address: string): Promise<string> => {
 
 export const getCurrentPrice = async (): Promise<string> => {
   try {
-    if (!contract && !readOnlyContract) {
+    if (!contract) {
       throw new Error('Contract not initialized');
     }
 
-    const activeContract = contract || readOnlyContract;
+    const activeContract = contract;
     const price = await activeContract.currentPrice();
     return ethers.utils.formatEther(price);
   } catch (error) {
@@ -410,11 +413,11 @@ export const getCurrentPrice = async (): Promise<string> => {
 
 export const getKYCStatus = async (address: string): Promise<boolean> => {
   try {
-    if (!contract && !readOnlyContract) {
+    if (!contract) {
       throw new Error('Contract not initialized');
     }
 
-    const activeContract = contract || readOnlyContract;
+    const activeContract = contract;
     return await activeContract.kycApproved(address);
   } catch (error) {
     console.error('Error getting KYC status:', error);
