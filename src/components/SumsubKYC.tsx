@@ -207,7 +207,8 @@ export default function SumsubKYC() {
               );
               setApplicantId(appId);
 
-              const token = await getSumsubAccessToken(address, appId);              
+              const token = await getSumsubAccessToken(address, appId);
+              console.log(token);
               setAccessToken(token);
             } else {
               setError("Failed to create Sumsub applicant");
@@ -226,6 +227,7 @@ export default function SumsubKYC() {
   }, [address, isConnected]);
 
   useEffect(() => {
+    console.log(accessToken);
     if (kycStatus === KYCStatus.NOT_SUBMITTED && accessToken) {
       initializeSumsubSDK();
     }

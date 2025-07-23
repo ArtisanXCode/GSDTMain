@@ -41,6 +41,7 @@ export const getSumsubAccessToken = async (userAddress: string, applicantId?: st
     
     const data = await response.json();    
     if(data.status){
+      console.log(data);
        return data.response.token;
     } else {
       return null
