@@ -108,12 +108,9 @@ export const getUserKYCStatus = async (
     const contract_NFT = getNFTContract();
     if (contract_NFT) {
       try {
-        console.log('Checking NFT balance for:', userAddress);
         const userBalance = await contract_NFT.balanceOf(userAddress);
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-
-        console.log('NFT Balance:', readableBalance);
-
+        console.log('NFT:', readableBalance);
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
         } else {

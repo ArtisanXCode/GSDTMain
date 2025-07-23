@@ -313,13 +313,7 @@ export default function KYCRequests() {
                 <p className="text-sm text-white/70">
                   Review and manage user KYC verification requests
                 </p>
-              </div>
-              <button
-                className="px-4 py-2 rounded-lg text-white font-medium"
-                style={{ backgroundColor: "#ed9030" }}
-              >
-                Settings
-              </button>
+              </div>              
             </div>
 
             {/* Filters */}

@@ -38,8 +38,6 @@ export default function TokenMinting() {
         console.error("Error checking KYC status:", error);
       }
 
-      console.log(kycStatus);
-      console.log(checkingKYC);
     };
 
     if (isConnected && address) {
