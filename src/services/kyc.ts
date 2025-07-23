@@ -217,6 +217,15 @@ export const approveKYCRequest = async (
   requestId: string,
 ): Promise<void> => {
   try {
+    // Check wallet connection first
+    if (!window.ethereum) {
+      throw new Error("Please install MetaMask to use this feature.");
+    }
+
+    if (!window.ethereum.selectedAddress) {
+      throw new Error("Please connect your wallet first.");
+    }
+
     // First get the KYC request details
     const { data: request, error: fetchError } = await supabase
       .from("kyc_requests")
@@ -231,10 +240,15 @@ export const approveKYCRequest = async (
     const userAddress = request.user_address;
     const verificationMethod = request.verification_method;
 
-    // Update the blockchain KYC status
+    // Get contract with signer
     const contract = getContract();
     if (!contract) {
       throw new Error("Contract not initialized. Please connect your wallet.");
+    }
+
+    // Verify this is a contract with signer, not read-only
+    if (!contract.signer) {
+      throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
     }
 
     // Check if the contract has the required functions
@@ -349,6 +363,15 @@ export const rejectKYCRequest = async (
   reason: string,
 ): Promise<void> => {
   try {
+    // Check wallet connection first
+    if (!window.ethereum) {
+      throw new Error("Please install MetaMask to use this feature.");
+    }
+
+    if (!window.ethereum.selectedAddress) {
+      throw new Error("Please connect your wallet first.");
+    }
+
     // First get the KYC request details
     const { data: request, error: fetchError } = await supabase
       .from("kyc_requests")
@@ -362,10 +385,15 @@ export const rejectKYCRequest = async (
 
     const userAddress = request.user_address;
 
-    // Update the blockchain
+    // Get contract with signer
     const contract = getContract();
     if (!contract) {
       throw new Error("Contract not initialized. Please connect your wallet.");
+    }
+
+    // Verify this is a contract with signer, not read-only
+    if (!contract.signer) {
+      throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
     }
 
     // Try to estimate gas first
