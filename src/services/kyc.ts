@@ -247,10 +247,25 @@ export const approveKYCRequest = async (
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
       console.error("Gas estimation failed:", gasError);
-      if (gasError.message?.includes('AccessControl') || gasError.message?.includes('missing role')) {
+      
+      // Handle specific error cases
+      if (gasError.message?.includes('sending a transaction requires a signer')) {
+        throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
+      } else if (gasError.message?.includes('AccessControl') || gasError.message?.includes('missing role')) {
         throw new Error("You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC.");
+      } else if (gasError.message?.includes('user rejected')) {
+        throw new Error("Transaction was rejected by user.");
+      } else if (gasError.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        throw new Error("Cannot estimate gas for this transaction. Please check your permissions and wallet connection.");
+      } else if (gasError.code === 'NETWORK_ERROR') {
+        throw new Error("Network error occurred. Please check your internet connection and try again.");
+      } else if (gasError.code === 'INSUFFICIENT_FUNDS') {
+        throw new Error("Insufficient funds for gas fees. Please add more ETH to your wallet.");
+      } else {
+        // Extract meaningful error message from the error object
+        const errorMessage = gasError.reason || gasError.message || gasError.data?.message || "Unknown error occurred";
+        throw new Error(`Transaction would fail: ${errorMessage}`);
       }
-      throw new Error("Transaction would fail. Please check your permissions and try again.");
     }
 
     // Execute the KYC status update
@@ -301,9 +316,31 @@ export const approveKYCRequest = async (
       .eq("id", requestId);
 
     if (error) throw error;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error approving KYC request:", error);
-    throw error;
+    
+    // Handle different types of errors with specific messages
+    if (error.message?.includes('sending a transaction requires a signer')) {
+      throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
+    } else if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+      throw new Error("Transaction was rejected by user.");
+    } else if (error.code === 'INSUFFICIENT_FUNDS' || error.code === -32000) {
+      throw new Error("Insufficient funds for gas fees. Please add more ETH to your wallet.");
+    } else if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') {
+      throw new Error("Network error occurred. Please check your internet connection and try again.");
+    } else if (error.message?.includes('AccessControl') || error.message?.includes('missing role')) {
+      throw new Error("You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC.");
+    } else if (error.message?.includes('execution reverted')) {
+      const revertReason = error.data?.message || error.reason || error.message;
+      throw new Error(`Smart contract error: ${revertReason}`);
+    } else if (error.message?.includes('Contract not initialized')) {
+      throw new Error("Contract not initialized. Please connect your wallet and try again.");
+    } else if (error.message?.includes('KYC request not found')) {
+      throw new Error("KYC request not found. Please refresh the page and try again.");
+    } else {
+      // If it's already a formatted error message, use it directly
+      throw new Error(error.message || "An unexpected error occurred while approving KYC request. Please try again.");
+    }
   }
 };
 
@@ -328,10 +365,28 @@ export const rejectKYCRequest = async (
     // Update the blockchain
     const contract = getContract();
     if (!contract) {
-      throw new Error("Contract not initialized");
+      throw new Error("Contract not initialized. Please connect your wallet.");
     }
 
-    const tx = await contract.updateKYCStatus(userAddress, false);
+    // Try to estimate gas first
+    try {
+      await contract.estimateGas.updateKYCStatus(userAddress, false);
+    } catch (gasError: any) {
+      console.error("Gas estimation failed for rejection:", gasError);
+      
+      if (gasError.message?.includes('sending a transaction requires a signer')) {
+        throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
+      } else if (gasError.message?.includes('AccessControl') || gasError.message?.includes('missing role')) {
+        throw new Error("You do not have permission to reject KYC requests. Only users with ADMIN role can reject KYC.");
+      } else {
+        const errorMessage = gasError.reason || gasError.message || gasError.data?.message || "Unknown error occurred";
+        throw new Error(`Transaction would fail: ${errorMessage}`);
+      }
+    }
+
+    const tx = await contract.updateKYCStatus(userAddress, false, {
+      gasLimit: 150000
+    });
     await tx.wait();
 
     // Then update the database
@@ -345,9 +400,25 @@ export const rejectKYCRequest = async (
       .eq("id", requestId);
 
     if (error) throw error;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error rejecting KYC request:", error);
-    throw error;
+    
+    // Handle different types of errors with specific messages
+    if (error.message?.includes('sending a transaction requires a signer')) {
+      throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
+    } else if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
+      throw new Error("Transaction was rejected by user.");
+    } else if (error.code === 'INSUFFICIENT_FUNDS' || error.code === -32000) {
+      throw new Error("Insufficient funds for gas fees. Please add more ETH to your wallet.");
+    } else if (error.message?.includes('AccessControl') || error.message?.includes('missing role')) {
+      throw new Error("You do not have permission to reject KYC requests. Only users with ADMIN role can reject KYC.");
+    } else if (error.message?.includes('execution reverted')) {
+      const revertReason = error.data?.message || error.reason || error.message;
+      throw new Error(`Smart contract error: ${revertReason}`);
+    } else {
+      // If it's already a formatted error message, use it directly
+      throw new Error(error.message || "An unexpected error occurred while rejecting KYC request. Please try again.");
+    }
   }
 };
 
