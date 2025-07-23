@@ -222,8 +222,25 @@ export const approveKYCRequest = async (
       throw new Error("Please install MetaMask to use this feature.");
     }
 
+    // If not connected, try to connect automatically
     if (!window.ethereum.selectedAddress) {
-      throw new Error("Please connect your wallet first.");
+      try {
+        console.log("Wallet not connected. Attempting to connect...");
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        // Recheck connection after request
+        if (!window.ethereum.selectedAddress) {
+          throw new Error("Please connect your wallet first. Click on MetaMask extension and connect your account.");
+        }
+      } catch (connectionError: any) {
+        if (connectionError.code === 4001) {
+          throw new Error("Wallet connection was rejected. Please connect your wallet and try again.");
+        } else if (connectionError.code === -32002) {
+          throw new Error("MetaMask is already processing a connection request. Please check MetaMask and complete the connection.");
+        } else {
+          throw new Error("Failed to connect wallet. Please open MetaMask and connect manually, then try again.");
+        }
+      }
     }
 
     // First get the KYC request details
@@ -261,7 +278,7 @@ export const approveKYCRequest = async (
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
       console.error("Gas estimation failed:", gasError);
-      
+
       // Handle specific error cases
       if (gasError.message?.includes('sending a transaction requires a signer')) {
         throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
@@ -297,7 +314,7 @@ export const approveKYCRequest = async (
           try {
             const mintAmount = ethers.utils.parseEther("1");
             await contract.estimateGas.mint(userAddress, mintAmount);
-            
+
             // Mint 1 token (1 * 10^18 wei)
             const mintTx = await contract.mint(userAddress, mintAmount, {
               gasLimit: 200000 // Set manual gas limit for minting
@@ -332,7 +349,7 @@ export const approveKYCRequest = async (
     if (error) throw error;
   } catch (error: any) {
     console.error("Error approving KYC request:", error);
-    
+
     // Handle different types of errors with specific messages
     if (error.message?.includes('sending a transaction requires a signer')) {
       throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
@@ -368,8 +385,25 @@ export const rejectKYCRequest = async (
       throw new Error("Please install MetaMask to use this feature.");
     }
 
+    // If not connected, try to connect automatically
     if (!window.ethereum.selectedAddress) {
-      throw new Error("Please connect your wallet first.");
+      try {
+        console.log("Wallet not connected. Attempting to connect...");
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        // Recheck connection after request
+        if (!window.ethereum.selectedAddress) {
+          throw new Error("Please connect your wallet first. Click on MetaMask extension and connect your account.");
+        }
+      } catch (connectionError: any) {
+        if (connectionError.code === 4001) {
+          throw new Error("Wallet connection was rejected. Please connect your wallet and try again.");
+        } else if (connectionError.code === -32002) {
+          throw new Error("MetaMask is already processing a connection request. Please check MetaMask and complete the connection.");
+        } else {
+          throw new Error("Failed to connect wallet. Please open MetaMask and connect manually, then try again.");
+        }
+      }
     }
 
     // First get the KYC request details
@@ -401,7 +435,7 @@ export const rejectKYCRequest = async (
       await contract.estimateGas.updateKYCStatus(userAddress, false);
     } catch (gasError: any) {
       console.error("Gas estimation failed for rejection:", gasError);
-      
+
       if (gasError.message?.includes('sending a transaction requires a signer')) {
         throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
       } else if (gasError.message?.includes('AccessControl') || gasError.message?.includes('missing role')) {
@@ -430,7 +464,7 @@ export const rejectKYCRequest = async (
     if (error) throw error;
   } catch (error: any) {
     console.error("Error rejecting KYC request:", error);
-    
+
     // Handle different types of errors with specific messages
     if (error.message?.includes('sending a transaction requires a signer')) {
       throw new Error("Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.");
