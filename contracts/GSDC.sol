@@ -277,12 +277,12 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     /**
      * @dev Hook that is called before any transfer of tokens
      */
-    function _beforeTokenTransfer(
+    function _update(
         address from,
         address to,
         uint256 amount
     ) internal virtual override {
-        super._beforeTokenTransfer(from, to, amount);
+        super._update(from, to, amount);
         
         // Check blacklist status
         require(!blacklisted[from], "GSDC: sender is blacklisted");
