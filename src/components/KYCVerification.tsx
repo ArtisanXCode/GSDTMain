@@ -154,7 +154,7 @@ export default function KYCVerification() {
       }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold text-white-900">
           KYC Verification
         </h3>
       </div>
@@ -197,7 +197,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="first_name"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 First Name
               </label>
@@ -216,7 +216,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="last_name"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 Last Name
               </label>
@@ -235,7 +235,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="date_of_birth"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 Date of Birth
               </label>
@@ -254,7 +254,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="nationality"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 Nationality
               </label>
@@ -273,7 +273,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="document_type"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 Document Type
               </label>
@@ -296,7 +296,7 @@ export default function KYCVerification() {
             <div>
               <label
                 htmlFor="document_file"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white-700 mb-2"
               >
                 Upload Document
               </label>
@@ -313,17 +313,17 @@ export default function KYCVerification() {
                   hover:file:bg-primary-100"
                 required
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-white-500">
                 Accepted formats: JPEG, PNG, PDF. Max size: 5MB
               </p>
             </div>
           </div>
 
           {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="w-full bg-white-200 rounded-full h-2.5">
               <div
                 className="bg-primary-600 h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
+                style={{ width: `${uploadProgress}%` }}                
               ></div>
             </div>
           )}
@@ -340,6 +340,9 @@ export default function KYCVerification() {
             type="submit"
             disabled={isSubmitting || !formData.document_file}
             className="w-full rounded-lg bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            style={{
+              background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+            }}
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center">

@@ -198,22 +198,17 @@ export default function SumsubKYC() {
           kycResponse?.status !== KYCStatus.APPROVED &&
           kycResponse?.status !== KYCStatus.REJECTED
         ) {
+          var appId = await createSumsubApplicant(address);
+          if (appId) {
+            const appIdStatus = await getSumsubApplicantStatus(address, appId);
+            setApplicantId(appId);
 
-            var appId = await createSumsubApplicant(address);
-            if (appId) {
-              const appIdStatus = await getSumsubApplicantStatus(
-                address,
-                appId,
-              );
-              setApplicantId(appId);
-
-              const token = await getSumsubAccessToken(address, appId);
-              console.log(token);
-              setAccessToken(token);
-            } else {
-              setError("Failed to create Sumsub applicant");
-            }
-
+            const token = await getSumsubAccessToken(address, appId);
+            console.log(token);
+            setAccessToken(token);
+          } else {
+            setError("Failed to create Sumsub applicant");
+          }
         }
       } catch (error: any) {
         console.error("Error checking KYC status:", error);
@@ -253,7 +248,7 @@ export default function SumsubKYC() {
       }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold text-white-900">
           KYC Verification
         </h3>
       </div>
@@ -277,7 +272,7 @@ export default function SumsubKYC() {
       {isLoading && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          <p className="ml-3 text-gray-600">Checking verification status...</p>
+          <p className="ml-3 text-white-600">Checking verification status...</p>
         </div>
       )}
 
@@ -316,10 +311,10 @@ export default function SumsubKYC() {
       {kycStatus === KYCStatus.NOT_SUBMITTED && !isLoading && !error && (
         <div>
           <div className="mb-6">
-            <h4 className="text-lg font-medium text-gray-900">
+            <h4 className="text-lg font-medium text-white-900">
               Automated Verification
             </h4>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-white-600 mt-2">
               Complete your identity verification quickly and securely using our
               automated system. You'll need to provide a valid ID document and
               take a selfie.
@@ -338,10 +333,10 @@ export default function SumsubKYC() {
           </div>
 
           <div className="mt-8 border-t border-gray-200 pt-6">
-            <h4 className="text-lg font-medium text-gray-900">
+            <h4 className="text-lg font-medium text-white-900">
               Manual Verification
             </h4>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-white-600 mt-2">
               If you prefer, you can also complete verification by manually
               submitting your documents.
             </p>
@@ -349,7 +344,10 @@ export default function SumsubKYC() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleManualVerification}
-              className="mt-4 px-4 py-2 bg-secondary-600 text-white rounded-md text-sm font-medium"
+              className="mt-4 px-4 py-2 text-white rounded-md"
+              style={{
+                background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+              }}
             >
               Manual Verification
             </motion.button>
