@@ -198,7 +198,7 @@ export default function SumsubKYC() {
           kycResponse?.status !== KYCStatus.APPROVED &&
           kycResponse?.status !== KYCStatus.REJECTED
         ) {
-          
+
             var appId = await createSumsubApplicant(address);
             if (appId) {
               const appIdStatus = await getSumsubApplicantStatus(
@@ -212,7 +212,7 @@ export default function SumsubKYC() {
             } else {
               setError("Failed to create Sumsub applicant");
             }
-            
+
         }
       } catch (error: any) {
         console.error("Error checking KYC status:", error);
@@ -226,8 +226,10 @@ export default function SumsubKYC() {
   }, [address, isConnected]);
 
   useEffect(() => {
-    initializeSumsubSDK();
-  }, [accessToken]);
+    if (kycStatus === KYCStatus.NOT_SUBMITTED && accessToken) {
+      initializeSumsubSDK();
+    }
+  }, [accessToken, kycStatus]);
 
   if (!isConnected) {
     return (
