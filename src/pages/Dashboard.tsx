@@ -1,18 +1,16 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import ExchangeRates from "../components/ExchangeRates";
 import ExchangeRatesList from "../components/ExchangeRatesList";
-import ProofOfReserves from "../components/ProofOfReserves";
 import KYCVerification from "../components/KYCVerification";
 import SumsubKYC from "../components/SumsubKYC";
-import TokenInfo from "../components/TokenInfo";
-import { Link } from "react-router-dom";
 import { useWallet } from "../hooks/useWallet";
 import { KYCStatus, getUserKYCStatus } from "../services/kyc";
 
 export default function Dashboard() {
   const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
-  const [kycStatus, setKycStatus] = useState<KYCStatus>(KYCStatus.NOT_SUBMITTED);
+  const [kycStatus, setKycStatus] = useState<KYCStatus>(
+    KYCStatus.NOT_SUBMITTED,
+  );
   const [kycLoading, setKycLoading] = useState(true);
   const { address, isConnected } = useWallet();
 
@@ -74,9 +72,7 @@ export default function Dashboard() {
 
       {/* Centered Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
+        <div className="phoenix-icon-parent">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
@@ -132,13 +128,14 @@ export default function Dashboard() {
               transition={{ delay: 0.2 }}
               className="rounded-3xl p-16 text-white shadow-lg"
               style={{
-                backgroundColor: kycStatus === KYCStatus.APPROVED 
-                  ? "#3f763a" 
-                  : kycStatus === KYCStatus.PENDING 
-                  ? "#d97706" 
-                  : kycStatus === KYCStatus.REJECTED 
-                  ? "#dc2626" 
-                  : "#6b7280",
+                backgroundColor:
+                  kycStatus === KYCStatus.APPROVED
+                    ? "#3f763a"
+                    : kycStatus === KYCStatus.PENDING
+                      ? "#d97706"
+                      : kycStatus === KYCStatus.REJECTED
+                        ? "#dc2626"
+                        : "#E74134",
               }}
             >
               <h3 className="text-lg font-medium text-white/80 mb-5">
@@ -150,7 +147,7 @@ export default function Dashboard() {
                   <div className="text-xl font-bold text-white">Loading...</div>
                 </div>
               ) : (
-                <div className="text-xl font-bold text-white">
+                <div className="text-3xl font-bold text-white">
                   {kycStatus === KYCStatus.APPROVED && "Approved"}
                   {kycStatus === KYCStatus.PENDING && "Pending"}
                   {kycStatus === KYCStatus.REJECTED && "Rejected"}
