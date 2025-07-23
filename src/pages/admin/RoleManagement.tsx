@@ -438,7 +438,7 @@ export default function RoleManagement() {
             </div>
 
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break">
+              <div className="mb-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break mt-2">
                 {error}
               </div>
             )}

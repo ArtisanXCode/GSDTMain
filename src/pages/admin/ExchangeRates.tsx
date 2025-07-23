@@ -294,7 +294,7 @@ export default function ExchangeRates() {
             </div>
 
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              <div className="mb-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mt-2">
                 {error}
               </div>
             )}

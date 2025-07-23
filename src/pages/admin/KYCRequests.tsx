@@ -313,7 +313,7 @@ export default function KYCRequests() {
                 <p className="text-sm text-white/70">
                   Review and manage user KYC verification requests
                 </p>
-              </div>              
+              </div>
             </div>
 
             {/* Filters */}
@@ -360,7 +360,7 @@ export default function KYCRequests() {
             </div>
 
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              <div className="mb-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mt-2">
                 {error}
               </div>
             )}
@@ -368,7 +368,7 @@ export default function KYCRequests() {
             {/* KYC Requests Table */}
             <div
               className="overflow-x-auto"
-              style={{ "background-color": "#2a4661" }}
+              style={{ backgroundColor: "#2a4661" }}
             >
               <table className="w-full">
                 <thead style={{ backgroundColor: "#5a7a96" }}>

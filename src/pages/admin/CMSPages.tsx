@@ -148,7 +148,7 @@ export default function CMSPages() {
         <div className="bg-white rounded-lg shadow">
           <div className="px-4 py-5 sm:p-6">
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              <div className="mb-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mt-2">
                 {error}
               </div>
             )}
