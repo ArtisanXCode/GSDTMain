@@ -127,6 +127,10 @@ export default function SumsubKYC() {
   };
 
   const initializeSumsubSDK = async () => {
+    console.log(accessToken);
+    console.log(containerRef.current);
+    console.log(address);
+    console.log(applicantId);
     if (!accessToken || !containerRef.current || !address || !applicantId)
       return;
 
@@ -194,10 +198,8 @@ export default function SumsubKYC() {
           kycResponse?.status !== KYCStatus.APPROVED &&
           kycResponse?.status !== KYCStatus.REJECTED
         ) {
-          let appId = kycResponse?.request?.sumsub_applicant_id;
-
-          if (!appId) {
-            appId = await createSumsubApplicant(address);
+          
+            var appId = await createSumsubApplicant(address);
             if (appId) {
               const appIdStatus = await getSumsubApplicantStatus(
                 address,
@@ -205,23 +207,12 @@ export default function SumsubKYC() {
               );
               setApplicantId(appId);
 
-              /*
-              if (appIdStatus?.reviewStatus === "completed") {
-                await saveKYCDetails(address, appIdStatus, appId, KYCStatus.APPROVED);
-                setKycStatus(KYCStatus.APPROVED);
-              }
-              */
+              const token = await getSumsubAccessToken(address, appId);              
+              setAccessToken(token);
             } else {
               setError("Failed to create Sumsub applicant");
             }
-          } else {
-            setApplicantId(appId);
-          }
-
-          if (appId) {
-            const token = await getSumsubAccessToken(address, appId);
-            setAccessToken(token);
-          }
+            
         }
       } catch (error: any) {
         console.error("Error checking KYC status:", error);
@@ -279,7 +270,7 @@ export default function SumsubKYC() {
         onManualVerification={handleManualVerification}
       />
 
-      {isLoading && (
+      {!isLoading && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           <p className="ml-3 text-gray-600">Checking verification status...</p>
