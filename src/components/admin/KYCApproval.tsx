@@ -73,11 +73,10 @@ export default function KYCApproval() {
       await loadRequests();
     } catch (error: any) {
       console.error('Error rejecting KYC request:', error);
-      //setError(err.message || 'Error approving KYC request');
       
       // Handle specific error messages
       if (error.message?.includes('missing role')) {
-        setError('You do not have permission to mint tokens. Only users with SUPER_ADMIN can rejecting.');
+        setError('You do not have permission to reject KYC. Only users with ADMIN role can reject.');
       } else if (error.message?.includes('execution reverted')) {
         const revertReason = error.data?.message || error.message;
         if (revertReason.includes('KYC')) {
@@ -90,8 +89,6 @@ export default function KYCApproval() {
       } else {
         setError('Error rejecting KYC request.');
       }
-      
-      setError(err.message || 'Error rejecting KYC request');
     } finally {
       setActionLoading(false);
     }
@@ -190,7 +187,7 @@ export default function KYCApproval() {
                       View Document
                     </a>
                   </td>
-                  {/*<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-4">
                       <button
                         onClick={() => handleApprove(request)}
@@ -207,7 +204,7 @@ export default function KYCApproval() {
                         Reject
                       </button>
                     </div>
-                  </td>*/}
+                  </td>
                 </motion.tr>
               ))}
             </tbody>

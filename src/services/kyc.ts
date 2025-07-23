@@ -218,19 +218,48 @@ export const fetchKYCRequests = async (
 
 export const approveKYCRequest = async (
   requestId: string,
-  userAddress: string,
 ): Promise<void> => {
   try {
-    // First update the blockchain
+    // First get the KYC request details
+    const { data: request, error: fetchError } = await supabase
+      .from("kyc_requests")
+      .select("user_address, verification_method")
+      .eq("id", requestId)
+      .single();
+
+    if (fetchError || !request) {
+      throw new Error("KYC request not found");
+    }
+
+    const userAddress = request.user_address;
+    const verificationMethod = request.verification_method;
+
+    // Update the blockchain KYC status
     const contract = getContract();
     if (!contract) {
       throw new Error("Contract not initialized");
     }
 
-    const tx = await contract.updateKYCStatus(userAddress, true);
-    await tx.wait();
+    const kycTx = await contract.updateKYCStatus(userAddress, true);
+    await kycTx.wait();
 
-    // Then update the database
+    // For manual KYC requests, mint 1 token to the user's wallet
+    if (verificationMethod === "manual") {
+      console.log("Minting 1 token for manual KYC approval:", userAddress);
+      try {
+        // Mint 1 token (1 * 10^18 wei)
+        const mintAmount = ethers.utils.parseEther("1");
+        const mintTx = await contract.mint(userAddress, mintAmount);
+        await mintTx.wait();
+        console.log("Successfully minted 1 token to user:", userAddress);
+      } catch (mintError) {
+        console.error("Error minting tokens for manual KYC approval:", mintError);
+        // Don't throw here - KYC approval succeeded, minting failed
+        // The admin can manually mint tokens if needed
+      }
+    }
+
+    // Update the database
     const { error } = await supabase
       .from("kyc_requests")
       .update({
@@ -248,11 +277,23 @@ export const approveKYCRequest = async (
 
 export const rejectKYCRequest = async (
   requestId: string,
-  userAddress: string,
   reason: string,
 ): Promise<void> => {
   try {
-    // First update the blockchain
+    // First get the KYC request details
+    const { data: request, error: fetchError } = await supabase
+      .from("kyc_requests")
+      .select("user_address")
+      .eq("id", requestId)
+      .single();
+
+    if (fetchError || !request) {
+      throw new Error("KYC request not found");
+    }
+
+    const userAddress = request.user_address;
+
+    // Update the blockchain
     const contract = getContract();
     if (!contract) {
       throw new Error("Contract not initialized");
