@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ExchangeRates from "../components/ExchangeRates";
 import ExchangeRatesList from "../components/ExchangeRatesList";
 import ProofOfReserves from "../components/ProofOfReserves";
@@ -7,9 +7,41 @@ import KYCVerification from "../components/KYCVerification";
 import SumsubKYC from "../components/SumsubKYC";
 import TokenInfo from "../components/TokenInfo";
 import { Link } from "react-router-dom";
+import { useWallet } from "../hooks/useWallet";
+import { KYCStatus, getUserKYCStatus } from "../services/kyc";
 
 export default function Dashboard() {
   const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
+  const [kycStatus, setKycStatus] = useState<KYCStatus>(KYCStatus.NOT_SUBMITTED);
+  const [kycLoading, setKycLoading] = useState(true);
+  const { address, isConnected } = useWallet();
+
+  // Fetch KYC status when wallet connects
+  useEffect(() => {
+    const fetchKYCStatus = async () => {
+      if (isConnected && address) {
+        setKycLoading(true);
+        try {
+          const result = await getUserKYCStatus(address);
+          if (result) {
+            setKycStatus(result.status);
+          } else {
+            setKycStatus(KYCStatus.NOT_SUBMITTED);
+          }
+        } catch (error) {
+          console.error("Error fetching KYC status:", error);
+          setKycStatus(KYCStatus.NOT_SUBMITTED);
+        } finally {
+          setKycLoading(false);
+        }
+      } else {
+        setKycStatus(KYCStatus.NOT_SUBMITTED);
+        setKycLoading(false);
+      }
+    };
+
+    fetchKYCStatus();
+  }, [isConnected, address]);
 
   return (
     <div className="bg-white">
@@ -100,13 +132,31 @@ export default function Dashboard() {
               transition={{ delay: 0.2 }}
               className="rounded-3xl p-16 text-white shadow-lg"
               style={{
-                backgroundColor: "#3f763a",
+                backgroundColor: kycStatus === KYCStatus.APPROVED 
+                  ? "#3f763a" 
+                  : kycStatus === KYCStatus.PENDING 
+                  ? "#d97706" 
+                  : kycStatus === KYCStatus.REJECTED 
+                  ? "#dc2626" 
+                  : "#6b7280",
               }}
             >
               <h3 className="text-lg font-medium text-white/80 mb-5">
                 KYC Status
               </h3>
-              <div className="text-xl font-bold text-white">Approved</div>
+              {kycLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="text-xl font-bold text-white">Loading...</div>
+                </div>
+              ) : (
+                <div className="text-xl font-bold text-white">
+                  {kycStatus === KYCStatus.APPROVED && "Approved"}
+                  {kycStatus === KYCStatus.PENDING && "Pending"}
+                  {kycStatus === KYCStatus.REJECTED && "Rejected"}
+                  {kycStatus === KYCStatus.NOT_SUBMITTED && "Not Submitted"}
+                </div>
+              )}
             </motion.div>
           </div>
 
