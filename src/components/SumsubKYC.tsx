@@ -274,7 +274,7 @@ export default function SumsubKYC() {
         onManualVerification={handleManualVerification}
       />
 
-      {!isLoading && (
+      {isLoading && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
           <p className="ml-3 text-gray-600">Checking verification status...</p>
@@ -329,7 +329,7 @@ export default function SumsubKYC() {
               ref={containerRef}
               className="mt-6 border border-gray-200 rounded-lg min-h-[400px] flex items-center justify-center"
             >
-              {!accessToken && (
+              {!accessToken && !isLoading && (
                 <p className="text-gray-500">
                   Preparing verification system...
                 </p>
