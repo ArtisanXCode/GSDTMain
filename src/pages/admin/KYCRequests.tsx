@@ -83,7 +83,7 @@ export default function KYCRequests() {
 
     try {
       setActionLoading(true);
-      await approveKYCRequest(request.id, request.user_address);
+      await approveKYCRequest(request.id);
 
       // Update UI
       setKycRequests((prev) =>
@@ -596,3 +596,4 @@ export default function KYCRequests() {
     </div>
   );
 }
+`
