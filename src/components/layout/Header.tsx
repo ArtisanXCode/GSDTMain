@@ -85,14 +85,10 @@ export default function Header() {
                     </span>
                     {adminRole && (
                       <span className="text-xs leading-tight text-orange-300 font-medium">
-                        {adminRole.charAt(0).toUpperCase() + adminRole.slice(1).toLowerCase()}
+                        {adminRole}
                       </span>
                     )}
-                    {!adminRole && (
-                      <span className="text-xs leading-tight text-gray-300">
-                        User
-                      </span>
-                    )}
+                    
                   </div>
                   <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
                 </Menu.Button>
