@@ -3,44 +3,27 @@ import { initializeWeb3, connectWallet, getAddress, isConnected, checkAdminRole 
 import { getUserRole } from '../services/admin';
 
 export const useWallet = () => {
-  const [address, setAddress] = useState<string | null>(() => {
-    // Initialize from localStorage if available
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('walletAddress');
-    }
-    return null;
-  });
+  const [address, setAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminRole, setAdminRole] = useState<string | null>(null);
   const [connectionAttemptInProgress, setConnectionAttemptInProgress] = useState(false);
-  // Track connection status separately from address
-  const [isConnected, setIsConnected] = useState<boolean>(() => {
-    // Initialize from localStorage if available
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('walletAddress') !== null;
-    }
-    return false;
-  });
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   const checkConnection = useCallback(async () => {
     try {
-      // Check if we have a wallet address in localStorage
-      const storedAddress = localStorage.getItem('walletAddress');
-      
-      // Check if MetaMask is available and connected
+      // Check if MetaMask is available and actually connected
       if (window.ethereum && window.ethereum.selectedAddress) {
         const addr = window.ethereum.selectedAddress;
         setAddress(addr);
         setIsConnected(true);
-        localStorage.setItem('walletAddress', addr);
 
         // Check if user is admin and get role
         try {
           const hasAdminRole = await checkAdminRole(addr);
           setIsAdmin(hasAdminRole);
-          
+
           // Always try to get role, even if not admin (for role display)
           try {
             const role = await getUserRole(addr);
@@ -55,44 +38,14 @@ export const useWallet = () => {
           setAdminRole(null);
         }
       } 
-      // If MetaMask is not connected but we have a stored address
-      else if (storedAddress) {
-        setAddress(storedAddress);
-        setIsConnected(true);
-        
-        // Try to get role for stored address
-        try {
-          const hasAdminRole = await checkAdminRole(storedAddress);
-          setIsAdmin(hasAdminRole);
-          
-          try {
-            const role = await getUserRole(storedAddress);
-            setAdminRole(role);
-          } catch (error) {
-            console.error('Error fetching admin role:', error);
-            setAdminRole(null);
-          }
-        } catch (error) {
-          console.error('Error checking admin role:', error);
-          setIsAdmin(false);
-          setAdminRole(null);
-        }
-        
-        // Try to initialize web3 without requesting accounts
-        try {
-          await initializeWeb3(false);
-        } catch (error) {
-          console.error('Error initializing web3:', error);
-        }
-      } 
-      // No connection at all
+      // MetaMask is not connected or locked
       else {
         setAddress(null);
         setIsConnected(false);
         setIsAdmin(false);
         setAdminRole(null);
       }
-      
+
       setError(null);
     } catch (err: any) {
       console.error('Error checking wallet connection:', err);
@@ -101,7 +54,6 @@ export const useWallet = () => {
       setIsConnected(false);
       setIsAdmin(false);
       setAdminRole(null);
-      localStorage.removeItem('walletAddress');
     } finally {
       setLoading(false);
     }
@@ -115,14 +67,13 @@ export const useWallet = () => {
     if (typeof window !== 'undefined' && window.ethereum) {
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length > 0) {
-          localStorage.setItem('walletAddress', accounts[0]);
           setAddress(accounts[0]);
           setIsConnected(true);
-          
+
           // Check if user is admin when account changes
           checkAdminRole(accounts[0]).then(hasRole => {
             setIsAdmin(hasRole);
-            
+
             // Get specific admin role if user is admin
             if (hasRole) {
               getUserRole(accounts[0]).then(role => {
@@ -135,9 +86,6 @@ export const useWallet = () => {
             }
           });
         } else {
-          localStorage.removeItem('walletAddress');
-          localStorage.removeItem('adminAuth');
-          localStorage.removeItem('adminAddress');
           setAddress(null);
           setIsConnected(false);
           setIsAdmin(false);
@@ -173,14 +121,13 @@ export const useWallet = () => {
       // Check if already connected
       if (window.ethereum && window.ethereum.selectedAddress) {
         const addr = window.ethereum.selectedAddress;
-        localStorage.setItem('walletAddress', addr);
         setAddress(addr);
         setIsConnected(true);
-        
+
         // Check if user is admin
         const hasAdminRole = await checkAdminRole(addr);
         setIsAdmin(hasAdminRole);
-        
+
         // Get specific admin role if user is admin
         if (hasAdminRole) {
           try {
@@ -190,22 +137,21 @@ export const useWallet = () => {
             console.error('Error fetching admin role:', error);
           }
         }
-        
+
         return addr;
       }
 
       // Connect wallet - this will handle the MetaMask popup
       const addr = await connectWallet();
-      
+
       if (addr) {
-        localStorage.setItem('walletAddress', addr);
         setAddress(addr);
         setIsConnected(true);
-        
+
         // Check if user is admin
         const hasAdminRole = await checkAdminRole(addr);
         setIsAdmin(hasAdminRole);
-        
+
         // Get specific admin role if user is admin
         if (hasAdminRole) {
           try {
@@ -215,10 +161,10 @@ export const useWallet = () => {
             console.error('Error fetching admin role:', error);
           }
         }
-        
+
         return addr;
       }
-      
+
       throw new Error('Failed to connect wallet');
     } catch (err: any) {
       // Don't show error for user rejection
@@ -242,13 +188,8 @@ export const useWallet = () => {
   const disconnect = async () => {
     try {
       setLoading(true);
-      
-      // Clear all authentication data
-      localStorage.removeItem('walletAddress');
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAddress');
-      
-      // Reset state
+
+      // Reset state - no localStorage clearing needed
       setAddress(null);
       setIsConnected(false);
       setIsAdmin(false);

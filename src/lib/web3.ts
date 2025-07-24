@@ -209,38 +209,38 @@ export const initializeWeb3 = async (requestAccounts = false) => {
   }
 };
 
-export const connectWallet = async (): Promise<boolean> => {
+export const connectWallet = async (): Promise<string | null> => {
   if (connectionInProgress) {
-    return connectionPromise || Promise.resolve(false);
+    return null;
   }
 
   if (typeof window.ethereum === 'undefined') {
     console.error('Please install MetaMask to use this application');
-    return false;
+    return null;
   }
 
   connectionInProgress = true;
-  connectionPromise = (async () => {
-    try {
-      // Request account access
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-
+  
+  try {
+    // Request account access
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    
+    if (accounts.length > 0) {
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
       contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
       nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
 
-      return true;
-    } catch (error) {
-      console.error('Failed to connect wallet:', error);
-      return false;
-    } finally {
-      connectionInProgress = false;
-      connectionPromise = null;
+      return accounts[0];
     }
-  })();
-
-  return connectionPromise;
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to connect wallet:', error);
+    return null;
+  } finally {
+    connectionInProgress = false;
+  }
 };
 
 export const getContract = () => {
@@ -310,7 +310,7 @@ export const getNFTContract = () => {
 
 export const getAddress = async () => {
   try {
-    // Check if we have accounts already connected
+    // Check if MetaMask is connected and unlocked
     if (window.ethereum && window.ethereum.selectedAddress) {
       // Initialize without requesting accounts if we haven't already
       if (!provider || !signer) {
@@ -320,7 +320,7 @@ export const getAddress = async () => {
       return window.ethereum.selectedAddress;
     }
 
-    // No accounts connected
+    // No accounts connected or MetaMask is locked
     return null;
   } catch (error) {
     console.error('Error getting address:', error);
@@ -330,14 +330,12 @@ export const getAddress = async () => {
 
 export const isConnected = async () => {
   try {
-    // Check if MetaMask is connected by looking at selectedAddress
+    // Check if MetaMask is available, unlocked, and has a selected address
     if (window.ethereum && window.ethereum.selectedAddress) {
       return true;
     }
 
-    // Fallback to getting address
-    const address = await getAddress();
-    return Boolean(address);
+    return false;
   } catch {
     return false;
   }
