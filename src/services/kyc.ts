@@ -324,7 +324,7 @@ export const approveKYCRequest = async (
       try {
         const SUMSUB_NODE_API_URL = import.meta.env.VITE_SUMSUB_NODE_API_URL;
         const apiUrl = SUMSUB_NODE_API_URL + '/webhooks/sumsub';
-        
+
         const webhookPayload = {
           applicantId: `manual-${userAddress}-${Date.now()}`,
           inspectionId: `manual-${userAddress}-${Date.now()}`,
@@ -343,6 +343,8 @@ export const approveKYCRequest = async (
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'x-payload-digest': import.meta.env.VITE_SUMSUB_WEBHOOK_KEYPAIR,
+            'x-payload-sign': import.meta.env.VITE_SUMSUB_WEBHOOK_KEYPAIR,
           },
           body: JSON.stringify(webhookPayload),
         });
@@ -484,7 +486,7 @@ export const rejectKYCRequest = async (
       if (!fetchKycError && kycRequest?.verification_method === "manual") {
         const SUMSUB_NODE_API_URL = import.meta.env.VITE_SUMSUB_NODE_API_URL;
         const apiUrl = SUMSUB_NODE_API_URL + '/webhooks/sumsub';
-        
+
         const webhookPayload = {
           applicantId: `manual-${userAddress}-${Date.now()}`,
           inspectionId: `manual-${userAddress}-${Date.now()}`,
