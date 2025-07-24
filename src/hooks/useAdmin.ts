@@ -11,6 +11,8 @@ export const useAdmin = () => {
   const [error, setError] = useState<string | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastCheckedAddressRef = useRef<string | null>(null);
+  const failureCountRef = useRef<number>(0);
+  const circuitBreakerRef = useRef<boolean>(false);
 
   // Add role-specific states
   const [isMinter, setIsMinter] = useState(false);
@@ -35,6 +37,15 @@ export const useAdmin = () => {
         setIsModerator(false);
         setLoading(false);
         lastCheckedAddressRef.current = null;
+        failureCountRef.current = 0;
+        circuitBreakerRef.current = false;
+        return;
+      }
+
+      // Circuit breaker: stop making calls after 3 consecutive failures
+      if (circuitBreakerRef.current) {
+        console.log("Circuit breaker active, skipping API call");
+        setLoading(false);
         return;
       }
 
@@ -125,6 +136,9 @@ export const useAdmin = () => {
               role === AdminRole.PRICE_UPDATER || role === AdminRole.SUPER_ADMIN,
             );
 
+            // Reset failure count on successful call
+            failureCountRef.current = 0;
+            
             // If we have a role, store it in localStorage
             if (role) {
               localStorage.setItem("adminAuth", "true");
@@ -139,9 +153,28 @@ export const useAdmin = () => {
           } catch (roleError) {
             console.error("Error fetching user role:", roleError);
             
+            // Increment failure count
+            failureCountRef.current += 1;
+            
             // Don't retry on network errors to prevent spam
-            if (roleError.message?.includes("Failed to fetch")) {
+            if (roleError.message?.includes("Failed to fetch") || roleError.message?.includes("TypeError: Failed to fetch")) {
+              console.log("Network error detected, stopping API calls");
               setError("Network connection issue. Using offline mode.");
+              
+              // Activate circuit breaker after 3 failures
+              if (failureCountRef.current >= 3) {
+                circuitBreakerRef.current = true;
+                console.log("Circuit breaker activated - no more API calls");
+              }
+              
+              // Mark this address as checked to prevent further calls
+              lastCheckedAddressRef.current = address.toLowerCase();
+              
+              // Clear any existing timer
+              if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+                debounceTimerRef.current = null;
+              }
               
               // Fallback to hardcoded admin addresses for testing
               if (
