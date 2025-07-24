@@ -319,55 +319,42 @@ export const approveKYCRequest = async (
       }
     }
 
-    // Call SumSub webhook API if this is a SumSub verification
-    if (verificationMethod === "sumsub") {
+    // For manual KYC approvals, call our webhook API to sync with external systems
+    if (verificationMethod === "manual") {
       try {
-        // Get SumSub applicant ID from the request
-        const { data: kycRequest, error: kycError } = await supabase
-          .from("kyc_requests")
-          .select("sumsub_applicant_id")
-          .eq("id", requestId)
-          .single();
+        const SUMSUB_NODE_API_URL = import.meta.env.VITE_SUMSUB_NODE_API_URL;
+        const apiUrl = SUMSUB_NODE_API_URL + '/webhooks/sumsub';
+        
+        const webhookPayload = {
+          applicantId: `manual-${userAddress}-${Date.now()}`,
+          inspectionId: `manual-${userAddress}-${Date.now()}`,
+          correlationId: `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          externalUserId: userAddress,
+          levelName: "manual-verification",
+          type: "applicantReviewed",
+          reviewResult: {
+            reviewAnswer: "GREEN"
+          },
+          reviewStatus: "completed",
+          createdAtMs: new Date().toISOString()
+        };
 
-        if (kycError || !kycRequest?.sumsub_applicant_id) {
-          console.warn("No SumSub applicant ID found for KYC request");
-        } else {
-          const SUMSUB_NODE_API_URL = import.meta.env.VITE_SUMSUB_NODE_API_URL;
-          const apiUrl = SUMSUB_NODE_API_URL + '/webhooks/sumsub';
-          
-          const webhookPayload = {
-            applicantId: kycRequest.sumsub_applicant_id,
-            inspectionId: kycRequest.sumsub_applicant_id,
-            correlationId: `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            externalUserId: userAddress,
-            levelName: "id-and-liveness",
-            type: "applicantReviewed",
-            reviewResult: {
-              reviewAnswer: "GREEN"
-            },
-            reviewStatus: "completed",
-            createdAtMs: new Date().toISOString()
-          };
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookPayload),
+        });
 
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(webhookPayload),
-          });
-
-          if (!response.ok) {
-            throw new Error(`SumSub webhook API failed with status: ${response.status}`);
-          }
-
-          console.log("SumSub webhook API called successfully");
+        if (!response.ok) {
+          throw new Error(`Manual KYC webhook API failed with status: ${response.status}`);
         }
+
+        console.log("Manual KYC webhook API called successfully");
       } catch (webhookError) {
-        console.error("Error calling SumSub webhook API:", webhookError);
+        console.error("Error calling manual KYC webhook API:", webhookError);
         // Don't throw here - the KYC approval should still proceed even if webhook fails
-        // You can choose to throw if you want the approval to fail when webhook fails
-        // throw new Error(`KYC approved but SumSub webhook failed: ${webhookError.message}`);
       }
     }
 
@@ -485,25 +472,25 @@ export const rejectKYCRequest = async (
     });
     await tx.wait();
 
-    // Call SumSub webhook API if this is a SumSub verification
+    // For manual KYC rejections, call our webhook API to sync with external systems
     try {
       // Get the KYC request details to check verification method
       const { data: kycRequest, error: fetchKycError } = await supabase
         .from("kyc_requests")
-        .select("verification_method, sumsub_applicant_id")
+        .select("verification_method")
         .eq("id", requestId)
         .single();
 
-      if (!fetchKycError && kycRequest?.verification_method === "sumsub" && kycRequest?.sumsub_applicant_id) {
+      if (!fetchKycError && kycRequest?.verification_method === "manual") {
         const SUMSUB_NODE_API_URL = import.meta.env.VITE_SUMSUB_NODE_API_URL;
         const apiUrl = SUMSUB_NODE_API_URL + '/webhooks/sumsub';
         
         const webhookPayload = {
-          applicantId: kycRequest.sumsub_applicant_id,
-          inspectionId: kycRequest.sumsub_applicant_id,
+          applicantId: `manual-${userAddress}-${Date.now()}`,
+          inspectionId: `manual-${userAddress}-${Date.now()}`,
           correlationId: `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           externalUserId: userAddress,
-          levelName: "id-and-liveness",
+          levelName: "manual-verification",
           type: "applicantReviewed",
           reviewResult: {
             reviewAnswer: "RED"
@@ -522,13 +509,13 @@ export const rejectKYCRequest = async (
         });
 
         if (!response.ok) {
-          console.error(`SumSub webhook API failed with status: ${response.status}`);
+          console.error(`Manual KYC webhook API failed with status: ${response.status}`);
         } else {
-          console.log("SumSub webhook API called successfully for rejection");
+          console.log("Manual KYC webhook API called successfully for rejection");
         }
       }
     } catch (webhookError) {
-      console.error("Error calling SumSub webhook API for rejection:", webhookError);
+      console.error("Error calling manual KYC webhook API for rejection:", webhookError);
       // Don't throw here - the KYC rejection should still proceed even if webhook fails
     }
 

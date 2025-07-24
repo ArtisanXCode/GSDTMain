@@ -88,7 +88,7 @@ export default function Header() {
                         {adminRole}
                       </span>
                     )}
-                    
+
                   </div>
                   <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
                 </Menu.Button>
