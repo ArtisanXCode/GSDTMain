@@ -136,7 +136,7 @@ export default function KYCVerification() {
 
   if (!isConnected) {
     return (
-      <div className="rounded-xl p-8 shadow-lg">
+      <div className="bg-white rounded-xl p-8 shadow-lg">
         <div className="text-center">
           <p className="text-gray-600">
             Connect your wallet to start KYC verification
