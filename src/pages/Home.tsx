@@ -88,7 +88,7 @@ export default function Home() {
       <div
         className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
         style={{
-          backgroundImage: `url('/public/home_header.png')`,
+          backgroundImage: `url('/headers/home_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

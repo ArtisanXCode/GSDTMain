@@ -19,7 +19,7 @@ export default function TransactionListPage() {
       <div
         className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `url('/public/transaction_history_header.png')`,
+          backgroundImage: `url('/headers/transaction_history_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

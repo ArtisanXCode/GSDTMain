@@ -51,7 +51,7 @@ export default function TokenMinting() {
       <div
         className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `url('/public/token_minting_header.png')`,
+          backgroundImage: `url('/headers/token_minting_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
