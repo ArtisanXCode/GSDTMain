@@ -167,13 +167,17 @@ export const useWallet = () => {
 
       throw new Error('Failed to connect wallet');
     } catch (err: any) {
-      // Don't show error for user rejection
-      if (err.message && (
+      // Handle specific MetaMask errors
+      if (err.code === -32002) {
+        console.log('MetaMask is already processing a request. Please check your MetaMask extension.');
+        setError('MetaMask is processing another request. Please check your MetaMask extension and try again.');
+      } else if (err.code === 4001 || err.message && (
         err.message.includes('User rejected') || 
         err.message.includes('user rejected') ||
         err.message.includes('User denied')
       )) {
         console.log('User rejected wallet connection');
+        // Don't set error for user rejection, just reset state
       } else {
         console.error('Error connecting wallet:', err);
         setError(err.message || 'Error connecting wallet');

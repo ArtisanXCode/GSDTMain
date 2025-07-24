@@ -211,12 +211,11 @@ export const initializeWeb3 = async (requestAccounts = false) => {
 
 export const connectWallet = async (): Promise<string | null> => {
   if (connectionInProgress) {
-    return null;
+    throw new Error('Connection already in progress');
   }
 
   if (typeof window.ethereum === 'undefined') {
-    console.error('Please install MetaMask to use this application');
-    return null;
+    throw new Error('Please install MetaMask to use this application');
   }
 
   connectionInProgress = true;
@@ -235,9 +234,15 @@ export const connectWallet = async (): Promise<string | null> => {
     }
     
     return null;
-  } catch (error) {
-    console.error('Failed to connect wallet:', error);
-    return null;
+  } catch (error: any) {
+    // Re-throw the error with proper error codes for the hook to handle
+    if (error.code === -32002) {
+      throw { code: -32002, message: 'Already processing eth_requestAccounts. Please wait.' };
+    } else if (error.code === 4001) {
+      throw { code: 4001, message: 'User rejected the request.' };
+    } else {
+      throw error;
+    }
   } finally {
     connectionInProgress = false;
   }
