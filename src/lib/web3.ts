@@ -315,14 +315,23 @@ export const getNFTContract = () => {
 
 export const getAddress = async () => {
   try {
-    // Check if MetaMask is connected and unlocked
-    if (window.ethereum && window.ethereum.selectedAddress) {
-      // Initialize without requesting accounts if we haven't already
-      if (!provider || !signer) {
-        await initializeWeb3(false);
+    // Check if MetaMask is available
+    if (window.ethereum) {
+      try {
+        // Try to get accounts without requesting permission
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        
+        if (accounts && accounts.length > 0) {
+          // Initialize without requesting accounts if we haven't already
+          if (!provider || !signer) {
+            await initializeWeb3(false);
+          }
+          return accounts[0];
+        }
+      } catch (error) {
+        // MetaMask is locked or error occurred
+        console.log('MetaMask is locked or not accessible');
       }
-
-      return window.ethereum.selectedAddress;
     }
 
     // No accounts connected or MetaMask is locked
@@ -335,9 +344,16 @@ export const getAddress = async () => {
 
 export const isConnected = async () => {
   try {
-    // Check if MetaMask is available, unlocked, and has a selected address
-    if (window.ethereum && window.ethereum.selectedAddress) {
-      return true;
+    // Check if MetaMask is available
+    if (window.ethereum) {
+      try {
+        // Try to get accounts without requesting permission
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        return accounts && accounts.length > 0;
+      } catch (error) {
+        // MetaMask is locked or error occurred
+        return false;
+      }
     }
 
     return false;

@@ -13,33 +13,52 @@ export const useWallet = () => {
 
   const checkConnection = useCallback(async () => {
     try {
-      // Check if MetaMask is available and actually connected
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        const addr = window.ethereum.selectedAddress;
-        setAddress(addr);
-        setIsConnected(true);
-
-        // Check if user is admin and get role
+      // Check if MetaMask is available
+      if (window.ethereum) {
         try {
-          const hasAdminRole = await checkAdminRole(addr);
-          setIsAdmin(hasAdminRole);
+          // Try to get accounts without requesting permission
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          
+          if (accounts && accounts.length > 0 && window.ethereum.selectedAddress) {
+            const addr = accounts[0];
+            setAddress(addr);
+            setIsConnected(true);
 
-          // Always try to get role, even if not admin (for role display)
-          try {
-            const role = await getUserRole(addr);
-            setAdminRole(role);
-          } catch (error) {
-            console.error('Error fetching admin role:', error);
+            // Check if user is admin and get role
+            try {
+              const hasAdminRole = await checkAdminRole(addr);
+              setIsAdmin(hasAdminRole);
+
+              // Always try to get role, even if not admin (for role display)
+              try {
+                const role = await getUserRole(addr);
+                setAdminRole(role);
+              } catch (error) {
+                console.error('Error fetching admin role:', error);
+                setAdminRole(null);
+              }
+            } catch (error) {
+              console.error('Error checking admin role:', error);
+              setIsAdmin(false);
+              setAdminRole(null);
+            }
+          } else {
+            // MetaMask is not connected or locked
+            setAddress(null);
+            setIsConnected(false);
+            setIsAdmin(false);
             setAdminRole(null);
           }
         } catch (error) {
-          console.error('Error checking admin role:', error);
+          // Error getting accounts (likely MetaMask is locked)
+          console.log('MetaMask is locked or not connected');
+          setAddress(null);
+          setIsConnected(false);
           setIsAdmin(false);
           setAdminRole(null);
         }
-      } 
-      // MetaMask is not connected or locked
-      else {
+      } else {
+        // MetaMask not installed
         setAddress(null);
         setIsConnected(false);
         setIsAdmin(false);
@@ -98,11 +117,17 @@ export const useWallet = () => {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
 
+      // Periodic check for MetaMask lock/unlock (every 3 seconds)
+      const connectionInterval = setInterval(() => {
+        checkConnection();
+      }, 3000);
+
       return () => {
         if (window.ethereum && window.ethereum.removeListener) {
           window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
           window.ethereum.removeListener('chainChanged', handleChainChanged);
         }
+        clearInterval(connectionInterval);
       };
     }
   }, [checkConnection]);
@@ -117,29 +142,6 @@ export const useWallet = () => {
       setConnectionAttemptInProgress(true);
       setLoading(true);
       setError(null);
-
-      // Check if already connected
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        const addr = window.ethereum.selectedAddress;
-        setAddress(addr);
-        setIsConnected(true);
-
-        // Check if user is admin
-        const hasAdminRole = await checkAdminRole(addr);
-        setIsAdmin(hasAdminRole);
-
-        // Get specific admin role if user is admin
-        if (hasAdminRole) {
-          try {
-            const role = await getUserRole(addr);
-            setAdminRole(role);
-          } catch (error) {
-            console.error('Error fetching admin role:', error);
-          }
-        }
-
-        return addr;
-      }
 
       // Connect wallet - this will handle the MetaMask popup
       const addr = await connectWallet();

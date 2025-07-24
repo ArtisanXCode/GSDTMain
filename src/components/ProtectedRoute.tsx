@@ -9,17 +9,34 @@ interface Props {
 }
 
 export default function ProtectedRoute({ children, requireAdmin = false }: Props) {
-  const { isConnected, loading: walletLoading } = useWallet();
+  const { isConnected, loading: walletLoading, address } = useWallet();
   const { isAdmin, loading: adminLoading } = useAdmin();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     // Wait until all auth checks are complete
     if (!walletLoading && (!requireAdmin || !adminLoading)) {
       setIsChecking(false);
+      
+      // Check if we should redirect due to wallet disconnection
+      if (!isConnected || !address) {
+        setShouldRedirect(true);
+      } else {
+        setShouldRedirect(false);
+      }
     }
-  }, [walletLoading, adminLoading, requireAdmin]);
+  }, [walletLoading, adminLoading, requireAdmin, isConnected, address]);
+
+  // Real-time check for wallet disconnection
+  useEffect(() => {
+    if (!isChecking) {
+      if (!isConnected || !address) {
+        setShouldRedirect(true);
+      }
+    }
+  }, [isConnected, address, isChecking]);
 
   if (isChecking) {
     return (
@@ -29,14 +46,14 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
     );
   }
 
-  if (!isConnected) {
-    // Redirect to home if not connected
+  if (shouldRedirect || !isConnected) {
+    // Redirect to home if not connected or wallet was disconnected
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (requireAdmin && !isAdmin) {
-    // Redirect to admin login if admin access is required but user is not admin
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    // Redirect to home if admin access is required but user is not admin
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
