@@ -21,7 +21,7 @@ const navigation = [
 ];
 
 export default function Header() {
-  const { address, isConnected, connect, disconnect } = useWallet();
+  const { address, isConnected, connect, disconnect, loading, connectionAttemptInProgress } = useWallet();
   const { isAdmin, adminRole } = useAdmin();
   const location = useLocation();
 
