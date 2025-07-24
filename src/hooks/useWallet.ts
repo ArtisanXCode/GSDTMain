@@ -36,28 +36,47 @@ export const useWallet = () => {
         setIsConnected(true);
         localStorage.setItem('walletAddress', addr);
 
-        // Check if user is admin
+        // Check if user is admin and get role
         try {
           const hasAdminRole = await checkAdminRole(addr);
           setIsAdmin(hasAdminRole);
           
-          // Get specific admin role if user is admin
-          if (hasAdminRole) {
-            try {
-              const role = await getUserRole(addr);
-              setAdminRole(role);
-            } catch (error) {
-              console.error('Error fetching admin role:', error);
-            }
+          // Always try to get role, even if not admin (for role display)
+          try {
+            const role = await getUserRole(addr);
+            setAdminRole(role);
+          } catch (error) {
+            console.error('Error fetching admin role:', error);
+            setAdminRole(null);
           }
         } catch (error) {
           console.error('Error checking admin role:', error);
+          setIsAdmin(false);
+          setAdminRole(null);
         }
       } 
       // If MetaMask is not connected but we have a stored address
       else if (storedAddress) {
         setAddress(storedAddress);
         setIsConnected(true);
+        
+        // Try to get role for stored address
+        try {
+          const hasAdminRole = await checkAdminRole(storedAddress);
+          setIsAdmin(hasAdminRole);
+          
+          try {
+            const role = await getUserRole(storedAddress);
+            setAdminRole(role);
+          } catch (error) {
+            console.error('Error fetching admin role:', error);
+            setAdminRole(null);
+          }
+        } catch (error) {
+          console.error('Error checking admin role:', error);
+          setIsAdmin(false);
+          setAdminRole(null);
+        }
         
         // Try to initialize web3 without requesting accounts
         try {

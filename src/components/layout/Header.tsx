@@ -75,21 +75,25 @@ export default function Header() {
 
           {/* Wallet Button */}
           <div className="hidden md:flex items-center">
-            {isConnected ? (
+            {isConnected && address ? (
               <Menu as="div" className="relative">
                 <Menu.Button className="flex items-center rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200">
                   <WalletIcon className="h-4 w-4 mr-2" />
-                  <span className="hidden lg:inline">
-                    {`${address?.slice(0, 6)}...${address?.slice(-4)}`}
-                  </span>
-                  <span className="lg:hidden">
-                    {`${address?.slice(0, 4)}...`}
-                  </span>
-                  {adminRole && (
-                    <span className="ml-2 text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded">
-                      {adminRole}
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs leading-tight">
+                      {`${address.slice(0, 6)}...${address.slice(-4)}`}
                     </span>
-                  )}
+                    {adminRole && (
+                      <span className="text-xs leading-tight text-orange-300 font-medium">
+                        {adminRole.charAt(0).toUpperCase() + adminRole.slice(1).toLowerCase()}
+                      </span>
+                    )}
+                    {!adminRole && (
+                      <span className="text-xs leading-tight text-gray-300">
+                        User
+                      </span>
+                    )}
+                  </div>
                   <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
                 </Menu.Button>
 
@@ -164,10 +168,23 @@ export default function Header() {
             ) : (
               <button
                 onClick={connect}
-                className="flex items-center rounded-full bg-white/10 backdrop-blur-sm border border-white/30 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200"
+                disabled={loading || connectionAttemptInProgress}
+                className="flex items-center rounded-full bg-white/10 backdrop-blur-sm border border-white/30 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <WalletIcon className="h-4 w-4 mr-2" />
-                WALLET
+                {loading || connectionAttemptInProgress ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <WalletIcon className="h-4 w-4 mr-2" />
+                    Connect Wallet
+                  </>
+                )}
               </button>
             )}
           </div>
@@ -268,12 +285,25 @@ export default function Header() {
                       {({ active }) => (
                         <button
                           onClick={connect}
+                          disabled={loading || connectionAttemptInProgress}
                           className={`${
                             active ? "bg-gray-100" : ""
-                          } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
+                          } flex w-full px-4 py-2 text-sm text-gray-700 items-center disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
-                          <WalletIcon className="h-5 w-5 mr-2" />
-                          WALLET
+                          {loading || connectionAttemptInProgress ? (
+                            <>
+                              <svg className="animate-spin h-5 w-5 mr-2 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Connecting...
+                            </>
+                          ) : (
+                            <>
+                              <WalletIcon className="h-5 w-5 mr-2" />
+                              Connect Wallet
+                            </>
+                          )}
                         </button>
                       )}
                     </Menu.Item>
