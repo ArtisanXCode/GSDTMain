@@ -1,0 +1,13 @@
+{code: -32002, message: 'Already processing eth_requestAccounts. Please wait.', stack: '{\n  "code": -32002,\n  "message": "Already processi…hfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62320)'}
+code
+: 
+-32002
+message
+: 
+"Already processing eth_requestAccounts. Please wait."
+stack
+: 
+"{\n  \"code\": -32002,\n  \"message\": \"Already processing eth_requestAccounts. Please wait.\",\n  \"stack\": \"Error: Already processing eth_requestAccounts. Please wait.\\n    at new o (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:5787)\\n    at a (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:8878)\\n    at Object.resourceUnavailable (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:9945)\\n    at implementation (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-0.js:1:268131)\\n    at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-0.js:1:237199\\n    at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:63118\\n    at new Promise (<anonymous>)\\n    at T.m (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62775)\\n    at T.p (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62693)\\n    at async T.d (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62494)\\n    at async T.l (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62320)\"\n}\n  at new o (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:5787)\n  at a (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:8878)\n  at Object.resourceUnavailable (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-3.js:3:9945)\n  at implementation (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-0.js:1:268131)\n  at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/background-0.js:1:237199\n  at chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:63118\n  at new Promise (<anonymous>)\n  at T.m (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62775)\n  at T.p (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62693)\n  at async T.d (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62494)\n  at async T.l (chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/common-2.js:3:62320)"
+[[Prototype]]
+: 
+Object
