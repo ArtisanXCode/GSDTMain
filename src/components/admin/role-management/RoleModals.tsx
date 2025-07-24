@@ -110,14 +110,14 @@ export default function RoleModals({
             <div className="mt-6 flex justify-end space-x-4">
               <button
                 onClick={() => onClose('edit')}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                className="px-4 py-2 text-sm font-medium text-white-700 bg-gray-500 hover:bg-gray-400 rounded-md"
               >
                 Cancel
               </button>
               <button
                 onClick={onEdit}
                 disabled={actionLoading || !formData.role}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 flex items-center"
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center"
               >
                 {actionLoading ? (
                   <>
