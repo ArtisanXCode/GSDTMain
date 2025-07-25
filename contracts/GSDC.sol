@@ -136,6 +136,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(EMERGENCY_ROLE, msg.sender);
         _grantRole(GUARDIAN_ROLE, msg.sender);
+        _grantRole(TIMELOCK_ADMIN_ROLE, msg.sender);
 
         // Initialize signers
         for (uint256 i = 0; i < _initialSigners.length; i++) {
@@ -270,12 +271,14 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     // ================================
 
     function addSigner(address newSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
         bytes memory data = abi.encode(newSigner, true);
         bytes32 operationHash = proposeOperation("UPDATE_SIGNER", data);
         signOperation(operationHash);
     }
 
     function removeSigner(address signer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
         bytes memory data = abi.encode(signer, false);
         bytes32 operationHash = proposeOperation("UPDATE_SIGNER", data);
         signOperation(operationHash);
@@ -313,6 +316,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     }
 
     function updateMinSignatures(uint256 newMinSignatures) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
         bytes memory data = abi.encode(newMinSignatures);
         bytes32 operationHash = proposeOperation("UPDATE_MIN_SIGNATURES", data);
         signOperation(operationHash);
@@ -369,6 +373,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
 
     function setBlacklistStatus(address account, bool status) external {
         require(hasRole(BLACKLIST_MANAGER_ROLE, msg.sender), "GSDC: not blacklist manager");
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
         
         // For sensitive operations, use timelock
         bytes memory data = abi.encode(account, status);
