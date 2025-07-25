@@ -1,0 +1,562 @@
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.29;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+/**
+ * @title GSDC Stablecoin with Enhanced Security
+ * @dev Implementation of the Global South Digital Currency (GSDC) stablecoin
+ * with multi-signature controls, timelock mechanisms, and emergency features
+ */
+contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
+    using ECDSA for bytes32;
+
+    // Existing roles
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant PRICE_UPDATER_ROLE = keccak256("PRICE_UPDATER_ROLE");
+    bytes32 public constant BLACKLIST_MANAGER_ROLE = keccak256("BLACKLIST_MANAGER_ROLE");
+    
+    // New security roles
+    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256("TIMELOCK_ADMIN_ROLE");
+    bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN_ROLE");
+
+    // Security constants
+    uint256 public constant TIMELOCK_DELAY = 2 days;
+    uint256 public constant EMERGENCY_DELAY = 6 hours;
+    uint256 public constant MAX_SIGNERS = 10;
+    uint256 public minSignatures = 2; // Minimum signatures required for sensitive operations
+
+    // Emergency controls
+    bool public emergencyMode = false;
+    uint256 public emergencyModeUntil;
+    mapping(address => bool) public emergencyGuardians;
+
+    // Timelock system
+    struct TimelockOperation {
+        bytes32 operationHash;
+        uint256 executeAfter;
+        bool executed;
+        address proposer;
+        string operationType;
+    }
+
+    mapping(bytes32 => TimelockOperation) public timelockOperations;
+    mapping(bytes32 => mapping(address => bool)) public operationSignatures;
+    mapping(bytes32 => uint256) public operationSignatureCount;
+
+    // Multi-signature system
+    address[] public authorizedSigners;
+    mapping(address => bool) public isAuthorizedSigner;
+
+    // Circuit breakers
+    uint256 public dailyMintLimit = 1000000 * 10**18; // 1M GSDC per day
+    uint256 public dailyBurnLimit = 1000000 * 10**18; // 1M GSDC per day
+    mapping(uint256 => uint256) public dailyMintUsed; // day => amount
+    mapping(uint256 => uint256) public dailyBurnUsed; // day => amount
+
+    // Events
+    event Mint(address indexed to, uint256 amount);
+    event Burn(address indexed from, uint256 amount);
+    event PriceUpdate(uint256 newPrice);
+    event RedemptionRequested(address indexed user, uint256 amount, uint256 requestId);
+    event RedemptionProcessed(uint256 indexed requestId, bool approved);
+    event KYCStatusUpdated(address indexed user, bool status);
+    event AddressBlacklisted(address indexed account, bool status);
+    
+    // New security events
+    event EmergencyModeActivated(address indexed activator, uint256 duration);
+    event EmergencyModeDeactivated(address indexed deactivator);
+    event TimelockOperationProposed(bytes32 indexed operationHash, address indexed proposer, string operationType);
+    event TimelockOperationSigned(bytes32 indexed operationHash, address indexed signer);
+    event TimelockOperationExecuted(bytes32 indexed operationHash, address indexed executor);
+    event SignerAdded(address indexed signer);
+    event SignerRemoved(address indexed signer);
+    event MinSignaturesUpdated(uint256 newMinSignatures);
+    event CircuitBreakerTriggered(string reason, uint256 amount, uint256 limit);
+
+    // Current price in USDC (6 decimals)
+    uint256 public currentPrice;
+
+    // Minimum and maximum amounts for minting/burning
+    uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
+    uint256 public constant MAX_MINT_AMOUNT = 1000000 * 10**18; // 1M GSDC
+
+    // KYC status mapping
+    mapping(address => bool) public kycApproved;
+
+    // Blacklist mapping
+    mapping(address => bool) public blacklisted;
+
+    // Redemption request structure
+    struct RedemptionRequest {
+        address user;
+        uint256 amount;
+        uint256 timestamp;
+        bool processed;
+        bool approved;
+    }
+
+    // Redemption requests mapping
+    mapping(uint256 => RedemptionRequest) public redemptionRequests;
+    uint256 public nextRedemptionId;
+
+    // Modifiers
+    modifier onlyEmergencyGuardian() {
+        require(emergencyGuardians[msg.sender] || hasRole(GUARDIAN_ROLE, msg.sender), "GSDC: not emergency guardian");
+        _;
+    }
+
+    modifier notInEmergencyMode() {
+        require(!emergencyMode || block.timestamp > emergencyModeUntil, "GSDC: emergency mode active");
+        _;
+    }
+
+    modifier notBlacklisted(address account) {
+        require(!blacklisted[account], "GSDC: address is blacklisted");
+        _;
+    }
+
+    modifier validSigner(address signer) {
+        require(isAuthorizedSigner[signer], "GSDC: not authorized signer");
+        _;
+    }
+
+    constructor(address[] memory _initialSigners) ERC20("Global South Digital Currency", "GSDC") {
+        require(_initialSigners.length >= 2, "GSDC: need at least 2 signers");
+        require(_initialSigners.length <= MAX_SIGNERS, "GSDC: too many signers");
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(EMERGENCY_ROLE, msg.sender);
+        _grantRole(GUARDIAN_ROLE, msg.sender);
+        _grantRole(TIMELOCK_ADMIN_ROLE, msg.sender);
+
+        // Initialize signers
+        for (uint256 i = 0; i < _initialSigners.length; i++) {
+            require(_initialSigners[i] != address(0), "GSDC: invalid signer address");
+            authorizedSigners.push(_initialSigners[i]);
+            isAuthorizedSigner[_initialSigners[i]] = true;
+            emergencyGuardians[_initialSigners[i]] = true;
+        }
+
+        // Initialize price to 1 USDC
+        currentPrice = 1_000000; // 1 USDC with 6 decimals
+    }
+
+    // ================================
+    // TIMELOCK FUNCTIONS
+    // ================================
+
+    //function proposeOperation(string memory operationType, bytes memory data) external onlyRole(TIMELOCK_ADMIN_ROLE) returns (bytes32) {    
+    function proposeOperation(string memory operationType, bytes memory data) internal returns (bytes32) {
+
+        bytes32 operationHash = keccak256(abi.encodePacked(operationType, data, block.timestamp));
+        
+        require(timelockOperations[operationHash].executeAfter == 0, "GSDC: operation already exists");
+
+        timelockOperations[operationHash] = TimelockOperation({
+            operationHash: operationHash,
+            executeAfter: block.timestamp + TIMELOCK_DELAY,
+            executed: false,
+            proposer: msg.sender,
+            operationType: operationType
+        });
+
+        emit TimelockOperationProposed(operationHash, msg.sender, operationType);
+        return operationHash;
+    }
+
+    function signOperation(bytes32 operationHash) internal {
+ 
+        require(timelockOperations[operationHash].executeAfter != 0, "GSDC: operation does not exist");
+        require(!timelockOperations[operationHash].executed, "GSDC: operation already executed");
+        require(!operationSignatures[operationHash][msg.sender], "GSDC: already signed");
+
+        operationSignatures[operationHash][msg.sender] = true;
+        operationSignatureCount[operationHash]++;
+
+        emit TimelockOperationSigned(operationHash, msg.sender);
+    }
+
+    function executeTimelockOperation(
+        bytes32 operationHash,
+        string memory operationType,
+        bytes memory data
+    ) external nonReentrant {
+        TimelockOperation storage operation = timelockOperations[operationHash];
+        
+        require(operation.executeAfter != 0, "GSDC: operation does not exist");
+        require(block.timestamp >= operation.executeAfter, "GSDC: timelock not expired");
+        require(!operation.executed, "GSDC: operation already executed");
+        require(operationSignatureCount[operationHash] >= minSignatures, "GSDC: insufficient signatures");
+
+        // Verify operation hash
+        bytes32 expectedHash = keccak256(abi.encodePacked(operationType, data, operation.executeAfter - TIMELOCK_DELAY));
+        require(operationHash == expectedHash, "GSDC: invalid operation data");
+
+        operation.executed = true;
+
+        // Execute the operation based on type
+        _executeOperation(operationType, data);
+
+        emit TimelockOperationExecuted(operationHash, msg.sender);
+    }
+
+    function _executeOperation(string memory operationType, bytes memory data) internal {
+        bytes32 opType = keccak256(abi.encodePacked(operationType));
+
+        if (opType == keccak256("GRANT_ROLE")) {
+            (bytes32 role, address account) = abi.decode(data, (bytes32, address));
+            _grantRole(role, account);
+        } else if (opType == keccak256("REVOKE_ROLE")) {
+            (bytes32 role, address account) = abi.decode(data, (bytes32, address));
+            _revokeRole(role, account);
+        } else if (opType == keccak256("BLACKLIST")) {
+            (address account, bool status) = abi.decode(data, (address, bool));
+            _setBlacklistStatus(account, status);
+        } else if (opType == keccak256("UPDATE_SIGNER")) {
+            (address signer, bool isAdd) = abi.decode(data, (address, bool));
+            if (isAdd) {
+                _addSigner(signer);
+            } else {
+                _removeSigner(signer);
+            }
+        } else if (opType == keccak256("UPDATE_MIN_SIGNATURES")) {
+            uint256 newMinSignatures = abi.decode(data, (uint256));
+            _updateMinSignatures(newMinSignatures);
+        } else {
+            revert("GSDC: unknown operation type");
+        }
+    }
+
+    // ================================
+    // EMERGENCY FUNCTIONS
+    // ================================
+
+    function activateEmergencyMode(uint256 duration) external onlyEmergencyGuardian {
+        require(duration <= 7 days, "GSDC: emergency mode too long");
+        require(!emergencyMode || block.timestamp > emergencyModeUntil, "GSDC: already in emergency mode");
+
+        emergencyMode = true;
+        emergencyModeUntil = block.timestamp + duration;
+        _pause();
+
+        emit EmergencyModeActivated(msg.sender, duration);
+    }
+
+    function deactivateEmergencyMode() external {
+        require(emergencyMode, "GSDC: not in emergency mode");
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || 
+            block.timestamp > emergencyModeUntil,
+            "GSDC: cannot deactivate emergency mode"
+        );
+
+        emergencyMode = false;
+        emergencyModeUntil = 0;
+        _unpause();
+
+        emit EmergencyModeDeactivated(msg.sender);
+    }
+
+    // ================================
+    // SIGNER MANAGEMENT
+    // ================================
+
+    function addSigner(address newSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
+        bytes memory data = abi.encode(newSigner, true);
+        bytes32 operationHash = proposeOperation("UPDATE_SIGNER", data);
+        signOperation(operationHash);
+    }
+
+    function removeSigner(address signer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
+        bytes memory data = abi.encode(signer, false);
+        bytes32 operationHash = proposeOperation("UPDATE_SIGNER", data);
+        signOperation(operationHash);
+    }
+
+    function _addSigner(address newSigner) internal {
+        require(newSigner != address(0), "GSDC: invalid signer");
+        require(!isAuthorizedSigner[newSigner], "GSDC: signer already exists");
+        require(authorizedSigners.length < MAX_SIGNERS, "GSDC: too many signers");
+
+        authorizedSigners.push(newSigner);
+        isAuthorizedSigner[newSigner] = true;
+        emergencyGuardians[newSigner] = true;
+
+        emit SignerAdded(newSigner);
+    }
+
+    function _removeSigner(address signer) internal {
+        require(isAuthorizedSigner[signer], "GSDC: signer does not exist");
+        require(authorizedSigners.length > minSignatures, "GSDC: cannot remove, would break min signatures");
+
+        isAuthorizedSigner[signer] = false;
+        emergencyGuardians[signer] = false;
+
+        // Remove from array
+        for (uint256 i = 0; i < authorizedSigners.length; i++) {
+            if (authorizedSigners[i] == signer) {
+                authorizedSigners[i] = authorizedSigners[authorizedSigners.length - 1];
+                authorizedSigners.pop();
+                break;
+            }
+        }
+
+        emit SignerRemoved(signer);
+    }
+
+    function updateMinSignatures(uint256 newMinSignatures) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
+        bytes memory data = abi.encode(newMinSignatures);
+        bytes32 operationHash = proposeOperation("UPDATE_MIN_SIGNATURES", data);
+        signOperation(operationHash);
+    }
+
+    function _updateMinSignatures(uint256 newMinSignatures) internal {
+        require(newMinSignatures >= 1, "GSDC: min signatures must be at least 1");
+        require(newMinSignatures <= authorizedSigners.length, "GSDC: min signatures exceeds signers");
+
+        minSignatures = newMinSignatures;
+        emit MinSignaturesUpdated(newMinSignatures);
+    }
+
+    // ================================
+    // CIRCUIT BREAKER FUNCTIONS
+    // ================================
+
+    function getCurrentDay() public view returns (uint256) {
+        return block.timestamp / 1 days;
+    }
+
+    function checkDailyMintLimit(uint256 amount) internal {
+        uint256 currentDay = getCurrentDay();
+        uint256 newDailyTotal = dailyMintUsed[currentDay] + amount;
+        
+        if (newDailyTotal > dailyMintLimit) {
+            emit CircuitBreakerTriggered("DAILY_MINT_LIMIT", newDailyTotal, dailyMintLimit);
+            revert("GSDC: daily mint limit exceeded");
+        }
+        
+        dailyMintUsed[currentDay] = newDailyTotal;
+    }
+
+    function checkDailyBurnLimit(uint256 amount) internal {
+        uint256 currentDay = getCurrentDay();
+        uint256 newDailyTotal = dailyBurnUsed[currentDay] + amount;
+        
+        if (newDailyTotal > dailyBurnLimit) {
+            emit CircuitBreakerTriggered("DAILY_BURN_LIMIT", newDailyTotal, dailyBurnLimit);
+            revert("GSDC: daily burn limit exceeded");
+        }
+        
+        dailyBurnUsed[currentDay] = newDailyTotal;
+    }
+
+    // ================================
+    // ENHANCED CORE FUNCTIONS
+    // ================================
+
+    function updateKYCStatus(address user, bool status) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        kycApproved[user] = status;
+        emit KYCStatusUpdated(user, status);
+    }
+
+    function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {
+        require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
+        
+        // For sensitive operations, use timelock
+        bytes memory data = abi.encode(account, status);
+        bytes32 operationHash = proposeOperation("BLACKLIST", data);
+        signOperation(operationHash);
+    }
+
+    function _setBlacklistStatus(address account, bool status) internal {
+        require(account != address(0), "GSDC: cannot blacklist zero address");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, account), "GSDC: cannot blacklist admin");
+        require(!isAuthorizedSigner[account], "GSDC: cannot blacklist signer");
+
+        blacklisted[account] = status;
+        emit AddressBlacklisted(account, status);
+    }
+
+    function isBlacklisted(address account) external view returns (bool) {
+        return blacklisted[account];
+    }
+
+    function mint(address to, uint256 amount) 
+        external 
+        onlyRole(MINTER_ROLE) 
+        whenNotPaused 
+        notInEmergencyMode
+        nonReentrant 
+        notBlacklisted(to)
+    {
+        require(to != address(0), "GSDC: mint to the zero address");
+        require(kycApproved[to], "GSDC: recipient not KYC approved");
+        require(amount >= MIN_MINT_AMOUNT, "GSDC: amount below minimum");
+        require(amount <= MAX_MINT_AMOUNT, "GSDC: amount above maximum");
+
+        checkDailyMintLimit(amount);
+
+        _mint(to, amount);
+        emit Mint(to, amount);
+    }
+
+    function burn(address from, uint256 amount) 
+        external 
+        onlyRole(BURNER_ROLE) 
+        whenNotPaused 
+        notInEmergencyMode
+        nonReentrant 
+        notBlacklisted(from)
+    {
+        require(from != address(0), "GSDC: burn from the zero address");
+        require(kycApproved[from], "GSDC: user not KYC approved");
+        require(balanceOf(from) >= amount, "GSDC: insufficient balance");
+
+        checkDailyBurnLimit(amount);
+
+        _burn(from, amount);
+        emit Burn(from, amount);
+    }
+
+    function requestRedemption(uint256 amount)
+        external
+        whenNotPaused
+        notInEmergencyMode
+        nonReentrant
+        notBlacklisted(msg.sender)
+    {
+        require(kycApproved[msg.sender], "GSDC: user not KYC approved");
+        require(balanceOf(msg.sender) >= amount, "GSDC: insufficient balance");
+
+        uint256 requestId = nextRedemptionId++;
+        redemptionRequests[requestId] = RedemptionRequest({
+            user: msg.sender,
+            amount: amount,
+            timestamp: block.timestamp,
+            processed: false,
+            approved: false
+        });
+
+        emit RedemptionRequested(msg.sender, amount, requestId);
+    }
+
+    function processRedemption(uint256 requestId, bool approved)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        nonReentrant
+    {
+        RedemptionRequest storage request = redemptionRequests[requestId];
+        require(!request.processed, "GSDC: request already processed");
+        require(request.user != address(0), "GSDC: invalid request");
+        require(!blacklisted[request.user], "GSDC: user is blacklisted");
+
+        request.processed = true;
+        request.approved = approved;
+
+        if (approved) {
+            checkDailyBurnLimit(request.amount);
+            _burn(request.user, request.amount);
+        }
+
+        emit RedemptionProcessed(requestId, approved);
+    }
+
+    function updatePrice(uint256 newPrice) 
+        external 
+        onlyRole(PRICE_UPDATER_ROLE) 
+    {
+        require(newPrice > 0, "GSDC: invalid price");
+        currentPrice = newPrice;
+        emit PriceUpdate(newPrice);
+    }
+
+    function pause() external onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() external onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+    // ================================
+    // VIEW FUNCTIONS
+    // ================================
+
+    function getAuthorizedSigners() external view returns (address[] memory) {
+        return authorizedSigners;
+    }
+
+    function getOperationSignatureCount(bytes32 operationHash) external view returns (uint256) {
+        return operationSignatureCount[operationHash];
+    }
+
+    function hasSignedOperation(bytes32 operationHash, address signer) external view returns (bool) {
+        return operationSignatures[operationHash][signer];
+    }
+
+    function getDailyLimits() external view returns (uint256 mintLimit, uint256 burnLimit, uint256 mintUsed, uint256 burnUsed) {
+        uint256 currentDay = getCurrentDay();
+        return (dailyMintLimit, dailyBurnLimit, dailyMintUsed[currentDay], dailyBurnUsed[currentDay]);
+    }
+
+    // ================================
+    // OVERRIDE FUNCTIONS
+    // ================================
+
+    function transfer(address to, uint256 amount) 
+        public 
+        override 
+        notBlacklisted(msg.sender) 
+        notBlacklisted(to) 
+        notInEmergencyMode
+        returns (bool) 
+    {
+        return super.transfer(to, amount);
+    }
+
+    function transferFrom(address from, address to, uint256 amount) 
+        public 
+        override 
+        notBlacklisted(from) 
+        notBlacklisted(to) 
+        notInEmergencyMode
+        returns (bool) 
+    {
+        return super.transferFrom(from, to, amount);
+    }
+
+    function _update(address from, address to, uint256 amount) internal virtual override {
+        super._update(from, to, amount);
+
+        // Check blacklist status
+        require(!blacklisted[from], "GSDC: sender is blacklisted");
+        require(!blacklisted[to], "GSDC: recipient is blacklisted");
+
+        // Check KYC status for non-zero addresses (exclude minting/burning)
+        if (from != address(0) && to != address(0)) {
+            require(kycApproved[from] && kycApproved[to], "GSDC: KYC check failed");
+        }
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+}
