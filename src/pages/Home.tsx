@@ -117,9 +117,9 @@ export default function Home() {
               <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
                 Global South
                 <br />
-                <span className="text-brand-orange">Digital Currency</span>
+                <span className="text-white-900">Digital Currency</span>
               </h1>
-              <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
+              <p className="text-lg leading-8 text-white/90 mb-10 font-bold">
                 GSDC is a revolutionary stablecoin offering enhanced financial
                 accessibility with innovative blockchain technology and
                 real-world asset backing.
