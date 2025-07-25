@@ -371,8 +371,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         emit KYCStatusUpdated(user, status);
     }
 
-    function setBlacklistStatus(address account, bool status) external {
-        require(hasRole(BLACKLIST_MANAGER_ROLE, msg.sender), "GSDC: not blacklist manager");
+    function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {
         require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
         
         // For sensitive operations, use timelock
