@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.29;
 
@@ -22,7 +21,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant PRICE_UPDATER_ROLE = keccak256("PRICE_UPDATER_ROLE");
     bytes32 public constant BLACKLIST_MANAGER_ROLE = keccak256("BLACKLIST_MANAGER_ROLE");
-    
+
     // New security roles
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
     bytes32 public constant TIMELOCK_ADMIN_ROLE = keccak256("TIMELOCK_ADMIN_ROLE");
@@ -70,7 +69,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     event RedemptionProcessed(uint256 indexed requestId, bool approved);
     event KYCStatusUpdated(address indexed user, bool status);
     event AddressBlacklisted(address indexed account, bool status);
-    
+
     // New security events
     event EmergencyModeActivated(address indexed activator, uint256 duration);
     event EmergencyModeDeactivated(address indexed deactivator);
@@ -154,12 +153,9 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     // TIMELOCK FUNCTIONS
     // ================================
 
-    function proposeOperation(
-        string memory operationType,
-        bytes memory data
-    ) external onlyRole(TIMELOCK_ADMIN_ROLE) returns (bytes32) {
+    function proposeOperation(string memory operationType, bytes memory data) external onlyRole(TIMELOCK_ADMIN_ROLE) returns (bytes32) {
         bytes32 operationHash = keccak256(abi.encodePacked(operationType, data, block.timestamp));
-        
+
         require(timelockOperations[operationHash].executeAfter == 0, "GSDC: operation already exists");
 
         timelockOperations[operationHash] = TimelockOperation({
@@ -191,7 +187,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
         bytes memory data
     ) external nonReentrant {
         TimelockOperation storage operation = timelockOperations[operationHash];
-        
+
         require(operation.executeAfter != 0, "GSDC: operation does not exist");
         require(block.timestamp >= operation.executeAfter, "GSDC: timelock not expired");
         require(!operation.executed, "GSDC: operation already executed");
@@ -341,24 +337,24 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
     function checkDailyMintLimit(uint256 amount) internal {
         uint256 currentDay = getCurrentDay();
         uint256 newDailyTotal = dailyMintUsed[currentDay] + amount;
-        
+
         if (newDailyTotal > dailyMintLimit) {
             emit CircuitBreakerTriggered("DAILY_MINT_LIMIT", newDailyTotal, dailyMintLimit);
             revert("GSDC: daily mint limit exceeded");
         }
-        
+
         dailyMintUsed[currentDay] = newDailyTotal;
     }
 
     function checkDailyBurnLimit(uint256 amount) internal {
         uint256 currentDay = getCurrentDay();
         uint256 newDailyTotal = dailyBurnUsed[currentDay] + amount;
-        
+
         if (newDailyTotal > dailyBurnLimit) {
             emit CircuitBreakerTriggered("DAILY_BURN_LIMIT", newDailyTotal, dailyBurnLimit);
             revert("GSDC: daily burn limit exceeded");
         }
-        
+
         dailyBurnUsed[currentDay] = newDailyTotal;
     }
 
@@ -373,7 +369,7 @@ contract GSDC is ERC20Pausable, AccessControl, ReentrancyGuard {
 
     function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {
         require(hasRole(TIMELOCK_ADMIN_ROLE, msg.sender), "GSDC: need timelock admin role");
-        
+
         // For sensitive operations, use timelock
         bytes memory data = abi.encode(account, status);
         bytes32 operationHash = proposeOperation("BLACKLIST", data);
