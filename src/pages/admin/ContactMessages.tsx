@@ -486,12 +486,22 @@ export default function ContactMessages() {
                     )}
                   </p>
                 </div>
-                <span
-                  className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedMessage.status)}`}
-                >
-                  {selectedMessage.status.charAt(0).toUpperCase() +
-                    selectedMessage.status.slice(1)}
-                </span>
+                <div className="flex items-center space-x-3">
+                  <span
+                    className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(selectedMessage.status)}`}
+                  >
+                    {selectedMessage.status.charAt(0).toUpperCase() +
+                      selectedMessage.status.slice(1)}
+                  </span>
+                  <button
+                    onClick={() => setShowMessageModal(false)}
+                    className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 rounded-md p-1"
+                  >
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -514,7 +524,8 @@ export default function ContactMessages() {
               </div>
             ) : (
               <div className="p-6">
-                {selectedMessage.status !== "archived" && (
+                {/* Commented out reply functionality */}
+                {/* {selectedMessage.status !== "archived" && (
                   <>
                     <h4 className="text-sm font-medium text-gray-500 mb-2">
                       Reply
@@ -527,7 +538,7 @@ export default function ContactMessages() {
                       placeholder="Type your reply here..."
                     />
                   </>
-                )}
+                )} */}
 
                 {error && (
                   <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
@@ -567,7 +578,15 @@ export default function ContactMessages() {
                     )}
                   </div>
 
-                  {selectedMessage.status !== "archived" && (
+                  <button
+                    onClick={() => setShowMessageModal(false)}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  >
+                    Close
+                  </button>
+
+                  {/* Commented out send reply button */}
+                  {/* {selectedMessage.status !== "archived" && (
                     <button
                       onClick={handleSendReply}
                       disabled={actionLoading || !replyText.trim()}
@@ -604,7 +623,7 @@ export default function ContactMessages() {
                         </>
                       )}
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             )}
