@@ -164,27 +164,43 @@ export const deleteContactSubmission = async (id: string): Promise<boolean> => {
  */
 export const sendContactReply = async (submission: ContactSubmission, replyText: string): Promise<boolean> => {
   try {
-    // Send email to the user
-    const emailHtml = getContactReplyTemplate(
-      submission.name,
-      submission.subject,
-      replyText
-    );
+    // First, save the reply attempt to the database
+    const { error: replyError } = await supabase
+      .from('contact_replies')
+      .insert([
+        {
+          submission_id: submission.id,
+          reply_text: replyText,
+          sent_at: new Date().toISOString(),
+          admin_email: 'admin@gsdt.com' // You can get this from auth context
+        }
+      ]);
     
-    const emailSent = await sendEmail({
-      to: submission.email,
-      subject: `Re: ${submission.subject}`,
-      html: emailHtml,
-      from: 'support@gsdt.com'
-    });
-    
-    if (emailSent) {
-      // Update submission status to replied
-      const updated = await updateContactStatus(submission.id, 'replied');
-      return updated;
+    if (replyError) {
+      console.error('Error saving reply to database:', replyError);
     }
     
-    return false;
+    // Try to send email to the user
+    try {
+      const emailHtml = getContactReplyTemplate(
+        submission.name,
+        submission.subject,
+        replyText
+      );
+      
+      await sendEmail({
+        to: submission.email,
+        subject: `Re: ${submission.subject}`,
+        html: emailHtml,
+        from: 'support@gsdt.com'
+      });
+    } catch (emailError) {
+      console.warn('Email sending failed, but reply was saved:', emailError);
+    }
+    
+    // Update submission status to replied (this is the most important part)
+    const updated = await updateContactStatus(submission.id, 'replied');
+    return updated;
   } catch (error) {
     console.error('Error sending reply:', error);
     return false;

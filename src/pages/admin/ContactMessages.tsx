@@ -143,33 +143,40 @@ export default function ContactMessages() {
   };
 
   const handleSendReply = async () => {
-    if (!selectedMessage || !replyText) return;
+    if (!selectedMessage || !replyText.trim()) return;
 
     try {
       setActionLoading(true);
+      setError(null); // Clear any previous errors
 
       // Send reply
-      const success = await sendContactReply(selectedMessage, replyText);
+      const result = await sendContactReply(selectedMessage, replyText.trim());
 
-      if (success) {
+      if (result) {
         // Update status to replied
-        await handleStatusChange(selectedMessage.id, "replied");
+        await updateContactStatus(selectedMessage.id, "replied");
 
-        setMessageSuccess("Reply sent successfully");
+        setSelectedMessage({
+          ...selectedMessage,
+          status: "replied",
+        });
+
+        setMessageSuccess("Reply sent successfully!");
         setReplyText("");
 
-        // Close modal after a delay
+        // Close modal after short delay
         setTimeout(() => {
           setShowMessageModal(false);
-          setSelectedMessage(null);
-          setMessageSuccess(null);
-        }, 2000);
+        }, 1500);
+
+        // Refresh the submissions list
+        await loadSubmissions();
       } else {
-        setError("Failed to send reply");
+        setError("Failed to send reply. Please try again.");
       }
     } catch (err: any) {
       console.error("Error sending reply:", err);
-      setError(err.message || "Error sending reply");
+      setError(err.message || "Failed to send reply. Please check your connection and try again.");
     } finally {
       setActionLoading(false);
     }
@@ -203,7 +210,7 @@ export default function ContactMessages() {
               backgroundRepeat: "no-repeat",
             }}
           >
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -528,57 +535,42 @@ export default function ContactMessages() {
                   </div>
                 )}
 
-                <div className="mt-6 flex justify-between">
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => setShowDeleteConfirm(selectedMessage.id)}
-                      disabled={actionLoading}
-                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                    >
-                      <TrashIcon className="h-5 w-5 mr-2" />
-                      Delete
-                    </button>
-
-                    {selectedMessage.status === "archived" ? (
+                <div className="flex justify-between">
+                    <div className="flex space-x-3">
                       <button
-                        onClick={() =>
-                          handleStatusChange(selectedMessage.id, "read")
-                        }
+                        onClick={() => handleDelete(selectedMessage.id)}
                         disabled={actionLoading}
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                       >
-                        <ArchiveBoxXMarkIcon className="h-5 w-5 mr-2" />
-                        Unarchive
+                        <TrashIcon className="h-5 w-5 mr-2" />
+                        Delete
                       </button>
-                    ) : (
-                      <button
-                        onClick={() =>
-                          handleStatusChange(selectedMessage.id, "archived")
-                        }
-                        disabled={actionLoading}
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                      >
-                        <ArchiveBoxIcon className="h-5 w-5 mr-2" />
-                        Archive
-                      </button>
-                    )}
-                  </div>
 
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => {
-                        setShowMessageModal(false);
-                        setSelectedMessage(null);
-                      }}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                    >
-                      Close
-                    </button>
+                      {selectedMessage.status === "archived" ? (
+                        <button
+                          onClick={() => handleStatusChange(selectedMessage.id, "read")}
+                          disabled={actionLoading}
+                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                          <ArchiveBoxXMarkIcon className="h-5 w-5 mr-2" />
+                          Unarchive
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleStatusChange(selectedMessage.id, "archived")}
+                          disabled={actionLoading}
+                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                          <ArchiveBoxIcon className="h-5 w-5 mr-2" />
+                          Archive
+                        </button>
+                      )}
+                    </div>
 
                     {selectedMessage.status !== "archived" && (
                       <button
                         onClick={handleSendReply}
-                        disabled={actionLoading || !replyText}
+                        disabled={actionLoading || !replyText.trim()}
                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                       >
                         {actionLoading ? (
