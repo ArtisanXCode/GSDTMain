@@ -41,7 +41,7 @@ export default function ContactContent({
               From: {submission.name} &lt;{submission.email}&gt;
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              Received: {format(new Date(submission.submitted_at), 'MMMM d, yyyy HH:mm:ss')}
+              Received 1: {format(new Date(submission.submitted_at), 'MMMM d, yyyy HH:mm:ss')}
             </p>
           </div>
           <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(submission.status)}`}>
