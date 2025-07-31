@@ -121,6 +121,14 @@ export default function FiatMinting() {
   const handleFiatMint = async () => {
     if (!isConnected || !address || !amount || !gsdtAmount) return;
 
+    // Check minimum amount
+    const fiatAmount = parseFloat(amount);
+    const minAmount = parseFloat(minMintAmount);
+    if (fiatAmount < minAmount) {
+      setError(`Minimum amount is ${minMintAmount} ${currency}`);
+      return;
+    }
+
     // Check KYC status first
     if (kycStatus !== KYCStatus.APPROVED) {
       setError(
@@ -362,7 +370,7 @@ export default function FiatMinting() {
                 </span>
               </div>
               <div className="text-xs mt-1">
-                Minimum amount: {minMintAmount} GSDC
+                Minimum fiat amount: {minMintAmount} {currency}
               </div>
             </div>
 
@@ -383,7 +391,7 @@ export default function FiatMinting() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading || !amount || parseFloat(gsdtAmount) <= 0}
+              disabled={loading || !amount || !gsdtAmount || parseFloat(gsdtAmount) <= 0 || parseFloat(amount) < parseFloat(minMintAmount)}
               className="w-full rounded-lg px-6 py-3 text-base font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
               style={{
                 backgroundColor: "#ed9030",
