@@ -329,10 +329,10 @@ export default function KYCRequests() {
           >
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">
+                <h3 className="text-3xl font-semibold text-white mb-1">
                   KYC Requests
                 </h3>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-white">
                   Review and manage user KYC verification requests
                 </p>
               </div>

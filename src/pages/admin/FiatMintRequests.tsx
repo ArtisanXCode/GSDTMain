@@ -377,10 +377,10 @@ export default function FiatMintRequests() {
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-3xl font-bold text-white mb-2">
                   Fiat Mint Requests
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-white">
                   Review and manage KYC verification requests
                 </p>
               </div>

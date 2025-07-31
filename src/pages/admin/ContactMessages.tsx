@@ -317,10 +317,10 @@ export default function ContactMessages() {
             >
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
+                  <h3 className="text-3xl font-semibold text-white mb-1">
                     Contact Messages
                   </h3>
-                  <p className="text-sm text-white/70">
+                  <p className="text-sm text-white">
                     View and respond to messages from users
                   </p>
                 </div>

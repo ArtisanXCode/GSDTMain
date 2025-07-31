@@ -261,26 +261,12 @@ export default function ExchangeRates() {
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
+               
                 <div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-3xl font-semibold text-white">
                     Exchange Rates
                   </h3>
-                  <p className="text-white/70 text-sm">
+                  <p className="text-white text-sm pt-3">
                     Manage currency exchange rates
                   </p>
                 </div>

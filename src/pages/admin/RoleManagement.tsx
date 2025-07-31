@@ -416,10 +416,10 @@ export default function RoleManagement() {
           >
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">
+                <h3 className="text-3xl font-semibold text-white mb-1">
                   Smart Contract Role Management
                 </h3>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-white">
                   Assign and manage smart contract roles for users
                 </p>
               </div>

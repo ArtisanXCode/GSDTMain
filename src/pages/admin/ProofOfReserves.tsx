@@ -311,10 +311,10 @@ export default function ProofOfReserves() {
               <div className="px-4 py-5 sm:p-6">
                 <div className="sm:flex sm:items-center">
                   <div className="sm:flex-auto">
-                    <h3 className="text-base font-medium leading-6 text-white">
+                    <h3 className="text-3xl font-semibold text-white mb-1">
                       Proof of Reserves
                     </h3>
-                    <p className="mt-1 text-xs text-white/70">
+                    <p className="text-sm text-white">
                       Manage and update reserve assets and their allocations
                     </p>
                   </div>
