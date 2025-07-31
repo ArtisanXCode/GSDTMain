@@ -85,7 +85,14 @@ export default function FiatMinting() {
 
   // Calculate GSDC amount based on fiat amount and current rates
   useEffect(() => {
-    if (!amount || !rates || !gsdtPrice) {
+    console.log("=== GSDT CALCULATION DEBUG ===");
+    console.log("Amount input:", amount);
+    console.log("Currency:", currency);
+    console.log("Rates available:", rates);
+    console.log("GSDT Price:", gsdtPrice);
+
+    if (!amount) {
+      console.log("No amount, setting GSDT to 0");
       setGsdtAmount("0");
       return;
     }
@@ -93,24 +100,32 @@ export default function FiatMinting() {
     try {
       const fiatAmount = parseFloat(amount);
       if (isNaN(fiatAmount) || fiatAmount <= 0) {
+        console.log("Invalid fiat amount, setting GSDT to 0");
         setGsdtAmount("0");
         return;
       }
 
-      // Convert fiat amount to USD equivalent
+      // For stablecoin, assume 1:1 ratio with USD regardless of rates
+      // Convert fiat amount to USD equivalent first
       let usdAmount = fiatAmount;
-      if (currency !== "USD" && rates[currency]) {
+      if (currency !== "USD" && rates && rates[currency] && rates[currency] > 0) {
         usdAmount = fiatAmount / rates[currency];
+        console.log(`Converted ${fiatAmount} ${currency} to ${usdAmount} USD`);
+      } else {
+        console.log(`Using direct USD amount: ${usdAmount}`);
       }
 
-      // Convert USD to GSDC based on current price (assuming 1:1 with USD for now)
-      // If gsdtPrice is the price of GSDT in USD, then GSDC amount = USD amount / price
-      const gsdcAmount = usdAmount; // Assuming 1:1 ratio for stablecoin
-      setGsdtAmount(gsdcAmount.toFixed(6));
+      // For GSDC (stablecoin), maintain 1:1 with USD
+      const gsdcAmount = usdAmount;
+      const result = gsdcAmount.toFixed(6);
+      
+      console.log(`Final GSDC amount: ${result}`);
+      setGsdtAmount(result);
     } catch (err) {
       console.error("Error calculating GSDT amount:", err);
       setGsdtAmount("0");
     }
+    console.log("==============================");
   }, [amount, currency, rates, gsdtPrice]);
 
   const generatePaymentReference = () => {
@@ -118,6 +133,29 @@ export default function FiatMinting() {
     setPaymentReference(ref);
     return ref;
   };
+
+  // Add debugging for button state
+  const isButtonDisabled = loading || 
+    !amount || 
+    !gsdtAmount || 
+    parseFloat(gsdtAmount || '0') <= 0 || 
+    parseFloat(amount || '0') < parseFloat(minMintAmount);
+
+  // Debug logging
+  console.log("=== FIAT MINTING DEBUG ===");
+  console.log("Amount:", amount);
+  console.log("GSDT Amount:", gsdtAmount);
+  console.log("Currency:", currency);
+  console.log("Min Mint Amount:", minMintAmount);
+  console.log("Rates:", rates);
+  console.log("GSDT Price:", gsdtPrice);
+  console.log("Button disabled:", isButtonDisabled);
+  console.log("Loading:", loading);
+  console.log("Amount check:", !amount);
+  console.log("GSDT amount check:", !gsdtAmount);
+  console.log("GSDT amount <= 0:", parseFloat(gsdtAmount || '0') <= 0);
+  console.log("Amount < min:", parseFloat(amount || '0') < parseFloat(minMintAmount));
+  console.log("========================");
 
   const handleFiatMint = async () => {
     if (!isConnected || !address || !amount || !gsdtAmount) {
@@ -399,13 +437,7 @@ export default function FiatMinting() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={
-                loading || 
-                !amount || 
-                !gsdtAmount || 
-                parseFloat(gsdtAmount || '0') <= 0 || 
-                parseFloat(amount || '0') < parseFloat(minMintAmount)
-              }
+              disabled={isButtonDisabled}
               className="w-full rounded-lg px-6 py-3 text-base font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
               style={{
                 backgroundColor: "#ed9030",
