@@ -136,9 +136,30 @@ export default function ContactMessages() {
     setShowMessageModal(true);
     setReplyText("");
 
-    // If message is new, mark it as read
+    // If message is new, mark it as read silently without showing success message
     if (message.status === "new") {
-      await handleStatusChange(message.id, "read");
+      try {
+        setActionLoading(true);
+        const success = await updateContactStatus(message.id, "read");
+
+        if (success) {
+          // Update UI optimistically without showing success message
+          setContactSubmissions((prev) =>
+            prev.map((s) => (s.id === message.id ? { ...s, status: "read" } : s)),
+          );
+
+          // Update the selected message status in the modal
+          setSelectedMessage({
+            ...message,
+            status: "read",
+          });
+        }
+      } catch (err: any) {
+        console.error("Error updating status:", err);
+        setError(err.message || "Error updating status");
+      } finally {
+        setActionLoading(false);
+      }
     }
   };
 
