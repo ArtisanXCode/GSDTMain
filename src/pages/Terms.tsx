@@ -47,16 +47,13 @@ export default function Terms() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="prose prose-lg max-w-none">
-              <p className="text-gray-600 mb-6">
-                Content will be added here. This is the Terms of Service page for GSDC platform.
-              </p>
               
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Terms and Conditions
               </h2>
               
               <p className="text-gray-600 mb-4">
-                Terms and conditions content will be added by the administrator.
+                Terms and conditions.
               </p>
             </div>
           </div>

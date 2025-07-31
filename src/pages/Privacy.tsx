@@ -47,16 +47,13 @@ export default function Privacy() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="prose prose-lg max-w-none">
-              <p className="text-gray-600 mb-6">
-                Content will be added here. This is the Privacy Policy page for GSDC platform.
-              </p>
-              
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">
+          
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Privacy Policy
               </h2>
               
               <p className="text-gray-600 mb-4">
-                Privacy policy content will be added by the administrator.
+                Privacy policy content.
               </p>
             </div>
           </div>
