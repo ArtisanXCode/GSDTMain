@@ -1,10 +1,10 @@
-import { motion } from 'framer-motion';
-import { ReserveAsset } from '../../../services/reserves';
-import { format } from 'date-fns';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import ErrorMessage from './ErrorMessage';
-import EmptyState from './EmptyState';
-import LoadingState from './LoadingState';
+import { motion } from "framer-motion";
+import { ReserveAsset } from "../../../services/reserves";
+import { format } from "date-fns";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import ErrorMessage from "./ErrorMessage";
+import EmptyState from "./EmptyState";
+import LoadingState from "./LoadingState";
 
 interface ReserveListProps {
   reserves: ReserveAsset[] | undefined;
@@ -15,13 +15,13 @@ interface ReserveListProps {
   onRetry?: () => void;
 }
 
-export default function ReserveList({ 
-  reserves, 
-  loading, 
+export default function ReserveList({
+  reserves,
+  loading,
   error,
-  onEdit, 
+  onEdit,
   onDelete,
-  onRetry
+  onRetry,
 }: ReserveListProps) {
   if (loading) {
     return <LoadingState message="Loading reserve assets..." />;
@@ -33,8 +33,8 @@ export default function ReserveList({
 
   if (!reserves || reserves.length === 0) {
     return (
-      <EmptyState 
-        message="No reserve assets found" 
+      <EmptyState
+        message="No reserve assets found"
         actionLabel="Add Reserve Asset"
         onAction={() => {}} // This would be handled by the parent component
       />
@@ -42,20 +42,37 @@ export default function ReserveList({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg" style={{ backgroundColor: '#2a4661' }}>
+    <div className="overflow-x-auto" style={{ backgroundColor: "#2a4661" }}>
       <table className="min-w-full divide-y divide-white/20">
-        <thead style={{ backgroundColor: '#2a4661' }}>
+        <thead style={{ backgroundColor: "#446c93" }}>
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Symbol</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Amount</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">USD Value</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Custodian</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Last Updated</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Symbol
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Name
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Amount
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              USD Value
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Custodian
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Last Updated
+            </th>
+            <th className="p-6 text-left text-xs font-large text-white uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/20" style={{ backgroundColor: '#2a4661' }}>
+        <tbody
+          className="divide-y divide-white/20"
+          style={{ backgroundColor: "#2a4661" }}
+        >
           {reserves.map((reserve) => (
             <motion.tr
               key={reserve.id}
@@ -79,7 +96,7 @@ export default function ReserveList({
                 {reserve.custodian}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80">
-                {format(new Date(reserve.last_updated), 'MMM d, yyyy HH:mm')}
+                {format(new Date(reserve.last_updated), "MMM d, yyyy HH:mm")}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex space-x-3">

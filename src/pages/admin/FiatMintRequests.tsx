@@ -200,9 +200,7 @@ export default function FiatMintRequests() {
 
         {/* Phoenix Icon overlapping sections */}
         <div className="relative z-20 flex justify-end">
-          <div
-            className="phoenix-icon-parent"
-          >
+          <div className="phoenix-icon-parent">
             <img
               src="/logo_gsdc_icon.png"
               alt="Phoenix Icon"
@@ -313,9 +311,7 @@ export default function FiatMintRequests() {
 
       {/* Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
+        <div className="phoenix-icon-parent">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
@@ -373,7 +369,12 @@ export default function FiatMintRequests() {
           </div>
 
           {/* Fiat Mint Requests Content */}
-          <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
+          <div
+            className="rounded-2xl p-8 shadow-lg"
+            style={{
+              backgroundColor: "#2a4661",
+            }}
+          >
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">
@@ -392,7 +393,12 @@ export default function FiatMintRequests() {
             </div>
 
             {/* Filters */}
-            <div className="mb-6 bg-slate-600 p-4 rounded-lg">
+            <div
+              className="mb-6 p-4 rounded-lg"
+              style={{
+                backgroundColor: "#446c93",
+              }}
+            >
               <div>
                 <label
                   htmlFor="status-filter"
@@ -406,7 +412,10 @@ export default function FiatMintRequests() {
                   onChange={(e) =>
                     setFilterStatus(e.target.value as FiatMintStatus | "ALL")
                   }
-                  className="block w-full md:w-48 rounded-md border-0 bg-slate-500 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm"
+                  className="block w-full md:w-48 rounded-md border-0 px-3 py-2 text-white shadow-sm ring-1 ring-inset ring-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm"
+                  style={{
+                    backgroundColor: "#2a4661",
+                  }}
                 >
                   <option value="ALL">All Statuses</option>
                   <option value={FiatMintStatus.PENDING}>Pending</option>
@@ -432,9 +441,14 @@ export default function FiatMintRequests() {
                 <p className="text-gray-300">No fiat mint requests found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto bg-slate-600 rounded-lg">
+              <div className="overflow-x-auto rounded-lg">
                 <table className="min-w-full">
-                  <thead className="bg-slate-800">
+                  <thead
+                    className=""
+                    style={{
+                      backgroundColor: "#446c93",
+                    }}
+                  >
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                         USER
