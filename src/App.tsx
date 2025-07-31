@@ -3,19 +3,13 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
-import Dashboard from './pages/Dashboard';
 import Contact from './pages/Contact';
-import AdminLogin from './pages/admin/Login';
-import AdminDashboard from './pages/admin/Dashboard';
-import KYCRequests from './pages/admin/KYCRequests';
-import ContactMessages from './pages/admin/ContactMessages';
-import RoleManagement from './pages/admin/RoleManagement';
-import FiatMintRequests from './pages/admin/FiatMintRequests';
-import ProofOfReserves from './pages/admin/ProofOfReserves';
-import ExchangeRates from './pages/admin/ExchangeRates';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Dashboard from './pages/Dashboard';
+import TokenMinting from './pages/TokenMinting';
 import TransactionList from './pages/TransactionList';
 import ProtectedRoute from './components/ProtectedRoute';
-import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
 
 export default function App() {
@@ -27,10 +21,12 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/token-minting" element={<TokenMinting />} />
             <Route path="/transactions" element={<TransactionList />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/cms" element={<CMSPages />} />
