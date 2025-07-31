@@ -529,103 +529,6 @@ export default function ContactMessages() {
                   </>
                 )}
 
-                <>
-                  {error && (
-                    <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                      {error}
-                    </div>
-                  )}
-
-                  <div className="flex justify-between">
-                      <div className="flex space-x-3">
-                        <button
-                          onClick={() => handleDelete(selectedMessage.id)}
-                          disabled={actionLoading}
-                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                          <TrashIcon className="h-5 w-5 mr-2" />
-                          Delete
-                        </button>
-
-                        {selectedMessage.status === "archived" ? (
-                          <button
-                            onClick={() => handleStatusChange(selectedMessage.id, "read")}
-                            disabled={actionLoading}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                          >
-                            <ArchiveBoxXMarkIcon className="h-5 w-5 mr-2" />
-                            Unarchive
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleStatusChange(selectedMessage.id, "archived")}
-                            disabled={actionLoading}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <ArchiveBoxIcon className="h-5 w-5 mr-2" />
-                            Archive
-                          </button>
-                        )}
-                      </div>
-
-                      {selectedMessage.status !== "archived" && (
-                        <button
-                          onClick={handleSendReply}
-                          disabled={actionLoading || !replyText.trim()}
-                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                        >
-                          {actionLoading ? (
-                            <>
-                              <svg
-                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                ></circle>
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                              </svg>
-                              Sending...
-                            </>
-                          ) : (
-                            <>
-                              <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                              Send Reply
-                            </>
-                          )}
-                        </button>
-                      )}
-                  </div>
-                </div>
-              )}
-            ) : (
-              <div className="p-6">
-                {selectedMessage.status !== "archived" && (
-                  <>
-                    <h4 className="text-sm font-medium text-gray-500 mb-2">
-                      Reply
-                    </h4>
-                    <textarea
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6"
-                      rows={5}
-                      placeholder="Type your reply here..."
-                    />
-                  </>
-                )}
-
                 {error && (
                   <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
                     {error}
@@ -633,75 +536,75 @@ export default function ContactMessages() {
                 )}
 
                 <div className="flex justify-between mt-4">
-                    <div className="flex space-x-3">
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => handleDelete(selectedMessage.id)}
+                      disabled={actionLoading}
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      <TrashIcon className="h-5 w-5 mr-2" />
+                      Delete
+                    </button>
+
+                    {selectedMessage.status === "archived" ? (
                       <button
-                        onClick={() => handleDelete(selectedMessage.id)}
+                        onClick={() => handleStatusChange(selectedMessage.id, "read")}
                         disabled={actionLoading}
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                       >
-                        <TrashIcon className="h-5 w-5 mr-2" />
-                        Delete
+                        <ArchiveBoxXMarkIcon className="h-5 w-5 mr-2" />
+                        Unarchive
                       </button>
-
-                      {selectedMessage.status === "archived" ? (
-                        <button
-                          onClick={() => handleStatusChange(selectedMessage.id, "read")}
-                          disabled={actionLoading}
-                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md hover:bg-green-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                          <ArchiveBoxXMarkIcon className="h-5 w-5 mr-2" />
-                          Unarchive
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleStatusChange(selectedMessage.id, "archived")}
-                          disabled={actionLoading}
-                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <ArchiveBoxIcon className="h-5 w-5 mr-2" />
-                          Archive
-                        </button>
-                      )}
-                    </div>
-
-                    {selectedMessage.status !== "archived" && (
+                    ) : (
                       <button
-                        onClick={handleSendReply}
-                        disabled={actionLoading || !replyText.trim()}
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        onClick={() => handleStatusChange(selectedMessage.id, "archived")}
+                        disabled={actionLoading}
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                       >
-                        {actionLoading ? (
-                          <>
-                            <svg
-                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                            Send Reply
-                          </>
-                        )}
+                        <ArchiveBoxIcon className="h-5 w-5 mr-2" />
+                        Archive
                       </button>
                     )}
+                  </div>
+
+                  {selectedMessage.status !== "archived" && (
+                    <button
+                      onClick={handleSendReply}
+                      disabled={actionLoading || !replyText.trim()}
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                    >
+                      {actionLoading ? (
+                        <>
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+                          Send Reply
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
