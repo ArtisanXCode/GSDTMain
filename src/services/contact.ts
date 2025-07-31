@@ -42,23 +42,28 @@ export const submitContactForm = async (formData: ContactFormData): Promise<bool
       return false;
     }
     
-    // Send email notification to admin
-    const adminEmail = 'laljij@etherauthority.io';
-    const emailHtml = getContactFormEmailTemplate(
-      formData.name,
-      formData.email,
-      formData.subject,
-      formData.message
-    );
+    // Try to send email notification to admin (but don't fail if email fails)
+    try {
+      const adminEmail = 'laljij@etherauthority.io';
+      const emailHtml = getContactFormEmailTemplate(
+        formData.name,
+        formData.email,
+        formData.subject,
+        formData.message
+      );
+      
+      await sendEmail({
+        to: adminEmail,
+        subject: `New Contact Form: ${formData.subject}`,
+        html: emailHtml,
+        from: 'noreply@gsdt.com'
+      });
+    } catch (emailError) {
+      console.warn('Email notification failed, but form was saved:', emailError);
+    }
     
-    const emailSent = await sendEmail({
-      to: adminEmail,
-      subject: `New Contact Form: ${formData.subject}`,
-      html: emailHtml,
-      from: 'noreply@gsdt.com'
-    });
-    
-    return emailSent;
+    // Return true if the form was saved successfully, regardless of email status
+    return true;
   } catch (error) {
     console.error('Error submitting contact form:', error);
     return false;
