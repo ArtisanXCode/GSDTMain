@@ -4,11 +4,11 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const GSDT = await ethers.getContractFactory("GSDT");
-  const gsdt = await GSDT.deploy();
-  await gsdt.deployed();
+  const GSDC = await ethers.getContractFactory("GSDC");
+  const gsdc = await GSDC.deploy();
+  await gsdc.deployed();
 
-  console.log("DBDK deployed to:", gsdt.address);
+  console.log("DBDK deployed to:", gsdc.address);
 }
 
 main()

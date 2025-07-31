@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { useGSDTPrice } from '../services/exchangeRates';
+import { useGSDCPrice } from '../services/exchangeRates';
 
 export default function ExchangeRates() {
-  const { price, rates, isLoading, isError } = useGSDTPrice();
+  const { price, rates, isLoading, isError } = useGSDCPrice();
 
   if (isLoading) {
     return (

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useWallet } from "../hooks/useWallet";
-import { useGSDTPrice } from "../services/exchangeRates";
+import { useGSDCPrice } from "../services/exchangeRates";
 import { useGSDCContract } from "../hooks/useContract";
 import {
   createFiatMintRequest,
@@ -16,7 +16,7 @@ import { getUserKYCStatus, KYCStatus } from "../services/kyc";
 
 export default function FiatMinting() {
   const { address, isConnected } = useWallet();
-  const { price: gsdtPrice, rates } = useGSDTPrice();
+  const { price: gsdtPrice, rates } = useGSDCPrice();
   const contract = useGSDCContract();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USD");
@@ -141,22 +141,6 @@ export default function FiatMinting() {
     parseFloat(gsdtAmount || '0') <= 0 || 
     parseFloat(amount || '0') < parseFloat(minMintAmount);
 
-  // Debug logging
-  console.log("=== FIAT MINTING DEBUG ===");
-  console.log("Amount:", amount);
-  console.log("GSDT Amount:", gsdtAmount);
-  console.log("Currency:", currency);
-  console.log("Min Mint Amount:", minMintAmount);
-  console.log("Rates:", rates);
-  console.log("GSDT Price:", gsdtPrice);
-  console.log("Button disabled:", isButtonDisabled);
-  console.log("Loading:", loading);
-  console.log("Amount check:", !amount);
-  console.log("GSDT amount check:", !gsdtAmount);
-  console.log("GSDT amount <= 0:", parseFloat(gsdtAmount || '0') <= 0);
-  console.log("Amount < min:", parseFloat(amount || '0') < parseFloat(minMintAmount));
-  console.log("========================");
-
   const handleFiatMint = async () => {
     if (!isConnected || !address || !amount || !gsdtAmount) {
       setError("Please fill in all required fields");
@@ -203,7 +187,7 @@ export default function FiatMinting() {
       setSuccess(`
         Please complete your payment using the following details:
 
-        Bank: GSDT Global Bank
+        Bank: GSDC Global Bank
         Account Number: 1234567890
         Reference: ${ref}
         Amount: ${amount} ${currency}

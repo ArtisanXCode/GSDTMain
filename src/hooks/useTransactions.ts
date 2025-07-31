@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { Transaction, TransactionStatus, TransactionType } from '../services/admin';
+import { GSDC_ADDRESS } from "../contracts/GSDC";
 
 // Use the actual contract address from useContract.ts
-const GSDT_ADDRESS = '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804';
 const BSC_SCAN_API_KEY = import.meta.env.VITE_BSC_SCAN_API_KEY;
 const BSC_SCAN_API_LINK = import.meta.env.VITE_BSC_SCAN_API_LINK || 'https://api-testnet.bscscan.com/';
 
@@ -107,7 +107,7 @@ export const useTransactions = (props: UseTransactionsProps = {}) => {
       }
 
       // Fetch transactions from BSCScan API
-      const url = `${BSC_SCAN_API_LINK}api?module=account&action=txlist&address=${GSDT_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSC_SCAN_API_KEY}`;
+      const url = `${BSC_SCAN_API_LINK}api?module=account&action=txlist&address=${GSDC_ADDRESS}&startblock=0&endblock=99999999&sort=desc&apikey=${BSC_SCAN_API_KEY}`;
       
       const response = await fetch(url);
       const data = await response.json();
@@ -116,8 +116,8 @@ export const useTransactions = (props: UseTransactionsProps = {}) => {
         let txs = data.result
           .filter((tx: BscScanTransaction) => 
             // Only include transactions that interact with our contract
-            tx.to.toLowerCase() === GSDT_ADDRESS.toLowerCase() || 
-            tx.from.toLowerCase() === GSDT_ADDRESS.toLowerCase()
+            tx.to.toLowerCase() === GSDC_ADDRESS.toLowerCase() || 
+            tx.from.toLowerCase() === GSDC_ADDRESS.toLowerCase()
           )
           .map(mapBscScanTransaction);
         

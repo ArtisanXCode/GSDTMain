@@ -57,7 +57,7 @@ export default function TokenActions() {
       <div className="space-y-4">
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-            Amount (GSDT)
+            Amount (GSDC)
           </label>
           <div className="mt-1">
             <input

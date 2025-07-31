@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export default function About() {
   return (
@@ -12,7 +12,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             className="text-base font-semibold leading-7 text-indigo-600"
           >
-            About GSDT
+            About GSDC
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -28,9 +28,10 @@ export default function About() {
             transition={{ delay: 0.2 }}
             className="mt-6 text-lg leading-8 text-gray-600"
           >
-            GSDT is a revolutionary stablecoin that represents a basket of BRICS currencies,
-            providing a stable and efficient means of cross-border transactions while promoting
-            economic cooperation among Global South nations.
+            GSDC is a revolutionary stablecoin that represents a basket of BRICS
+            currencies, providing a stable and efficient means of cross-border
+            transactions while promoting economic cooperation among Global South
+            nations.
           </motion.p>
         </div>
 
@@ -41,11 +42,14 @@ export default function About() {
           className="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none"
         >
           <div className="p-8 sm:p-10 lg:flex-auto">
-            <h3 className="text-2xl font-bold tracking-tight text-gray-900">Our Mission</h3>
+            <h3 className="text-2xl font-bold tracking-tight text-gray-900">
+              Our Mission
+            </h3>
             <p className="mt-6 text-base leading-7 text-gray-600">
-              We aim to facilitate seamless international trade and investment among Global South nations
-              by providing a digital currency that reflects the collective economic strength of
-              these emerging markets.
+              We aim to facilitate seamless international trade and investment
+              among Global South nations by providing a digital currency that
+              reflects the collective economic strength of these emerging
+              markets.
             </p>
             <div className="mt-10 flex items-center gap-x-4">
               <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">

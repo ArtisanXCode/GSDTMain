@@ -76,8 +76,8 @@ export const createPayment = async (
       price_amount: amount,
       price_currency: 'USD',
       pay_currency: currency,
-      order_id: `GSDT-${Date.now()}-${userAddress}`,
-      order_description: `GSDT Token Purchase - ${amount} GSDT`,
+      order_id: `GSDC-${Date.now()}-${userAddress}`,
+      order_description: `GSDC Token Purchase - ${amount} GSDC`,
       ipn_callback_url: `${window.location.origin}/api/payment-callback`,
       success_url: `${window.location.origin}/dashboard?payment=success`,
       cancel_url: `${window.location.origin}/dashboard?payment=cancelled`

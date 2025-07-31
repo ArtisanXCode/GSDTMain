@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'GSDT - Global South Digital Token',
+  title: 'GSDC - Global South Digital Currency',
   description: 'A stablecoin backed by BRICS currencies',
 };
 

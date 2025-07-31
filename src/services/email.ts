@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from "../lib/supabase";
 
 export interface EmailData {
   to: string;
@@ -14,29 +14,27 @@ export interface EmailData {
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
     // In a real implementation, this would call a Supabase Edge Function or email service
-    console.log('Sending email:', emailData);
-    
+    console.log("Sending email:", emailData);
+
     // Save the email to Supabase
-    const { error } = await supabase
-      .from('emails')
-      .insert([
-        {
-          to_email: emailData.to,
-          from_email: emailData.from || 'noreply@gsdt.com',
-          subject: emailData.subject,
-          html: emailData.html,
-          sent_at: new Date().toISOString()
-        }
-      ]);
-    
+    const { error } = await supabase.from("emails").insert([
+      {
+        to_email: emailData.to,
+        from_email: emailData.from || "noreply@gsdc.com",
+        subject: emailData.subject,
+        html: emailData.html,
+        sent_at: new Date().toISOString(),
+      },
+    ]);
+
     if (error) {
-      console.error('Error saving email to Supabase:', error);
+      console.error("Error saving email to Supabase:", error);
       return false;
     }
-    
+
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return false;
   }
 };
@@ -48,7 +46,7 @@ export const getContactFormEmailTemplate = (
   name: string,
   email: string,
   subject: string,
-  message: string
+  message: string,
 ): string => {
   return `
     <!DOCTYPE html>
@@ -121,7 +119,7 @@ export const getContactFormEmailTemplate = (
           </div>
         </div>
         <div class="footer">
-          This email was sent from the GSDT website contact form.
+          This email was sent from the GSDC website contact form.
         </div>
       </div>
     </body>
@@ -135,7 +133,7 @@ export const getContactFormEmailTemplate = (
 export const getContactReplyTemplate = (
   name: string,
   originalSubject: string,
-  replyMessage: string
+  replyMessage: string,
 ): string => {
   return `
     <!DOCTYPE html>
@@ -187,13 +185,13 @@ export const getContactReplyTemplate = (
           <p>Dear ${name},</p>
           <p>Thank you for contacting us regarding "${originalSubject}".</p>
           <div class="message">
-            ${replyMessage.replace(/\n/g, '<br>')}
+            ${replyMessage.replace(/\n/g, "<br>")}
           </div>
           <p>If you have any further questions, please don't hesitate to contact us again.</p>
-          <p>Best regards,<br>GSDT Support Team</p>
+          <p>Best regards,<br>GSDC Support Team</p>
         </div>
         <div class="footer">
-          <p>This email is in response to your inquiry submitted through the GSDT website.</p>
+          <p>This email is in response to your inquiry submitted through the GSDC website.</p>
           <p>© ${new Date().getFullYear()} Global South Digital Token. All rights reserved.</p>
         </div>
       </div>

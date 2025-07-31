@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Fragment } from 'react';
-import { Disclosure } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { useAccount } from 'wagmi';
+import { Fragment } from "react";
+import { Disclosure } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount } from "wagmi";
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Dashboard', href: '/dashboard' },
-  { name: 'Contact', href: '/contact' },
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
@@ -27,7 +27,9 @@ export default function Header() {
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
                   <Link href="/">
-                    <span className="text-2xl font-bold text-secondary-400">GSDT</span>
+                    <span className="text-2xl font-bold text-secondary-400">
+                      GSDC
+                    </span>
                   </Link>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -47,7 +49,9 @@ export default function Header() {
                   onClick={() => open()}
                   className="rounded-md bg-secondary-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-600"
                 >
-                  {isConnected ? `${address?.slice(0, 6)}...${address?.slice(-4)}` : 'Connect Wallet'}
+                  {isConnected
+                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                    : "Connect Wallet"}
                 </button>
               </div>
               <div className="-mr-2 flex items-center sm:hidden">
@@ -82,7 +86,9 @@ export default function Header() {
                   onClick={() => open()}
                   className="w-full rounded-md bg-secondary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-600"
                 >
-                  {isConnected ? `${address?.slice(0, 6)}...${address?.slice(-4)}` : 'Connect Wallet'}
+                  {isConnected
+                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                    : "Connect Wallet"}
                 </button>
               </div>
             </div>
