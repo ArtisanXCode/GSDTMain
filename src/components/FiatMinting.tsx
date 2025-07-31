@@ -92,19 +92,20 @@ export default function FiatMinting() {
 
     try {
       const fiatAmount = parseFloat(amount);
-      if (isNaN(fiatAmount)) {
+      if (isNaN(fiatAmount) || fiatAmount <= 0) {
         setGsdtAmount("0");
         return;
       }
 
-      // Convert fiat amount to USDC equivalent
-      let usdcAmount = fiatAmount;
-      if (currency !== "USD") {
-        usdcAmount = fiatAmount / rates[currency];
+      // Convert fiat amount to USD equivalent
+      let usdAmount = fiatAmount;
+      if (currency !== "USD" && rates[currency]) {
+        usdAmount = fiatAmount / rates[currency];
       }
 
-      // Convert USDC to GSDT based on current price
-      const gsdcAmount = usdcAmount / gsdtPrice;
+      // Convert USD to GSDC based on current price (assuming 1:1 with USD for now)
+      // If gsdtPrice is the price of GSDT in USD, then GSDC amount = USD amount / price
+      const gsdcAmount = usdAmount; // Assuming 1:1 ratio for stablecoin
       setGsdtAmount(gsdcAmount.toFixed(6));
     } catch (err) {
       console.error("Error calculating GSDT amount:", err);
@@ -119,11 +120,18 @@ export default function FiatMinting() {
   };
 
   const handleFiatMint = async () => {
-    if (!isConnected || !address || !amount || !gsdtAmount) return;
+    if (!isConnected || !address || !amount || !gsdtAmount) {
+      setError("Please fill in all required fields");
+      return;
+    }
 
     // Check minimum amount
     const fiatAmount = parseFloat(amount);
     const minAmount = parseFloat(minMintAmount);
+    
+    console.log("Debug - Fiat amount:", fiatAmount, "Min amount:", minAmount);
+    console.log("Debug - GSDT amount:", gsdtAmount);
+    
     if (fiatAmount < minAmount) {
       setError(`Minimum amount is ${minMintAmount} ${currency}`);
       return;
@@ -391,7 +399,13 @@ export default function FiatMinting() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading || !amount || !gsdtAmount || parseFloat(gsdtAmount) <= 0 || parseFloat(amount) < parseFloat(minMintAmount)}
+              disabled={
+                loading || 
+                !amount || 
+                !gsdtAmount || 
+                parseFloat(gsdtAmount || '0') <= 0 || 
+                parseFloat(amount || '0') < parseFloat(minMintAmount)
+              }
               className="w-full rounded-lg px-6 py-3 text-base font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform"
               style={{
                 backgroundColor: "#ed9030",
