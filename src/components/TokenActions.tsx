@@ -1,37 +1,39 @@
-'use client';
+"use client";
 
-import { BigNumber } from 'ethers';
-import { useState, useEffect } from 'react';
-import { useWallet } from '../hooks/useWallet';
-import { useGSDCContract } from '../hooks/useContract';
-import { motion } from 'framer-motion';
-import { parseEther } from 'ethers/lib/utils';
-import { useAdmin } from '../hooks/useAdmin';
-import { getUserKYCStatus, KYCStatus } from '../services/kyc';
+import { BigNumber } from "ethers";
+import { useState, useEffect } from "react";
+import { useWallet } from "../hooks/useWallet";
+import { useGSDCContract } from "../hooks/useContract";
+import { motion } from "framer-motion";
+import { parseEther } from "ethers/lib/utils";
+import { useAdmin } from "../hooks/useAdmin";
+import { getUserKYCStatus, KYCStatus } from "../services/kyc";
 
 export default function TokenActions() {
   const { address, isConnected } = useWallet();
   const { isMinter } = useAdmin();
   const contract = useGSDCContract();
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [minMintAmount, setMinMintAmount] = useState<string>('100'); // Default min amount
-  const [kycStatus, setKycStatus] = useState<KYCStatus>(KYCStatus.NOT_SUBMITTED);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [minMintAmount, setMinMintAmount] = useState<string>("100"); // Default min amount
+  const [kycStatus, setKycStatus] = useState<KYCStatus>(
+    KYCStatus.NOT_SUBMITTED,
+  );
   const [checkingKYC, setCheckingKYC] = useState(true);
 
   // Check KYC status
   useEffect(() => {
     const checkKYC = async () => {
       if (!address) return;
-      
+
       try {
         setCheckingKYC(true);
         const response = await getUserKYCStatus(address);
         setKycStatus(response.status);
       } catch (err) {
-        console.error('Error checking KYC status:', err);
+        console.error("Error checking KYC status:", err);
         setKycStatus(KYCStatus.NOT_SUBMITTED);
       } finally {
         setCheckingKYC(false);
@@ -43,12 +45,14 @@ export default function TokenActions() {
 
   const handleMint = async () => {
     if (!isConnected || !amount || !contract) return;
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     // Check KYC status first
     if (kycStatus !== KYCStatus.APPROVED) {
-      setError('KYC verification is required before minting tokens. Please complete KYC verification first.');
+      setError(
+        "KYC verification is required before minting tokens. Please complete KYC verification first.",
+      );
       return;
     }
 
@@ -57,48 +61,54 @@ export default function TokenActions() {
 
       // Check if user has minter role
       if (!isMinter) {
-        throw new Error('You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.');
+        throw new Error(
+          "You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.",
+        );
       }
-      
+
       const minMintAmt = await contract.MIN_MINT_AMOUNT();
       const decimals = await contract.decimals();
-      const minMintAmnt = await minMintAmt.div(BigNumber.from(10).pow(decimals));  // Dividing by 10^18 for ERC20 tokens
+      const minMintAmnt = await minMintAmt.div(
+        BigNumber.from(10).pow(decimals),
+      ); // Dividing by 10^18 for ERC20 tokens
       await setMinMintAmount(minMintAmnt.toNumber());
-      
+
       // Convert amount to wei
       const mintAmount = parseEther(amount);
-      
+
       // Call contract mint function
       const tx = await contract.mint(address, mintAmount);
-      
+
       // Wait for transaction to be mined
       await tx.wait();
-      
+
       setSuccess(`Successfully minted ${amount} GSDT`);
-      setAmount('');
+      setAmount("");
     } catch (error: any) {
-      console.error('Error minting tokens:', error);
-      
+      console.error("Error minting tokens:", error);
+
       // Handle specific error messages
-      if (error.message?.includes('missing role')) {
-        setError('You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.');
-      } else if (error.message?.includes('execution reverted')) {
+      if (error.message?.includes("missing role")) {
+        setError(
+          "You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.",
+        );
+      } else if (error.message?.includes("execution reverted")) {
         const revertReason = error.data?.message || error.message;
-        if (revertReason.includes('KYC')) {
-          setError('KYC verification required before minting tokens.');
-        } else if (revertReason.includes('amount below minimum')) {
+        if (revertReason.includes("KYC")) {
+          setError("KYC verification required before minting tokens.");
+        } else if (revertReason.includes("amount below minimum")) {
           setError(`Amount must be at least ${minMintAmount} GSDT.`);
-        } else if (revertReason.includes('amount above maximum')) {
-          setError('Amount exceeds maximum minting limit.');
-        } else if (revertReason.includes('daily mint limit')) {
-          setError('Daily minting limit exceeded. Please try again tomorrow.');
+        } else if (revertReason.includes("amount above maximum")) {
+          setError("Amount exceeds maximum minting limit.");
+        } else if (revertReason.includes("daily mint limit")) {
+          setError("Daily minting limit exceeded. Please try again tomorrow.");
         } else {
-          setError(revertReason || 'Transaction failed. Please try again.');
+          setError(revertReason || "Transaction failed. Please try again.");
         }
-      } else if (error.code === 'ACTION_REJECTED') {
-        setError('Transaction was rejected by user.');
+      } else if (error.code === "ACTION_REJECTED") {
+        setError("Transaction was rejected by user.");
       } else {
-        setError('Error minting tokens. Please try again.');
+        setError("Error minting tokens. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -107,48 +117,52 @@ export default function TokenActions() {
 
   const handleRedeem = async () => {
     if (!isConnected || !amount || !contract) return;
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     // Check KYC status first
     if (kycStatus !== KYCStatus.APPROVED) {
-      setError('KYC verification is required before redeeming tokens. Please complete KYC verification first.');
+      setError(
+        "KYC verification is required before redeeming tokens. Please complete KYC verification first.",
+      );
       return;
     }
-    
+
     try {
       setLoading(true);
-      
+
       // Convert amount to wei
       const redeemAmount = parseEther(amount);
-      
+
       // Call contract requestRedemption function
       const tx = await contract.requestRedemption(redeemAmount);
-      
+
       // Wait for transaction to be mined
       await tx.wait();
-      
+
       setSuccess(`Successfully requested redemption of ${amount} GSDT`);
-      setAmount('');
+      setAmount("");
     } catch (error: any) {
-      console.error('Error requesting redemption:', error);
-      
+      console.error("Error requesting redemption:", error);
+
       // Handle specific error messages
-      if (error.message?.includes('execution reverted')) {
+      if (error.message?.includes("execution reverted")) {
         const revertReason = error.data?.message || error.message;
-        if (revertReason.includes('KYC')) {
-          setError('KYC verification required before redeeming tokens.');
-        } else if (revertReason.includes('insufficient balance')) {
-          setError('Insufficient token balance for redemption.');
-        } else if (revertReason.includes('daily redemption limit')) {
-          setError('Daily redemption limit exceeded. Please try again tomorrow.');
+        if (revertReason.includes("KYC")) {
+          setError("KYC verification required before redeeming tokens.");
+        } else if (revertReason.includes("insufficient balance")) {
+          setError("Insufficient token balance for redemption.");
+        } else if (revertReason.includes("daily redemption limit")) {
+          setError(
+            "Daily redemption limit exceeded. Please try again tomorrow.",
+          );
         } else {
-          setError(revertReason || 'Transaction failed. Please try again.');
+          setError(revertReason || "Transaction failed. Please try again.");
         }
-      } else if (error.code === 'ACTION_REJECTED') {
-        setError('Transaction was rejected by user.');
+      } else if (error.code === "ACTION_REJECTED") {
+        setError("Transaction was rejected by user.");
       } else {
-        setError('Error requesting redemption. Please try again.');
+        setError("Error requesting redemption. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -175,21 +189,34 @@ export default function TokenActions() {
       <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-            <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="h-6 w-6 text-red-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
           </div>
-          <h3 className="mt-2 text-lg font-medium text-gray-900">KYC Required</h3>
+          <h3 className="mt-2 text-lg font-medium text-gray-900">
+            KYC Required
+          </h3>
           <p className="mt-1 text-sm text-gray-500">
-            You need to complete KYC verification before you can perform token actions.
-            Please complete your KYC verification first.
+            You need to complete KYC verification before you can perform token
+            actions. Please complete your KYC verification first.
           </p>
           <div className="mt-6">
             <a
               href="/dashboard"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700"
             >
-              Complete KYC
+              Complete KYC 1
             </a>
           </div>
         </div>
@@ -197,7 +224,8 @@ export default function TokenActions() {
     );
   }
 
-  {/*
+  {
+    /*
   return (
     <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Token Actions</h3>
@@ -286,5 +314,6 @@ export default function TokenActions() {
       </div>
     </div>
   );
-  */}
+  */
+  }
 }

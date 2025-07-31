@@ -92,7 +92,7 @@ export default function TokenMinting() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="min-h-screen py-12">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="sm:flex sm:items-center">
+            { /* <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">
                 {!isConnected && (
                   <div className="flex justify-center mb-8">
@@ -111,10 +111,10 @@ export default function TokenMinting() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */ }
 
             {/* Main Content */}
-            <div className="mt-8 space-y-8">
+            <div className="space-y-8">
               {/* Show KYC Required Message and Tabs if not connected or KYC not approved */}
               {(!isConnected || (isConnected && !checkingKYC)) && (
                 <>
@@ -125,7 +125,7 @@ export default function TokenMinting() {
                     transition={{ delay: 0.1 }}
                     className="rounded-xl shadow-lg overflow-hidden"
                     style={{
-                      backgroundColor: "#446c93",
+                      backgroundColor: "#2a4661",
                     }}
                   >
                     <div className="p-8 text-center">
@@ -157,10 +157,10 @@ export default function TokenMinting() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-full text-white shadow-lg transition-all duration-200"
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white shadow-lg transition-all duration-200"
                         style={{
-                          background:
-                            "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                          backgroundColor: "#ed9030",
+                          color: "#fff",
                         }}
                       >
                         <Link to="/dashboard">Complete KYC</Link>
@@ -176,7 +176,7 @@ export default function TokenMinting() {
                   >
                     <div
                       className="rounded-xl shadow-lg overflow-hidden"
-                      style={{ backgroundColor: "#446c93" }}
+                      style={{ backgroundColor: "#2a4661" }}
                     >
                       <div className="border-b border-gray-600">
                         <nav className="-mb-px flex" aria-label="Tabs">
@@ -221,7 +221,7 @@ export default function TokenMinting() {
 
                       <div
                         className="p-6"
-                        style={{ backgroundColor: "#446c93" }}
+                        style={{ backgroundColor: "#2a4661" }}
                       >
                         <div
                           className="rounded-xl shadow-lg overflow-hidden"
@@ -259,9 +259,9 @@ export default function TokenMinting() {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-full text-white shadow-lg transition-all duration-200"
+                              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white shadow-lg transition-all duration-200"
                               style={{
-                                backgroundColor: "#f6b62e",
+                                backgroundColor: "#ed9030",
                                 color: "#fff",
                               }}
                             >
