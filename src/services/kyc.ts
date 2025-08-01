@@ -1,10 +1,3 @@
-import { Buffer } from 'buffer';
-
-// Polyfill Buffer for browser compatibility
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
-}
-
 import { supabase } from "../lib/supabase";
 import { getContract, getNFTContract } from "../lib/web3";
 import { ethers } from "ethers";

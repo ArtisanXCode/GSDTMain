@@ -1,12 +1,4 @@
 import axios from 'axios';
-import { Buffer } from 'buffer';
-
-// Polyfill Buffer for browser compatibility
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
-}
-
-import { ethers } from 'ethers';
 import { supabase } from '../lib/supabase';
 
 const NOWPAYMENTS_API_KEY = import.meta.env.VITE_NOWPAYMENTS_API_KEY || 'test_api_key';
@@ -167,7 +159,7 @@ export const getPaymentStatus = async (paymentId: string): Promise<PaymentStatus
       // Simulate different payment statuses for testing
       const statuses = ['waiting', 'confirming', 'confirmed', 'sending', 'finished'];
       const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-
+      
       return {
         payment_id: paymentId,
         payment_status: randomStatus,

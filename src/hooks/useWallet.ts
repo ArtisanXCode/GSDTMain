@@ -1,12 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { initializeWeb3, connectWallet, getAddress, isConnected, checkAdminRole } from '../lib/web3';
 import { getUserRole } from '../services/admin';
-import { Buffer } from 'buffer';
-
-// Polyfill Buffer for browser compatibility
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
-}
 
 export const useWallet = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -24,7 +18,7 @@ export const useWallet = () => {
         try {
           // Try to get accounts without requesting permission
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-
+          
           if (accounts && accounts.length > 0 && window.ethereum.selectedAddress) {
             const addr = accounts[0];
             setAddress(addr);

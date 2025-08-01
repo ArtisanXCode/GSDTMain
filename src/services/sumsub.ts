@@ -1,10 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Buffer } from 'buffer';
-
-// Polyfill Buffer for browser compatibility
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
-}
 import CryptoJS from 'crypto-js';
 import { supabase } from '../lib/supabase';
 import { KYCStatus, submitKYCRequest, updateKYCWithSumsubData } from './kyc';
@@ -44,7 +38,7 @@ export const getSumsubAccessToken = async (userAddress: string, applicantId?: st
       },
       body: JSON.stringify({ userAddress }),
     });
-
+    
     const data = await response.json();    
     if(data.status){
       console.log(data);
@@ -52,7 +46,7 @@ export const getSumsubAccessToken = async (userAddress: string, applicantId?: st
     } else {
       return null
     }
-
+   
   } catch (error) {
     console.error('Error getting SumSub access token:', error);
     return null;
@@ -69,14 +63,14 @@ export const createSumsubApplicant = async (userAddress: string): Promise<string
       },
       body: JSON.stringify({ userAddress }),
     });
-
+    
     const data = await response.json();    
     if(data.status){
        return data.applicant_id;
     } else {
       return null
     }
-
+    
   } catch (error) {
     console.error('Error creating SumSub applicant:', error);
     return null;
@@ -93,14 +87,14 @@ export const getSumsubApplicantStatus = async (userAddress: string, applicantId?
       },
       body: JSON.stringify({ applicantId, userAddress }),
     });
-
+    
     const data = await response.json();    
     if(data.status){
        return data.response;
     } else {
       return null
     }
-
+   
   } catch (error) {
     console.error('Error getting SumSub applicant status:', error);
     return null;
@@ -111,7 +105,7 @@ export const getSumsubApplicantStatus = async (userAddress: string, applicantId?
 export const verifySumsubWebhookSignature = (signature: string, payload: string): boolean => {
   try {
     if (!SUMSUB_SECRET_KEY) return true; // Skip verification in test mode
-
+    
     const calculatedSignature = CryptoJS.HmacSHA256(payload, SUMSUB_SECRET_KEY).toString(CryptoJS.enc.Hex);
     return calculatedSignature === signature;
   } catch (error) {

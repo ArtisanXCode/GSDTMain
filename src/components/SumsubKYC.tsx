@@ -1,10 +1,3 @@
-import { Buffer } from 'buffer';
-
-// Polyfill Buffer for browser compatibility
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
-}
-
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useWallet } from "../hooks/useWallet";
