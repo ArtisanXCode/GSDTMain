@@ -129,7 +129,6 @@ export default function SumsubKYC() {
   const initializeSumsubSDK = async () => {
     if (!accessToken || !containerRef.current || !address || !applicantId)
       return;
-    c;
 
     try {
       if (!window.snsWebSdk) {
