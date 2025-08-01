@@ -1,3 +1,9 @@
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser compatibility
+if (typeof window !== 'undefined' && !window.Buffer) {
+  window.Buffer = Buffer;
+}
 
 import { Contract } from 'ethers';
 import { useProvider, useSigner } from '../utils/web3';

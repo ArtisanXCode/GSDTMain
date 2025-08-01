@@ -1,3 +1,15 @@
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser compatibility
+if (typeof window !== 'undefined' && !window.Buffer) {
+  window.Buffer = Buffer;
+}
+
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import { Header } from '../components/layout/Header';
+import { Footer } from '../components/layout/Footer';
+import { getContract } from '../lib/web3';
 import { motion } from 'framer-motion';
 import CryptoMinting from '../components/CryptoMinting';
 import { useWallet } from '../hooks/useWallet';
