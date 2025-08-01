@@ -19,13 +19,11 @@ import TransactionList from './pages/TransactionList';
 import ProtectedRoute from './components/ProtectedRoute';
 import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
-import BrowserCompatibilityCheck from "./components/BrowserCompatibilityCheck";
 
 export default function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <BrowserCompatibilityCheck />
         <Header />
         <main className="flex-grow">
           <Routes>

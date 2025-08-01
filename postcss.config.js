@@ -1,19 +1,6 @@
 module.exports = {
   plugins: {
     tailwindcss: {},
-    autoprefixer: {
-      overrideBrowserslist: [
-        '> 0.5%',
-        'last 2 versions',
-        'Firefox ESR',
-        'not dead',
-        'not IE 11',
-        'Chrome >= 61',
-        'Firefox >= 60',
-        'Safari >= 11',
-        'Edge >= 18'
-      ],
-      grid: true,
-    },
+    autoprefixer: {},
   },
-};
+}
