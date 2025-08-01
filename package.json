@@ -24,7 +24,6 @@
     "@tiptap/react": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",
     "axios": "^1.8.3",
-    "buffer": "^6.0.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "date-fns": "2.30.0",
