@@ -1,3 +1,10 @@
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser compatibility
+if (typeof window !== 'undefined' && !window.Buffer) {
+  window.Buffer = Buffer;
+}
+
 import { createConfig, configureChains, WagmiConfig } from 'wagmi';
 import { bscTestnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';

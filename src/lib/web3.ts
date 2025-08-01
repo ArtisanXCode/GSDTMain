@@ -1,3 +1,10 @@
+import { Buffer } from 'buffer';
+
+// Polyfill Buffer for browser compatibility
+if (typeof window !== 'undefined' && !window.Buffer) {
+  window.Buffer = Buffer;
+}
+
 import { ethers } from 'ethers';
 import { GSDC_ABI, GSDC_ADDRESS } from '../contracts/GSDC';
 import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
