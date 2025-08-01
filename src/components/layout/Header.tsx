@@ -123,6 +123,12 @@ export default function Header() {
                           className={`${
                             active ? "bg-gray-100" : ""
                           } flex px-4 py-2 text-sm text-gray-700 items-center`}
+                          onClick={(e) => {
+                            if (location.pathname === "/token-minting") {
+                              e.preventDefault();
+                              window.location.reload();
+                            }
+                          }}
                         >
                           <PlusCircleIcon className="h-5 w-5 mr-2" />
                           Mint Token
@@ -240,6 +246,12 @@ export default function Header() {
                             className={`${
                               active ? "bg-gray-100" : ""
                             } flex px-4 py-2 text-sm text-gray-700 items-center`}
+                            onClick={(e) => {
+                              if (location.pathname === "/token-minting") {
+                                e.preventDefault();
+                                window.location.reload();
+                              }
+                            }}
                           >
                             <PlusCircleIcon className="h-5 w-5 mr-2" />
                             Mint Token
