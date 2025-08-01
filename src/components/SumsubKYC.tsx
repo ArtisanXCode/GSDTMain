@@ -127,12 +127,9 @@ export default function SumsubKYC() {
   };
 
   const initializeSumsubSDK = async () => {
-    console.log(accessToken);
-    console.log(containerRef.current);
-    console.log(address);
-    console.log(applicantId);
     if (!accessToken || !containerRef.current || !address || !applicantId)
       return;
+    c;
 
     try {
       if (!window.snsWebSdk) {
@@ -155,7 +152,7 @@ export default function SumsubKYC() {
         })
         .withOptions({ addViewportTag: false, adaptIframeHeight: true })
         .on("idCheck.onStepCompleted", async (payload: any) => {
-          console.log("onStepCompleted", payload);
+          //console.log("onStepCompleted", payload);
 
           if (payload.idDocType === "SELFIE") {
             const appIdStatus = await getSumsubApplicantStatus(
@@ -202,9 +199,7 @@ export default function SumsubKYC() {
           if (appId) {
             const appIdStatus = await getSumsubApplicantStatus(address, appId);
             setApplicantId(appId);
-
             const token = await getSumsubAccessToken(address, appId);
-            console.log(token);
             setAccessToken(token);
           } else {
             setError("Failed to create Sumsub applicant");
@@ -222,7 +217,6 @@ export default function SumsubKYC() {
   }, [address, isConnected]);
 
   useEffect(() => {
-    console.log(accessToken);
     if (kycStatus === KYCStatus.NOT_SUBMITTED && accessToken) {
       initializeSumsubSDK();
     }
