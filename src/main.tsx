@@ -1,15 +1,15 @@
+
 import { Buffer } from 'buffer';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './globals.css';
 
-// Polyfill Buffer for browser compatibility
+// Polyfill Buffer for browser compatibility with ethers.js
 if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-  (window as any).global = window;
+  (window as any).Buffer = Buffer;
+  (window as any).global = globalThis;
 }
-
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './globals.css'
-import App from './App'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
