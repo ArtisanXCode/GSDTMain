@@ -354,7 +354,7 @@ export default function KYCRequests() {
                   }
                   className="w-full px-3 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-orange-500 focus:outline-none"
                 >
-                  <option value="ALL">All Statuses</option>
+                  <option value="ALL">All Status</option>
                   <option value={KYCStatus.PENDING}>Pending</option>
                   <option value={KYCStatus.APPROVED}>Approved</option>
                   <option value={KYCStatus.REJECTED}>Rejected</option>

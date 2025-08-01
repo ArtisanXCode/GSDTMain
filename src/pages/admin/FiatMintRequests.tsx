@@ -417,7 +417,7 @@ export default function FiatMintRequests() {
                     backgroundColor: "#2a4661",
                   }}
                 >
-                  <option value="ALL">All Statuses</option>
+                  <option value="ALL">All Status</option>
                   <option value={FiatMintStatus.PENDING}>Pending</option>
                   <option value={FiatMintStatus.APPROVED}>Approved</option>
                   <option value={FiatMintStatus.REJECTED}>Rejected</option>

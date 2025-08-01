@@ -87,7 +87,7 @@ export default function TransactionList({
             onChange={(e) => onStatusChange(e.target.value ? e.target.value as TransactionStatus : undefined)}
             className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
           >
-            <option value="">All Statuses</option>
+            <option value="">All Status</option>
             {Object.values(TransactionStatus).map((status) => (
               <option key={status} value={status}>{status}</option>
             ))}
