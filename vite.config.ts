@@ -10,19 +10,31 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    target: ['es2015', 'chrome61', 'firefox60', 'safari11', 'edge18'],
     rollupOptions: {
       external: [],
     },
   },
   define: {
     global: 'globalThis',
+    'process.env': {},
   },
   resolve: {
     alias: {
       buffer: 'buffer',
+      crypto: 'crypto-browserify',
+      stream: 'stream-browserify',
+      util: 'util',
+      process: 'process/browser',
     },
   },
   optimizeDeps: {
-    include: ['buffer'],
+    include: [
+      'buffer',
+      'crypto-browserify',
+      'stream-browserify',
+      'util',
+      'process',
+    ],
   },
 });
