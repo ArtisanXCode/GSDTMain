@@ -254,19 +254,46 @@ export const assignUserRole = async (
       }
 
       try {
-        // Check if user has permission to grant roles
+        // Check if user has permission to grant roles (must have admin role for the specific role being granted)
         const hasAdminRole = await contract.hasRole(ethers.constants.HashZero, assignedBy);
-        if (!hasAdminRole) {
-          throw new Error("You don't have permission to assign roles on the smart contract");
+        const roleAdminRole = await contract.getRoleAdmin(roleHash);
+        const hasRoleAdminPermission = await contract.hasRole(roleAdminRole, assignedBy);
+        
+        if (!hasAdminRole && !hasRoleAdminPermission) {
+          throw new Error("You don't have permission to assign this role on the smart contract");
         }
 
-        // Estimate gas first to catch potential errors
-        const gasEstimate = await contract.estimateGas.grantRole(roleHash, address);
-        
-        // Execute the transaction with the estimated gas plus a buffer
-        const tx = await contract.grantRole(roleHash, address, {
-          gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
-        });
+        // Check if the user already has the role to avoid redundant transactions
+        const hasRole = await contract.hasRole(roleHash, address);
+        if (hasRole) {
+          console.log(`User ${address} already has role ${role}`);
+          // Still update the database in case it's out of sync
+        } else {
+          // Estimate gas first to catch potential errors
+          try {
+            const gasEstimate = await contract.estimateGas.grantRole(roleHash, address);
+            
+            // Execute the transaction with the estimated gas plus a buffer
+            const tx = await contract.grantRole(roleHash, address, {
+              gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
+            });
+            
+            console.log(`Role assignment transaction queued: ${tx.hash}`);
+            await tx.wait();
+            console.log(`Role assignment transaction confirmed: ${tx.hash}`);
+          } catch (gasError: any) {
+            // Handle gas estimation errors with more specific messages
+            if (gasError.message?.includes("AccessControl") || gasError.reason?.includes("AccessControl")) {
+              throw new Error("Access denied: You don't have permission to assign this role on the smart contract");
+            } else if (gasError.code === "UNPREDICTABLE_GAS_LIMIT") {
+              throw new Error("Transaction would fail: Either you don't have the required permissions or the target address already has this role");
+            } else if (gasError.code === "CALL_EXCEPTION") {
+              throw new Error("Smart contract call failed: Check if you have the required permissions and the contract is properly deployed");
+            } else {
+              throw gasError;
+            }
+          }
+        }
         
         console.log(`Role assignment transaction queued: ${tx.hash}`);
         await tx.wait();
@@ -388,19 +415,46 @@ export const removeUserRole = async (
       }
 
       try {
-        // Check if user has permission to revoke roles
+        // Check if user has permission to revoke roles (must have admin role for the specific role being revoked)
         const hasAdminRole = await contract.hasRole(ethers.constants.HashZero, removedBy);
-        if (!hasAdminRole) {
-          throw new Error("You don't have permission to revoke roles on the smart contract");
+        const roleAdminRole = await contract.getRoleAdmin(roleHash);
+        const hasRoleAdminPermission = await contract.hasRole(roleAdminRole, removedBy);
+        
+        if (!hasAdminRole && !hasRoleAdminPermission) {
+          throw new Error("You don't have permission to revoke this role on the smart contract");
         }
 
-        // Estimate gas first to catch potential errors
-        const gasEstimate = await contract.estimateGas.revokeRole(roleHash, address);
-        
-        // Execute the transaction with the estimated gas plus a buffer
-        const tx = await contract.revokeRole(roleHash, address, {
-          gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
-        });
+        // Check if the user actually has the role before trying to revoke it
+        const hasRole = await contract.hasRole(roleHash, address);
+        if (!hasRole) {
+          console.log(`User ${address} doesn't have role ${currentRole} on the contract`);
+          // Still remove from database in case it's out of sync
+        } else {
+          // Estimate gas first to catch potential errors
+          try {
+            const gasEstimate = await contract.estimateGas.revokeRole(roleHash, address);
+            
+            // Execute the transaction with the estimated gas plus a buffer
+            const tx = await contract.revokeRole(roleHash, address, {
+              gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
+            });
+            
+            console.log(`Role revocation transaction queued: ${tx.hash}`);
+            await tx.wait();
+            console.log(`Role revocation transaction confirmed: ${tx.hash}`);
+          } catch (gasError: any) {
+            // Handle gas estimation errors with more specific messages
+            if (gasError.message?.includes("AccessControl") || gasError.reason?.includes("AccessControl")) {
+              throw new Error("Access denied: You don't have permission to revoke this role on the smart contract");
+            } else if (gasError.code === "UNPREDICTABLE_GAS_LIMIT") {
+              throw new Error("Transaction would fail: Either you don't have the required permissions or the target address doesn't have this role");
+            } else if (gasError.code === "CALL_EXCEPTION") {
+              throw new Error("Smart contract call failed: Check if you have the required permissions and the contract is properly deployed");
+            } else {
+              throw gasError;
+            }
+          }
+        }
         
         console.log(`Role revocation transaction queued: ${tx.hash}`);
         await tx.wait();
