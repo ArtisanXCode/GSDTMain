@@ -1,65 +1,66 @@
-// Admin role types
-export enum AdminRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  MODERATOR = 'MODERATOR',
-  MINTER = 'MINTER',
-  BURNER = 'BURNER',
-  PAUSER = 'PAUSER',
-  PRICE_UPDATER = 'PRICE_UPDATER'
-}
 
-// Transaction types for monitoring
-export enum TransactionType {
-  MINT = 'MINT',
-  BURN = 'BURN',
-  PROCESS_REDEEM = 'PROCESS_REDEEM',
-  REQUEST_REDEEM = 'REQUEST_REDEEM',
-  UPDATE_KYC = 'UPDATE_KYC',
-  GRANT_ROLE = 'GRANT_ROLE',
-  REVOKE_ROLE = 'REVOKE_ROLE',
-  TRANSFER = 'TRANSFER',
-  FIAT_DEPOSIT = 'FIAT_DEPOSIT'
-}
+import { SMART_CONTRACT_ROLES, SmartContractRole } from '../../constants/roles';
 
-// Transaction status
-export enum TransactionStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  FLAGGED = 'FLAGGED'
-}
+// Use the smart contract roles as the AdminRole enum
+export const AdminRole = SMART_CONTRACT_ROLES;
+export type AdminRole = SmartContractRole;
 
 export interface AdminUser {
   id: string;
   user_address: string;
   role: AdminRole;
-  created_at: string;
-  email?: string;
   name?: string;
+  email?: string;
+  created_at: string;
+  updated_at?: string;
 }
 
-export interface Transaction {
+export interface PendingTransaction {
   id: string;
-  type: TransactionType;
-  status: TransactionStatus;
-  amount: string;
-  fromAddress: string;
-  toAddress: string;
-  timestamp: Date;
-  blockNumber: number;
-  txHash: string;
-  riskScore?: number;
-  flags?: string[];
+  transaction_type: string;
+  user_address: string;
+  amount?: number;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  approved_by?: string;
+  approved_at?: string;
+  rejection_reason?: string;
 }
 
-export interface FiatDeposit {
+export interface FiatMintRequest {
   id: string;
-  userId: string;
+  user_address: string;
   amount: number;
   currency: string;
-  status: TransactionStatus;
-  paymentMethod: string;
-  timestamp: Date;
-  verificationDocument?: string;
+  payment_proof: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  processed_by?: string;
+  processed_at?: string;
+  rejection_reason?: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: 'unread' | 'read' | 'replied';
+  created_at: string;
+  replied_at?: string;
+  replied_by?: string;
+}
+
+export interface KYCRequest {
+  id: string;
+  user_address: string;
+  applicant_id: string;
+  review_id?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  level_name?: string;
+  created_at: string;
+  updated_at?: string;
+  reviewed_by?: string;
+  rejection_reasons?: string[];
 }

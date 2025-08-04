@@ -1,4 +1,6 @@
+
 import { AdminRole } from '../../../services/admin';
+import { SMART_CONTRACT_ROLES, ROLE_DESCRIPTIONS } from '../../../constants/roles';
 
 interface RoleFormProps {
   formData: {
@@ -41,7 +43,7 @@ export default function RoleForm({ formData, formErrors, onFormChange, isEdit }:
       
       <div>
         <label htmlFor="role" className="block text-sm font-semibold leading-6 text-gray-900">
-          Role <span className="text-red-500">*</span>
+          Smart Contract Role <span className="text-red-500">*</span>
         </label>
         <div className="mt-2.5 relative">
           <select
@@ -52,10 +54,15 @@ export default function RoleForm({ formData, formErrors, onFormChange, isEdit }:
               formErrors.role ? 'ring-red-300 focus:ring-red-500' : 'ring-gray-300 focus:ring-primary-500'
             } focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6`}
           >
-            <option value="">Select Role</option>
-            {Object.values(AdminRole).map((role) => (
-              <option key={role} value={role}>{role}</option>
-            ))}
+            <option value="">Select Smart Contract Role</option>
+            {Object.values(SMART_CONTRACT_ROLES).map((role) => {
+              const description = ROLE_DESCRIPTIONS[role];
+              return (
+                <option key={role} value={role}>
+                  {description?.name || role}
+                </option>
+              );
+            })}
           </select>
           {formErrors.role && (
             <p className="mt-1 text-sm text-red-600">{formErrors.role}</p>

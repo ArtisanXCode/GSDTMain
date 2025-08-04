@@ -1,14 +1,13 @@
-
-import { motion } from "framer-motion";
 import { AdminRole } from "../../../services/admin";
+import { ROLE_DESCRIPTIONS, SMART_CONTRACT_ROLES } from "../../../constants/roles";
 import {
   ShieldCheckIcon,
-  BanknotesIcon,
-  KeyIcon,
-  PauseCircleIcon,
   CurrencyDollarIcon,
-  UserIcon,
-  EyeIcon,
+  FireIcon,
+  PauseIcon,
+  ChartBarIcon,
+  UserMinusIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/outline";
 
 interface RoleCardProps {
@@ -16,82 +15,51 @@ interface RoleCardProps {
 }
 
 export const getRoleIcon = (role: AdminRole) => {
+  const iconClass = "h-5 w-5";
+
   switch (role) {
-    case AdminRole.SUPER_ADMIN:
-      return <ShieldCheckIcon className="h-4 w-4" />;
-    case AdminRole.ADMIN:
-      return <ShieldCheckIcon className="h-4 w-4" />;
-    case AdminRole.MODERATOR:
-      return <EyeIcon className="h-4 w-4" />;
-    case AdminRole.MINTER:
-      return <BanknotesIcon className="h-4 w-4" />;
-    case AdminRole.BURNER:
-      return <KeyIcon className="h-4 w-4" />;
-    case AdminRole.PAUSER:
-      return <PauseCircleIcon className="h-4 w-4" />;
-    case AdminRole.PRICE_UPDATER:
-      return <CurrencyDollarIcon className="h-4 w-4" />;
+    case SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE:
+      return <ShieldCheckIcon className={`${iconClass} text-orange-400`} />;
+    case SMART_CONTRACT_ROLES.MINTER_ROLE:
+      return <CurrencyDollarIcon className={`${iconClass} text-green-400`} />;
+    case SMART_CONTRACT_ROLES.BURNER_ROLE:
+      return <FireIcon className={`${iconClass} text-red-400`} />;
+    case SMART_CONTRACT_ROLES.PAUSER_ROLE:
+      return <PauseIcon className={`${iconClass} text-yellow-400`} />;
+    case SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE:
+      return <ChartBarIcon className={`${iconClass} text-blue-400`} />;
+    case SMART_CONTRACT_ROLES.BLACKLIST_MANAGER_ROLE:
+      return <UserMinusIcon className={`${iconClass} text-gray-400`} />;
+    case SMART_CONTRACT_ROLES.APPROVER_ROLE:
+      return <CheckCircleIcon className={`${iconClass} text-purple-400`} />;
     default:
-      return <UserIcon className="h-4 w-4" />;
+      return <ShieldCheckIcon className={`${iconClass} text-gray-400`} />;
   }
 };
 
-export const getRoleBadgeClass = (role: AdminRole) => {
-  switch (role) {
-    case AdminRole.SUPER_ADMIN:
-      return "border-2 border-orange-400 text-orange-400 bg-transparent";
-    case AdminRole.ADMIN:
-      return "border-2 border-blue-400 text-blue-400 bg-transparent";
-    case AdminRole.MODERATOR:
-      return "border-2 border-gray-400 text-gray-400 bg-transparent";
-    case AdminRole.MINTER:
-      return "border-2 border-green-400 text-green-400 bg-transparent";
-    case AdminRole.BURNER:
-      return "border-2 border-red-400 text-red-400 bg-transparent";
-    case AdminRole.PAUSER:
-      return "border-2 border-yellow-400 text-yellow-400 bg-transparent";
-    case AdminRole.PRICE_UPDATER:
-      return "border-2 border-blue-500 text-blue-500 bg-transparent";
-    default:
-      return "border-2 border-gray-400 text-gray-400 bg-transparent";
-  }
-};
-
-export const getRoleDescription = (role: AdminRole) => {
-  switch (role) {
-    case AdminRole.SUPER_ADMIN:
-      return "Full admin access to all functions";
-    case AdminRole.ADMIN:
-      return "Admin access to most functions";
-    case AdminRole.MODERATOR:
-      return "Moderate content and users";
-    case AdminRole.MINTER:
-      return "Can mint new tokens";
-    case AdminRole.BURNER:
-      return "Can burn tokens and process redemptions";
-    case AdminRole.PAUSER:
-      return "Can pause/unpause contract operations";
-    case AdminRole.PRICE_UPDATER:
-      return "Can update token price";
-    default:
-      return "";
-  }
+export const getRoleBadgeClass = (role: AdminRole): string => {
+  const description = ROLE_DESCRIPTIONS[role];
+  return description ? description.color : 'bg-gray-100 text-gray-800 border-gray-200';
 };
 
 export default function RoleCard({ role }: RoleCardProps) {
+  const description = ROLE_DESCRIPTIONS[role];
+
+  if (!description) return null;
+
   return (
-    <div className="flex flex-col space-y-2">
-      <div className="flex items-center space-x-2">
+    <div className="flex items-start space-x-3 p-3 bg-gray-600/50 rounded-lg border border-gray-500">
+      <div className="flex-shrink-0 mt-0.5">
         {getRoleIcon(role)}
-        <span
-          className={`inline-flex items-center text-sm font-medium rounded-full px-4 py-2 ${getRoleBadgeClass(role)}`}
-        >
-          {role}
-        </span>
       </div>
-      <p className="text-white/70 text-xs ml-6">
-        {getRoleDescription(role)}
-      </p>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-white truncate">
+          {description.name}
+        </p>
+        <p className="text-xs text-white/70 mt-1">
+          {description.description}
+        </p>
+      </div>
     </div>
   );
 }
