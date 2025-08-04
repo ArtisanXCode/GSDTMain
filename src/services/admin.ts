@@ -296,10 +296,6 @@ export const assignUserRole = async (
             }
           }
         }
-        
-        console.log(`Role assignment transaction queued: ${tx.hash}`);
-        await tx.wait();
-        console.log(`Role assignment transaction confirmed: ${tx.hash}`);
 
       } catch (contractError: any) {
         console.error("Smart contract error:", contractError);
@@ -459,10 +455,6 @@ export const removeUserRole = async (
             }
           }
         }
-        
-        console.log(`Role revocation transaction queued: ${tx.hash}`);
-        await tx.wait();
-        console.log(`Role revocation transaction confirmed: ${tx.hash}`);
 
       } catch (contractError: any) {
         console.error("Smart contract error:", contractError);
