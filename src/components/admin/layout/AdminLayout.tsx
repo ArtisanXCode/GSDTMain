@@ -17,14 +17,14 @@ export default function AdminLayout({ children, activeTab }: AdminLayoutProps) {
   // Check if we're admin from localStorage as a fallback
   const isAdminAuth = localStorage.getItem('adminAuth') === 'true';
   const storedRole = localStorage.getItem('adminRole');
-  
+
   // Redirect if not admin
   useEffect(() => {
     if (!isConnected) {
       navigate('/', { replace: true });
       return;
     }
-    
+
     if (!isAdmin && !isAdminAuth) {
       navigate('/admin/login', { replace: true });
     }
@@ -93,6 +93,16 @@ export default function AdminLayout({ children, activeTab }: AdminLayoutProps) {
                   }`}
                 >
                   Role Management
+                </Link>
+                <Link 
+                  to="/admin/pending-transactions"
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                    activeTab === 'pending-transactions'
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  Pending Transactions
                 </Link>
                 <Link 
                   to="/admin/fiat-requests"

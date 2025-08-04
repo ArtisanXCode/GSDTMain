@@ -19,6 +19,7 @@ import TransactionList from './pages/TransactionList';
 import ProtectedRoute from './components/ProtectedRoute';
 import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
+import AdminPendingTransactions from './pages/admin/PendingTransactions';
 
 export default function App() {
   return (
@@ -92,6 +93,14 @@ export default function App() {
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <ExchangeRates />
+                </ProtectedRoute>
+              } 
+            />
+             <Route 
+              path="/admin/pending-transactions" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminPendingTransactions />
                 </ProtectedRoute>
               } 
             />
