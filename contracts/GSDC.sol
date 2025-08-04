@@ -141,7 +141,7 @@ contract GSDC is
      * @param account Address to check
      */
     modifier notBlacklisted(address account) {
-        require(!blacklisted[account], "GSDC: address is blacklisted");
+        require(!blacklisted[account], "Address is blacklisted");
         _;
     }
 
@@ -151,7 +151,7 @@ contract GSDC is
     modifier canApprove() {
         require(
             hasRole(APPROVER_ROLE, msg.sender) || hasRole(SUPER_ADMIN_ROLE, msg.sender),
-            "GSDC: insufficient approval permissions"
+            "Insufficient approval permissions"
         );
         _;
     }
@@ -193,8 +193,8 @@ contract GSDC is
      */
     function approveTransaction(uint256 txId) external canApprove {
         PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "GSDC: transaction does not exist");
-        require(txn.status == TransactionStatus.PENDING, "GSDC: transaction not pending");
+        require(txn.exists, "Transaction does not exist");
+        require(txn.status == TransactionStatus.PENDING, "Transaction not pending");
 
         txn.status = TransactionStatus.APPROVED;
         txn.approver = msg.sender;
@@ -208,9 +208,9 @@ contract GSDC is
      */
     function rejectTransaction(uint256 txId, string memory reason) external canApprove {
         PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "GSDC: transaction does not exist");
-        require(txn.status == TransactionStatus.PENDING, "GSDC: transaction not pending");
-        require(bytes(reason).length > 0, "GSDC: rejection reason required");
+        require(txn.exists, "Transaction does not exist");
+        require(txn.status == TransactionStatus.PENDING, "Transaction not pending");
+        require(bytes(reason).length > 0, "Rejection reason required");
 
         txn.status = TransactionStatus.REJECTED;
         txn.rejectionReason = reason;
@@ -225,11 +225,11 @@ contract GSDC is
      */
     function executeTransaction(uint256 txId) external {
         PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "GSDC: transaction does not exist");
+        require(txn.exists, "Transaction does not exist");
         require(
             txn.status == TransactionStatus.APPROVED || 
             (txn.status == TransactionStatus.PENDING && block.timestamp >= txn.executeAfter),
-            "GSDC: transaction not ready for execution"
+            "Transaction not ready for execution"
         );
 
         if (txn.status == TransactionStatus.PENDING) {
@@ -313,8 +313,8 @@ contract GSDC is
      * @dev Adds or removes an address from the blacklist (with cooldown)
      */
     function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {
-        require(account != address(0), "GSDC: cannot blacklist zero address");
-        require(!hasRole(DEFAULT_ADMIN_ROLE, account), "GSDC: cannot blacklist admin");
+        require(account != address(0), "Cannot blacklist zero address");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, account), "Cannot blacklist admin");
 
         bytes memory data = abi.encode(account, status);
         _queueTransaction(TransactionType.BLACKLIST, account, 0, data);
@@ -328,8 +328,8 @@ contract GSDC is
         onlyRole(BLACKLIST_MANAGER_ROLE)
     {
         for (uint256 i = 0; i < accounts.length; i++) {
-            require(accounts[i] != address(0), "GSDC: cannot blacklist zero address");
-            require(!hasRole(DEFAULT_ADMIN_ROLE, accounts[i]), "GSDC: cannot blacklist admin");
+            require(accounts[i] != address(0), "Cannot blacklist zero address");
+            require(!hasRole(DEFAULT_ADMIN_ROLE, accounts[i]), "Cannot blacklist admin");
 
             bytes memory data = abi.encode(accounts[i], status);
             _queueTransaction(TransactionType.BLACKLIST, accounts[i], 0, data);
@@ -353,10 +353,10 @@ contract GSDC is
         nonReentrant 
         notBlacklisted(to)
     {
-        require(to != address(0), "GSDC: mint to the zero address");
-        require(kycApproved[to], "GSDC: recipient not KYC approved");
-        require(amount >= MIN_MINT_AMOUNT, "GSDC: amount below minimum");
-        require(amount <= MAX_MINT_AMOUNT, "GSDC: amount above maximum");
+        require(to != address(0), "Mint to the zero address");
+        require(kycApproved[to], "Recipient not KYC approved");
+        require(amount >= MIN_MINT_AMOUNT, "Amount below minimum");
+        require(amount <= MAX_MINT_AMOUNT, "Amount above maximum");
 
         _queueTransaction(TransactionType.MINT, to, amount, "");
     }
@@ -370,8 +370,8 @@ contract GSDC is
         nonReentrant
         notBlacklisted(msg.sender)
     {
-        require(kycApproved[msg.sender], "GSDC: user not KYC approved");
-        require(balanceOf(msg.sender) >= amount, "GSDC: insufficient balance");
+        require(kycApproved[msg.sender], "User not KYC approved");
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
 
         uint256 requestId = nextRedemptionId++;
         redemptionRequests[requestId] = RedemptionRequest({
@@ -394,9 +394,9 @@ contract GSDC is
         nonReentrant
     {
         RedemptionRequest storage request = redemptionRequests[requestId];
-        require(!request.processed, "GSDC: request already processed");
-        require(request.user != address(0), "GSDC: invalid request");
-        require(!blacklisted[request.user], "GSDC: user is blacklisted");
+        require(!request.processed, "Request already processed");
+        require(request.user != address(0), "Invalid request");
+        require(!blacklisted[request.user], "User is blacklisted");
 
         request.processed = true;
         request.approved = approved;
