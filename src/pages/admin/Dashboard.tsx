@@ -47,13 +47,13 @@ export default function AdminDashboard() {
   const isSuperAdminUser = isSuperAdmin || displayRole === "SUPER_ADMIN";
 
   const getSubtitleForRole = () => {
-    if (displayRole === "SUPER_ADMIN") return "Super Admin Dashboard - Full Access";
-    if (displayRole === "ADMIN") return "Admin Dashboard - Manage Content and Users";
-    if (displayRole === "MODERATOR") return "Moderator Dashboard - Content Management";
-    if (displayRole === "MINTER") return "Minter Dashboard - Token Minting Access";
-    if (displayRole === "BURNER") return "Burner Dashboard - Token Burning Access";
-    if (displayRole === "PAUSER") return "Pauser Dashboard - Contract Pause Access";
-    if (displayRole === "PRICE_UPDATER") return "Price Updater Dashboard - Token Price Management";
+    if (displayRole === "SUPER_ADMIN_ROLE") return "Super Admin Dashboard - Full Access";
+    if (displayRole === "MINTER_ROLE") return "Minter Dashboard - Token Minting Access";
+    if (displayRole === "BURNER_ROLE") return "Burner Dashboard - Token Burning Access";
+    if (displayRole === "PAUSER_ROLE") return "Pauser Dashboard - Contract Pause Access";
+    if (displayRole === "PRICE_UPDATER_ROLE") return "Price Updater Dashboard - Token Price Management";
+    if (displayRole === "BLACKLIST_MANAGER_ROLE") return "Blacklist Manager Dashboard - Address Management";
+    if (displayRole === "APPROVER_ROLE") return "Approver Dashboard - Transaction Approval";
     return "Admin Dashboard";
   };
 

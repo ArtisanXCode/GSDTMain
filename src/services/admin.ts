@@ -175,6 +175,15 @@ export const getFraudDetectionFlags = (tx: Transaction): string[] => {
   return flags;
 };
 
-// Use smart contract roles
+// Use smart contract roles - export both for compatibility
 export const AdminRole = SMART_CONTRACT_ROLES;
 export type AdminRole = SmartContractRole;
+
+// For backward compatibility, also export individual role values
+export const SUPER_ADMIN = SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE;
+export const MINTER = SMART_CONTRACT_ROLES.MINTER_ROLE;
+export const BURNER = SMART_CONTRACT_ROLES.BURNER_ROLE;
+export const PAUSER = SMART_CONTRACT_ROLES.PAUSER_ROLE;
+export const PRICE_UPDATER = SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE;
+export const BLACKLIST_MANAGER = SMART_CONTRACT_ROLES.BLACKLIST_MANAGER_ROLE;
+export const APPROVER = SMART_CONTRACT_ROLES.APPROVER_ROLE;
