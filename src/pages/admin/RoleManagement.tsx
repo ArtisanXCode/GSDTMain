@@ -14,6 +14,7 @@ import { UserPlusIcon } from "@heroicons/react/24/outline";
 import RoleCard from "../../components/admin/role-management/RoleCard";
 import RoleTable from "../../components/admin/role-management/RoleTable";
 import RoleModals from "../../components/admin/role-management/RoleModals";
+import AdminNavigation from "../../components/admin/AdminNavigation";
 
 export default function RoleManagement() {
   const { address } = useWallet();
@@ -239,34 +240,7 @@ export default function RoleManagement() {
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             {/* Navigation Tabs */}
-            <div className="bg-gray-700 p-1 rounded-lg mb-6">
-              <div className="flex flex-wrap gap-1">
-                {[
-                  "KYC Requests",
-                  "Contact Messages",
-                  "Role Management",
-                  "Fiat Mint Requests",
-                  "Proof of Reserves",
-                  "Exchange Rates",
-                  "Pending Role Approvals",
-                  "Pending Transactions",
-                  "CMS Pages",
-                  "Contact Details"
-                ].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => navigate(getRouteForTab(tab))}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
-                      tab === "Role Management"
-                        ? "bg-orange-500 text-white"
-                        : "text-gray-300 hover:text-white hover:bg-gray-600"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <AdminNavigation className="mb-6" />
 
             {/* Access Denied Section */}
             <div
@@ -380,34 +354,7 @@ export default function RoleManagement() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Navigation Tabs */}
-          <div className="bg-gray-700 p-1 rounded-lg mb-6">
-            <div className="flex flex-wrap gap-1">
-              {[
-                "KYC Requests",
-                "Contact Messages",
-                "Role Management",
-                "Fiat Mint Requests",
-                "Proof of Reserves",
-                "Exchange Rates",
-                "Pending Role Approvals",
-                "Pending Transactions",
-                "CMS Pages",
-                "Contact Details"
-              ].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => navigate(getRouteForTab(tab))}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
-                    tab === "Role Management"
-                      ? "bg-orange-500 text-white"
-                      : "text-gray-300 hover:text-white hover:bg-gray-600"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
+          <AdminNavigation className="mb-6" />
 
           {/* Role Management Section */}
           <div

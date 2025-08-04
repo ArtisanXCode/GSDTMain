@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
+import AdminNavigation from "../../components/admin/AdminNavigation";
 import { useGSDCContract } from "../../hooks/useContract";
 
 import {
@@ -324,49 +325,7 @@ export default function FiatMintRequests() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Navigation Menu */}
-          <div className="mb-8">
-            <div
-              className="mb-8 shadow rounded-lg p-8"
-              style={{ backgroundColor: "#2a4661" }}
-            >
-              <button
-                onClick={() => navigate("/admin/kyc-requests")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                KYC Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/contact-messages")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Contact Messages
-              </button>
-              <button
-                onClick={() => navigate("/admin/role-management")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Role Management
-              </button>
-              <button
-                style={{ backgroundColor: "#ed9030" }}
-                className="px-6 py-2 rounded-lg font-medium text-white"
-              >
-                Fiat Mint Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/reserves")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Proof of Reserves
-              </button>
-              <button
-                onClick={() => navigate("/admin/exchange-rates")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Exchange Rates
-              </button>
-            </div>
-          </div>
+          <AdminNavigation className="mb-8" />
 
           {/* Fiat Mint Requests Content */}
           <div

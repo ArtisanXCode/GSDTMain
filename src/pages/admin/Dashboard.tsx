@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
+import AdminNavigation from "../../components/admin/AdminNavigation";
 import AdminStats from "../../components/admin/AdminStats";
 import {
   UserGroupIcon,
@@ -104,47 +105,7 @@ export default function AdminDashboard() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Admin Navigation */}
           <div className="mb-8">
-            <div
-              className="mb-8 shadow rounded-lg p-8"
-              style={{ backgroundColor: "#2a4661" }}
-            >
-              <button
-                onClick={() => navigate("/admin/kyc-requests")}
-                className="px-6 py-3 rounded-lg font-medium text-white"
-              >
-                KYC Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/contact-messages")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Contact Messages
-              </button>
-              <button
-                onClick={() => navigate("/admin/role-management")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Role Management
-              </button>
-              <button
-                onClick={() => navigate("/admin/fiat-requests")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Fiat Mint Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/reserves")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Proof of Reserves
-              </button>
-              <button
-                onClick={() => navigate("/admin/exchange-rates")}
-                className="px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Exchange Rates
-              </button>
-            </div>
+            <AdminNavigation />
           </div>
 
           {/* Admin Dashboard Overview */}
