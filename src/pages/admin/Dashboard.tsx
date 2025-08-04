@@ -104,9 +104,7 @@ export default function AdminDashboard() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Admin Navigation */}
-          <div className="mb-8">
-            <AdminNavigation />
-          </div>
+          <AdminNavigation className="mb-8" />
 
           {/* Admin Dashboard Overview */}
           <div

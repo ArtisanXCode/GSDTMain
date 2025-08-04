@@ -5,6 +5,7 @@ import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 import { CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { getContract } from "../../lib/web3";
+import AdminNavigation from "../../components/admin/AdminNavigation";
 
 interface PendingTransaction {
   id: number;
@@ -194,6 +195,9 @@ export default function PendingRoles() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          {/* Navigation Menu */}
+          <AdminNavigation className="mb-8" />
+
           <div
             className="rounded-lg p-6"
             style={{ backgroundColor: "#2a4661" }}

@@ -123,47 +123,8 @@ export default function ProofOfReserves() {
         {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Navigation Tabs */}
-            <div className="mb-8">
-              <div
-                className="mb-8 shadow rounded-lg p-8"
-                style={{ backgroundColor: "#2a4661" }}
-              >
-                <button
-                  onClick={() => navigate("/admin/kyc-requests")}
-                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  KYC Requests
-                </button>
-                <button
-                  onClick={() => navigate("/admin/contact-messages")}
-                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Contact Messages
-                </button>
-                <button
-                  onClick={() => navigate("/admin/role-management")}
-                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Role Management
-                </button>
-                <button
-                  onClick={() => navigate("/admin/fiat-requests")}
-                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Fiat Mint Requests
-                </button>
-                <button className="px-6 py-2 rounded-lg text-white font-medium bg-orange-500">
-                  Proof of Reserves
-                </button>
-                <button
-                  onClick={() => navigate("/admin/exchange-rates")}
-                  className="px-6 py-2 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Exchange Rates
-                </button>
-              </div>
-            </div>
+            {/* Navigation Menu */}
+            <AdminNavigation className="mb-8" />
 
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-center py-8">
@@ -244,7 +205,7 @@ export default function ProofOfReserves() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Navigation Menu */}
-          <AdminNavigation navigate={navigate} activeTab="proof-of-reserves" />
+          <AdminNavigation className="mb-8" />
 
           <div className="space-y-6">
             {/* Summary Section */}

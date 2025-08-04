@@ -1,4 +1,3 @@
-
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface AdminNavigationProps {
@@ -25,21 +24,31 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
   const isActivePath = (path: string) => location.pathname === path;
 
   return (
-    <div className={`bg-gray-700 p-1 rounded-lg ${className}`}>
-      <div className="flex flex-wrap gap-1">
-        {navItems.map((item) => (
-          <button
-            key={item.name}
-            onClick={() => navigate(item.path)}
-            className={`px-6 py-3 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
-              isActivePath(item.path)
-                ? "bg-orange-500 text-white"
-                : "text-gray-300 hover:text-white hover:bg-gray-600"
-            }`}
-          >
-            {item.name}
-          </button>
-        ))}
+    <div className={`${className}`}>
+      <div
+        className="shadow rounded-lg p-6"
+        style={{ backgroundColor: "#2a4661" }}
+      >
+        <div className="flex flex-wrap gap-2">
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => navigate(item.path)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActivePath(item.path)
+                  ? "text-white"
+                  : "text-white hover:bg-white/10"
+              }`}
+              style={
+                isActivePath(item.path)
+                  ? { backgroundColor: "#ed9030" }
+                  : {}
+              }
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

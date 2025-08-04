@@ -4,6 +4,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ContactSubmission, getContactSubmission, updateContactStatus, sendContactReply, deleteContactSubmission } from '../../services/contact';
 import { useWallet } from '../../hooks/useWallet';
+import AdminNavigation from '../../components/admin/AdminNavigation';
 import { 
   ArrowLeftIcon, 
   ArchiveBoxIcon, 
@@ -204,21 +205,60 @@ export default function ContactDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Contact Message</h1>
-            <Link
-              to="/admin/contacts"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            >
-              <ArrowLeftIcon className="h-5 w-5 mr-2" />
-              Back to Messages
-            </Link>
+    <div className="bg-white min-h-screen">
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `url('/headers/admin_dashboard_header.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Admin Dashboard
+            </h1>
+            <p className="text-lg leading-8 text-white/90 font-regular">
+              Super Admin Dashboard – Full Access
+            </p>
           </div>
-          <p className="mt-2 text-gray-600">View and respond to user message</p>
+        </motion.div>
+      </div>
+
+      <div className="relative z-20 flex justify-end">
+        <div className="phoenix-icon-parent">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="phoenix-icon-large"
+          />
         </div>
+      </div>
+
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <AdminNavigation className="mb-8" />
+          
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold text-gray-900">Contact Message</h1>
+              <Link
+                to="/admin/contact-messages"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                Back to Messages
+              </Link>
+            </div>
+            <p className="mt-2 text-gray-600">View and respond to user message</p>
+          </div>
 
         {loading ? (
           <div className="text-center py-12 bg-white rounded-lg shadow">
@@ -245,7 +285,7 @@ export default function ContactDetails() {
             <p className="text-gray-500">Message not found</p>
             <div className="mt-4">
               <Link
-                to="/admin/contacts"
+                to="/admin/contact-messages"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 <ArrowLeftIcon className="h-5 w-5 mr-2" />
@@ -374,6 +414,8 @@ export default function ContactDetails() {
             )}
           </div>
         )}
+          </div>
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
