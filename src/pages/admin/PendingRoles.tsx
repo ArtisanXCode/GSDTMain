@@ -39,26 +39,50 @@ export default function PendingRoles() {
       
       const contract = getContract();
       if (!contract) {
-        throw new Error('Contract not initialized');
+        throw new Error('Contract not initialized. Please connect your wallet first.');
       }
 
-      const pendingIds = await contract.getPendingTransactionIds();
+      // Check if the contract has the required methods
+      if (typeof contract.getPendingTransactionIds !== 'function') {
+        throw new Error('Contract does not support pending transactions. Please ensure you are connected to the correct network and contract.');
+      }
+
+      // Add a timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 10000);
+      });
+
+      const pendingIdsPromise = contract.getPendingTransactionIds();
+      const pendingIds = await Promise.race([pendingIdsPromise, timeoutPromise]);
+      
+      if (!pendingIds || pendingIds.length === 0) {
+        setPendingTransactions([]);
+        return;
+      }
+
       const transactions = [];
 
       for (const id of pendingIds) {
-        const tx = await contract.getPendingTransaction(id);
-        if (tx.txType === 6 || tx.txType === 7) { // ROLE_GRANT or ROLE_REVOKE
-          transactions.push({
-            id: id.toNumber(),
-            txType: tx.txType === 6 ? 'ROLE_GRANT' : 'ROLE_REVOKE',
-            status: tx.status,
-            initiator: tx.initiator,
-            target: tx.target,
-            amount: tx.amount.toString(),
-            timestamp: tx.timestamp.toNumber(),
-            executeAfter: tx.executeAfter.toNumber(),
-            data: tx.data
-          });
+        try {
+          const txPromise = contract.getPendingTransaction(id);
+          const tx = await Promise.race([txPromise, timeoutPromise]);
+          
+          if (tx && (tx.txType === 6 || tx.txType === 7)) { // ROLE_GRANT or ROLE_REVOKE
+            transactions.push({
+              id: id.toNumber(),
+              txType: tx.txType === 6 ? 'ROLE_GRANT' : 'ROLE_REVOKE',
+              status: tx.status,
+              initiator: tx.initiator,
+              target: tx.target,
+              amount: tx.amount.toString(),
+              timestamp: tx.timestamp.toNumber(),
+              executeAfter: tx.executeAfter.toNumber(),
+              data: tx.data
+            });
+          }
+        } catch (txError: any) {
+          console.warn(`Failed to load transaction ${id}:`, txError);
+          // Continue with other transactions instead of failing completely
         }
       }
 
@@ -67,6 +91,9 @@ export default function PendingRoles() {
       console.error('Error loading pending transactions:', err);
       const errorMessage = handleBlockchainError(err);
       setError(errorMessage);
+      
+      // Set empty array on error to prevent UI issues
+      setPendingTransactions([]);
     } finally {
       setLoading(false);
     }

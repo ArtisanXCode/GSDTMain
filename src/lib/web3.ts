@@ -260,8 +260,8 @@ export const handleBlockchainError = (error: any): string => {
     if (error.error?.message?.includes('Internal JSON-RPC error')) {
       return 'Blockchain network error occurred. Please check your connection and try again in a few moments.';
     }
-    if (error.data === '0x') {
-      return 'Smart contract call failed. The transaction was reverted without providing a reason. Please check your permissions and try again.';
+    if (error.data === '0x' || error.message?.includes('missing revert data')) {
+      return 'The requested contract method is not available or you lack permission to access it. Please ensure you are connected to the correct network and have the required role permissions.';
     }
   }
 
