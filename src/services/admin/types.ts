@@ -5,6 +5,30 @@ import { SMART_CONTRACT_ROLES, SmartContractRole } from '../../constants/roles';
 export const AdminRole = SMART_CONTRACT_ROLES;
 export type AdminRole = SmartContractRole;
 
+// Transaction Status enum
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  FLAGGED = 'FLAGGED'
+}
+
+// Transaction Type enum
+export enum TransactionType {
+  MINT = 'MINT',
+  BURN = 'BURN',
+  TRANSFER = 'TRANSFER',
+  BLACKLIST = 'BLACKLIST',
+  KYC_UPDATE = 'KYC_UPDATE',
+  ROLE_GRANT = 'ROLE_GRANT',
+  ROLE_REVOKE = 'ROLE_REVOKE',
+  REQUEST_REDEEM = 'REQUEST_REDEEM',
+  PROCESS_REDEEM = 'PROCESS_REDEEM',
+  UPDATE_KYC = 'UPDATE_KYC',
+  GRANT_ROLE = 'GRANT_ROLE',
+  REVOKE_ROLE = 'REVOKE_ROLE'
+}
+
 export interface AdminUser {
   id: string;
   user_address: string;
@@ -63,4 +87,17 @@ export interface KYCRequest {
   updated_at?: string;
   reviewed_by?: string;
   rejection_reasons?: string[];
+}
+
+export interface Transaction {
+  id: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  amount: string;
+  fromAddress: string;
+  toAddress: string;
+  timestamp: Date;
+  blockNumber: number;
+  txHash: string;
+  riskScore: number;
 }
