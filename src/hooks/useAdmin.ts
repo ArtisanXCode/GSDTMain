@@ -138,7 +138,7 @@ export const useAdmin = () => {
 
             // Reset failure count on successful call
             failureCountRef.current = 0;
-            
+
             // If we have a role, store it in localStorage
             if (role) {
               localStorage.setItem("adminAuth", "true");
@@ -152,30 +152,30 @@ export const useAdmin = () => {
             }
           } catch (roleError) {
             console.error("Error fetching user role:", roleError);
-            
+
             // Increment failure count
             failureCountRef.current += 1;
-            
+
             // Don't retry on network errors to prevent spam
             if (roleError.message?.includes("Failed to fetch") || roleError.message?.includes("TypeError: Failed to fetch")) {
               console.log("Network error detected, stopping API calls");
               setError("Network connection issue. Using offline mode.");
-              
+
               // Activate circuit breaker after 3 failures
               if (failureCountRef.current >= 3) {
                 circuitBreakerRef.current = true;
                 console.log("Circuit breaker activated - no more API calls");
               }
-              
+
               // Mark this address as checked to prevent further calls
               lastCheckedAddressRef.current = address.toLowerCase();
-              
+
               // Clear any existing timer
               if (debounceTimerRef.current) {
                 clearTimeout(debounceTimerRef.current);
                 debounceTimerRef.current = null;
               }
-              
+
               // Fallback to hardcoded admin addresses for testing
               if (
                 address.toLowerCase() ===
@@ -190,7 +190,7 @@ export const useAdmin = () => {
               }
               return; // Exit early to prevent further API calls
             }
-            
+
             throw roleError; // Re-throw other errors
           }
         } else {

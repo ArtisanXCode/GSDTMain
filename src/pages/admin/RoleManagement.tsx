@@ -239,44 +239,47 @@ export default function RoleManagement() {
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             {/* Navigation Tabs */}
-            <div className="mb-8">
-              <div
-                className="flex flex-wrap gap-1 p-2 rounded-lg"
-                style={{ backgroundColor: "#5a7a96" }}
-              >
-                <button
-                  onClick={() => navigate("/admin/kyc-requests")}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
+            <div className="flex items-center justify-between bg-gray-700 p-1 rounded-lg mb-6">
+              <div className="flex space-x-1">
+                {[
+                  "KYC Requests",
+                  "Contact Messages", 
+                  "Role Management",
+                  "Fiat Mint Requests",
+                  "Proof of Reserves",
+                  "Exchange Rates"
+                ].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => navigate(getRouteForTab(tab))}
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      tab === "Role Management"
+                        ? "bg-orange-500 text-white"
+                        : "text-gray-300 hover:text-white hover:bg-gray-600"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right side dropdown */}
+              <div className="relative">
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      navigate(e.target.value);
+                    }
+                  }}
+                  className="bg-gray-600 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  defaultValue=""
                 >
-                  KYC Requests
-                </button>
-                <button
-                  onClick={() => navigate("/admin/contact-messages")}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Contact Messages
-                </button>
-                <button className="px-6 py-3 rounded-lg text-white font-medium bg-orange-500">
-                  Role Management
-                </button>
-                <button
-                  onClick={() => navigate("/admin/fiat-requests")}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Fiat Mint Requests
-                </button>
-                <button
-                  onClick={() => navigate("/admin/reserves")}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Proof of Reserves
-                </button>
-                <button
-                  onClick={() => navigate("/admin/exchange-rates")}
-                  className="px-6 py-3 rounded-lg text-white/70 font-medium hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  Exchange Rates
-                </button>
+                  <option value="" disabled>More Actions</option>
+                  <option value="/admin/pending-roles">Pending Role Approvals</option>
+                  <option value="/admin/pending-transactions">Pending Transactions</option>
+                  <option value="/admin/cms-pages">CMS Pages</option>
+                  <option value="/admin/contact-details">Contact Details</option>
+                </select>
               </div>
             </div>
 
@@ -317,6 +320,25 @@ export default function RoleManagement() {
       </div>
     );
   }
+
+  const getRouteForTab = (tab: string): string => {
+    switch (tab) {
+      case "KYC Requests":
+        return "/admin/kyc-requests";
+      case "Contact Messages":
+        return "/admin/contact-messages";
+      case "Role Management":
+        return "/admin/role-management";
+      case "Fiat Mint Requests":
+        return "/admin/fiat-requests";
+      case "Proof of Reserves":
+        return "/admin/reserves";
+      case "Exchange Rates":
+        return "/admin/exchange-rates";
+      default:
+        return "/admin";
+    }
+  };
 
   return (
     <div className="bg-white min-h-screen">
@@ -364,48 +386,48 @@ export default function RoleManagement() {
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {/* Navigation Menu */}
-          <div className="mb-8">
-            <div
-              className="mb-8 shadow rounded-lg p-8"
-              style={{ backgroundColor: "#2a4661" }}
-            >
-              <button
-                onClick={() => navigate("/admin/kyc-requests")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
+          {/* Navigation Tabs */}
+          <div className="flex items-center justify-between bg-gray-700 p-1 rounded-lg mb-6">
+            <div className="flex space-x-1">
+              {[
+                "KYC Requests",
+                "Contact Messages",
+                "Role Management",
+                "Fiat Mint Requests",
+                "Proof of Reserves",
+                "Exchange Rates"
+              ].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => navigate(getRouteForTab(tab))}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    tab === "Role Management"
+                      ? "bg-orange-500 text-white"
+                      : "text-gray-300 hover:text-white hover:bg-gray-600"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Right side dropdown */}
+            <div className="relative">
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    navigate(e.target.value);
+                  }
+                }}
+                className="bg-gray-600 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                defaultValue=""
               >
-                KYC Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/contact-messages")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Contact Messages
-              </button>
-              <button
-                style={{ backgroundColor: "#ed9030" }}
-                className="px-6 py-2 rounded-lg font-medium text-white"
-              >
-                Role Management
-              </button>
-              <button
-                onClick={() => navigate("/admin/fiat-requests")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Fiat Mint Requests
-              </button>
-              <button
-                onClick={() => navigate("/admin/reserves")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Proof of Reserves
-              </button>
-              <button
-                onClick={() => navigate("/admin/exchange-rates")}
-                className="px-6 py-2 rounded-lg font-medium hover:bg-white/10 transition-colors text-white"
-              >
-                Exchange Rates
-              </button>
+                <option value="" disabled>More Actions</option>
+                <option value="/admin/pending-roles">Pending Role Approvals</option>
+                <option value="/admin/pending-transactions">Pending Transactions</option>
+                <option value="/admin/cms-pages">CMS Pages</option>
+                <option value="/admin/contact-details">Contact Details</option>
+              </select>
             </div>
           </div>
 

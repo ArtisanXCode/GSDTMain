@@ -12,6 +12,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import KYCRequests from './pages/admin/KYCRequests';
 import ContactMessages from './pages/admin/ContactMessages';
 import RoleManagement from './pages/admin/RoleManagement';
+import PendingRoles from './pages/admin/PendingRoles';
 import FiatMintRequests from './pages/admin/FiatMintRequests';
 import ProofOfReserves from './pages/admin/ProofOfReserves';
 import ExchangeRates from './pages/admin/ExchangeRates';
@@ -69,6 +70,14 @@ export default function App() {
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <RoleManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/pending-roles" 
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <PendingRoles />
                 </ProtectedRoute>
               } 
             />

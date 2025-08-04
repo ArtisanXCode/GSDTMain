@@ -28,6 +28,20 @@ interface RoleModalsProps {
   onClose: (modal: "add" | "edit" | "remove") => void;
 }
 
+// Function to get role descriptions (replace with your actual descriptions)
+const getRoleDescription = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "Grants full access to all features and data.";
+    case "editor":
+      return "Allows content creation and modification.";
+    case "viewer":
+      return "Provides read-only access to content.";
+    default:
+      return "No description available for this role.";
+  }
+};
+
 export default function RoleModals({
   showAddModal,
   showEditModal,
@@ -50,17 +64,33 @@ export default function RoleModals({
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg p-6 max-w-md w-full"
+            className="bg-white rounded-lg p-6 max-w-lg w-full mx-4"
           >
-            <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-              <UserPlusIcon className="h-6 w-6 text-primary-600 mr-2" />
-              Assign Smart Contract Role
-            </h3>
+            <div className="flex items-center mb-6">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full mr-3">
+                <UserPlusIcon className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">Assign Smart Contract Role</h3>
+                <p className="text-sm text-gray-500">Grant a user access to smart contract functions</p>
+              </div>
+            </div>
             <RoleForm
               formData={formData}
               formErrors={formErrors}
               onFormChange={onFormChange}
             />
+
+            {/* Role Description */}
+            {formData.role && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="text-sm font-medium text-blue-900 mb-1">Role Description:</h4>
+                <p className="text-sm text-blue-700">
+                  {getRoleDescription(formData.role)}
+                </p>
+              </div>
+            )}
+
             <div className="mt-6 flex justify-end space-x-4">
               <button
                 onClick={() => onClose("add")}
