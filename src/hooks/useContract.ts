@@ -15,3 +15,6 @@ export function useGSDCContract() {
     signer || provider
   );
 }
+
+// Add the missing useContract export for compatibility
+export const useContract = useGSDCContract;

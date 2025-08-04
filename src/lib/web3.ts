@@ -146,63 +146,63 @@ export const initializeWeb3 = async (requestAccounts = false) => {
     }
 
     // Set connection in progress flag
-    // connectionInProgress = true; // Commented out because it's redefined in the edited code
+    connectionInProgress = true;
 
     // Create a new connection promise
-    // connectionPromise = (async () => { // Commented out because it's redefined in the edited code
-    try {
-      if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('Please install MetaMask to connect your wallet');
-      }
+    connectionPromise = (async () => {
+      try {
+        if (typeof window === 'undefined' || !window.ethereum) {
+          throw new Error('Please install MetaMask to connect your wallet');
+        }
 
-      // Create provider if it doesn't exist
-      if (!provider) {
-        provider = new ethers.providers.Web3Provider(window.ethereum, {
-          name: RPC_CONFIG.bscTestnet.name,
-          chainId: RPC_CONFIG.bscTestnet.chainId
-        });
-      }
+        // Create provider if it doesn't exist
+        if (!provider) {
+          provider = new ethers.providers.Web3Provider(window.ethereum, {
+            name: RPC_CONFIG.bscTestnet.name,
+            chainId: RPC_CONFIG.bscTestnet.chainId
+          });
+        }
 
-      // Only request accounts if explicitly asked to
-      if (requestAccounts) {
-        try {
-          // Check if we're already connected
-          if (!window.ethereum.selectedAddress) {
-            await provider.send("eth_requestAccounts", []);
+        // Only request accounts if explicitly asked to
+        if (requestAccounts) {
+          try {
+            // Check if we're already connected
+            if (!window.ethereum.selectedAddress) {
+              await provider.send("eth_requestAccounts", []);
+            }
+
+            // Initialize signer and contract
+            signer = provider.getSigner();
+            contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
+            nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
+
+          } catch (error: any) {
+            // If MetaMask is already processing a request, wait for it
+            if (error.code === -32002) {
+              console.log('MetaMask is already processing a connection request. Waiting...');
+              return false;
+            }
+            throw error;
           }
-
-          // Initialize signer and contract
+        } else if (window.ethereum.selectedAddress && !signer) {
+          // If already connected but signer not initialized
           signer = provider.getSigner();
           contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
           nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
-
-        } catch (error: any) {
-          // If MetaMask is already processing a request, wait for it
-          if (error.code === -32002) {
-            console.log('MetaMask is already processing a connection request. Waiting...');
-            return false;
-          }
-          throw error;
         }
-      } else if (window.ethereum.selectedAddress && !signer) {
-        // If already connected but signer not initialized
-        signer = provider.getSigner();
-        contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
-        nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
+
+        return true;
+      } catch (error) {
+        console.error('Error initializing web3:', error);
+        throw error;
+      } finally {
+        // Clear the connection state
+        connectionPromise = null;
+        connectionInProgress = false;
       }
+    })();
 
-      return true;
-    } catch (error) {
-      console.error('Error initializing web3:', error);
-      throw error;
-    } finally {
-      // Clear the connection state
-      connectionPromise = null;
-      connectionInProgress = false;
-    }
-  // })(); // Commented out because it's redefined in the edited code
-
-    // return connectionPromise; // Commented out because it's redefined in the edited code
+    return connectionPromise;
   } catch (error) {
     console.error('Error in initializeWeb3:', error);
     return false;
