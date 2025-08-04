@@ -322,6 +322,7 @@ export default function PendingRoles() {
             </table>
           </div>
         )}
+      </div>
           </div>
         </div>
       </div>
