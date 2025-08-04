@@ -183,6 +183,8 @@ export const useAdmin = () => {
               setIsAdmin(true);
               setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
               setIsSuperAdmin(true);
+              setIsRegularAdmin(false);
+              setIsModerator(false);
               setIsMinter(true);
               setIsBurner(true);
               setIsPauser(true);
@@ -202,6 +204,8 @@ export const useAdmin = () => {
           setIsAdmin(true);
           setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
           setIsSuperAdmin(true);
+          setIsRegularAdmin(false);
+          setIsModerator(false);
           setIsMinter(true);
           setIsBurner(true);
           setIsPauser(true);
@@ -220,6 +224,8 @@ export const useAdmin = () => {
         setIsAdmin(true);
         setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
         setIsSuperAdmin(true);
+        setIsRegularAdmin(false);
+        setIsModerator(false);
         setIsMinter(true);
         setIsBurner(true);
         setIsPauser(true);
