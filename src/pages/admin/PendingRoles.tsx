@@ -152,17 +152,52 @@ export default function PendingRoles() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
-        <div className="flex items-center">
-          <ClockIcon className="h-8 w-8 mr-3" />
-          <div>
-            <h1 className="text-2xl font-bold">Pending Role Approvals</h1>
-            <p className="text-blue-100">Review and approve pending role assignments</p>
+    <div className="bg-white min-h-screen">
+      {/* Hero section with same style as RoleManagement */}
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `url('/headers/admin_dashboard_header.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Pending Role Approvals
+            </h1>
+            <p className="text-lg leading-8 text-white/90 font-regular">
+              Review and approve pending role assignments
+            </p>
           </div>
+        </motion.div>
+      </div>
+
+      {/* Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-end">
+        <div className="phoenix-icon-parent">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="phoenix-icon-large"
+          />
         </div>
       </div>
+
+      {/* Main content section */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div
+            className="rounded-lg p-6"
+            style={{ backgroundColor: "#2a4661" }}
+          >
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
@@ -287,6 +322,8 @@ export default function PendingRoles() {
             </table>
           </div>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );
