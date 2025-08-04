@@ -18,7 +18,7 @@ import {
   TrashIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
-import AdminNavigation from "../../components/AdminNavigation";
+import AdminNavigation from "../../components/admin/AdminNavigation";
 
 export default function ContactMessages() {
   const { isConnected } = useWallet();
