@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useContract } from '../../hooks/useContract';
 import { toast } from 'react-hot-toast';
+import { handleBlockchainError } from '../../lib/web3';
 
 interface PendingTransaction {
   id: string;
@@ -95,9 +96,10 @@ export default function PendingTransactions({ onRefresh }: Props) {
 
       const pendingTxs = await Promise.all(txPromises);
       setTransactions(pendingTxs);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching pending transactions:', error);
-      toast.error('Failed to fetch pending transactions');
+      const errorMessage = handleBlockchainError(error);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -116,7 +118,8 @@ export default function PendingTransactions({ onRefresh }: Props) {
       onRefresh?.();
     } catch (error: any) {
       console.error('Error approving transaction:', error);
-      toast.error(error.reason || 'Failed to approve transaction');
+      const errorMessage = handleBlockchainError(error);
+      toast.error(errorMessage);
     } finally {
       setProcessing(false);
     }
@@ -138,7 +141,8 @@ export default function PendingTransactions({ onRefresh }: Props) {
       onRefresh?.();
     } catch (error: any) {
       console.error('Error rejecting transaction:', error);
-      toast.error(error.reason || 'Failed to reject transaction');
+      const errorMessage = handleBlockchainError(error);
+      toast.error(errorMessage);
     } finally {
       setProcessing(false);
     }
@@ -157,7 +161,8 @@ export default function PendingTransactions({ onRefresh }: Props) {
       onRefresh?.();
     } catch (error: any) {
       console.error('Error executing transaction:', error);
-      toast.error(error.reason || 'Failed to execute transaction');
+      const errorMessage = handleBlockchainError(error);
+      toast.error(errorMessage);
     } finally {
       setProcessing(false);
     }

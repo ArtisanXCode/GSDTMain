@@ -248,6 +248,62 @@ export const connectWallet = async (): Promise<string | null> => {
   }
 };
 
+// Enhanced error handling utility
+export const handleBlockchainError = (error: any): string => {
+  console.error('Blockchain error details:', error);
+
+  // Handle specific blockchain infrastructure errors
+  if (error.code === 'CALL_EXCEPTION') {
+    if (error.error?.data?.message?.includes('missing trie node')) {
+      return 'Blockchain network is temporarily unavailable due to node synchronization issues. Please wait a moment and try again.';
+    }
+    if (error.error?.message?.includes('Internal JSON-RPC error')) {
+      return 'Blockchain network error occurred. Please check your connection and try again in a few moments.';
+    }
+    if (error.data === '0x') {
+      return 'Smart contract call failed. The transaction was reverted without providing a reason. Please check your permissions and try again.';
+    }
+  }
+
+  // Handle MetaMask/Wallet errors
+  if (error.code === -32603 && error.message?.includes('Internal JSON-RPC error')) {
+    if (error.data?.message?.includes('missing trie node')) {
+      return 'Network synchronization error. Please wait a moment and try again, or switch to a different network and back.';
+    }
+    return 'Network connectivity issue. Please check your wallet connection and try again.';
+  }
+
+  // Handle user rejection
+  if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+    return 'Transaction was rejected by user.';
+  }
+
+  // Handle insufficient funds
+  if (error.code === 'INSUFFICIENT_FUNDS' || error.code === -32000) {
+    if (error.message?.includes('insufficient funds')) {
+      return 'Insufficient funds for gas fees. Please add more ETH to your wallet.';
+    }
+  }
+
+  // Handle permission errors
+  if (error.message?.includes('AccessControl') || error.message?.includes('missing role')) {
+    return 'You do not have the required permissions to perform this action.';
+  }
+
+  // Handle network errors
+  if (error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT') {
+    return 'Network connection timeout. Please check your internet connection and try again.';
+  }
+
+  // Handle unpredictable gas limit
+  if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+    return 'Cannot estimate gas for this transaction. Please check your permissions and wallet connection.';
+  }
+
+  // Generic fallback
+  return error.reason || error.message || 'An unexpected blockchain error occurred. Please try again.';
+};
+
 export const getContract = () => {
   try {
     if (!contract) {
