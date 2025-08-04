@@ -239,20 +239,24 @@ export default function RoleManagement() {
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             {/* Navigation Tabs */}
-            <div className="flex items-center justify-between bg-gray-700 p-1 rounded-lg mb-6">
-              <div className="flex space-x-1">
+            <div className="bg-gray-700 p-1 rounded-lg mb-6">
+              <div className="flex flex-wrap gap-1">
                 {[
                   "KYC Requests",
-                  "Contact Messages", 
+                  "Contact Messages",
                   "Role Management",
                   "Fiat Mint Requests",
                   "Proof of Reserves",
-                  "Exchange Rates"
+                  "Exchange Rates",
+                  "Pending Role Approvals",
+                  "Pending Transactions",
+                  "CMS Pages",
+                  "Contact Details"
                 ].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => navigate(getRouteForTab(tab))}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                       tab === "Role Management"
                         ? "bg-orange-500 text-white"
                         : "text-gray-300 hover:text-white hover:bg-gray-600"
@@ -261,25 +265,6 @@ export default function RoleManagement() {
                     {tab}
                   </button>
                 ))}
-              </div>
-
-              {/* Right side dropdown */}
-              <div className="relative">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      navigate(e.target.value);
-                    }
-                  }}
-                  className="bg-gray-600 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  defaultValue=""
-                >
-                  <option value="" disabled>More Actions</option>
-                  <option value="/admin/pending-roles">Pending Role Approvals</option>
-                  <option value="/admin/pending-transactions">Pending Transactions</option>
-                  <option value="/admin/cms-pages">CMS Pages</option>
-                  <option value="/admin/contact-details">Contact Details</option>
-                </select>
               </div>
             </div>
 
@@ -335,6 +320,14 @@ export default function RoleManagement() {
         return "/admin/reserves";
       case "Exchange Rates":
         return "/admin/exchange-rates";
+        case "Pending Role Approvals":
+        return "/admin/pending-roles";
+      case "Pending Transactions":
+        return "/admin/pending-transactions";
+      case "CMS Pages":
+        return "/admin/cms-pages";
+      case "Contact Details":
+        return "/admin/contact-details";
       default:
         return "/admin";
     }
@@ -387,20 +380,24 @@ export default function RoleManagement() {
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           {/* Navigation Tabs */}
-          <div className="flex items-center justify-between bg-gray-700 p-1 rounded-lg mb-6">
-            <div className="flex space-x-1">
+          <div className="bg-gray-700 p-1 rounded-lg mb-6">
+            <div className="flex flex-wrap gap-1">
               {[
                 "KYC Requests",
                 "Contact Messages",
                 "Role Management",
                 "Fiat Mint Requests",
                 "Proof of Reserves",
-                "Exchange Rates"
+                "Exchange Rates",
+                "Pending Role Approvals",
+                "Pending Transactions",
+                "CMS Pages",
+                "Contact Details"
               ].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => navigate(getRouteForTab(tab))}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                     tab === "Role Management"
                       ? "bg-orange-500 text-white"
                       : "text-gray-300 hover:text-white hover:bg-gray-600"
@@ -409,25 +406,6 @@ export default function RoleManagement() {
                   {tab}
                 </button>
               ))}
-            </div>
-
-            {/* Right side dropdown */}
-            <div className="relative">
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    navigate(e.target.value);
-                  }
-                }}
-                className="bg-gray-600 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                defaultValue=""
-              >
-                <option value="" disabled>More Actions</option>
-                <option value="/admin/pending-roles">Pending Role Approvals</option>
-                <option value="/admin/pending-transactions">Pending Transactions</option>
-                <option value="/admin/cms-pages">CMS Pages</option>
-                <option value="/admin/contact-details">Contact Details</option>
-              </select>
             </div>
           </div>
 
