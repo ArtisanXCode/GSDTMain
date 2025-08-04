@@ -1,6 +1,6 @@
+
 import { ethers } from 'ethers';
 import { supabase } from '../lib/supabase';
-import { SMART_CONTRACT_ROLES, SmartContractRole } from '../constants/roles';
 
 // Re-export everything from the modular admin services
 export * from './admin/types';
@@ -69,7 +69,7 @@ const generateMockTransactions = (count: number): Transaction[] => {
 const generateMockDeposits = (count: number): FiatDeposit[] => {
   const currencies = ['USD', 'EUR', 'GBP', 'JPY'];
   const paymentMethods = ['Bank Transfer', 'Credit Card', 'Wire Transfer', 'SEPA'];
-
+  
   return Array.from({ length: count }, (_, i) => ({
     id: (i + 1).toString(),
     userId: `0x${Math.random().toString(36).substring(2, 10)}...${Math.random().toString(36).substring(2, 6)}`,
@@ -147,7 +147,7 @@ export const flagTransaction = async (txId: string, reason: string) => {
 // Fraud detection helpers
 export const calculateRiskScore = (tx: Transaction): number => {
   let score = 0;
-
+  
   // Amount-based risk
   const amount = parseFloat(ethers.utils.formatEther(tx.amount));
   if (amount > 100000) score += 30;
@@ -174,16 +174,3 @@ export const getFraudDetectionFlags = (tx: Transaction): string[] => {
 
   return flags;
 };
-
-// Use smart contract roles - export both for compatibility
-export const AdminRole = SMART_CONTRACT_ROLES;
-export type AdminRole = SmartContractRole;
-
-// For backward compatibility, also export individual role values
-export const SUPER_ADMIN = SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE;
-export const MINTER = SMART_CONTRACT_ROLES.MINTER_ROLE;
-export const BURNER = SMART_CONTRACT_ROLES.BURNER_ROLE;
-export const PAUSER = SMART_CONTRACT_ROLES.PAUSER_ROLE;
-export const PRICE_UPDATER = SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE;
-export const BLACKLIST_MANAGER = SMART_CONTRACT_ROLES.BLACKLIST_MANAGER_ROLE;
-export const APPROVER = SMART_CONTRACT_ROLES.APPROVER_ROLE;

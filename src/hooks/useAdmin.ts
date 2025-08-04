@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useWallet } from "./useWallet";
-import { getUserRole } from "../services/admin";
+import { AdminRole, getUserRole } from "../services/admin";
 import { checkSupabaseConnection } from "../lib/supabase";
-import { SMART_CONTRACT_ROLES, SmartContractRole } from "../constants/roles";
 
 export const useAdmin = () => {
   const { address, isConnected } = useWallet();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [adminRole, setAdminRole] = useState<SmartContractRole | null>(null);
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -72,7 +71,7 @@ export const useAdmin = () => {
         const isAdminAuth = localStorage.getItem("adminAuth") === "true";
         const storedRole = localStorage.getItem(
           "adminRole",
-        ) as SmartContractRole | null;
+        ) as AdminRole | null;
         const storedAddress = localStorage.getItem("adminAddress");
 
         // If we have admin auth in localStorage and the address matches
@@ -86,24 +85,24 @@ export const useAdmin = () => {
           setAdminRole(storedRole);
 
           // Set role-specific flags
-          setIsSuperAdmin(storedRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-          setIsRegularAdmin(false); // No regular admin in smart contract
-          setIsModerator(false); // No moderator in smart contract
+          setIsSuperAdmin(storedRole === AdminRole.SUPER_ADMIN);
+          setIsRegularAdmin(storedRole === AdminRole.ADMIN);
+          setIsModerator(storedRole === AdminRole.MODERATOR);
           setIsMinter(
-            storedRole === SMART_CONTRACT_ROLES.MINTER_ROLE ||
-              storedRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+            storedRole === AdminRole.MINTER ||
+              storedRole === AdminRole.SUPER_ADMIN,
           );
           setIsBurner(
-            storedRole === SMART_CONTRACT_ROLES.BURNER_ROLE ||
-              storedRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+            storedRole === AdminRole.BURNER ||
+              storedRole === AdminRole.SUPER_ADMIN,
           );
           setIsPauser(
-            storedRole === SMART_CONTRACT_ROLES.PAUSER_ROLE ||
-              storedRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+            storedRole === AdminRole.PAUSER ||
+              storedRole === AdminRole.SUPER_ADMIN,
           );
           setIsPriceUpdater(
-            storedRole === SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE ||
-              storedRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+            storedRole === AdminRole.PRICE_UPDATER ||
+              storedRole === AdminRole.SUPER_ADMIN,
           );
 
           setLoading(false);
@@ -121,20 +120,20 @@ export const useAdmin = () => {
             setIsAdmin(!!role);
 
             // Set role-specific flags
-            setIsSuperAdmin(role === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-            setIsRegularAdmin(false); // No regular admin in smart contract
-            setIsModerator(false); // No moderator in smart contract
+            setIsSuperAdmin(role === AdminRole.SUPER_ADMIN);
+            setIsRegularAdmin(role === AdminRole.ADMIN);
+            setIsModerator(role === AdminRole.MODERATOR);
             setIsMinter(
-              role === SMART_CONTRACT_ROLES.MINTER_ROLE || role === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+              role === AdminRole.MINTER || role === AdminRole.SUPER_ADMIN,
             );
             setIsBurner(
-              role === SMART_CONTRACT_ROLES.BURNER_ROLE || role === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+              role === AdminRole.BURNER || role === AdminRole.SUPER_ADMIN,
             );
             setIsPauser(
-              role === SMART_CONTRACT_ROLES.PAUSER_ROLE || role === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+              role === AdminRole.PAUSER || role === AdminRole.SUPER_ADMIN,
             );
             setIsPriceUpdater(
-              role === SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE || role === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE,
+              role === AdminRole.PRICE_UPDATER || role === AdminRole.SUPER_ADMIN,
             );
 
             // Reset failure count on successful call
@@ -177,62 +176,53 @@ export const useAdmin = () => {
                 debounceTimerRef.current = null;
               }
 
-              // Temporary fallback: grant super admin access to any connected wallet when network is down
-              // TODO: Remove this in production and implement proper smart contract role checking
-              console.log("Network error detected, granting temporary super admin access for testing");
-              setIsAdmin(true);
-              setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-              setIsSuperAdmin(true);
-              setIsRegularAdmin(false);
-              setIsModerator(false);
-              setIsMinter(true);
-              setIsBurner(true);
-              setIsPauser(true);
-              setIsPriceUpdater(true);
-              localStorage.setItem("adminAuth", "true");
-              localStorage.setItem("adminRole", SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-              localStorage.setItem("adminAddress", address);
+              // Fallback to hardcoded admin addresses for testing
+              if (
+                address.toLowerCase() ===
+                "0x1234567890123456789012345678901234567890".toLowerCase()
+              ) {
+                setIsAdmin(true);
+                setAdminRole(AdminRole.SUPER_ADMIN);
+                setIsSuperAdmin(true);
+                localStorage.setItem("adminAuth", "true");
+                localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+                localStorage.setItem("adminAddress", address);
+              }
               return; // Exit early to prevent further API calls
             }
 
             throw roleError; // Re-throw other errors
           }
         } else {
-          // Temporary fallback: grant super admin access for testing when Supabase is unavailable
-          // TODO: Remove this in production and implement proper smart contract role checking
-          console.log("Supabase unavailable, granting temporary super admin access for testing");
-          setIsAdmin(true);
-          setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-          setIsSuperAdmin(true);
-          setIsRegularAdmin(false);
-          setIsModerator(false);
-          setIsMinter(true);
-          setIsBurner(true);
-          setIsPauser(true);
-          setIsPriceUpdater(true);
-          localStorage.setItem("adminAuth", "true");
-          localStorage.setItem("adminRole", SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-          localStorage.setItem("adminAddress", address);
+          // Fallback to hardcoded admin addresses for testing
+          if (
+            address.toLowerCase() ===
+            "0x1234567890123456789012345678901234567890".toLowerCase()
+          ) {
+            setIsAdmin(true);
+            setAdminRole(AdminRole.SUPER_ADMIN);
+            setIsSuperAdmin(true);
+            localStorage.setItem("adminAuth", "true");
+            localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+            localStorage.setItem("adminAddress", address);
+          }
         }
       } catch (err: any) {
         console.error("Error checking roles:", err);
         setError(err.message || "Error checking roles");
 
-        // Temporary fallback: grant super admin access for testing
-        // TODO: Remove this in production and implement proper smart contract role checking
-        console.log("Error occurred, granting temporary super admin access for testing");
-        setIsAdmin(true);
-        setAdminRole(SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-        setIsSuperAdmin(true);
-        setIsRegularAdmin(false);
-        setIsModerator(false);
-        setIsMinter(true);
-        setIsBurner(true);
-        setIsPauser(true);
-        setIsPriceUpdater(true);
-        localStorage.setItem("adminAuth", "true");
-        localStorage.setItem("adminRole", SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE);
-        localStorage.setItem("adminAddress", address);
+        // Fallback to hardcoded admin addresses for testing
+        if (
+          address.toLowerCase() ===
+          "0x1234567890123456789012345678901234567890".toLowerCase()
+        ) {
+          setIsAdmin(true);
+          setAdminRole(AdminRole.SUPER_ADMIN);
+          setIsSuperAdmin(true);
+          localStorage.setItem("adminAuth", "true");
+          localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+          localStorage.setItem("adminAddress", address);
+        }
       } finally {
         setLoading(false);
         lastCheckedAddressRef.current = address.toLowerCase();
