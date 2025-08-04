@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 import { CheckIcon, XMarkIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { getContract } from "../../lib/web3";
+import { getContract, handleBlockchainError } from "../../lib/web3";
 import AdminNavigation from "../../components/admin/AdminNavigation";
 
 interface PendingTransaction {
@@ -65,7 +65,8 @@ export default function PendingRoles() {
       setPendingTransactions(transactions);
     } catch (err: any) {
       console.error('Error loading pending transactions:', err);
-      setError(err.message || 'Error loading pending transactions');
+      const errorMessage = handleBlockchainError(err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -91,7 +92,8 @@ export default function PendingRoles() {
       await loadPendingTransactions();
     } catch (err: any) {
       console.error('Error approving transaction:', err);
-      setError(err.message || 'Error approving transaction');
+      const errorMessage = handleBlockchainError(err);
+      setError(errorMessage);
     } finally {
       setActionLoading(null);
     }
@@ -117,7 +119,8 @@ export default function PendingRoles() {
       await loadPendingTransactions();
     } catch (err: any) {
       console.error('Error rejecting transaction:', err);
-      setError(err.message || 'Error rejecting transaction');
+      const errorMessage = handleBlockchainError(err);
+      setError(errorMessage);
     } finally {
       setActionLoading(null);
     }
