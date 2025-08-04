@@ -269,25 +269,27 @@ export const assignUserRole = async (
           console.log(`User ${address} already has role ${role}`);
           // Still update the database in case it's out of sync
         } else {
-          // Estimate gas first to catch potential errors
+          // The GSDC contract queues role operations rather than executing them immediately
+          // Call grantRole which will queue the transaction in the contract's pending system
           try {
             const gasEstimate = await contract.estimateGas.grantRole(roleHash, address);
             
-            // Execute the transaction with the estimated gas plus a buffer
+            // Execute the transaction - this will queue the role assignment
             const tx = await contract.grantRole(roleHash, address, {
               gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
             });
             
-            console.log(`Role assignment transaction queued: ${tx.hash}`);
+            console.log(`Role assignment transaction queued in contract: ${tx.hash}`);
             await tx.wait();
-            console.log(`Role assignment transaction confirmed: ${tx.hash}`);
+            console.log(`Role assignment queued successfully: ${tx.hash}`);
+            console.log(`Note: Role will be active after the cooldown period or admin approval`);
           } catch (gasError: any) {
             // Handle gas estimation errors with more specific messages
             if (gasError.message?.includes("AccessControl") || gasError.reason?.includes("AccessControl")) {
               throw new Error("Access denied: You don't have permission to assign this role on the smart contract");
             } else if (gasError.code === "UNPREDICTABLE_GAS_LIMIT") {
               throw new Error("Transaction would fail: Either you don't have the required permissions or the target address already has this role");
-            } else if (gasError.code === "CALL_EXCEPTION") {
+            } else if (gasError.code === "CALL_EXCEPTION" || gasError.message?.includes("call exception")) {
               throw new Error("Smart contract call failed: Check if you have the required permissions and the contract is properly deployed");
             } else {
               throw gasError;
@@ -430,25 +432,27 @@ export const removeUserRole = async (
           console.log(`User ${address} doesn't have role ${currentRole} on the contract`);
           // Still remove from database in case it's out of sync
         } else {
-          // Estimate gas first to catch potential errors
+          // The GSDC contract queues role operations rather than executing them immediately
+          // Call revokeRole which will queue the transaction in the contract's pending system
           try {
             const gasEstimate = await contract.estimateGas.revokeRole(roleHash, address);
             
-            // Execute the transaction with the estimated gas plus a buffer
+            // Execute the transaction - this will queue the role revocation
             const tx = await contract.revokeRole(roleHash, address, {
               gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
             });
             
-            console.log(`Role revocation transaction queued: ${tx.hash}`);
+            console.log(`Role revocation transaction queued in contract: ${tx.hash}`);
             await tx.wait();
-            console.log(`Role revocation transaction confirmed: ${tx.hash}`);
+            console.log(`Role revocation queued successfully: ${tx.hash}`);
+            console.log(`Note: Role will be revoked after the cooldown period or admin approval`);
           } catch (gasError: any) {
             // Handle gas estimation errors with more specific messages
             if (gasError.message?.includes("AccessControl") || gasError.reason?.includes("AccessControl")) {
               throw new Error("Access denied: You don't have permission to revoke this role on the smart contract");
             } else if (gasError.code === "UNPREDICTABLE_GAS_LIMIT") {
               throw new Error("Transaction would fail: Either you don't have the required permissions or the target address doesn't have this role");
-            } else if (gasError.code === "CALL_EXCEPTION") {
+            } else if (gasError.code === "CALL_EXCEPTION" || gasError.message?.includes("call exception")) {
               throw new Error("Smart contract call failed: Check if you have the required permissions and the contract is properly deployed");
             } else {
               throw gasError;
