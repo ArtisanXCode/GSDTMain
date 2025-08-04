@@ -8,8 +8,9 @@ import ReserveList from "../../components/admin/reserves/ReserveList";
 import ReserveForm from "../../components/admin/reserves/ReserveForm";
 import DeleteConfirmModal from "../../components/admin/reserves/DeleteConfirmModal";
 import { useReserves } from "../../hooks/useReserves";
-import { motion } from "framer-motion";
+import AdminHeroSection from "../../components/admin/AdminHeroSection";
 import AdminNavigation from "../../components/admin/AdminNavigation";
+import AccessDenied from "../../components/admin/AccessDenied";
 
 export default function ProofOfReserves() {
   const { isConnected } = useWallet();
@@ -80,126 +81,16 @@ export default function ProofOfReserves() {
 
   if (!isSuperAdmin) {
     return (
-      <div className="bg-white">
-        {/* Hero section with tech background */}
-          <div
-            className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-            style={{
-              backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-          >
-            <div className="text-left">
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-                Admin Dashboard
-              </h1>
-              <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-                Super Admin Dashboard - Full Access
-              </p>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Phoenix Icon overlapping sections */}
-        <div className="relative z-20 flex justify-center">
-          <div className="absolute -top-16">
-            <img
-              src="/logo_gsdc_icon.png"
-              alt="Phoenix Icon"
-              className="w-24 h-24 sm:w-32 sm:h-32"
-            />
-          </div>
-        </div>
-
-        {/* Main content section */}
-        <div className="bg-gray-200 py-24 sm:py-32 relative">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Navigation Menu */}
-            <AdminNavigation className="mb-8" />
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-center py-8">
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                  <svg
-                    className="h-6 w-6 text-red-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="mt-2 text-lg font-medium text-gray-900">
-                  Access Denied
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Only Super Admins can manage proof of reserves.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AccessDenied 
+        message="Access Denied"
+        description="Only Super Admins can manage proof of reserves."
+      />
     );
   }
 
   return (
     <div className="bg-white">
-      {/* Hero section with tech background */}
-        <div
-          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-        >
-          <div className="text-left">
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Admin Dashboard
-            </h1>
-            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              Super Admin Dashboard - Full Access
-            </p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="phoenix-icon-large"
-          />
-        </div>
-      </div>
+      <AdminHeroSection />
 
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">

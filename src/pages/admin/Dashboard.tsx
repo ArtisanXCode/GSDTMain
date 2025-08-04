@@ -5,6 +5,7 @@ import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 import AdminNavigation from "../../components/admin/AdminNavigation";
 import AdminStats from "../../components/admin/AdminStats";
+import AdminHeroSection from "../../components/admin/AdminHeroSection";
 import {
   UserGroupIcon,
   ChatBubbleLeftIcon,
@@ -45,60 +46,20 @@ export default function AdminDashboard() {
   const displayRole = adminRole || storedRole;
   const isSuperAdminUser = isSuperAdmin || displayRole === "SUPER_ADMIN";
 
+  const getSubtitleForRole = () => {
+    if (displayRole === "SUPER_ADMIN") return "Super Admin Dashboard - Full Access";
+    if (displayRole === "ADMIN") return "Admin Dashboard - Manage Content and Users";
+    if (displayRole === "MODERATOR") return "Moderator Dashboard - Content Management";
+    if (displayRole === "MINTER") return "Minter Dashboard - Token Minting Access";
+    if (displayRole === "BURNER") return "Burner Dashboard - Token Burning Access";
+    if (displayRole === "PAUSER") return "Pauser Dashboard - Contract Pause Access";
+    if (displayRole === "PRICE_UPDATER") return "Price Updater Dashboard - Token Price Management";
+    return "Admin Dashboard";
+  };
+
   return (
     <div className="bg-white">
-      {/* Hero section with tech background */}
-      <div
-        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-        style={{
-          backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-        >
-          <div className="text-left">
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Admin Dashboard
-            </h1>
-            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              {displayRole === "SUPER_ADMIN" &&
-                "Super Admin Dashboard - Full Access"}
-              {displayRole === "ADMIN" &&
-                "Admin Dashboard - Manage Content and Users"}
-              {displayRole === "MODERATOR" &&
-                "Moderator Dashboard - Content Management"}
-              {displayRole === "MINTER" &&
-                "Minter Dashboard - Token Minting Access"}
-              {displayRole === "BURNER" &&
-                "Burner Dashboard - Token Burning Access"}
-              {displayRole === "PAUSER" &&
-                "Pauser Dashboard - Contract Pause Access"}
-              {displayRole === "PRICE_UPDATER" &&
-                "Price Updater Dashboard - Token Price Management"}
-            </p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="phoenix-icon-large"
-          />
-        </div>
-      </div>
+      <AdminHeroSection subtitle={getSubtitleForRole()} />
 
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">

@@ -6,6 +6,8 @@ import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 import AdminNavigation from "../../components/admin/AdminNavigation";
 import { useGSDCContract } from "../../hooks/useContract";
+import AdminHeroSection from "../../components/admin/AdminHeroSection";
+import AccessDenied from "../../components/admin/AccessDenied";
 
 import {
   FiatMintRequest,
@@ -171,113 +173,20 @@ export default function FiatMintRequests() {
 
   if (!isSuperAdmin) {
     return (
-      <div className="bg-white">
-        {/* Hero section with tech background */}
-        <div
-          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-          >
-            <div className="text-left">
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-                Admin Dashboard
-              </h1>
-              <p className="text-xl text-white/90 max-w-2xl leading-8">
-                Super Admin Dashboard – Full Access
-              </p>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Phoenix Icon overlapping sections */}
-        <div className="relative z-20 flex justify-end">
-          <div className="phoenix-icon-parent">
-            <img
-              src="/logo_gsdc_icon.png"
-              alt="Phoenix Icon"
-              className="phoenix-icon-large"
-            />
-          </div>
-        </div>
-
-        {/* Main content section */}
-        <div className="bg-gray-200 py-24 sm:py-32 relative">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Navigation Menu */}
-            <AdminNavigation className="mb-8" />
-
-            {/* Access Denied Content */}
-            <div className="bg-slate-700 rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-white mb-6">
-                Access Denied
-              </h3>
-              <div className="text-center py-8">
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                  <XCircleIcon className="h-6 w-6 text-red-600" />
-                </div>
-                <h3 className="mt-2 text-lg font-medium text-white">
-                  Access Denied
-                </h3>
-                <p className="mt-1 text-sm text-gray-300">
-                  Only Super Admins can manage fiat mint requests.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AccessDenied 
+        message="Access Denied"
+        description="Only Super Admins can manage fiat mint requests."
+      />
     );
   }
 
   return (
     <div className="bg-white">
       {/* Hero section with tech background */}
-      <div
-        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-        style={{
-          backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-        >
-          <div className="text-left">
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Admin Dashboard
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl leading-8">
-              Super Admin Dashboard – Full Access
-            </p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-end">
-        <div className="phoenix-icon-parent">
-          <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="phoenix-icon-large"
-          />
-        </div>
-      </div>
+      <AdminHeroSection
+        title="Admin Dashboard"
+        subtitle="Super Admin Dashboard – Full Access"
+      />
 
       {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
