@@ -236,24 +236,61 @@ export const assignUserRole = async (
       throw new Error("Only super admins can assign roles");
     }
 
-    // If it's a contract role, update the smart contract first
+    // Validate the address format
+    if (!ethers.utils.isAddress(address)) {
+      throw new Error("Invalid Ethereum address format");
+    }
+
+    // If it's a contract role, queue the transaction through the smart contract
     if (isContractRole(role)) {
       const contract = getContract();
       if (!contract) {
-        throw new Error("Contract not initialized");
+        throw new Error("Contract not initialized. Please connect your wallet.");
       }
 
-      // Grant role on the smart contract
       const roleHash = ROLE_HASHES[role];
       if (!roleHash) {
         throw new Error("Invalid contract role");
       }
 
-      const tx = await contract.grantRole(roleHash, address);
-      await tx.wait();
+      try {
+        // Check if user has permission to grant roles
+        const hasAdminRole = await contract.hasRole(ethers.constants.HashZero, assignedBy);
+        if (!hasAdminRole) {
+          throw new Error("You don't have permission to assign roles on the smart contract");
+        }
+
+        // Estimate gas first to catch potential errors
+        const gasEstimate = await contract.estimateGas.grantRole(roleHash, address);
+        
+        // Execute the transaction with the estimated gas plus a buffer
+        const tx = await contract.grantRole(roleHash, address, {
+          gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
+        });
+        
+        console.log(`Role assignment transaction queued: ${tx.hash}`);
+        await tx.wait();
+        console.log(`Role assignment transaction confirmed: ${tx.hash}`);
+
+      } catch (contractError: any) {
+        console.error("Smart contract error:", contractError);
+        
+        // Handle specific contract errors
+        if (contractError.message?.includes("AccessControl")) {
+          throw new Error("Access denied: You don't have permission to assign this role");
+        } else if (contractError.message?.includes("UNPREDICTABLE_GAS_LIMIT")) {
+          throw new Error("Transaction would fail: Check if you have the required permissions and the target address is valid");
+        } else if (contractError.code === "INSUFFICIENT_FUNDS") {
+          throw new Error("Insufficient funds for gas fees");
+        } else if (contractError.code === 4001) {
+          throw new Error("Transaction rejected by user");
+        } else {
+          throw new Error(`Smart contract error: ${contractError.message || "Unknown error"}`);
+        }
+      }
     }
 
-    // Check if user already has a role
+    // Update database regardless of contract interaction
     const { data: existingRole } = await supabase
       .from("admin_roles")
       .select("id")
@@ -285,9 +322,27 @@ export const assignUserRole = async (
     }
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error assigning user role:", error);
-    throw error;
+    
+    // Re-throw with more specific error messages
+    if (error.message.includes("Only super admins")) {
+      throw error;
+    } else if (error.message.includes("Invalid Ethereum address")) {
+      throw error;
+    } else if (error.message.includes("Contract not initialized")) {
+      throw error;
+    } else if (error.message.includes("Access denied") || error.message.includes("permission")) {
+      throw error;
+    } else if (error.message.includes("Transaction would fail")) {
+      throw error;
+    } else if (error.message.includes("Insufficient funds")) {
+      throw error;
+    } else if (error.message.includes("rejected by user")) {
+      throw error;
+    } else {
+      throw new Error(`Failed to assign role: ${error.message || "Unknown error"}`);
+    }
   }
 };
 
@@ -300,6 +355,11 @@ export const removeUserRole = async (
     const removerRole = await getUserRole(removedBy);
     if (removerRole !== AdminRole.SUPER_ADMIN) {
       throw new Error("Only super admins can remove roles");
+    }
+
+    // Validate the address format
+    if (!ethers.utils.isAddress(address)) {
+      throw new Error("Invalid Ethereum address format");
     }
 
     // Get the user's current role before removing it
@@ -319,17 +379,49 @@ export const removeUserRole = async (
     if (isContractRole(currentRole)) {
       const contract = getContract();
       if (!contract) {
-        throw new Error("Contract not initialized");
+        throw new Error("Contract not initialized. Please connect your wallet.");
       }
 
-      // Revoke role on the smart contract
       const roleHash = ROLE_HASHES[currentRole];
       if (!roleHash) {
         throw new Error("Invalid contract role");
       }
 
-      const tx = await contract.revokeRole(roleHash, address);
-      await tx.wait();
+      try {
+        // Check if user has permission to revoke roles
+        const hasAdminRole = await contract.hasRole(ethers.constants.HashZero, removedBy);
+        if (!hasAdminRole) {
+          throw new Error("You don't have permission to revoke roles on the smart contract");
+        }
+
+        // Estimate gas first to catch potential errors
+        const gasEstimate = await contract.estimateGas.revokeRole(roleHash, address);
+        
+        // Execute the transaction with the estimated gas plus a buffer
+        const tx = await contract.revokeRole(roleHash, address, {
+          gasLimit: gasEstimate.mul(120).div(100) // Add 20% buffer
+        });
+        
+        console.log(`Role revocation transaction queued: ${tx.hash}`);
+        await tx.wait();
+        console.log(`Role revocation transaction confirmed: ${tx.hash}`);
+
+      } catch (contractError: any) {
+        console.error("Smart contract error:", contractError);
+        
+        // Handle specific contract errors
+        if (contractError.message?.includes("AccessControl")) {
+          throw new Error("Access denied: You don't have permission to revoke this role");
+        } else if (contractError.message?.includes("UNPREDICTABLE_GAS_LIMIT")) {
+          throw new Error("Transaction would fail: Check if you have the required permissions and the target address is valid");
+        } else if (contractError.code === "INSUFFICIENT_FUNDS") {
+          throw new Error("Insufficient funds for gas fees");
+        } else if (contractError.code === 4001) {
+          throw new Error("Transaction rejected by user");
+        } else {
+          throw new Error(`Smart contract error: ${contractError.message || "Unknown error"}`);
+        }
+      }
     }
 
     // Delete from database
@@ -340,9 +432,29 @@ export const removeUserRole = async (
 
     if (error) throw error;
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error removing user role:", error);
-    throw error;
+    
+    // Re-throw with more specific error messages
+    if (error.message.includes("Only super admins")) {
+      throw error;
+    } else if (error.message.includes("Invalid Ethereum address")) {
+      throw error;
+    } else if (error.message.includes("User role not found")) {
+      throw error;
+    } else if (error.message.includes("Contract not initialized")) {
+      throw error;
+    } else if (error.message.includes("Access denied") || error.message.includes("permission")) {
+      throw error;
+    } else if (error.message.includes("Transaction would fail")) {
+      throw error;
+    } else if (error.message.includes("Insufficient funds")) {
+      throw error;
+    } else if (error.message.includes("rejected by user")) {
+      throw error;
+    } else {
+      throw new Error(`Failed to remove role: ${error.message || "Unknown error"}`);
+    }
   }
 };
 
