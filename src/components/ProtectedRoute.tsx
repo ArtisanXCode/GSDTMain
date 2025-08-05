@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useAdmin } from '../hooks/useAdmin';
+import { useAuth } from '../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -11,32 +12,33 @@ interface Props {
 export default function ProtectedRoute({ children, requireAdmin = false }: Props) {
   const { isConnected, loading: walletLoading, address } = useWallet();
   const { isAdmin, loading: adminLoading } = useAdmin();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     // Wait until all auth checks are complete
-    if (!walletLoading && (!requireAdmin || !adminLoading)) {
+    if (!authLoading && !walletLoading && (!requireAdmin || !adminLoading)) {
       setIsChecking(false);
       
-      // Check if we should redirect due to wallet disconnection
-      if (!isConnected || !address) {
+      // Check if we should redirect due to missing authentication
+      if (!isAuthenticated) {
         setShouldRedirect(true);
       } else {
         setShouldRedirect(false);
       }
     }
-  }, [walletLoading, adminLoading, requireAdmin, isConnected, address]);
+  }, [authLoading, walletLoading, adminLoading, requireAdmin, isAuthenticated]);
 
-  // Real-time check for wallet disconnection
+  // Real-time check for authentication status
   useEffect(() => {
     if (!isChecking) {
-      if (!isConnected || !address) {
+      if (!isAuthenticated) {
         setShouldRedirect(true);
       }
     }
-  }, [isConnected, address, isChecking]);
+  }, [isAuthenticated, isChecking]);
 
   if (isChecking) {
     return (
@@ -46,8 +48,8 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
     );
   }
 
-  if (shouldRedirect || !isConnected) {
-    // Redirect to home if not connected or wallet was disconnected
+  if (shouldRedirect || !isAuthenticated) {
+    // Redirect to home if not authenticated
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
