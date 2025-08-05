@@ -33,30 +33,7 @@ export default function Footer() {
             className="-mb-6 grid grid-cols-2 gap-4 sm:flex sm:justify-center sm:space-x-8 sm:grid-cols-none"
             aria-label="Footer"
           >
-            <div className="pb-6">
-              <Link
-                to="/about"
-                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
-              >
-                ABOUT
-              </Link>
-            </div>
-            <div className="pb-6">
-              <Link
-                to="/transparency"
-                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
-              >
-                TRANSPARENCY
-              </Link>
-            </div>
-            <div className="pb-6">
-              <Link
-                to="/live-exchange-rates"
-                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
-              >
-                LIVE RATES
-              </Link>
-            </div>
+      
             <div className="pb-6">
               <Link
                 to="/contact"
