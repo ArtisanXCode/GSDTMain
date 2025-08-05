@@ -24,6 +24,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
 import AdminPendingTransactions from './pages/admin/PendingTransactions';
+import LiveExchangeRatesPage from "./pages/LiveExchangeRates";
 
 export default function App() {
   return (
@@ -35,7 +36,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/transparency" element={<Transparency />} />
+              <Route path="/live-exchange-rates" element={<LiveExchangeRatesPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/token-minting" element={<TokenMinting />} />
               <Route path="/transactions" element={<TransactionList />} />

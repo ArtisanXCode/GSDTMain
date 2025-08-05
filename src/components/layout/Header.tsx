@@ -1,4 +1,3 @@
-
 import { Fragment, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon, WalletIcon, ArrowRightOnRectangleIcon, DocumentTextIcon, PlusCircleIcon, ShieldCheckIcon, UserIcon } from '@heroicons/react/24/outline';
@@ -40,6 +39,7 @@ const Header = () => {
   const navigation = [
     { name: "ABOUT", href: "/about" },
     { name: "TRANSPARENCY", href: "/transparency" },
+    { name: "Live Rates", href: "/live-exchange-rates", requireAuth: false },
     { name: "DASHBOARD", href: "/dashboard", requireAuth: true },
     { name: "CONTACT", href: "/contact" },
   ];

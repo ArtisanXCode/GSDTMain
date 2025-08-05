@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import ExchangeRatesList from "../components/ExchangeRatesList";
+import LiveExchangeRates from "../components/LiveExchangeRates";
 
 const features = [
   {
@@ -143,14 +143,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Exchange Rates Card */}
+            {/* Live Exchange Rates Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="w-full max-w-sm"
             >
-              <ExchangeRatesList refreshInterval={30000} variant="compact" />
+              <LiveExchangeRates variant="compact" showTitle={true} />
             </motion.div>
           </div>
         </motion.div>

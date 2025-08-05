@@ -9,15 +9,14 @@ export interface ExchangeRate {
   last_updated: string;
 }
 
-// BRICS currencies and their weights in the basket
-export const BRICS_CURRENCIES = {
-  CNH: 0.3, // Chinese Yuan (30%)
-  RUB: 0.2, // Russian Ruble (20%)
-  INR: 0.2, // Indian Rupee (20%)
-  BRL: 0.15, // Brazilian Real (15%)
-  ZAR: 0.1, // South African Rand (10%)
-  IDR: 0.05, // Indonesian Rupiah (5%)
-};
+// BRICS currencies included in the GSDC basket
+export const GSDC_BASKET_CURRENCIES = ["CNH", "BRL", "INR", "ZAR", "IDR", "THB"];
+
+// Major currencies for phase 2
+export const MAJOR_CURRENCIES = ["USD", "JPY", "EUR", "CAD"];
+
+// All supported currencies
+export const ALL_CURRENCIES = [...GSDC_BASKET_CURRENCIES, ...MAJOR_CURRENCIES];
 
 // Fetch exchange rates from the database
 const fetchExchangeRates = async (): Promise<ExchangeRate[]> => {
@@ -30,25 +29,81 @@ const fetchExchangeRates = async (): Promise<ExchangeRate[]> => {
   return data || [];
 };
 
-// Calculate GSDC price in USDC based on BRICS currency basket
-export const calculateGSDCPrice = (rates: ExchangeRate[]): number => {
-  let gsdcPrice = 0;
-
-  // Calculate weighted average of BRICS currencies against USDC
-  Object.entries(BRICS_CURRENCIES).forEach(([currency, weight]) => {
-    const rate = rates.find(
-      (r) => r.currency_from === currency && r.currency_to === "USDC",
-    );
-    if (rate) {
-      gsdcPrice += rate.rate * weight;
-    }
-  });
-
-  // Round to 6 decimal places (USDC precision)
-  return Number(gsdcPrice.toFixed(6));
+// Get exchange rate between two currencies
+const getExchangeRate = (rates: ExchangeRate[], from: string, to: string): number => {
+  // Direct rate
+  const directRate = rates.find(r => r.currency_from === from && r.currency_to === to);
+  if (directRate) return directRate.rate;
+  
+  // Inverse rate
+  const inverseRate = rates.find(r => r.currency_from === to && r.currency_to === from);
+  if (inverseRate && inverseRate.rate !== 0) return 1 / inverseRate.rate;
+  
+  return 0;
 };
 
-// Custom hook to fetch and calculate GSDT price
+// Calculate GSDC value against USD
+// GSDC/USD = CNH/USD + BRL/USD + INR/USD + ZAR/USD + IDR/USD + THB/USD
+export const calculateGSDCToUSD = (rates: ExchangeRate[]): number => {
+  let gsdcValue = 0;
+  
+  GSDC_BASKET_CURRENCIES.forEach(currency => {
+    const rate = getExchangeRate(rates, currency, "USD");
+    gsdcValue += rate;
+  });
+  
+  return Number(gsdcValue.toFixed(6));
+};
+
+// Calculate GSDC value against any currency in the basket
+// GSDC/[Currency] = 1 + sum of (other_currencies/[Currency])
+export const calculateGSDCToCurrency = (rates: ExchangeRate[], targetCurrency: string): number => {
+  if (!GSDC_BASKET_CURRENCIES.includes(targetCurrency)) {
+    return 0;
+  }
+  
+  let gsdcValue = 1; // Start with 1 unit of the target currency
+  
+  // Add rates of all other basket currencies converted to target currency
+  GSDC_BASKET_CURRENCIES.forEach(currency => {
+    if (currency !== targetCurrency) {
+      const rate = getExchangeRate(rates, currency, targetCurrency);
+      gsdcValue += rate;
+    }
+  });
+  
+  return Number(gsdcValue.toFixed(6));
+};
+
+// Calculate all GSDC rates
+export const calculateAllGSDCRates = (rates: ExchangeRate[]) => {
+  const gsdcRates: Record<string, number> = {};
+  
+  // GSDC/USD
+  gsdcRates["USD"] = calculateGSDCToUSD(rates);
+  
+  // GSDC against each basket currency
+  GSDC_BASKET_CURRENCIES.forEach(currency => {
+    gsdcRates[currency] = calculateGSDCToCurrency(rates, currency);
+  });
+  
+  // Phase 2: GSDC against major currencies (via USD conversion)
+  MAJOR_CURRENCIES.slice(1).forEach(currency => {
+    const usdToCurrency = getExchangeRate(rates, "USD", currency);
+    if (usdToCurrency > 0) {
+      gsdcRates[currency] = Number((gsdcRates["USD"] * usdToCurrency).toFixed(6));
+    }
+  });
+  
+  return gsdcRates;
+};
+
+// Legacy function for backward compatibility
+export const calculateGSDCPrice = (rates: ExchangeRate[]): number => {
+  return calculateGSDCToUSD(rates);
+};
+
+// Custom hook to fetch and calculate GSDC prices
 export const useGSDCPrice = () => {
   const { data, error, isLoading } = useSWR<ExchangeRate[]>(
     "exchange-rates",
@@ -59,8 +114,11 @@ export const useGSDCPrice = () => {
     },
   );
 
+  const gsdcRates = data ? calculateAllGSDCRates(data) : null;
+
   return {
-    price: data ? calculateGSDCPrice(data) : null,
+    price: gsdcRates?.USD || null, // Legacy USD price
+    gsdcRates, // All GSDC rates against different currencies
     rates: data,
     isLoading,
     isError: error,
