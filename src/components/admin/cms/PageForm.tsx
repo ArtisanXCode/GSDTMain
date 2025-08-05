@@ -131,7 +131,7 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
         </label>
         <div className="border border-gray-300 rounded-md overflow-hidden">
           <Editor
-            apiKey="no-api-key"
+            apiKey="6l3v2mgqtxwt8ag0rgligodvmo6k00j6zjq7a40e6irgq906"
             value={formData.content}
             onEditorChange={handleEditorChange}
             init={{
