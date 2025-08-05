@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../../hooks/useWallet';
 import { useAdmin } from '../../hooks/useAdmin';
-import { checkAdminRole } from '../../lib/web3';
 import { getUserRole, AdminRole } from '../../services/admin';
 
 export default function AdminLogin() {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { initializeWeb3, connectWallet, getAddress, isConnected, checkAdminRole } from '../lib/web3';
-import { getUserRole } from '../services/admin';
+import { initializeWeb3, connectWallet, getAddress, isConnected } from '../lib/web3';
+import { getUserRole, AdminRole } from '../services/admin';
 
 export const useWallet = () => {
   const [address, setAddress] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export const useWallet = () => {
         try {
           // Try to get accounts without requesting permission
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          
+
           if (accounts && accounts.length > 0 && window.ethereum.selectedAddress) {
             const addr = accounts[0];
             setAddress(addr);
@@ -26,19 +26,11 @@ export const useWallet = () => {
 
             // Check if user is admin and get role
             try {
-              const hasAdminRole = await checkAdminRole(addr);
-              setIsAdmin(hasAdminRole);
-
-              // Always try to get role, even if not admin (for role display)
-              try {
-                const role = await getUserRole(addr);
-                setAdminRole(role);
-              } catch (error) {
-                console.error('Error fetching admin role:', error);
-                setAdminRole(null);
-              }
+              const role = await getUserRole(addr);
+              setIsAdmin(!!role);
+              setAdminRole(role);
             } catch (error) {
-              console.error('Error checking admin role:', error);
+              console.error('Error fetching admin role:', error);
               setIsAdmin(false);
               setAdminRole(null);
             }
@@ -90,19 +82,13 @@ export const useWallet = () => {
           setIsConnected(true);
 
           // Check if user is admin when account changes
-          checkAdminRole(accounts[0]).then(hasRole => {
-            setIsAdmin(hasRole);
-
-            // Get specific admin role if user is admin
-            if (hasRole) {
-              getUserRole(accounts[0]).then(role => {
-                setAdminRole(role);
-              }).catch(error => {
-                console.error('Error fetching admin role:', error);
-              });
-            } else {
-              setAdminRole(null);
-            }
+          getUserRole(accounts[0]).then(role => {
+            setIsAdmin(!!role);
+            setAdminRole(role);
+          }).catch(error => {
+            console.error('Error fetching admin role:', error);
+            setIsAdmin(false);
+            setAdminRole(null);
           });
         } else {
           setAddress(null);
@@ -150,18 +136,15 @@ export const useWallet = () => {
         setAddress(addr);
         setIsConnected(true);
 
-        // Check if user is admin
-        const hasAdminRole = await checkAdminRole(addr);
-        setIsAdmin(hasAdminRole);
-
-        // Get specific admin role if user is admin
-        if (hasAdminRole) {
-          try {
-            const role = await getUserRole(addr);
-            setAdminRole(role);
-          } catch (error) {
-            console.error('Error fetching admin role:', error);
-          }
+        // Check if user is admin and get role
+        try {
+          const role = await getUserRole(addr);
+          setIsAdmin(!!role);
+          setAdminRole(role);
+        } catch (error) {
+          console.error('Error fetching admin role:', error);
+          setIsAdmin(false);
+          setAdminRole(null);
         }
 
         return addr;
