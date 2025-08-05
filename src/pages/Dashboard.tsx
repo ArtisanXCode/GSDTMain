@@ -5,6 +5,9 @@ import KYCVerification from "../components/KYCVerification";
 import SumsubKYC from "../components/SumsubKYC";
 import { useWallet } from "../hooks/useWallet";
 import { KYCStatus, getUserKYCStatus } from "../services/kyc";
+import { Navigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+
 
 export default function Dashboard() {
   const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
@@ -13,6 +16,10 @@ export default function Dashboard() {
   );
   const [kycLoading, setKycLoading] = useState(true);
   const { address, isConnected } = useWallet();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [kycVerified, setKycVerified] = useState(false);
+
 
   // Fetch KYC status when wallet connects
   useEffect(() => {
@@ -40,6 +47,79 @@ export default function Dashboard() {
 
     fetchKYCStatus();
   }, [isConnected, address]);
+
+  // Fetch user and check KYC status
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        setUser(user);
+
+        // Check KYC status if user is authenticated
+        if (user) {
+          const { data: kycData, error: kycError } = await supabase
+            .from('kyc_applications')
+            .select('status')
+            .eq('user_id', user.id)
+            .eq('status', 'approved')
+            .single();
+
+          if (!kycError && kycData) {
+            setKycVerified(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  // Show KYC required message if not verified
+  if (!kycVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
+          <div className="mb-4">
+            <svg className="mx-auto h-12 w-12 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.726-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">KYC Verification Required</h2>
+          <p className="text-gray-600 mb-4">
+            You need to complete and have your KYC verification approved to access the dashboard.
+          </p>
+          <button
+            onClick={() => window.location.href = '/token-minting'}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+          >
+            Complete KYC Verification
+          </button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="bg-white">
@@ -207,21 +287,6 @@ export default function Dashboard() {
                 Manual Verification
               </button>
             </div>
-
-            {/* KYC Status Display */}
-            {/*
-            <div
-              className="rounded-lg p-4 mb-4"
-              style={{ background: "rgba(34, 197, 94, 0.2)" }}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                <span className="text-white font-medium">KYC Verified</span>
-              </div>
-              <p className="text-white/80 text-sm mt-2">
-                Your identity has been verified and you can now access all features.
-              </p>
-            </div>*/}
 
             {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
           </motion.div>
