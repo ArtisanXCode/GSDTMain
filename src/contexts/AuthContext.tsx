@@ -42,19 +42,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) throw error;
+    if (error) {
+      console.error('Sign in error:', error);
+      throw new Error(error.message || 'Login failed');
+    }
+    return data;
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: window.location.origin
+      }
     });
-    if (error) throw error;
+    if (error) {
+      console.error('Sign up error:', error);
+      throw new Error(error.message || 'Registration failed');
+    }
+    return data;
   };
 
   const signOut = async () => {

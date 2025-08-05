@@ -31,8 +31,9 @@ const Header = () => {
     try {
       await signIn(credentials.email, credentials.password);
       setLoginModalOpen(false);
-    } catch (error) {
-      throw error; // Let the modal handle the error display
+    } catch (error: any) {
+      console.error('Login error in header:', error);
+      throw new Error(error.message || 'Login failed');
     }
   };
 

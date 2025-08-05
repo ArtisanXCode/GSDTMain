@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { authService } from '../../services/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -28,8 +30,10 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
   const [credentials, setCredentials] = useState({ email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [geoRestricted, setGeoRestricted] = useState(false);
   const [geoLoading, setGeoLoading] = useState(true);
+  const { signIn, signUp } = useAuth();
 
   useEffect(() => {
     if (isOpen) {
@@ -101,16 +105,34 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
       return;
     }
 
+    if (credentials.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      await onLogin({
-        email: credentials.email,
-        password: credentials.password
-      });
-      onClose();
+      if (isLogin) {
+        await signIn(credentials.email, credentials.password);
+        setSuccess('Login successful!');
+        setTimeout(() => {
+          onClose();
+        }, 1000);
+      } else {
+        // Handle signup
+        await signUp(credentials.email, credentials.password);
+        setError('');
+        setSuccess('Registration successful! Please check your email to verify your account.');
+        setTimeout(() => {
+          setIsLogin(true);
+          setCredentials({ email: credentials.email, password: '', confirmPassword: '' });
+          setSuccess('');
+        }, 3000);
+      }
     } catch (err: any) {
+      console.error('Authentication error:', err);
       setError(err.message || 'Authentication failed');
     } finally {
       setLoading(false);
@@ -159,6 +181,12 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                {success}
               </div>
             )}
 
