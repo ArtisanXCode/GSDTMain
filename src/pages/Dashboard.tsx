@@ -217,19 +217,19 @@ export default function Dashboard() {
                 className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
               >
                 {/* Balance Card */}
-                <div className="bg-slate-700 rounded-2xl p-6 text-white">
+                <div className="bg-slate-700 rounded-2xl p-12 text-white">
                   <h3 className="text-sm font-medium text-gray-300 mb-2">Balance</h3>
                   <p className="text-2xl font-bold text-orange-400">0 GSDC</p>
                 </div>
 
                 {/* Current Price Card */}
-                <div className="bg-slate-700 rounded-2xl p-6 text-white">
+                <div className="bg-slate-700 rounded-2xl p-12 text-white">
                   <h3 className="text-sm font-medium text-gray-300 mb-2">Current Price</h3>
                   <p className="text-2xl font-bold text-orange-400">0 GSDC</p>
                 </div>
 
                 {/* KYC Status Card */}
-                <div className={`rounded-2xl p-6 text-white ${
+                <div className={`rounded-2xl p-12 text-white ${
                   kycStatus === KYCStatus.APPROVED 
                     ? 'bg-green-600' 
                     : kycStatus === KYCStatus.PENDING 
