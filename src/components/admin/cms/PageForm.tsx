@@ -1,15 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TextAlign from '@tiptap/extension-text-align';
-import Color from '@tiptap/extension-color';
-import Highlight from '@tiptap/extension-highlight';
 
 import { generateSlug, generateLegalSlug } from '../../../services/cms';
 
@@ -37,23 +28,6 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image,
-      Link.configure({
-        openOnClick: false,
-      }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Color,
-      Highlight.configure({
-        multicolor: true,
-      })
     ],
     content: formData.content,
     onUpdate: ({ editor }) => {
@@ -186,15 +160,6 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
               >
                 <em>I</em>
               </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
-                className={`px-2 py-1 text-xs rounded ${
-                  editor.isActive('underline') ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <u>U</u>
-              </button>
               
               <div className="w-px h-6 bg-gray-300 mx-1"></div>
               
@@ -248,74 +213,6 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
               </button>
               
               <div className="w-px h-6 bg-gray-300 mx-1"></div>
-              
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().setTextAlign('left').run()}
-                className={`px-2 py-1 text-xs rounded ${
-                  editor.isActive({ textAlign: 'left' }) ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().setTextAlign('center').run()}
-                className={`px-2 py-1 text-xs rounded ${
-                  editor.isActive({ textAlign: 'center' }) ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                ↔
-              </button>
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().setTextAlign('right').run()}
-                className={`px-2 py-1 text-xs rounded ${
-                  editor.isActive({ textAlign: 'right' }) ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                →
-              </button>
-              
-              <div className="w-px h-6 bg-gray-300 mx-1"></div>
-              
-              <button
-                type="button"
-                onClick={() => {
-                  const url = window.prompt('Enter URL:');
-                  if (url) {
-                    editor.chain().focus().setLink({ href: url }).run();
-                  }
-                }}
-                className={`px-2 py-1 text-xs rounded ${
-                  editor.isActive('link') ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                🔗
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-                className="px-2 py-1 text-xs rounded bg-white text-gray-700 hover:bg-gray-100"
-              >
-                Table
-              </button>
-              
-              <div className="w-px h-6 bg-gray-300 mx-1"></div>
-              
-              <button
-                type="button"
-                onClick={() => {
-                  const url = window.prompt('Enter image URL:');
-                  if (url) {
-                    editor.chain().focus().setImage({ src: url }).run();
-                  }
-                }}
-                className="px-2 py-1 text-xs rounded bg-white text-gray-700 hover:bg-gray-100"
-              >
-                📷
-              </button>
               
               <button
                 type="button"
