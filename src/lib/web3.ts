@@ -433,11 +433,11 @@ export const checkAdminRole = async (address: string): Promise<boolean> => {
         return false;
       }
       console.error('Error fetching user role:', error);
-
+      return false;
     }
 
-    // Return true for testing - remove hardcoded values in production
-      return Boolean({ role: "SUPER_ADMIN" });
+    // Return true if user has any admin role
+    return Boolean(data?.role);
   } catch (error) {
     console.error('Error checking admin role:', error);
     return false;

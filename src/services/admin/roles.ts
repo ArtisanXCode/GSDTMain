@@ -90,7 +90,7 @@ export const assignUserRole = async (
       .from('admin_roles')
       .select('id')
       .eq('user_address', address.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (existingRole) {
       const { error: updateError } = await supabase
@@ -131,7 +131,7 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (!userData) {
       throw new Error('User role not found');
