@@ -32,9 +32,20 @@ export const getAdminUsers = async (): Promise<AdminUser[]> => {
 
 export const getUserRole = async (address: string): Promise<AdminRole | null> => {
   try {
+    // Check for hardcoded admin addresses first
+    const hardcodedAdmins = [
+      "0x1234567890123456789012345678901234567890",
+      "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+      "0x1111111111111111111111111111111111111111"
+    ];
+
+    if (hardcodedAdmins.some(addr => addr.toLowerCase() === address.toLowerCase())) {
+      return AdminRole.SUPER_ADMIN;
+    }
+
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased timeout
 
     const { data, error } = await supabase
       .from('admin_roles')
@@ -47,14 +58,28 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
 
     if (error) {
       console.error('Database error in getUserRole:', error);
-      return null; // Return null on any error to prevent infinite loops
+      // Don't return null immediately, try hardcoded fallback
+      if (hardcodedAdmins.some(addr => addr.toLowerCase() === address.toLowerCase())) {
+        return AdminRole.SUPER_ADMIN;
+      }
+      return null;
     }
 
     return data?.role as AdminRole || null;
   } catch (error: any) {
     console.error('Error getting user role:', error);
 
-    // Return null for all errors to prevent cascading failures
+    // Final fallback for hardcoded admins
+    const hardcodedAdmins = [
+      "0x1234567890123456789012345678901234567890",
+      "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+      "0x1111111111111111111111111111111111111111"
+    ];
+
+    if (hardcodedAdmins.some(addr => addr.toLowerCase() === address.toLowerCase())) {
+      return AdminRole.SUPER_ADMIN;
+    }
+
     return null;
   }
 };
