@@ -52,13 +52,57 @@ export const handleSupabaseError = (error: any): string => {
   return error.message || 'An unexpected error occurred';
 };
 
-// Helper function to check if Supabase is available
+// Connection caching to prevent constant API calls
+let connectionCache: {
+  isConnected: boolean;
+  lastChecked: number;
+  cacheTimeout: number;
+} = {
+  isConnected: false,
+  lastChecked: 0,
+  cacheTimeout: 30000, // 30 seconds cache
+};
+
+// Helper function to check if Supabase is available with caching
 export const checkSupabaseConnection = async (): Promise<boolean> => {
+  const now = Date.now();
+  
+  // Return cached result if within timeout period
+  if (now - connectionCache.lastChecked < connectionCache.cacheTimeout) {
+    return connectionCache.isConnected;
+  }
+
   try {
     const { data, error } = await supabase.from('admin_roles').select('count').limit(1);
-    return !error;
+    const isConnected = !error;
+    
+    // Update cache
+    connectionCache = {
+      isConnected,
+      lastChecked: now,
+      cacheTimeout: isConnected ? 30000 : 10000, // 30s if connected, 10s if failed
+    };
+    
+    return isConnected;
   } catch (error) {
     console.error('Supabase connection check failed:', error);
+    
+    // Update cache with failure
+    connectionCache = {
+      isConnected: false,
+      lastChecked: now,
+      cacheTimeout: 10000, // 10 seconds on failure
+    };
+    
     return false;
   }
+};
+
+// Helper function to reset connection cache (useful for testing)
+export const resetConnectionCache = (): void => {
+  connectionCache = {
+    isConnected: false,
+    lastChecked: 0,
+    cacheTimeout: 30000,
+  };
 };

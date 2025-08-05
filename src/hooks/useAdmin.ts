@@ -76,7 +76,7 @@ export const useAdmin = () => {
         clearTimeout(debounceTimerRef.current);
       }
 
-      // Debounce the API call by 1000ms to reduce frequency
+      // Debounce the API call by 2000ms to reduce frequency
       debounceTimerRef.current = setTimeout(async () => {
 
       try {
@@ -222,7 +222,7 @@ export const useAdmin = () => {
         setLoading(false);
         lastCheckedAddressRef.current = address.toLowerCase();
       }
-      }, 1000); // 1000ms debounce to reduce API call frequency
+      }, 2000); // 2000ms debounce to reduce API call frequency
     };
 
     checkRoles();
