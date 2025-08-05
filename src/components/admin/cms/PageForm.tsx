@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { generateSlug, generateLegalSlug } from '../../../services/cms';
@@ -86,8 +85,8 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
                   const category = e.target.value as 'general' | 'legal';
                   const baseSlug = generateSlug(formData.title);
                   const finalSlug = category === 'legal' ? `legal-${baseSlug}` : baseSlug;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     category,
                     slug: formData.title ? finalSlug : formData.slug
                   });
@@ -105,8 +104,8 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
                   const category = e.target.value as 'general' | 'legal';
                   const baseSlug = generateSlug(formData.title);
                   const finalSlug = category === 'legal' ? `legal-${baseSlug}` : baseSlug;
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     category,
                     slug: formData.title ? finalSlug : formData.slug
                   });
@@ -242,7 +241,8 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 flex items-center" style={{ backgroundColor: '#ed9030'}}
+            className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 flex items-center"
+            style={{ backgroundColor: '#ed9030' }}
           >
             {loading ? (
               <>

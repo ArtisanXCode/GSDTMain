@@ -175,7 +175,7 @@ export default function PendingRoles() {
           </div>
           <h3 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h3>
           <p className="mt-1 text-sm text-gray-500">
-            Only Super Admins and Approvers can view pending role approvals.
+            Only Super Admins and Approvers can view pending transactions.
           </p>
         </div>
       </div>
@@ -202,10 +202,10 @@ export default function PendingRoles() {
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Pending Role Approvals
+              Pending Transactions
             </h1>
             <p className="text-lg leading-8 text-white/90 font-regular">
-              Review and approve pending role assignments
+              Review and approve pending transactions that require authorization
             </p>
           </div>
         </motion.div>
@@ -250,13 +250,13 @@ export default function PendingRoles() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-500">Loading pending role approvals...</p>
+            <p className="mt-4 text-gray-500">Loading pending transactions...</p>
           </div>
         ) : pendingTransactions.length === 0 ? (
           <div className="text-center py-12">
             <ClockIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No pending approvals</h3>
-            <p className="mt-1 text-sm text-gray-500">All role assignments have been processed.</p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No pending transactions</h3>
+            <p className="mt-1 text-sm text-gray-500">All transactions have been processed.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
