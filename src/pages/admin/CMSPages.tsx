@@ -266,8 +266,13 @@ export default function CMSPages() {
                       <div className="sm:flex-auto">
                         <h3 className="text-lg font-medium text-gray-900">CMS Pages</h3>
                         <p className="mt-1 text-sm text-gray-500">
-                          Manage your website's content pages
+                          Manage your website's content pages including legal documents
                         </p>
+                        <div className="mt-2 flex space-x-4 text-xs text-gray-400">
+                          <span>Legal pages: {pages.filter(p => p.slug.startsWith('legal-')).length}</span>
+                          <span>General pages: {pages.filter(p => !p.slug.startsWith('legal-')).length}</span>
+                          <span>Total: {pages.length}</span>
+                        </div>
                       </div>
                       <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                         <button

@@ -25,6 +25,7 @@ import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
 import AdminPendingTransactions from './pages/admin/PendingTransactions';
 import LiveExchangeRatesPage from "./pages/LiveExchangeRates";
+import DynamicPage from './pages/DynamicPage';
 
 export default function App() {
   return (
@@ -126,6 +127,11 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Legal Pages */}
+              <Route path="/legal/:slug" element={<DynamicPage />} />
+
+              {/* Dynamic CMS Pages */}
+              <Route path="/page/:slug" element={<DynamicPage />} />
             </Routes>
           </main>
           <Footer />

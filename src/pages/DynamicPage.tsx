@@ -18,7 +18,11 @@ export default function DynamicPage() {
         setLoading(true);
         setError(null);
         
-        const data = await getPageBySlug(slug);
+        // Check if this is a legal page route
+        const isLegalPage = window.location.pathname.startsWith('/legal/');
+        const pageSlug = isLegalPage ? `legal-${slug}` : slug;
+        
+        const data = await getPageBySlug(pageSlug);
         if (!data) {
           navigate('/404', { replace: true });
           return;

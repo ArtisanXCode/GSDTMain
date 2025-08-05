@@ -19,6 +19,11 @@ export const generateSlug = (title: string): string => {
   });
 };
 
+export const generateLegalSlug = (title: string): string => {
+  const baseSlug = generateSlug(title);
+  return baseSlug.startsWith('legal-') ? baseSlug : `legal-${baseSlug}`;
+};
+
 export const createPage = async (data: Omit<CMSPage, 'id' | 'created_at' | 'updated_at'>): Promise<CMSPage> => {
   try {
     const { data: page, error } = await supabase

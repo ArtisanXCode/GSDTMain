@@ -8,7 +8,7 @@ import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 
-import { generateSlug } from '../../../services/cms';
+import { generateSlug, generateLegalSlug } from '../../../services/cms';
 
 interface PageFormProps {
   initialData?: {
@@ -27,7 +27,8 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
     title: initialData?.title || '',
     slug: initialData?.slug || '',
     content: initialData?.content || '',
-    status: initialData?.status || 'active'
+    status: initialData?.status || 'active',
+    category: initialData?.slug?.startsWith('legal-') ? 'legal' : 'general'
   });
 
   const editor = useEditor({
@@ -54,12 +55,14 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
 
   useEffect(() => {
     if (!initialData?.slug && formData.title) {
+      const baseSlug = generateSlug(formData.title);
+      const finalSlug = formData.category === 'legal' ? `legal-${baseSlug}` : baseSlug;
       setFormData(prev => ({
         ...prev,
-        slug: generateSlug(formData.title)
+        slug: finalSlug
       }));
     }
-  }, [formData.title, initialData?.slug]);
+  }, [formData.title, formData.category, initialData?.slug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,8 +89,55 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
       </div>
 
       <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Page Category
+        </label>
+        <div className="flex items-center space-x-4 mb-4">
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              value="general"
+              checked={formData.category === 'general'}
+              onChange={(e) => {
+                const category = e.target.value as 'general' | 'legal';
+                const baseSlug = generateSlug(formData.title);
+                const finalSlug = category === 'legal' ? `legal-${baseSlug}` : baseSlug;
+                setFormData({ 
+                  ...formData, 
+                  category,
+                  slug: formData.title ? finalSlug : formData.slug
+                });
+              }}
+              className="form-radio h-4 w-4 text-primary-600"
+            />
+            <span className="ml-2 text-gray-700">General Page</span>
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              value="legal"
+              checked={formData.category === 'legal'}
+              onChange={(e) => {
+                const category = e.target.value as 'general' | 'legal';
+                const baseSlug = generateSlug(formData.title);
+                const finalSlug = category === 'legal' ? `legal-${baseSlug}` : baseSlug;
+                setFormData({ 
+                  ...formData, 
+                  category,
+                  slug: formData.title ? finalSlug : formData.slug
+                });
+              }}
+              className="form-radio h-4 w-4 text-primary-600"
+            />
+            <span className="ml-2 text-gray-700">Legal Page</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
         <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">
           Page Slug
+          {formData.category === 'legal' && <span className="text-xs text-gray-500 ml-2">(Will be accessible at /legal/[slug-without-legal-prefix])</span>}
         </label>
         <input
           type="text"
