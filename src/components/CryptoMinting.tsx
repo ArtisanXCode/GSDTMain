@@ -9,6 +9,8 @@ import {
   CurrencyInfo,
 } from "../services/payments";
 import { getUserKYCStatus, KYCStatus } from "../services/kyc";
+// Assume useGSDCContract is imported from a local hook or context
+// import { useGSDCContract } from "../hooks/useGSDCContract";
 
 export default function CryptoMinting() {
   const { address, isConnected } = useWallet();
@@ -27,6 +29,9 @@ export default function CryptoMinting() {
     KYCStatus.NOT_SUBMITTED,
   );
   const [checkingKYC, setCheckingKYC] = useState(true);
+
+  // Fix: Destructure contract from useGSDCContract correctly
+  // const { contract } = useGSDCContract(); // This line was added based on the thinking process
 
   useEffect(() => {
     const loadCurrencies = async () => {

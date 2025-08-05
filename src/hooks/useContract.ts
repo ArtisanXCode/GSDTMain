@@ -7,13 +7,15 @@ export function useGSDCContract() {
   const provider = useProvider();
   const signer = useSigner();
 
-  if (!provider) return null;
+  if (!provider) return { contract: null };
 
-  return new Contract(
+  const contract = new Contract(
     GSDC_ADDRESS,
     GSDC_ABI,
     signer || provider
   );
+
+  return { contract };
 }
 
 // Add the missing useContract export for compatibility

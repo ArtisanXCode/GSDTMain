@@ -305,36 +305,11 @@ export const handleBlockchainError = (error: any): string => {
 };
 
 export const getContract = () => {
-  try {
-    if (!contract) {
-      // Try to initialize if we have a selected address
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        try {
-          // Create provider if it doesn't exist
-          if (!provider) {
-            provider = new ethers.providers.Web3Provider(window.ethereum, {
-              name: RPC_CONFIG.bscTestnet.name,
-              chainId: RPC_CONFIG.bscTestnet.chainId
-            });
-          }
-
-          // Initialize signer and contract
-          signer = provider.getSigner();
-          contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
-          nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
-        } catch (error) {
-          console.error('Error initializing contract:', error);
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }
-    return contract;
-  } catch (error) {
-    console.error('Error in getContract:', error);
+  if (!provider || !contract) {
+    console.warn('Contract not initialized. Call initializeWeb3() first.');
     return null;
   }
+  return contract;
 };
 
 export const getNFTContract = () => {

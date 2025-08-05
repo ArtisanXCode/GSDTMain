@@ -12,7 +12,7 @@ import { getUserKYCStatus, KYCStatus } from "../services/kyc";
 export default function TokenActions() {
   const { address, isConnected } = useWallet();
   const { isMinter } = useAdmin();
-  const contract = useGSDCContract();
+  const { contract } = useGSDCContract();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

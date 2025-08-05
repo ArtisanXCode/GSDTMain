@@ -17,7 +17,7 @@ import { getUserKYCStatus, KYCStatus } from "../services/kyc";
 export default function FiatMinting() {
   const { address, isConnected } = useWallet();
   const { price: gsdtPrice, rates } = useGSDCPrice();
-  const contract = useGSDCContract();
+  const { contract } = useGSDCContract();
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);
