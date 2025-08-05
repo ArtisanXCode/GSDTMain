@@ -143,22 +143,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Exchange Rates Table */}
+            {/* Exchange Rates Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20"
+              className="w-full max-w-sm"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">
-                  Live Exchange Rates
-                </h3>
-                <span className="text-sm text-white/70">
-                  Last updated: Just now
-                </span>
-              </div>
-              <ExchangeRatesList refreshInterval={30000} />
+              <ExchangeRatesList refreshInterval={30000} variant="compact" />
             </motion.div>
           </div>
         </motion.div>
