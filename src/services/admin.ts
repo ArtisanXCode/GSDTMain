@@ -1,4 +1,3 @@
-
 import { ethers } from 'ethers';
 import { supabase } from '../lib/supabase';
 
@@ -69,7 +68,7 @@ const generateMockTransactions = (count: number): Transaction[] => {
 const generateMockDeposits = (count: number): FiatDeposit[] => {
   const currencies = ['USD', 'EUR', 'GBP', 'JPY'];
   const paymentMethods = ['Bank Transfer', 'Credit Card', 'Wire Transfer', 'SEPA'];
-  
+
   return Array.from({ length: count }, (_, i) => ({
     id: (i + 1).toString(),
     userId: `0x${Math.random().toString(36).substring(2, 10)}...${Math.random().toString(36).substring(2, 6)}`,
@@ -147,7 +146,7 @@ export const flagTransaction = async (txId: string, reason: string) => {
 // Fraud detection helpers
 export const calculateRiskScore = (tx: Transaction): number => {
   let score = 0;
-  
+
   // Amount-based risk
   const amount = parseFloat(ethers.utils.formatEther(tx.amount));
   if (amount > 100000) score += 30;
@@ -173,4 +172,31 @@ export const getFraudDetectionFlags = (tx: Transaction): string[] => {
   if (hour < 6 || hour > 22) flags.push('UNUSUAL_HOURS');
 
   return flags;
+};
+
+// Mock admin users for role lookup
+const mockAdminUsers = [
+  { user_address: '0x1234567890abcdef1234567890abcdef12345678', role: 'admin' },
+  { user_address: '0xfedcba0987654321fedcba0987654321fedcba09', role: 'editor' },
+];
+
+// Function to get user role from Supabase, ensuring address is lowercase
+export const getUserRole = async (address: string): Promise<string | null> => {
+  // Return mock role for testing
+  const mockUser = mockAdminUsers.find(user => user.user_address.toLowerCase() === address.toLowerCase());
+  if (mockUser) return mockUser.role;
+
+  // Fetch role from Supabase
+  const { data, error } = await supabase
+    .from('admin_roles')
+    .select('role')
+    .eq('user_address', address.toLowerCase())
+    .single();
+
+  if (error) {
+    console.error('Error fetching user role:', error.message);
+    return null;
+  }
+
+  return data?.role || null;
 };

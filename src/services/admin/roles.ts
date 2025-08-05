@@ -60,8 +60,8 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
 };
 
 export const assignUserRole = async (
-  address: string, 
-  role: AdminRole, 
+  address: string,
+  role: AdminRole,
   assignedBy: string
 ): Promise<boolean> => {
   try {
