@@ -1,4 +1,3 @@
-
 import { supabase } from '../lib/supabase';
 
 export interface SignUpData {
@@ -66,11 +65,55 @@ export const authService = {
 
   async getCurrentUser() {
     const { data: { user }, error } = await supabase.auth.getUser();
-    
+
     if (error) {
       throw new Error(error.message);
     }
 
     return user;
+  }
+};
+
+export const signInWithWallet = async (address: string): Promise<void> => {
+  try {
+    // Create a deterministic password from the wallet address
+    const password = `wallet_${address.toLowerCase()}`;
+
+    // Try to sign in first
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: `${address.toLowerCase()}@wallet.local`,
+      password: password,
+    });
+
+    if (signInError) {
+      // If sign in fails, try to sign up
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: `${address.toLowerCase()}@wallet.local`,
+        password: password,
+        options: {
+          data: {
+            wallet_address: address.toLowerCase()
+          }
+        }
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+    } else {
+      // Update user metadata with wallet address if not present
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: {
+          wallet_address: address.toLowerCase()
+        }
+      });
+
+      if (updateError) {
+        console.warn('Could not update user metadata:', updateError);
+      }
+    }
+  } catch (error) {
+    console.error('Error signing in with wallet:', error);
+    throw error;
   }
 };
