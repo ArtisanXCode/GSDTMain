@@ -6,75 +6,72 @@ import ExchangeRates from '../components/ExchangeRates';
 export default function LiveExchangeRatesPage() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with theme colors */}
       <div
-        className="relative isolate text-white min-h-[40vh] flex items-center overflow-hidden"
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)`,
+          backgroundImage: `url('/headers/about_us_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="absolute inset-0 bg-black/20"></div>
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-16 z-10"
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
         >
-          <div className="text-center">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-block mb-6"
-            >
-              <div className="bg-white/10 backdrop-blur-md rounded-full px-6 py-2 border border-white/20">
-                <span className="text-sm font-medium text-white/90">Live Market Data</span>
-              </div>
-            </motion.div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
-              GSDC Exchange Rates
+          <div className="text-left">
+            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+              Complete Exchange Rates
             </h1>
-            <p className="text-xl leading-8 text-white/90 mb-8 max-w-3xl mx-auto">
-              Real-time exchange rates for GSDC against major global currencies with 
-              comprehensive market analysis and calculation transparency.
+            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
+              Comprehensive view of GSDC rates against all supported currencies with detailed 
+              calculation methodology.
             </p>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap justify-center gap-4 text-sm text-white/80"
-            >
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                <span>Live Updates</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
-                <span>8 Currency Pairs</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
-                <span>Real-time Data</span>
-              </div>
-            </motion.div>
           </div>
         </motion.div>
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Centered Phoenix Icon overlapping sections */}
+      <div className="relative z-20 flex justify-end">
+        <div
+          className="phoenix-icon-parent"
+        >
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="phoenix-icon-large"
+          />
         </div>
       </div>
 
-      {/* Exchange Rates Component */}
-      <ExchangeRates />
+      {/* Main content section with theme background */}
+      <div className="bg-gray-200 py-24 sm:py-32 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <p
+              className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
+              style={{ color: "#ed9030" }}
+            >
+              REAL-TIME GSDC <br/> EXCHANGE RATES
+            </p>
+            <p className="text-lg leading-6 text-black max-w-2xl mx-auto font-regular">
+              Stay updated with live exchange rates for GSDC against major global currencies.
+              <br />
+              Our transparent methodology ensures accurate and reliable pricing information
+              <br />
+              for all your trading and investment decisions.
+            </p>
+          </div>
+
+          {/* Exchange Rates Component */}
+          <ExchangeRates />
+        </div>
+      </div>
       
-      {/* Additional Information Section */}
+      {/* Additional Information Section with theme colors */}
       <div className="bg-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -85,8 +82,11 @@ export default function LiveExchangeRatesPage() {
               viewport={{ once: true }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold">24/7</span>
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: "#ed9030" }}
+              >
+                <span className="text-2xl font-bold text-white">24/7</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Continuous Updates</h3>
               <p className="text-gray-400">
@@ -101,7 +101,10 @@ export default function LiveExchangeRatesPage() {
               viewport={{ once: true }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background: "linear-gradient(100deg, #e74134 0%, #f6b62e 100%)" }}
+              >
                 <span className="text-2xl">📊</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Transparent Methodology</h3>
@@ -117,7 +120,10 @@ export default function LiveExchangeRatesPage() {
               viewport={{ once: true }}
               className="text-center"
             >
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: "#ed9030" }}
+              >
                 <span className="text-2xl">🔒</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Secure & Reliable</h3>
