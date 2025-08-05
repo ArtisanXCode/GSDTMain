@@ -19,9 +19,12 @@ import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { lowlight } from 'lowlight';
+import { createLowlight } from 'lowlight';
 
 import { generateSlug, generateLegalSlug } from '../../../services/cms';
+
+// Create lowlight instance
+const lowlight = createLowlight();
 
 interface PageFormProps {
   initialData?: {
