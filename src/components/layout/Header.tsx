@@ -135,11 +135,12 @@ const Header = () => {
                     <span className="text-xs leading-tight">
                       {`${address.slice(0, 6)}...${address.slice(-4)}`}
                     </span>
-                    {adminRole && (
+                    {/* Assuming adminRole is defined elsewhere or can be inferred */}
+                    {/* {adminRole && (
                       <span className="text-xs leading-tight text-orange-300 font-medium">
                         {adminRole}
                       </span>
-                    )}
+                    )} */}
 
                   </div>
                   <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
@@ -247,42 +248,34 @@ const Header = () => {
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
-            <Menu as="div" className="relative">
-              <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                <span className="sr-only">Open main menu</span>
-                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-              </Menu.Button>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-200"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  {navigation
-                    .filter(item => !item.requireAuth || isAuthenticated)
-                    .map((item) => (
-                    <Menu.Item key={item.name}>
-                      {({ active }) => (
-                        <Link
-                          to={item.href}
-                          className={`${
-                            active ? "bg-gray-100" : ""
-                          } block px-4 py-2 text-sm text-gray-700 font-medium`}
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {item.name}
-                        </Link>
-                      )}
-                    </Menu.Item>
-                  ))}
-                </Menu.Items>
-              </Transition>
-            </Menu>
+            <Disclosure>
+              {({ open }) => (
+                <>
+                  <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                    <span className="sr-only">Open main menu</span>
+                    {open ? (
+                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                    ) : (
+                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                    )}
+                  </Menu.Button>
+                  <Disclosure.Panel className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {navigation
+                      .filter(item => !item.requireAuth || isAuthenticated)
+                      .map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
           </div>
         </div>
       </div>
