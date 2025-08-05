@@ -146,13 +146,12 @@ export default function TokenMinting() {
                         </svg>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">
-                        KYC Required
+                        Verification Required
                       </h3>
                       <p className="text-white/90 text-sm mb-6">
-                        You need to complete KYC verification before you can
-                        perform token actions.
+                        Please complete your identity verification to access token minting.
                         <br />
-                        Please complete your KYC verification first.
+                        This helps us ensure compliance and security.
                       </p>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -247,14 +246,12 @@ export default function TokenMinting() {
                               </svg>
                             </div>
                             <h3 className="text-xl font-bold text-white mb-2">
-                              KYC Required
+                              Verification Required
                             </h3>
                             <p className="text-white/90 text-sm mb-6">
-                              You need to complete KYC verification before you
-                              can mint tokens.
+                              Complete your identity verification to unlock token minting.
                               <br />
-                              Please go to the dashboard to complete your KYC
-                              verification.
+                              Visit your dashboard to start the verification process.
                             </p>
                             <motion.button
                               whileHover={{ scale: 1.05 }}
