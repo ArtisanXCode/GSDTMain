@@ -114,7 +114,7 @@ export default function CMSPages() {
   };
 
   // 🔐 Block non-admins
-  if (!isSuperAdmin) {
+  if (!isAdmin && !isSuperAdmin) {
     return (
       <div className="bg-white min-h-screen">
         <div
