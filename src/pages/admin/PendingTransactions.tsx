@@ -1,11 +1,10 @@
-
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useWallet } from '../../hooks/useWallet';
-import { useContract } from '../../hooks/useContract';
-import PendingTransactions from '../../components/admin/PendingTransactions';
-import AdminNavigation from '../../components/admin/AdminNavigation';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useWallet } from "../../hooks/useWallet";
+import { useContract } from "../../hooks/useContract";
+import PendingTransactions from "../../components/admin/PendingTransactions";
+import AdminNavigation from "../../components/admin/AdminNavigation";
+import { toast } from "react-hot-toast";
 
 export default function PendingTransactionsPage() {
   const { account, isConnected } = useWallet();
@@ -25,20 +24,20 @@ export default function PendingTransactionsPage() {
 
     try {
       setLoading(true);
-      
+
       // Check if user has APPROVER_ROLE or SUPER_ADMIN_ROLE
       const APPROVER_ROLE = await contract.APPROVER_ROLE();
       const SUPER_ADMIN_ROLE = await contract.SUPER_ADMIN_ROLE();
-      
+
       const [hasApproverRole, hasSuperAdminRole] = await Promise.all([
         contract.hasRole(APPROVER_ROLE, account),
-        contract.hasRole(SUPER_ADMIN_ROLE, account)
+        contract.hasRole(SUPER_ADMIN_ROLE, account),
       ]);
 
       setHasApprovalPermissions(hasApproverRole || hasSuperAdminRole);
     } catch (error) {
-      console.error('Error checking permissions:', error);
-      toast.error('Failed to check permissions');
+      console.error("Error checking permissions:", error);
+      toast.error("Failed to check permissions");
     } finally {
       setLoading(false);
     }
@@ -144,8 +143,12 @@ export default function PendingTransactionsPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <AdminNavigation className="mb-8" />
             <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Wallet Not Connected</h2>
-              <p className="text-gray-600 mb-6">Please connect your wallet to access this page.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Wallet Not Connected
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Please connect your wallet to access this page.
+              </p>
             </div>
           </div>
         </div>
@@ -196,17 +199,19 @@ export default function PendingTransactionsPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <AdminNavigation className="mb-8" />
             <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Access Denied
+              </h2>
               <p className="text-gray-600 mb-6">
-                You need APPROVER_ROLE or SUPER_ADMIN_ROLE permissions to access this page.
+                You need APPROVER_ROLE or SUPER_ADMIN_ROLE permissions to access
+                this page.
               </p>
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-md mx-auto">
                 <p className="text-sm text-yellow-800">
                   <strong>Required Roles:</strong>
                   <br />
                   • APPROVER_ROLE
-                  <br />
-                  • SUPER_ADMIN_ROLE
+                  <br />• SUPER_ADMIN_ROLE
                 </p>
               </div>
             </div>
@@ -266,9 +271,12 @@ export default function PendingTransactionsPage() {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Transaction Approval</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      Transaction Approval
+                    </h1>
                     <p className="text-gray-600 mt-2">
-                      Review and approve or reject pending transactions that are in cooldown period.
+                      Review and approve or reject pending transactions that are
+                      in cooldown period.
                     </p>
                   </div>
                   <div className="text-right">
@@ -280,12 +288,26 @@ export default function PendingTransactionsPage() {
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <h3 className="font-semibold text-blue-900 mb-2">How it works:</h3>
+                  <h3 className="font-semibold text-blue-900 mb-2">
+                    How it works:
+                  </h3>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• All sensitive transactions have a 90-minute cooldown period</li>
-                    <li>• Transactions can be approved or rejected during this period</li>
-                    <li>• If no action is taken, transactions auto-execute after 90 minutes</li>
-                    <li>• Only APPROVER_ROLE and SUPER_ADMIN_ROLE can approve/reject</li>
+                    <li>
+                      • All sensitive transactions have a 90-minute cooldown
+                      period
+                    </li>
+                    <li>
+                      • Transactions can be approved or rejected during this
+                      period
+                    </li>
+                    <li>
+                      • If no action is taken, transactions auto-execute after
+                      90 minutes
+                    </li>
+                    <li>
+                      • Only APPROVER_ROLE and SUPER_ADMIN_ROLE can
+                      approve/reject
+                    </li>
                   </ul>
                 </div>
 
