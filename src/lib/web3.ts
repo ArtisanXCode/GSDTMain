@@ -426,7 +426,7 @@ export const checkAdminRole = async (address: string): Promise<boolean> => {
       .select('role')
       .eq('user_address', address.toLowerCase())
       .maybeSingle();
-    
+  
     if (error) {
       if (error.code === 'PGRST116') {
         // No data found

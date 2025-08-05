@@ -75,7 +75,6 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     const { data, error } = await supabase.from('admin_roles').select('count').limit(1);
     const isConnected = !error;
-    
     // Update cache
     connectionCache = {
       isConnected,
