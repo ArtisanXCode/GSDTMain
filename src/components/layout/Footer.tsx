@@ -30,7 +30,7 @@ export default function Footer() {
             />
           </Link>
           <nav
-            className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12"
+            className="-mb-6 grid grid-cols-2 gap-4 sm:flex sm:justify-center sm:space-x-8 sm:grid-cols-none"
             aria-label="Footer"
           >
             <div className="pb-6">
@@ -43,18 +43,18 @@ export default function Footer() {
             </div>
             <div className="pb-6">
               <Link
-                to="/terms"
+                to="/transparency"
                 className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
-                TERMS
+                TRANSPARENCY
               </Link>
             </div>
             <div className="pb-6">
               <Link
-                to="/privacy"
+                to="/live-exchange-rates"
                 className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
-                PRIVACY
+                LIVE RATES
               </Link>
             </div>
             <div className="pb-6">
@@ -63,6 +63,48 @@ export default function Footer() {
                 className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 CONTACT
+              </Link>
+            </div>
+            
+            {/* Legal Section */}
+            <div className="pb-6">
+              <Link
+                to="/legal/terms-of-service"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                TERMS
+              </Link>
+            </div>
+            <div className="pb-6">
+              <Link
+                to="/legal/privacy-policy"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                PRIVACY
+              </Link>
+            </div>
+            <div className="pb-6">
+              <Link
+                to="/legal/law-enforcement-request"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                LAW ENFORCEMENT
+              </Link>
+            </div>
+            <div className="pb-6">
+              <Link
+                to="/legal/cookies-notice"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                COOKIES
+              </Link>
+            </div>
+            <div className="pb-6">
+              <Link
+                to="/legal/risk-disclosure"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                RISK DISCLOSURE
               </Link>
             </div>
           </nav>

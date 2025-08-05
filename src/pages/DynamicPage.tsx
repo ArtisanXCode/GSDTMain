@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -60,22 +61,60 @@ export default function DynamicPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 py-12"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-4 py-5 sm:p-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">{page.title}</h1>
-            <div 
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: page.content }}
-            />
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div 
+        className="relative py-24 sm:py-32"
+        style={{
+          backgroundImage: `linear-gradient(135deg, #0a1217c7 0%, #132536d4 100%), url(/headers/dashboard_header.png)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-blue-900/80"></div>
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold tracking-tight text-white sm:text-6xl"
+            >
+              {page.title}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-6 text-lg leading-8 text-gray-300"
+            >
+              {window.location.pathname.startsWith('/legal/') ? 
+                'Legal information and compliance documentation' : 
+                'Important information and resources'
+              }
+            </motion.p>
           </div>
         </div>
       </div>
-    </motion.div>
+
+      {/* Content Section */}
+      <div className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-xl shadow-lg overflow-hidden"
+          >
+            <div className="px-6 py-8 sm:p-10">
+              <div 
+                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700"
+                dangerouslySetInnerHTML={{ __html: page.content }}
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   );
 }

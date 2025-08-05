@@ -132,6 +132,9 @@ export default function App() {
 
               {/* Dynamic CMS Pages */}
               <Route path="/page/:slug" element={<DynamicPage />} />
+              
+              {/* Legal Pages */}
+              <Route path="/legal/:slug" element={<DynamicPage />} />
             </Routes>
           </main>
           <Footer />
