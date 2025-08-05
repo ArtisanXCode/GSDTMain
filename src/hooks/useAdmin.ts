@@ -113,86 +113,80 @@ export const useAdmin = () => {
         const isSupabaseAvailable = await checkSupabaseConnection();
 
         if (isSupabaseAvailable) {
-          try {
-            // Get the user's primary role from the database
-            const role = await getUserRole(address);
-            setAdminRole(role);
-            setIsAdmin(!!role);
+          // Try to get role from database with timeout
+        try {
+          const role = await Promise.race([
+            getUserRole(address),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error("Request timeout")), 5000)
+            )
+          ]) as AdminRole | null;
 
-            // Set role-specific flags
-            setIsSuperAdmin(role === AdminRole.SUPER_ADMIN);
-            setIsRegularAdmin(role === AdminRole.ADMIN);
-            setIsModerator(role === AdminRole.MODERATOR);
-            setIsMinter(
-              role === AdminRole.MINTER || role === AdminRole.SUPER_ADMIN,
-            );
-            setIsBurner(
-              role === AdminRole.BURNER || role === AdminRole.SUPER_ADMIN,
-            );
-            setIsPauser(
-              role === AdminRole.PAUSER || role === AdminRole.SUPER_ADMIN,
-            );
-            setIsPriceUpdater(
-              role === AdminRole.PRICE_UPDATER || role === AdminRole.SUPER_ADMIN,
-            );
+          setAdminRole(role);
 
-            // Reset failure count on successful call
-            failureCountRef.current = 0;
+          // Set individual role flags based on the role
+          setIsAdmin(!!role);
+          setIsSuperAdmin(role === AdminRole.SUPER_ADMIN);
+          setIsRegularAdmin(role === AdminRole.ADMIN);
+          setIsModerator(role === AdminRole.MODERATOR);
+          setIsMinter(role === AdminRole.MINTER_ROLE);
+          setIsBurner(role === AdminRole.BURNER_ROLE);
+          setIsPauser(role === AdminRole.PAUSER_ROLE);
+          setIsPriceUpdater(role === AdminRole.PRICE_UPDATER_ROLE);
 
-            // If we have a role, store it in localStorage
-            if (role) {
-              localStorage.setItem("adminAuth", "true");
-              localStorage.setItem("adminRole", role);
-              localStorage.setItem("adminAddress", address);
-            } else {
-              // Clear localStorage if no role found
-              localStorage.removeItem("adminAuth");
-              localStorage.removeItem("adminRole");
-              localStorage.removeItem("adminAddress");
-            }
-          } catch (roleError) {
-            console.error("Error fetching user role:", roleError);
+          // Reset failure count on success
+          failureCountRef.current = 0;
 
-            // Increment failure count
-            failureCountRef.current += 1;
-
-            // Don't retry on network errors to prevent spam
-            if (roleError.message?.includes("Failed to fetch") || roleError.message?.includes("TypeError: Failed to fetch")) {
-              console.log("Network error detected, stopping API calls");
-              setError("Network connection issue. Using offline mode.");
-
-              // Activate circuit breaker after 3 failures
-              if (failureCountRef.current >= 3) {
-                circuitBreakerRef.current = true;
-                console.log("Circuit breaker activated - no more API calls");
-              }
-
-              // Mark this address as checked to prevent further calls
-              lastCheckedAddressRef.current = address.toLowerCase();
-
-              // Clear any existing timer
-              if (debounceTimerRef.current) {
-                clearTimeout(debounceTimerRef.current);
-                debounceTimerRef.current = null;
-              }
-
-              // Fallback to hardcoded admin addresses for testing
-              if (
-                address.toLowerCase() ===
-                "0x1234567890123456789012345678901234567890".toLowerCase()
-              ) {
-                setIsAdmin(true);
-                setAdminRole(AdminRole.SUPER_ADMIN);
-                setIsSuperAdmin(true);
-                localStorage.setItem("adminAuth", "true");
-                localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
-                localStorage.setItem("adminAddress", address);
-              }
-              return; // Exit early to prevent further API calls
-            }
-
-            throw roleError; // Re-throw other errors
+          // If we have a role, store it in localStorage
+          if (role) {
+            localStorage.setItem("adminAuth", "true");
+            localStorage.setItem("adminRole", role);
+            localStorage.setItem("adminAddress", address);
+          } else {
+            // Clear localStorage if no role found
+            localStorage.removeItem("adminAuth");
+            localStorage.removeItem("adminRole");
+            localStorage.removeItem("adminAddress");
           }
+        } catch (roleError: any) {
+          console.error("Error fetching user role:", roleError);
+
+          // Increment failure count
+          failureCountRef.current += 1;
+
+          // Activate circuit breaker immediately on database errors
+          if (roleError.message?.includes("infinite recursion") || 
+              roleError.message?.includes("Failed to fetch") || 
+              roleError.message?.includes("TypeError: Failed to fetch") ||
+              roleError.message?.includes("Request timeout")) {
+
+            console.log("Database error detected, activating circuit breaker");
+            circuitBreakerRef.current = true;
+            setError("Database connection issue. Using offline mode.");
+
+            // Mark this address as checked to prevent further calls
+            lastCheckedAddressRef.current = address.toLowerCase();
+
+            // Clear any existing timer
+            if (debounceTimerRef.current) {
+              clearTimeout(debounceTimerRef.current);
+              debounceTimerRef.current = null;
+            }
+
+            // Use hardcoded admin for testing only
+            if (address.toLowerCase() === "0x1234567890123456789012345678901234567890".toLowerCase()) {
+              setIsAdmin(true);
+              setAdminRole(AdminRole.SUPER_ADMIN);
+              setIsSuperAdmin(true);
+              localStorage.setItem("adminAuth", "true");
+              localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+              localStorage.setItem("adminAddress", address);
+            }
+            return; // Exit early to prevent further API calls
+          }
+
+          throw roleError; // Re-throw other errors
+        }
         } else {
           // Fallback to hardcoded admin addresses for testing
           if (

@@ -32,22 +32,39 @@ export const getAdminUsers = async (): Promise<AdminUser[]> => {
 
 export const getUserRole = async (address: string): Promise<AdminRole | null> => {
   try {
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
     const { data, error } = await supabase
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
+      .abortSignal(controller.signal)
       .single();
+
+    clearTimeout(timeoutId);
 
     if (error) {
       if (error.code === 'PGRST116') {
+        // No data found - this is normal
         return null;
       }
+      console.error('Database error in getUserRole:', error);
       throw error;
     }
 
     return data.role as AdminRole;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting user role:', error);
+    
+    // Don't retry on network or timeout errors
+    if (error.name === 'AbortError' || 
+        error.message?.includes('Failed to fetch') ||
+        error.message?.includes('infinite recursion')) {
+      throw new Error('Database connection failed');
+    }
+    
     throw error;
   }
 };
