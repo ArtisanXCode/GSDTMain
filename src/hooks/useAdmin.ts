@@ -42,29 +42,6 @@ export const useAdmin = () => {
         return;
       }
 
-      // Skip circuit breaker for hardcoded super admin addresses
-      const isHardcodedAdmin = [
-        "0x1234567890123456789012345678901234567890",
-        "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-        "0x1111111111111111111111111111111111111111"
-      ].some(addr => addr.toLowerCase() === address.toLowerCase());
-
-      if (isHardcodedAdmin) {
-        setIsAdmin(true);
-        setAdminRole(AdminRole.SUPER_ADMIN);
-        setIsSuperAdmin(true);
-        setIsMinter(true);
-        setIsBurner(true);
-        setIsPauser(true);
-        setIsPriceUpdater(true);
-        localStorage.setItem("adminAuth", "true");
-        localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
-        localStorage.setItem("adminAddress", address);
-        setLoading(false);
-        lastCheckedAddressRef.current = address.toLowerCase();
-        return;
-      }
-
       // Circuit breaker: COMPLETELY stop making calls when active
       if (circuitBreakerRef.current) {
         console.log("Circuit breaker active, NO API calls allowed");

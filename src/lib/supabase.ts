@@ -5,8 +5,8 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Fallback values for development if environment variables are not available
-const fallbackUrl = 'https://xbnkaxrtelztsyisruke.supabase.co';
-const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhibmtheHJ0ZWx6dHN5aXNydWtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA0NjgyMzksImV4cCI6MjA1NjA0NDIzOX0.Jtha-zilPf1VkWhldPGiMbUllXupVX9OfBOKlXsxGGU';
+const fallbackUrl = '';
+const fallbackKey = '';
 
 // Use environment variables or fallback to hardcoded values
 const url = supabaseUrl || fallbackUrl;
