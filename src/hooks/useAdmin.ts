@@ -65,12 +65,18 @@ export const useAdmin = () => {
         return;
       }
 
+      // Prevent multiple simultaneous calls for the same address
+      if (lastCheckedAddressRef.current === address.toLowerCase()) {
+        setLoading(false);
+        return;
+      }
+
       // Clear existing debounce timer
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
 
-      // Debounce the API call by 500ms
+      // Debounce the API call by 1000ms to reduce frequency
       debounceTimerRef.current = setTimeout(async () => {
 
       try {
@@ -222,7 +228,7 @@ export const useAdmin = () => {
         setLoading(false);
         lastCheckedAddressRef.current = address.toLowerCase();
       }
-      }, 500); // 500ms debounce
+      }, 1000); // 1000ms debounce to reduce API call frequency
     };
 
     checkRoles();

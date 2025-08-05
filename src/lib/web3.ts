@@ -84,8 +84,8 @@ const createProvider = (rpcUrl: string) => {
         lastError = error;
 
         // Only retry on rate limit or timeout errors
-        if (!error.message?.includes('limit exceeded') && 
-            !error.message?.includes('timeout') && 
+        if (!error.message?.includes('limit exceeded') &&
+            !error.message?.includes('timeout') &&
             error.code !== 'TIMEOUT') {
           throw error;
         }
@@ -219,11 +219,11 @@ export const connectWallet = async (): Promise<string | null> => {
   }
 
   connectionInProgress = true;
-  
+
   try {
     // Request account access
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    
+
     if (accounts.length > 0) {
       provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
@@ -232,7 +232,7 @@ export const connectWallet = async (): Promise<string | null> => {
 
       return accounts[0];
     }
-    
+
     return null;
   } catch (error: any) {
     // Re-throw the error with proper error codes for the hook to handle
@@ -319,7 +319,7 @@ export const getContract = () => {
           }
 
           // Initialize signer and contract
-          signer = provider.getSigner();        
+          signer = provider.getSigner();
           contract = new ethers.Contract(GSDC_ADDRESS, GSDC_ABI, signer);
           nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
@@ -352,7 +352,7 @@ export const getNFTContract = () => {
           }
 
           // Initialize signer and nftContract
-          signer = provider.getSigner();                  
+          signer = provider.getSigner();
           nftContract = new ethers.Contract(GSDC_NFT_ADDRESS, GSDC_NFT_ABI, signer);
         } catch (error) {
           console.error('Error initializing nftContract:', error);
@@ -376,7 +376,7 @@ export const getAddress = async () => {
       try {
         // Try to get accounts without requesting permission
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        
+
         if (accounts && accounts.length > 0) {
           // Initialize without requesting accounts if we haven't already
           if (!provider || !signer) {
@@ -418,30 +418,8 @@ export const isConnected = async () => {
   }
 };
 
-export const checkAdminRole = async (address: string): Promise<boolean> => {
-  try {
-    // Query the admin_roles table from Supabase
-    const { data, error } = await supabase
-      .from('admin_roles')
-      .select('role')
-      .eq('user_address', address.toLowerCase())
-      .maybeSingle();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // No data found
-        return false;
-      }
-      console.error('Error fetching user role:', error);
-
-    }
-
-    return Boolean(data?.role);
-  } catch (error) {
-    console.error('Error checking admin role:', error);
-    return false;
-  }
-};
+// Removed checkAdminRole function - use getUserRole from services/admin/roles.ts instead
+// This prevents duplicate API calls and infinite recursion issues
 
 export const useProvider = () => provider;
 export const useSigner = () => signer;
