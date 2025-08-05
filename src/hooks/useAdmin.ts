@@ -42,11 +42,21 @@ export const useAdmin = () => {
         return;
       }
 
-      // Circuit breaker: stop making calls after 3 consecutive failures
+      // Circuit breaker: COMPLETELY stop making calls when active
       if (circuitBreakerRef.current) {
-        console.log("Circuit breaker active, skipping API call");
+        console.log("Circuit breaker active, NO API calls allowed");
         setLoading(false);
-        return;
+        
+        // Use hardcoded admin for testing only
+        if (address.toLowerCase() === "0x1234567890123456789012345678901234567890".toLowerCase()) {
+          setIsAdmin(true);
+          setAdminRole(AdminRole.SUPER_ADMIN);
+          setIsSuperAdmin(true);
+          localStorage.setItem("adminAuth", "true");
+          localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+          localStorage.setItem("adminAddress", address);
+        }
+        return; // EXIT EARLY - NO API CALLS
       }
 
       // Prevent checking the same address repeatedly
@@ -149,43 +159,31 @@ export const useAdmin = () => {
             localStorage.removeItem("adminAddress");
           }
         } catch (roleError: any) {
-          console.error("Error fetching user role:", roleError);
+          console.error("Database error detected, PERMANENTLY activating circuit breaker");
+          
+          // IMMEDIATELY activate circuit breaker on ANY error
+          circuitBreakerRef.current = true;
+          setError("API calls disabled to prevent spam. Using offline mode.");
 
-          // Increment failure count
-          failureCountRef.current += 1;
+          // Mark this address as checked to prevent further calls
+          lastCheckedAddressRef.current = address.toLowerCase();
 
-          // Activate circuit breaker immediately on database errors
-          if (roleError.message?.includes("infinite recursion") || 
-              roleError.message?.includes("Failed to fetch") || 
-              roleError.message?.includes("TypeError: Failed to fetch") ||
-              roleError.message?.includes("Request timeout")) {
-
-            console.log("Database error detected, activating circuit breaker");
-            circuitBreakerRef.current = true;
-            setError("Database connection issue. Using offline mode.");
-
-            // Mark this address as checked to prevent further calls
-            lastCheckedAddressRef.current = address.toLowerCase();
-
-            // Clear any existing timer
-            if (debounceTimerRef.current) {
-              clearTimeout(debounceTimerRef.current);
-              debounceTimerRef.current = null;
-            }
-
-            // Use hardcoded admin for testing only
-            if (address.toLowerCase() === "0x1234567890123456789012345678901234567890".toLowerCase()) {
-              setIsAdmin(true);
-              setAdminRole(AdminRole.SUPER_ADMIN);
-              setIsSuperAdmin(true);
-              localStorage.setItem("adminAuth", "true");
-              localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
-              localStorage.setItem("adminAddress", address);
-            }
-            return; // Exit early to prevent further API calls
+          // Clear any existing timer
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+            debounceTimerRef.current = null;
           }
 
-          throw roleError; // Re-throw other errors
+          // Use hardcoded admin for testing only
+          if (address.toLowerCase() === "0x1234567890123456789012345678901234567890".toLowerCase()) {
+            setIsAdmin(true);
+            setAdminRole(AdminRole.SUPER_ADMIN);
+            setIsSuperAdmin(true);
+            localStorage.setItem("adminAuth", "true");
+            localStorage.setItem("adminRole", AdminRole.SUPER_ADMIN);
+            localStorage.setItem("adminAddress", address);
+          }
+          return; // Exit early to prevent further API calls
         }
         } else {
           // Fallback to hardcoded admin addresses for testing
@@ -202,8 +200,11 @@ export const useAdmin = () => {
           }
         }
       } catch (err: any) {
-        console.error("Error checking roles:", err);
-        setError(err.message || "Error checking roles");
+        console.error("FATAL ERROR: Permanently disabling API calls", err);
+        
+        // PERMANENTLY activate circuit breaker on ANY error
+        circuitBreakerRef.current = true;
+        setError("API calls permanently disabled. Using offline mode.");
 
         // Fallback to hardcoded admin addresses for testing
         if (
