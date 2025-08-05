@@ -34,7 +34,7 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
             <button
               key={item.name}
               onClick={() => navigate(item.path)}
-              className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-2 py-2 rounded-lg font-medium transition-colors ${
                 isActivePath(item.path)
                   ? "text-white"
                   : "text-white hover:bg-white/10"
