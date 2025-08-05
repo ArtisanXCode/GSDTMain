@@ -46,7 +46,7 @@ export const useAdmin = () => {
       if (circuitBreakerRef.current) {
         console.log("Circuit breaker active, NO API calls allowed");
         setLoading(false);
-        
+
         // Use hardcoded admin for testing only
         if (address.toLowerCase() === "0x1234567890123456789012345678901234567890".toLowerCase()) {
           setIsAdmin(true);
@@ -82,14 +82,14 @@ export const useAdmin = () => {
         try {
           setLoading(true);
           setError(null);
-  
+
           // Check if admin auth is in localStorage
           const isAdminAuth = localStorage.getItem("adminAuth") === "true";
           const storedRole = localStorage.getItem(
             "adminRole",
           ) as AdminRole | null;
           const storedAddress = localStorage.getItem("adminAddress");
-  
+
           // If we have admin auth in localStorage and the address matches
           if (
             isAdminAuth &&
@@ -99,7 +99,7 @@ export const useAdmin = () => {
           ) {
             setIsAdmin(true);
             setAdminRole(storedRole);
-  
+
             // Set role-specific flags
             setIsSuperAdmin(storedRole === AdminRole.SUPER_ADMIN);
             setIsRegularAdmin(storedRole === AdminRole.ADMIN);
@@ -120,20 +120,20 @@ export const useAdmin = () => {
               storedRole === AdminRole.PRICE_UPDATER ||
                 storedRole === AdminRole.SUPER_ADMIN,
             );
-  
+
             setLoading(false);
             return;
           }
-  
+
           // Check if Supabase is available
           const isSupabaseAvailable = await checkSupabaseConnection();
-  
+
           if (isSupabaseAvailable) {
             // Try to get role from database with timeout
             try {
               const role = await getUserRole(address);
               setAdminRole(role);
-  
+
               // Set individual role flags based on the role
               setIsAdmin(!!role);
               setIsSuperAdmin(role === AdminRole.SUPER_ADMIN);
@@ -143,10 +143,10 @@ export const useAdmin = () => {
               setIsBurner(role === AdminRole.BURNER_ROLE);
               setIsPauser(role === AdminRole.PAUSER_ROLE);
               setIsPriceUpdater(role === AdminRole.PRICE_UPDATER_ROLE);
-    
+
               // Reset failure count on success
               failureCountRef.current = 0;
-    
+
               // If we have a role, store it in localStorage
               if (role) {
                 localStorage.setItem("adminAuth", "true");
@@ -160,14 +160,14 @@ export const useAdmin = () => {
               }
             } catch (roleError: any) {
               console.error("Database error detected, PERMANENTLY activating circuit breaker");
-              
+
               // IMMEDIATELY activate circuit breaker on ANY error
               circuitBreakerRef.current = true;
               setError("API calls disabled to prevent spam. Using offline mode.");
-    
+
               // Mark this address as checked to prevent further calls
               lastCheckedAddressRef.current = address.toLowerCase();
-    
+
               // Clear any existing timer
               if (debounceTimerRef.current) {
                 clearTimeout(debounceTimerRef.current);
@@ -175,14 +175,14 @@ export const useAdmin = () => {
               }
               return; // Exit early to prevent further API calls
             }
-          
+
           }
         } catch (err: any) {
           console.error("FATAL ERROR: Permanently disabling API calls", err);        
           // PERMANENTLY activate circuit breaker on ANY error
           circuitBreakerRef.current = true;
           setError("API calls permanently disabled. Using offline mode.");
-          
+
         } finally {
           setLoading(false);
           lastCheckedAddressRef.current = address.toLowerCase();
