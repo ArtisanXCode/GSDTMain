@@ -91,7 +91,7 @@ const Header = () => {
                 {/* Auth Buttons */}
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
-                    <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white-700 hover:bg-gray-100 hover:text-black rounded-lg">
                       <UserIcon className="h-5 w-5" />
                       <span>{user?.email}</span>
                       <ChevronDownIcon className="h-4 w-4" />
