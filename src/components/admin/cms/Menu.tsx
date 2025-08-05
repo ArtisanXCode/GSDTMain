@@ -19,7 +19,7 @@ export default function Menu({ view, onViewChange, onRefresh }: MenuProps) {
           onClick={() => onViewChange('list')}
           className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
             view === 'list'
-              ? 'bg-primary-100 text-primary-700'
+              ? 'bg-gray-500 text-primary-700'
               : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
           }`}
         >
@@ -30,14 +30,14 @@ export default function Menu({ view, onViewChange, onRefresh }: MenuProps) {
           onClick={() => onViewChange('form')}
           className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
             view === 'form'
-              ? 'bg-primary-100 text-primary-700'
+              ? 'bg-gray-500 text-primary-700'
               : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
           }`}
         >
           <PencilSquareIcon className="h-5 w-5 mr-2" />
           {view === 'form' ? 'Edit Page' : 'Create Page'}
         </button>
-        {onRefresh && (
+        {/* {onRefresh && (
           <button
             onClick={onRefresh}
             className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 ml-auto"
@@ -45,7 +45,7 @@ export default function Menu({ view, onViewChange, onRefresh }: MenuProps) {
             <ArrowPathIcon className="h-5 w-5 mr-2" />
             Refresh
           </button>
-        )}
+        )} */ }
       </nav>
     </div>
   );

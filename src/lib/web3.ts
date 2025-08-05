@@ -421,12 +421,14 @@ export const isConnected = async () => {
 export const checkAdminRole = async (address: string): Promise<boolean> => {
   try {
     // Query the admin_roles table from Supabase
-    const { data, error } = await supabase
+    /*const { data, error } = await supabase
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
-      .maybeSingle();
+      .maybeSingle();*/
 
+    const  data = { role: ""}; const error = false;
+    
     if (error) {
       if (error.code === 'PGRST116') {
         // No data found
@@ -434,14 +436,6 @@ export const checkAdminRole = async (address: string): Promise<boolean> => {
       }
       console.error('Error fetching user role:', error);
 
-      // Return mock role for testing
-      const mockUser = [
-        '0x1234567890123456789012345678901234567890',
-        '0x2345678901234567890123456789012345678901',
-        '0x3456789012345678901234567890123456789012'
-      ].find(addr => addr.toLowerCase() === address.toLowerCase());
-
-      return Boolean(mockUser);
     }
 
     return Boolean(data?.role);

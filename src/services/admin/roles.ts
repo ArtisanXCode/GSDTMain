@@ -36,12 +36,13 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-    const { data, error } = await supabase
+    /*const { data, error } = await supabase
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
       .abortSignal(controller.signal)
-      .single();
+      .single();*/
+    const  data = { role: ""}; const error = false;
 
     clearTimeout(timeoutId);
 
