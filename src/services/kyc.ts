@@ -397,6 +397,10 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       }
     }
 
+    // Get user email for notification
+    const { data: authUser } = await supabase.auth.getUser();
+    const userEmail = authUser?.user?.email;
+
     // Update the database
     const { error } = await supabase
       .from("kyc_requests")
@@ -407,6 +411,32 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       .eq("id", requestId);
 
     if (error) throw error;
+
+    // Send approval email notification
+    if (userEmail) {
+      try {
+        const emailResponse = await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: userEmail,
+            type: 'kyc_approved',
+            data: {
+              firstName: request.first_name || 'User',
+              mintingUrl: `${window.location.origin}/token-minting`
+            }
+          })
+        });
+        
+        if (!emailResponse.ok) {
+          console.warn('Failed to send KYC approval email');
+        }
+      } catch (emailError) {
+        console.error('Error sending KYC approval email:', emailError);
+      }
+    }
   } catch (error: any) {
     console.error("Error approving KYC request:", error);
 

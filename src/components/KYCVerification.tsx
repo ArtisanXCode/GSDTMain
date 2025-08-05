@@ -72,6 +72,17 @@ export default function KYCVerification() {
     setUploadProgress(0);
 
     try {
+      // Simulate upload progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
       // Create a unique file name
       const fileExt = formData.document_file.name.split(".").pop();
       const fileName = `${Date.now()}.${fileExt}`;
@@ -87,6 +98,9 @@ export default function KYCVerification() {
         });
 
       if (uploadError) throw uploadError;
+
+      // Complete progress
+      setUploadProgress(100);
 
       // Get the public URL of the uploaded document
       const { data: urlData } = await supabase.storage
@@ -109,6 +123,11 @@ export default function KYCVerification() {
       });
 
       setKYCStatus(KYCStatus.PENDING);
+
+      // Show success message with instant feedback
+      setTimeout(() => {
+        alert("✅ Documents uploaded successfully! Your KYC verification will be processed within 24 hours. You'll receive an email confirmation once approved.");
+      }, 500);
 
       // Reset form
       setFormData({
@@ -160,11 +179,31 @@ export default function KYCVerification() {
       </div>
 
       {kycStatus === KYCStatus.APPROVED && (
-        <div className="text-green-700 bg-green-50 rounded-lg p-4">
-          <p className="font-medium">KYC Verified</p>
-          <p className="text-sm mt-1">
-            Your identity has been verified. You can now use all features.
-          </p>
+        <div className="text-green-700 bg-green-50 rounded-lg p-4 border border-green-200">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="font-medium">KYC Verified ✅</p>
+              <p className="text-sm mt-1">
+                Your identity has been verified. You can now access all features including token minting.
+              </p>
+              <div className="mt-3">
+                <button
+                  onClick={() => window.location.href = '/token-minting'}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Start Token Minting
+                  <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -179,9 +218,16 @@ export default function KYCVerification() {
       )}
 
       {kycStatus === KYCStatus.PENDING && (
-        <div className="text-yellow-700 bg-yellow-50 rounded-lg p-4">
-          <p className="font-medium">Under Review</p>
-          <p className="text-sm mt-1">Your verification is being processed.</p>
+        <div className="text-yellow-700 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-3"></div>
+            <p className="font-medium">Under Review</p>
+          </div>
+          <p className="text-sm mt-2">Your verification is being processed.</p>
+          <div className="mt-3 p-3 bg-yellow-100 rounded-md">
+            <p className="text-xs font-medium text-yellow-800">⏱️ Estimated Processing Time: 24 hours</p>
+            <p className="text-xs text-yellow-700 mt-1">You'll receive an email confirmation once your verification is complete.</p>
+          </div>
         </div>
       )}
 

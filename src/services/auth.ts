@@ -18,7 +18,7 @@ export const authService = {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/dashboard?from=auth&new=true`,
         data: {
           first_name: data.firstName,
           last_name: data.lastName,
@@ -28,6 +28,29 @@ export const authService = {
 
     if (error) {
       throw new Error(error.message);
+    }
+
+    // Send welcome email if signup successful
+    if (authData.user && !error) {
+      try {
+        await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: data.email,
+            type: 'welcome',
+            data: {
+              firstName: data.firstName || 'User',
+              kycUrl: `${window.location.origin}/dashboard`
+            }
+          })
+        });
+      } catch (emailError) {
+        console.warn('Failed to send welcome email:', emailError);
+        // Don't throw error as signup was successful
+      }
     }
 
     return authData;

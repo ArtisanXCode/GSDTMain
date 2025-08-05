@@ -1,64 +1,92 @@
+
 import { motion } from "framer-motion";
+import { useWallet } from "../hooks/useWallet";
 import { useState, useEffect } from "react";
-import ExchangeRatesList from "../components/ExchangeRatesList";
+import {
+  KYCStatus,
+  getUserKYCStatus,
+  getDatabaseUserKYCStatus,
+} from "../services/kyc";
+import { getSumsubApplicantStatus } from "../services/sumsub";
 import KYCVerification from "../components/KYCVerification";
 import SumsubKYC from "../components/SumsubKYC";
-import { useWallet } from "../hooks/useWallet";
-import { KYCStatus, getUserKYCStatus } from "../services/kyc";
+import TokenInfo from "../components/TokenInfo";
+import ExchangeRatesList from "../components/ExchangeRatesList";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Dashboard() {
-  const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
+  const { address, isConnected, connect } = useWallet();
+  const { user } = useAuth();
   const [kycStatus, setKycStatus] = useState<KYCStatus>(
     KYCStatus.NOT_SUBMITTED,
   );
-  const [kycLoading, setKycLoading] = useState(true);
-  const { address, isConnected, loading: walletLoading } = useWallet();
+  const [kycMethod, setKycMethod] = useState<"manual" | "sumsub">("sumsub");
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [checkingKYC, setCheckingKYC] = useState(true);
+  const [autoRedirectShown, setAutoRedirectShown] = useState(false);
 
-  // Fetch KYC status using getUserKYCStatus function
+  // Check if user just signed up or logged in
   useEffect(() => {
-    const fetchKYCStatus = async () => {
-      if (isConnected && address) {
-        setKycLoading(true);
-        try {
-          const result = await getUserKYCStatus(address);
-          if (result) {
-            setKycStatus(result.status);
-          } else {
-            setKycStatus(KYCStatus.NOT_SUBMITTED);
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromAuth = urlParams.get('from') === 'auth';
+    const isNewUser = urlParams.get('new') === 'true';
+    
+    if (fromAuth || isNewUser) {
+      setShowWelcome(true);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  useEffect(() => {
+    const checkKYCStatus = async () => {
+      if (!address) {
+        setCheckingKYC(false);
+        return;
+      }
+
+      try {
+        setCheckingKYC(true);
+        const userKYCStatus = await getUserKYCStatus(address);
+
+        if (userKYCStatus) {
+          setKycStatus(userKYCStatus.status);
+          
+          // Auto-redirect to minting page if KYC is approved and user hasn't been redirected yet
+          if (userKYCStatus.status === KYCStatus.APPROVED && !autoRedirectShown) {
+            setAutoRedirectShown(true);
+            
+            // Show success message and redirect
+            const shouldRedirect = window.confirm(
+              "🎉 Congratulations! Your KYC verification has been approved.\n\nWould you like to go to the token minting page now?"
+            );
+            
+            if (shouldRedirect) {
+              window.location.href = '/token-minting';
+              return;
+            }
           }
-        } catch (error) {
-          console.error("Error fetching KYC status:", error);
-          setKycStatus(KYCStatus.NOT_SUBMITTED);
-        } finally {
-          setKycLoading(false);
         }
-      } else {
-        setKycStatus(KYCStatus.NOT_SUBMITTED);
-        setKycLoading(false);
+      } catch (error) {
+        console.error("Error checking KYC status:", error);
+      } finally {
+        setCheckingKYC(false);
       }
     };
 
-    fetchKYCStatus();
-  }, [isConnected, address]);
-
-  // Show loading while wallet is connecting
-  if (walletLoading || kycLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
+    if (isConnected && address) {
+      checkKYCStatus();
+    } else {
+      setCheckingKYC(false);
+    }
+  }, [address, isConnected, autoRedirectShown]);
 
   return (
     <div className="bg-white">
-      {/* Hero section with tech background */}
+      {/* Hero section */}
       <div
-        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        className="relative isolate text-white min-h-[50vh] flex items-center overflow-hidden"
         style={{
           backgroundImage: `url('/headers/dashboard_header.png')`,
           backgroundSize: "cover",
@@ -77,13 +105,43 @@ export default function Dashboard() {
               Dashboard
             </h1>
             <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              Manage your GSDC tokens and view market information
+              {showWelcome ? (
+                "Welcome! Let's get your account verified to unlock all features."
+              ) : (
+                "Manage your GSDC tokens and account settings"
+              )}
             </p>
           </div>
         </motion.div>
       </div>
 
-      {/* Centered Phoenix Icon overlapping sections */}
+      {/* Welcome message for new users */}
+      {showWelcome && (
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <svg className="h-6 w-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <p className="font-medium">
+                  Account created successfully! Complete your KYC verification below to start minting tokens.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowWelcome(false)}
+                className="text-white hover:text-gray-200"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Phoenix Icon */}
       <div className="relative z-20 flex justify-end">
         <div className="phoenix-icon-parent">
           <img
@@ -97,164 +155,195 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {/* Top Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Balance Card */}
+          {!isConnected ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-3xl p-16 text-white shadow-lg"
-              style={{
-                backgroundColor: "#2a4661",
-              }}
+              className="text-center"
             >
-              <h3 className="text-lg font-medium text-white/80 mb-5">
-                Balance
-              </h3>
-              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>
-                0 GSDC
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Connect Your Wallet
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Connect your wallet to access your dashboard and manage your account
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={connect}
+                  className="rounded-full px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200"
+                  style={{
+                    background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                  }}
+                >
+                  Connect Wallet
+                </motion.button>
               </div>
             </motion.div>
+          ) : (
+            <div className="space-y-8">
+              {/* Token Info Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <TokenInfo />
+              </motion.div>
 
-            {/* Current Price Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-3xl p-16 text-white shadow-lg"
-              style={{
-                backgroundColor: "#2a4661",
-              }}
-            >
-              <h3 className="text-lg font-medium text-white/80 mb-5">
-                Current Price
-              </h3>
-              <div className="text-2xl font-bold" style={{ color: "#ed9030" }}>
-                0 GSDC
-              </div>
-            </motion.div>
-
-            {/* KYC Status Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="rounded-3xl p-16 text-white shadow-lg"
-              style={{
-                backgroundColor:
-                  kycStatus === KYCStatus.APPROVED
-                    ? "#3f763a"
-                    : kycStatus === KYCStatus.PENDING
-                      ? "#d97706"
-                      : kycStatus === KYCStatus.REJECTED
-                        ? "#dc2626"
-                        : "#E74134",
-              }}
-            >
-              <h3 className="text-lg font-medium text-white/80 mb-5">
-                KYC Status
-              </h3>
-              {kycLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <div className="text-xl font-bold text-white">Loading...</div>
-                </div>
+              {/* KYC Progress Indicator */}
+              {checkingKYC ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="rounded-2xl p-8 text-white shadow-lg"
+                  style={{ backgroundColor: "#2a4661" }}
+                >
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mr-4"></div>
+                    <p className="text-lg">Checking verification status...</p>
+                  </div>
+                </motion.div>
               ) : (
-                <div className="text-3xl font-bold text-white">
-                  {kycStatus === KYCStatus.APPROVED && "Approved"}
-                  {kycStatus === KYCStatus.PENDING && "Pending"}
-                  {kycStatus === KYCStatus.REJECTED && "Rejected"}
-                  {kycStatus === KYCStatus.NOT_SUBMITTED && "Not Submitted"}
-                </div>
+                <>
+                  {/* KYC Progress Steps */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="rounded-2xl p-6 text-white shadow-lg"
+                    style={{ backgroundColor: "#2a4661" }}
+                  >
+                    <h3 className="text-lg font-semibold mb-4">Verification Progress</h3>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <span className="ml-2 text-sm">Account Created</span>
+                      </div>
+                      <div className="flex-1 h-0.5 bg-gray-600">
+                        <div 
+                          className="h-full bg-gradient-to-r from-green-500 to-yellow-500 transition-all duration-500"
+                          style={{ 
+                            width: kycStatus === KYCStatus.NOT_SUBMITTED ? '0%' : 
+                                   kycStatus === KYCStatus.PENDING ? '50%' : '100%' 
+                          }}
+                        ></div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          kycStatus === KYCStatus.PENDING ? 'bg-yellow-500' :
+                          kycStatus === KYCStatus.APPROVED ? 'bg-green-500' : 'bg-gray-500'
+                        }`}>
+                          {kycStatus === KYCStatus.APPROVED ? (
+                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          ) : kycStatus === KYCStatus.PENDING ? (
+                            <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                          ) : (
+                            <span className="text-xs font-bold text-white">2</span>
+                          )}
+                        </div>
+                        <span className="ml-2 text-sm">Identity Verification</span>
+                      </div>
+                      <div className="flex-1 h-0.5 bg-gray-600">
+                        <div 
+                          className="h-full bg-green-500 transition-all duration-500"
+                          style={{ width: kycStatus === KYCStatus.APPROVED ? '100%' : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          kycStatus === KYCStatus.APPROVED ? 'bg-green-500' : 'bg-gray-500'
+                        }`}>
+                          {kycStatus === KYCStatus.APPROVED ? (
+                            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <span className="text-xs font-bold text-white">3</span>
+                          )}
+                        </div>
+                        <span className="ml-2 text-sm">Start Minting</span>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* KYC Verification Section */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="rounded-2xl p-8 text-white shadow-lg mb-8"
+                    style={{ backgroundColor: "#2a4661" }}
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-semibold text-white">
+                        Identity Verification
+                      </h3>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setKycMethod("sumsub")}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            kycMethod === "sumsub"
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                          }`}
+                        >
+                          Automated
+                        </button>
+                        <button
+                          onClick={() => setKycMethod("manual")}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            kycMethod === "manual"
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                          }`}
+                        >
+                          Manual
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
+                  </motion.div>
+                </>
               )}
-            </motion.div>
-          </div>
 
-          {/* KYC Verification Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-2xl p-8 text-white shadow-lg mb-8"
-            style={{
-              backgroundColor: "#2a4661",
-            }}
-          >
-            <h3 className="text-xl font-semibold text-white mb-6">
-              KYC Verification
-            </h3>
-
-            <div className="flex space-x-4 mb-6">
-              <button
-                data-kyc-method="sumsub"
-                onClick={() => setKycMethod("sumsub")}
-                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  kycMethod === "sumsub"
-                    ? "text-white shadow-lg"
-                    : "bg-white/20 text-white/80 hover:bg-white/30"
-                }`}
-                style={{
-                  background:
-                    kycMethod === "sumsub"
-                      ? "linear-gradient(to bottom, #f6b62e, #e74134)"
-                      : undefined,
-                }}
-              >
-                Automated Verification
-              </button>
-              <button
-                data-kyc-method="manual"
-                onClick={() => setKycMethod("manual")}
-                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                  kycMethod === "manual"
-                    ? "text-white shadow-lg"
-                    : "bg-white/20 text-white/80 hover:bg-white/30"
-                }`}
-                style={{
-                  background:
-                    kycMethod === "manual"
-                      ? "linear-gradient(to bottom, #f6b62e, #e74134)"
-                      : undefined,
-                }}
-              >
-                Manual Verification
-              </button>
+              {/* Exchange Rates Section */}
+              {kycStatus === KYCStatus.APPROVED && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="rounded-2xl shadow-lg mb-8 overflow-hidden"
+                >
+                  <div
+                    className="p-6"
+                    style={{
+                      background: "linear-gradient(to bottom, #446c93, #6d97bf)",
+                    }}
+                  >
+                    <h3 className="text-xl font-semibold text-white">
+                      Live Exchange Rates
+                    </h3>
+                  </div>
+                  <div
+                    className="p-8"
+                    style={{ backgroundColor: "#2a4661" }}
+                  >
+                    <ExchangeRatesList refreshInterval={30000} />
+                  </div>
+                </motion.div>
+              )}
             </div>
-
-            {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
-          </motion.div>
-
-          {/* Exchange Rates Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="rounded-2xl shadow-lg mb-8 overflow-hidden"
-          >
-            {/* Header with gradient */}
-            <div
-              className="p-6"
-              style={{
-                background: "linear-gradient(to bottom, #446c93, #6d97bf)",
-              }}
-            >
-              <h3 className="text-xl font-semibold text-white">
-                Live Exchange Rates
-              </h3>
-            </div>
-
-            {/* Body with solid background */}
-            <div
-              className="p-8"
-              style={{
-                backgroundColor: "#2a4661",
-              }}
-            >
-              <ExchangeRatesList refreshInterval={30000} />
-            </div>
-          </motion.div>
-
-          
+          )}
         </div>
       </div>
     </div>

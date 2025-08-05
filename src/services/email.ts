@@ -199,3 +199,49 @@ export const getContactReplyTemplate = (
     </html>
   `;
 };
+export interface EmailNotificationData {
+  to: string;
+  type: 'kyc_approved' | 'kyc_rejected' | 'welcome';
+  data: Record<string, any>;
+}
+
+export const sendNotificationEmail = async (notification: EmailNotificationData): Promise<boolean> => {
+  try {
+    // This would integrate with your email service (SendGrid, AWS SES, etc.)
+    const response = await fetch('/api/send-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(notification),
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error('Error sending email notification:', error);
+    return false;
+  }
+};
+
+export const sendKYCApprovalEmail = async (email: string, firstName: string): Promise<boolean> => {
+  return sendNotificationEmail({
+    to: email,
+    type: 'kyc_approved',
+    data: {
+      firstName,
+      mintingUrl: `${window.location.origin}/token-minting`,
+      dashboardUrl: `${window.location.origin}/dashboard`,
+    }
+  });
+};
+
+export const sendWelcomeEmail = async (email: string, firstName: string): Promise<boolean> => {
+  return sendNotificationEmail({
+    to: email,
+    type: 'welcome',
+    data: {
+      firstName,
+      kycUrl: `${window.location.origin}/dashboard`,
+    }
+  });
+};

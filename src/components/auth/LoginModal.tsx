@@ -1,139 +1,50 @@
-
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { authService } from '../../services/auth';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (credentials: LoginCredentials) => void;
+  onLoginSuccess?: () => void;
 }
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface GeolocationData {
-  country: string;
-  countryCode: string;
-  region: string;
-  city: string;
-}
-
-const RESTRICTED_COUNTRIES = ['US', 'USA', 'United States'];
-
-export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
+  const { signIn, signUp } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
-  const [credentials, setCredentials] = useState({ email: '', password: '', confirmPassword: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [geoRestricted, setGeoRestricted] = useState(false);
-  const [geoLoading, setGeoLoading] = useState(true);
-  const { signIn, signUp } = useAuth();
-
-  useEffect(() => {
-    if (isOpen) {
-      checkGeolocation();
-    }
-  }, [isOpen]);
-
-  const checkGeolocation = async () => {
-    try {
-      setGeoLoading(true);
-      
-      // Try multiple geolocation services
-      const geoServices = [
-        'https://ipapi.co/json/',
-        'https://api.ipify.org?format=json', // fallback
-      ];
-
-      let geoData: GeolocationData | null = null;
-
-      for (const service of geoServices) {
-        try {
-          const response = await fetch(service);
-          const data = await response.json();
-          
-          if (service.includes('ipapi.co')) {
-            geoData = {
-              country: data.country_name,
-              countryCode: data.country_code,
-              region: data.region,
-              city: data.city
-            };
-            break;
-          }
-        } catch (err) {
-          console.warn(`Geolocation service ${service} failed:`, err);
-          continue;
-        }
-      }
-
-      if (geoData) {
-        const isRestricted = RESTRICTED_COUNTRIES.some(restricted => 
-          geoData!.country.toLowerCase().includes(restricted.toLowerCase()) ||
-          geoData!.countryCode.toLowerCase() === restricted.toLowerCase()
-        );
-        
-        setGeoRestricted(isRestricted);
-        
-        if (isRestricted) {
-          setError(`Access is restricted from ${geoData.country}. GSDC services are not available in your jurisdiction.`);
-        }
-      }
-    } catch (error) {
-      console.error('Geolocation check failed:', error);
-      // Allow access if geolocation fails
-    } finally {
-      setGeoLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (geoRestricted) {
-      return;
-    }
-
-    if (!isLogin && credentials.password !== credentials.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (credentials.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       if (isLogin) {
-        await signIn(credentials.email, credentials.password);
-        setSuccess('Login successful!');
+        await signIn(email, password);
+        setSuccess('Successfully signed in! Redirecting to KYC verification...');
         setTimeout(() => {
+          onLoginSuccess?.();
           onClose();
-        }, 1000);
+          window.location.href = '/dashboard';
+        }, 1500);
       } else {
-        // Handle signup
-        await signUp(credentials.email, credentials.password);
-        setError('');
-        setSuccess('Registration successful! Please check your email to verify your account.');
+        await signUp(email, password);
+        setSuccess('Account created successfully! Please complete your KYC verification to get started.');
         setTimeout(() => {
-          setIsLogin(true);
-          setCredentials({ email: credentials.email, password: '', confirmPassword: '' });
-          setSuccess('');
-        }, 3000);
+          onLoginSuccess?.();
+          onClose();
+          window.location.href = '/dashboard';
+        }, 1500);
       }
     } catch (err: any) {
-      console.error('Authentication error:', err);
-      setError(err.message || 'Authentication failed');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -142,118 +53,157 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-2xl p-8 w-full max-w-md mx-4"
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {isLogin ? 'Sign In' : 'Sign Up'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <XMarkIcon className="h-6 w-6" />
-          </button>
-        </div>
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black bg-opacity-50"
+          onClick={onClose}
+        />
 
-        {geoLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Checking location...</p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="relative bg-white rounded-xl shadow-xl p-8 m-4 w-full max-w-md z-10"
+        >
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {isLogin ? 'Sign In' : 'Create Account'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        ) : geoRestricted ? (
-          <div className="text-center py-8">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              <strong className="font-bold">Access Restricted</strong>
-              <p className="block sm:inline">{error}</p>
+
+          {!isLogin && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Next:</strong> After creating your account, you'll be guided through our secure KYC verification process to comply with regulations and protect your account.
+              </p>
             </div>
-            <p className="text-gray-600">
-              Please consult local regulations regarding digital asset access.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
+          )}
 
-            {success && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                {success}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required={!isLogin}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required={!isLogin}
+                  />
+                </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
               </label>
               <input
                 type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
-                value={credentials.email}
-                onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                placeholder="Enter your email"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input
                 type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
-                value={credentials.password}
-                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                placeholder="Enter your password"
+                minLength={6}
               />
             </div>
 
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={credentials.confirmPassword}
-                  onChange={(e) => setCredentials({ ...credentials, confirmPassword: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Confirm your password"
-                />
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            <button
+            {success && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-600">{success}</p>
+              </div>
+            )}
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-yellow-400 to-red-500 text-white py-3 px-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
-            </button>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-orange-600 hover:text-orange-700 font-medium"
-              >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-              </button>
-            </div>
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  {isLogin ? 'Signing In...' : 'Creating Account...'}
+                </span>
+              ) : (
+                isLogin ? 'Sign In & Continue to KYC' : 'Create Account & Start KYC'
+              )}
+            </motion.button>
           </form>
-        )}
-      </motion.div>
-    </div>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+            </button>
+          </div>
+
+          {!isLogin && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-600 text-center">
+                By creating an account, you agree to our Terms of Service and Privacy Policy. 
+                All users must complete KYC verification to comply with regulatory requirements.
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </AnimatePresence>
   );
 }
