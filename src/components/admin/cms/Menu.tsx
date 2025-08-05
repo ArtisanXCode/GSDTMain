@@ -37,15 +37,16 @@ export default function Menu({ view, onViewChange, onRefresh }: MenuProps) {
           <PencilSquareIcon className="h-5 w-5 mr-2" />
           {view === 'form' ? 'Edit Page' : 'Create Page'}
         </button>
-        {/* {onRefresh && (
+        {/* Refresh button commented out for now
+        {onRefresh && (
           <button
             onClick={onRefresh}
             className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 ml-auto"
           >
-            <ArrowPathIcon className="h-5 w-5 mr-2" />
+            <ArrowPathIcon className="h-4 w-4 mr-1" />
             Refresh
           </button>
-        )} */ }
+        )} */}
       </nav>
     </div>
   );

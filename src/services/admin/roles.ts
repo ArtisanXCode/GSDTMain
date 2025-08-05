@@ -58,14 +58,14 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
     return data.role as AdminRole;
   } catch (error: any) {
     console.error('Error getting user role:', error);
-    
+
     // Don't retry on network or timeout errors
     if (error.name === 'AbortError' || 
         error.message?.includes('Failed to fetch') ||
         error.message?.includes('infinite recursion')) {
       throw new Error('Database connection failed');
     }
-    
+
     throw error;
   }
 };
