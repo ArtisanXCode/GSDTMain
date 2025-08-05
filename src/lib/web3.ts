@@ -421,13 +421,11 @@ export const isConnected = async () => {
 export const checkAdminRole = async (address: string): Promise<boolean> => {
   try {
     // Query the admin_roles table from Supabase
-    /*const { data, error } = await supabase
+    const { data, error } = await supabase
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
-      .maybeSingle();*/
-
-    const  data = { role: ""}; const error = false;
+      .maybeSingle();
     
     if (error) {
       if (error.code === 'PGRST116') {
