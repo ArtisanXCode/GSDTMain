@@ -131,7 +131,7 @@ export default function PageForm({ initialData, onSubmit, onCancel, loading }: P
         </label>
         <div className="border border-gray-300 rounded-md overflow-hidden">
           <Editor
-            apiKey="6l3v2mgqtxwt8ag0rgligodvmo6k00j6zjq7a40e6irgq906"
+            apiKey={import.meta.env.VITE_API_KEY}
             value={formData.content}
             onEditorChange={handleEditorChange}
             init={{
