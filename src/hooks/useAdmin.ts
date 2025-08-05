@@ -130,15 +130,9 @@ export const useAdmin = () => {
 
         if (isSupabaseAvailable) {
           // Try to get role from database with timeout
-        try {
-          const role = await Promise.race([
-            getUserRole(address),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error("Request timeout")), 5000)
-            )
-          ]) as AdminRole | null;
-
-          setAdminRole(role);
+          try {
+            const role = await getUserRole(address);
+            setAdminRole(role);
 
           // Set individual role flags based on the role
           setIsAdmin(!!role);

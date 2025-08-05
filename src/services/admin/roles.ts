@@ -34,38 +34,28 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
   try {
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const { data, error } = await supabase
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
       .abortSignal(controller.signal)
-      .single();
+      .maybeSingle(); // Use maybeSingle instead of single
 
     clearTimeout(timeoutId);
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        // No data found - this is normal
-        return null;
-      }
       console.error('Database error in getUserRole:', error);
-      throw error;
+      return null; // Return null on any error to prevent infinite loops
     }
 
-    return data.role as AdminRole;
+    return data?.role as AdminRole || null;
   } catch (error: any) {
     console.error('Error getting user role:', error);
 
-    // Don't retry on network or timeout errors
-    if (error.name === 'AbortError' || 
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('infinite recursion')) {
-      throw new Error('Database connection failed');
-    }
-
-    throw error;
+    // Return null for all errors to prevent cascading failures
+    return null;
   }
 };
 
