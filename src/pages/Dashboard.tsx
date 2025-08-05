@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useWallet } from "../hooks/useWallet";
 import { useState, useEffect } from "react";
@@ -14,10 +13,11 @@ import TokenInfo from "../components/TokenInfo";
 import ExchangeRatesList from "../components/ExchangeRatesList";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import KYCSuccessModal from "../components/modals/KYCSuccessModal";
 
 export default function Dashboard() {
   const { address, isConnected, connect } = useWallet();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [kycStatus, setKycStatus] = useState<KYCStatus>(
     KYCStatus.NOT_SUBMITTED,
   );
@@ -25,13 +25,14 @@ export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [checkingKYC, setCheckingKYC] = useState(true);
   const [autoRedirectShown, setAutoRedirectShown] = useState(false);
+  const [showKYCSuccessModal, setShowKYCSuccessModal] = useState(false);
 
   // Check if user just signed up or logged in
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const fromAuth = urlParams.get('from') === 'auth';
     const isNewUser = urlParams.get('new') === 'true';
-    
+
     if (fromAuth || isNewUser) {
       setShowWelcome(true);
       // Clean up URL
@@ -52,20 +53,14 @@ export default function Dashboard() {
 
         if (userKYCStatus) {
           setKycStatus(userKYCStatus.status);
-          
-          // Auto-redirect to minting page if KYC is approved and user hasn't been redirected yet
-          if (userKYCStatus.status === KYCStatus.APPROVED && !autoRedirectShown) {
-            setAutoRedirectShown(true);
-            
-            // Show success message and redirect
-            const shouldRedirect = window.confirm(
-              "🎉 Congratulations! Your KYC verification has been approved.\n\nWould you like to go to the token minting page now?"
-            );
-            
-            if (shouldRedirect) {
-              window.location.href = '/token-minting';
-              return;
-            }
+
+          // Check if KYC was just approved
+          if (
+            userKYCStatus.status === KYCStatus.APPROVED &&
+            kycStatus !== KYCStatus.APPROVED
+          ) {
+            // Show success modal
+            setShowKYCSuccessModal(true);
           }
         }
       } catch (error) {
@@ -80,7 +75,38 @@ export default function Dashboard() {
     } else {
       setCheckingKYC(false);
     }
-  }, [address, isConnected, autoRedirectShown]);
+  }, [address, isConnected, kycStatus]); // Added kycStatus to dependency array
+
+  const handleCloseKYCModal = () => {
+    setShowKYCSuccessModal(false);
+  };
+
+  const handleGoToMinting = () => {
+    setShowKYCSuccessModal(false);
+    window.location.href = '/token-minting';
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+            Authentication Required
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Please log in to access your dashboard.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="bg-white">
@@ -227,11 +253,11 @@ export default function Dashboard() {
                         <span className="ml-2 text-sm">Account Created</span>
                       </div>
                       <div className="flex-1 h-0.5 bg-gray-600">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-green-500 to-yellow-500 transition-all duration-500"
-                          style={{ 
-                            width: kycStatus === KYCStatus.NOT_SUBMITTED ? '0%' : 
-                                   kycStatus === KYCStatus.PENDING ? '50%' : '100%' 
+                          style={{
+                            width: kycStatus === KYCStatus.NOT_SUBMITTED ? '0%' :
+                                   kycStatus === KYCStatus.PENDING ? '50%' : '100%'
                           }}
                         ></div>
                       </div>
@@ -253,7 +279,7 @@ export default function Dashboard() {
                         <span className="ml-2 text-sm">Identity Verification</span>
                       </div>
                       <div className="flex-1 h-0.5 bg-gray-600">
-                        <div 
+                        <div
                           className="h-full bg-green-500 transition-all duration-500"
                           style={{ width: kycStatus === KYCStatus.APPROVED ? '100%' : '0%' }}
                         ></div>
@@ -310,7 +336,7 @@ export default function Dashboard() {
                         </button>
                       </div>
                     </div>
-                    
+
                     {kycMethod === "sumsub" ? <SumsubKYC /> : <KYCVerification />}
                   </motion.div>
                 </>
@@ -346,6 +372,12 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      <KYCSuccessModal
+        isOpen={showKYCSuccessModal}
+        onClose={handleCloseKYCModal}
+        onGoToMinting={handleGoToMinting}
+      />
     </div>
   );
 }
