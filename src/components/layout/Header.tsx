@@ -269,7 +269,7 @@ const Header = () => {
                   className={`block px-4 py-2 rounded-lg text-base font-medium transition-colors ${
                     location.pathname === item.href
                       ? 'bg-primary-100 text-primary-900'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-white-700 hover:bg-gray-100'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -281,7 +281,7 @@ const Header = () => {
               {/* Auth Section */}
               {isAuthenticated ? (
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-white-600">
                     Signed in as: {user?.email}
                   </div>
                   <button
@@ -309,7 +309,7 @@ const Header = () => {
               {/* Wallet Section */}
               {isConnected ? (
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-white-600">
                     Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
                   </div>
                   <button
