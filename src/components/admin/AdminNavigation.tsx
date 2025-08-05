@@ -17,7 +17,7 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
     { name: "Exchange Rates", path: "/admin/exchange-rates" },
     { name: "Pending Role Approvals", path: "/admin/pending-roles" },
     //{ name: "Pending Transactions", path: "/admin/pending-transactions" },
-    //{ name: "CMS Pages", path: "/admin/cms-pages" },
+    { name: "CMS Pages", path: "/admin/cms-pages" },
     //{ name: "Contact Details", path: "/admin/contact-details" }
   ];
 

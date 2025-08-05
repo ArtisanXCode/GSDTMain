@@ -126,7 +126,7 @@ export default function AdminLayout({ children, activeTab }: AdminLayoutProps) {
                 </Link>
 
                 <Link
-                  to="/admin/cms"
+                  to="/admin/cms-pages"
                   className={`block px-4 py-2 rounded-md text-sm font-medium ${
                     activeTab === 'cms'
                       ? 'bg-primary-100 text-primary-700'

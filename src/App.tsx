@@ -53,7 +53,7 @@ export default function App() {
               />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="/admin/cms" element={<CMSPages />} />
+              <Route path="/admin/cms-pages" element={<CMSPages />} />
 
               <Route
                 path="/admin/dashboard"
