@@ -72,19 +72,18 @@ class LiveExchangeRateService {
           const targetRate = baseRates[target];
           
           if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
-            // Convert via USD: base/target = (base/USD) / (target/USD)
-            // This gives us how many target units equal 1 base unit
-            crossRates[base][target] = baseRate / targetRate;
+            // Convert via USD: base/target = (target/USD) / (base/USD)
+            crossRates[base][target] = targetRate / baseRate;
           } else {
             crossRates[base][target] = 0;
           }
         }
       });
       
-      // Add USD rates - direct rate from API (base currency per USD)
+      // Add USD rates - direct conversion from USD to base currency
       const baseRate = baseRates[base];
       if (baseRate && baseRate > 0) {
-        crossRates[base]['USD'] = baseRate;
+        crossRates[base]['USD'] = 1 / baseRate;
       } else {
         crossRates[base]['USD'] = 0;
       }
