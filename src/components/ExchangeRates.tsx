@@ -91,8 +91,10 @@ export default function ExchangeRates() {
                   <span className="text-white font-mono">
                     {(() => {
                       const rate = basket.benchmarkRates[currency];
+                      console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
                       if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
                       if (rate < 0.0001) return rate.toFixed(6);
+                      if (rate < 1) return rate.toFixed(4);
                       return rate.toFixed(4);
                     })()}
                   </span>

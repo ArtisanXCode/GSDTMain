@@ -41,7 +41,7 @@ class LiveExchangeRateService {
 
   private getMockRates(): Record<string, number> {
     // Rates based on screenshot values
-    return {
+    const rates = {
       CNH: 7.2405,
       THB: 33.95,
       INR: 83.12,
@@ -55,6 +55,8 @@ class LiveExchangeRateService {
       CAD: 1.36,
       AUD: 1.52
     };
+    console.log('Mock rates loaded:', rates);
+    return rates;
   }
 
   calculateCrossRates(baseRates: Record<string, number>): Record<string, Record<string, number>> {
@@ -70,11 +72,15 @@ class LiveExchangeRateService {
           const baseRate = baseRates[base];
           const targetRate = baseRates[target];
           
+          console.log(`Calculating ${target}/${base}: baseRate=${baseRate}, targetRate=${targetRate}`);
+          
           if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
             // Cross rate calculation: how many target currency units per 1 base currency unit
             const crossRate = targetRate / baseRate;
-            crossRates[base][target] = parseFloat(crossRate.toFixed(6));
+            console.log(`Cross rate calculation: ${targetRate} / ${baseRate} = ${crossRate}`);
+            crossRates[base][target] = Math.round(crossRate * 10000) / 10000; // Round to 4 decimal places
           } else {
+            console.log(`Invalid rates for ${target}/${base}`);
             crossRates[base][target] = 0;
           }
         }
@@ -89,6 +95,7 @@ class LiveExchangeRateService {
       }
     });
 
+    console.log('Final crossRates:', crossRates);
     return crossRates;
   }
 
