@@ -40,7 +40,7 @@ const Header = () => {
   const navigation = [
     { name: "ABOUT", href: "/about" },
     { name: "TRANSPARENCY", href: "/transparency" },
-    { name: "LIVE RATES", href: "/live-exchange-rates", requireAuth: false },
+    { name: "EXCHANGE RATES", href: "/live-exchange-rates", requireAuth: false },
     { name: "DASHBOARD", href: "/dashboard", requireAuth: true },
     { name: "CONTACT", href: "/contact" },
   ];

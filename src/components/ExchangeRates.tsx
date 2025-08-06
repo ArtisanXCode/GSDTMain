@@ -76,8 +76,8 @@ export default function ExchangeRates() {
           >
             {/* Header */}
             <div 
-              className="text-center py-3 px-4"
-              style={{ backgroundColor: "#2a4661" }}
+              className="text-center py-3"
+              style={{ backgroundColor: "#6d97bf" }}
             >
               <h3 className="text-lg font-semibold text-white">
                 {basket.currency} as Benchmark Reference
@@ -87,7 +87,7 @@ export default function ExchangeRates() {
             {/* Content */}
             <div 
               className="p-6"
-              style={{ backgroundColor: "#6d97bf" }}
+              style={{ backgroundColor: "#2a4661" }}
             >
 
             {/* Cross Rates */}

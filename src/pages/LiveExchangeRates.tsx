@@ -24,7 +24,7 @@ export default function LiveExchangeRatesPage() {
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              GSDC Tokenomics
+              Live Exchange Rates
             </h1>
             <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
               Live calculation of GSDC exchange rates using real-time market data from 
