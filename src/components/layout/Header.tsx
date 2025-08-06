@@ -92,7 +92,10 @@ const Header = () => {
                 {!isAuthenticated ? (
                   <button
                     onClick={() => setLoginModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" style={{
+                      background: loading ? "#ed9030" : "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                      opacity: loading ? 0.7 : 1
+                    }}
                   >
                     Login / Sign Up
                   </button>
