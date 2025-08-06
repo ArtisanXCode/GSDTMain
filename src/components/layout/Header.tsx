@@ -88,12 +88,20 @@ const Header = () => {
 
               {/* Desktop Auth and Wallet Buttons */}
               <div className="hidden md:flex md:items-center md:space-x-4">
-                {/* Auth Buttons */}
-                {isAuthenticated ? (
+                {/* Show Login Button if not authenticated */}
+                {!isAuthenticated ? (
+                  <button
+                    onClick={() => setLoginModalOpen(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Login / Sign Up
+                  </button>
+                ) : !isConnected ? (
+                  /* Show User Menu with Wallet Connect after authentication */
                   <Menu as="div" className="relative">
-                    <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white-700 hover:bg-gray-100 hover:text-black rounded-lg">
+                    <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-lg transition-colors">
                       <UserIcon className="h-5 w-5" />
-                      <span>{user?.email}</span>
+                      <span>{user?.email?.split('@')[0]}</span>
                       <ChevronDownIcon className="h-4 w-4" />
                     </Menu.Button>
                     <Transition
@@ -105,15 +113,35 @@ const Header = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm text-gray-500">Signed in as</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                        </div>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={connect}
+                              disabled={loading || connectionAttemptInProgress}
+                              className={`${
+                                active ? 'bg-gray-100' : ''
+                              } flex w-full px-4 py-2 text-sm text-gray-700 items-center disabled:opacity-50`}
+                            >
+                              <WalletIcon className="h-5 w-5 mr-2" />
+                              {loading || connectionAttemptInProgress ? 'Connecting...' : 'Connect Wallet'}
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <div className="border-t border-gray-100 my-1"></div>
                         <Menu.Item>
                           {({ active }) => (
                             <button
                               onClick={handleLogout}
-                              className={`block w-full text-left px-4 py-2 text-sm ${
+                              className={`${
                                 active ? 'bg-gray-100' : ''
-                              } text-gray-700`}
+                              } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                             >
+                              <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
                               Sign Out
                             </button>
                           )}
@@ -122,21 +150,15 @@ const Header = () => {
                     </Transition>
                   </Menu>
                 ) : (
-                  <button
-                    onClick={() => setLoginModalOpen(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Login / Sign Up
-                  </button>
-                )}
-
-                {/* Wallet Connection */}
-                {isConnected ? (
+                  /* Show Full Menu after wallet connection */
                   <Menu as="div" className="relative">
                     <Menu.Button className="flex items-center rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200">
                       <WalletIcon className="h-4 w-4 mr-2" />
                       <div className="flex flex-col items-start">
                         <span className="text-xs leading-tight">
+                          {user?.email?.split('@')[0]}
+                        </span>
+                        <span className="text-xs leading-tight opacity-75">
                           {`${address.slice(0, 6)}...${address.slice(-4)}`}
                         </span>
                       </div>
@@ -152,7 +174,12 @@ const Header = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm text-gray-500">Connected as</p>
+                          <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                          <p className="text-xs text-gray-500 truncate">{address}</p>
+                        </div>
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -212,34 +239,13 @@ const Header = () => {
                               } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                             >
                               <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                              Disconnect
+                              Disconnect & Sign Out
                             </button>
                           )}
                         </Menu.Item>
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                ) : (
-                  <button
-                    onClick={connect}
-                    disabled={loading || connectionAttemptInProgress}
-                    className="flex items-center rounded-full bg-white/10 backdrop-blur-sm border border-white/30 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading || connectionAttemptInProgress ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Connecting...
-                      </>
-                    ) : (
-                      <>
-                        <WalletIcon className="h-4 w-4 mr-2" />
-                        Connect Wallet
-                      </>
-                    )}
-                  </button>
                 )}
               </div>
 
@@ -278,12 +284,32 @@ const Header = () => {
               ))}
             </div>
             <div className="border-t border-gray-200 px-4 py-6 space-y-4">
-              {/* Auth Section */}
-              {isAuthenticated ? (
+              {/* Auth and Wallet Flow */}
+              {!isAuthenticated ? (
+                <button
+                  onClick={() => {
+                    setLoginModalOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Login / Sign Up
+                </button>
+              ) : !isConnected ? (
                 <div className="space-y-2">
                   <div className="text-sm text-white-600">
                     Signed in as: {user?.email}
                   </div>
+                  <button
+                    onClick={() => {
+                      connect();
+                      setMobileMenuOpen(false);
+                    }}
+                    disabled={loading || connectionAttemptInProgress}
+                    className="w-full bg-gradient-to-r from-yellow-400 to-red-500 text-white px-6 py-3 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50"
+                  >
+                    {loading || connectionAttemptInProgress ? 'Connecting...' : 'Connect Wallet'}
+                  </button>
                   <button
                     onClick={() => {
                       handleLogout();
@@ -295,43 +321,23 @@ const Header = () => {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => {
-                    setLoginModalOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Login / Sign Up
-                </button>
-              )}
-
-              {/* Wallet Section */}
-              {isConnected ? (
                 <div className="space-y-2">
+                  <div className="text-sm text-white-600">
+                    Signed in as: {user?.email}
+                  </div>
                   <div className="text-sm text-white-600">
                     Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
                   </div>
                   <button
                     onClick={() => {
-                      disconnect();
+                      handleLogout();
                       setMobileMenuOpen(false);
                     }}
                     className="w-full bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
                   >
-                    Disconnect Wallet
+                    Disconnect & Sign Out
                   </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    connect();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-red-500 text-white px-6 py-3 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-200"
-                >
-                  Connect Wallet
-                </button>
               )}
             </div>
           </Disclosure.Panel>
