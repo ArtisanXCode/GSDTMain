@@ -41,35 +41,37 @@ class LiveExchangeRateService {
     const crossRates: Record<string, Record<string, number>> = {};
 
     // Calculate all cross rates between basket currencies
-    BASKET_CURRENCIES.forEach(base => {
-      crossRates[base] = {};
-      BASKET_CURRENCIES.forEach(target => {
-        if (base === target) {
-          crossRates[base][target] = 1.0000;
+    BASKET_CURRENCIES.forEach(benchmark => {
+      crossRates[benchmark] = {};
+      BASKET_CURRENCIES.forEach(currency => {
+        if (benchmark === currency) {
+          crossRates[benchmark][currency] = 1.0000;
         } else {
-          const baseRate = baseRates[base];
-          const targetRate = baseRates[target];
+          const benchmarkRate = baseRates[benchmark];
+          const currencyRate = baseRates[currency];
 
-          console.log(`Calculating ${target}/${base}: baseRate=${baseRate}, targetRate=${targetRate}`);
+          console.log(`Calculating ${currency}/${benchmark}: benchmarkRate=${benchmarkRate}, currencyRate=${currencyRate}`);
 
-          if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
-            // Cross rate calculation: how many target currency units per 1 base currency unit
-            const crossRate = targetRate / baseRate;
-            console.log(`Cross rate calculation: ${targetRate} / ${baseRate} = ${crossRate}`);
-            crossRates[base][target] = Math.round(crossRate * 10000) / 10000; // Round to 4 decimal places
+          if (benchmarkRate && currencyRate && benchmarkRate > 0 && currencyRate > 0) {
+            // Cross rate calculation: how many benchmark currency units per 1 target currency unit
+            // This gives us the reciprocal rate (e.g., USD per 1 INR instead of INR per 1 USD)
+            const crossRate = benchmarkRate / currencyRate;
+            console.log(`Cross rate calculation: ${benchmarkRate} / ${currencyRate} = ${crossRate}`);
+            crossRates[benchmark][currency] = Math.round(crossRate * 1000000) / 1000000; // Round to 6 decimal places for precision
           } else {
-            console.log(`Invalid rates for ${target}/${base}`);
-            crossRates[base][target] = 0;
+            console.log(`Invalid rates for ${currency}/${benchmark}`);
+            crossRates[benchmark][currency] = 0;
           }
         }
       });
 
-      // Add USD rates - how many base currency units per 1 USD
-      const baseRate = baseRates[base];
-      if (baseRate && baseRate > 0) {
-        crossRates[base]['USD'] = baseRate;
+      // Add USD rates - how many benchmark currency units per 1 USD
+      const benchmarkRate = baseRates[benchmark];
+      if (benchmarkRate && benchmarkRate > 0) {
+        // For USD, we want the reciprocal: how many USD per 1 benchmark currency
+        crossRates[benchmark]['USD'] = Math.round((1 / benchmarkRate) * 1000000) / 1000000;
       } else {
-        crossRates[base]['USD'] = 0;
+        crossRates[benchmark]['USD'] = 0;
       }
     });
 
@@ -87,27 +89,26 @@ class LiveExchangeRateService {
       let gsdcValue = 0;
 
       basketCurrenciesExcludingUSD.forEach(currency => {
-        const rate = crossRates[currency]?.[benchmark];
+        const rate = crossRates[benchmark]?.[currency];
         if (rate !== undefined && !isNaN(rate) && rate > 0) {
+          // Since rates are now reciprocal, we add them directly
           gsdcValue += rate;
         }
       });
 
-      gsdcRates[benchmark] = parseFloat(gsdcValue.toFixed(4));
+      gsdcRates[benchmark] = parseFloat(gsdcValue.toFixed(6));
     });
 
     // Calculate GSDC/USD: sum all basket currencies in USD terms
     let gsdcUsdValue = 0;
-    BASKET_CURRENCIES.forEach(currency => {
-      if (currency !== 'USD') {
-        const rate = crossRates[currency]?.['USD'];
-        if (rate && !isNaN(rate) && rate > 0) {
-          // 1 unit of currency converted to USD
-          gsdcUsdValue += (1 / rate);
-        }
+    basketCurrenciesExcludingUSD.forEach(currency => {
+      const rate = crossRates['USD']?.[currency];
+      if (rate && !isNaN(rate) && rate > 0) {
+        // Since rates are now reciprocal (USD per 1 currency unit), we add them directly
+        gsdcUsdValue += rate;
       }
     });
-    gsdcRates['USD'] = parseFloat(gsdcUsdValue.toFixed(4));
+    gsdcRates['USD'] = parseFloat(gsdcUsdValue.toFixed(6));
 
     return gsdcRates;
   }

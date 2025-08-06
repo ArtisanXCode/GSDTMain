@@ -95,6 +95,7 @@ export default function ExchangeRates() {
                       if (!rate || isNaN(rate)) return '0.0000';
                       if (rate === 1) return '1.0000';
                       if (rate < 0.0001) return rate.toFixed(6);
+                      if (rate < 0.01) return rate.toFixed(6);
                       if (rate < 1) return rate.toFixed(4);
                       return rate.toFixed(4);
                     })()}
@@ -119,6 +120,8 @@ export default function ExchangeRates() {
                   {(() => {
                     const rate = basket.gsdcRate;
                     if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                    if (rate < 0.0001) return rate.toFixed(6);
+                    if (rate < 0.01) return rate.toFixed(6);
                     return rate.toFixed(4);
                   })()}
                 </span>
