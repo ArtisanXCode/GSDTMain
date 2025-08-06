@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useGSDCPrice } from "../services/liveExchangeRates";
 import { format } from "date-fns";
 import { ArrowPathIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
-import { CURRENCY_SYMBOLS, CURRENCY_NAMES } from "../config/api";
+import { CURRENCY_SYMBOLS, CURRENCY_NAMES, COMPACT_CURRENCIES, CURRENCY_PRECISION } from "../config/api";
 
 interface Props {
   variant?: 'default' | 'compact' | 'hero';
@@ -66,28 +66,10 @@ export default function LiveExchangeRates({
     : Object.keys(gsdcRates).filter(currency => gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
-    // Show GSDC basket currencies in specific order to match live exchange rates page
-    const compactCurrencies = ["CNY", "THB", "INR", "BRL", "ZAR", "IDR", "USD"];
-
-    // Function to format GSDC rate with appropriate precision to match the screenshot
+    // Function to format GSDC rate with appropriate precision from global config
     const formatGSDCRate = (rate: number, currency: string): string => {
-      if (currency === 'USD') {
-        return rate.toFixed(4);
-      } else if (currency === 'IDR') {
-        return rate.toFixed(4); // IDR shows as 6869.2918
-      } else if (currency === 'INR') {
-        return rate.toFixed(4); // INR shows as 36.8086
-      } else if (currency === 'THB') {
-        return rate.toFixed(4); // THB shows as 13.5644
-      } else if (currency === 'ZAR') {
-        return rate.toFixed(4); // ZAR shows as 7.5092
-      } else if (currency === 'CNY') {
-        return rate.toFixed(4); // CNY shows as 3.0129
-      } else if (currency === 'BRL') {
-        return rate.toFixed(4); // BRL shows as 2.3047
-      } else {
-        return rate.toFixed(4);
-      }
+      const precision = CURRENCY_PRECISION[currency] || 4;
+      return rate.toFixed(precision);
     };
 
     return (
@@ -105,7 +87,7 @@ export default function LiveExchangeRates({
         </div>
         
         <div className="grid grid-cols-2 gap-2">
-          {compactCurrencies.map((currency) => {
+          {COMPACT_CURRENCIES.map((currency) => {
             const rate = gsdcRates?.[currency] || 0;
             return (
               <motion.div

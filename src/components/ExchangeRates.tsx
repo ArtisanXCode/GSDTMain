@@ -2,19 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
-import { CURRENCY_NAMES } from '../config/api';
-
-// Using global currency names from config
-
-const currencyColors: Record<string, string> = {
-  CNY: '#ed9030',
-  BRL: '#ed9030',
-  ZAR: '#ed9030',
-  THB: '#ed9030',
-  INR: '#ed9030',
-  IDR: '#ed9030',
-  USD: '#ed9030'
-};
+import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
 
 export default function ExchangeRates() {
   const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
@@ -109,15 +97,15 @@ export default function ExchangeRates() {
             {/* GSDC Rate */}
               <div
                 className="border-t-2 pt-3"
-                style={{ borderColor: currencyColors[basket.currency] }}
+                style={{ borderColor: CURRENCY_COLORS[basket.currency] || '#ed9030' }}
               >
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold" style={{ color: currencyColors[basket.currency] }}>
+                  <span className="font-semibold" style={{ color: CURRENCY_COLORS[basket.currency] || '#ed9030' }}>
                     GSDC/{basket.currency}
                   </span>
                   <span
                     className="text-lg font-bold"
-                    style={{ color: currencyColors[basket.currency] }}
+                    style={{ color: CURRENCY_COLORS[basket.currency] || '#ed9030' }}
                   >
                     {(() => {
                       const rate = basket.gsdcRate;

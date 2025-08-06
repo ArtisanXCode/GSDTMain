@@ -70,3 +70,34 @@ export const CURRENCY_NAMES: Record<string, string> = parseEnvObject(
   }
 );
 
+// Currency colors from environment variables
+export const CURRENCY_COLORS: Record<string, string> = parseEnvObject(
+  import.meta.env.VITE_CURRENCY_COLORS,
+  {
+    CNY: '#ed9030',
+    BRL: '#ed9030',
+    ZAR: '#ed9030',
+    THB: '#ed9030',
+    INR: '#ed9030',
+    IDR: '#ed9030',
+    USD: '#ed9030'
+  }
+);
+
+// Currency precision configuration from environment variables
+export const CURRENCY_PRECISION: Record<string, number> = parseEnvObject(
+  import.meta.env.VITE_CURRENCY_PRECISION,
+  {
+    USD: 4,
+    IDR: 4,
+    INR: 4,
+    THB: 4,
+    ZAR: 4,
+    CNY: 4,
+    BRL: 4
+  }
+);
+
+// Compact currencies order from environment variables
+export const COMPACT_CURRENCIES = parseEnvArray(import.meta.env.VITE_COMPACT_CURRENCIES, ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']);
+
