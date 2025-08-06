@@ -5,7 +5,7 @@ import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
 
 const currencyNames: Record<string, string> = {
-  CNH: 'Chinese Yuan',
+  CNY: 'Chinese Yuan',
   THB: 'Thai Baht', 
   INR: 'Indian Rupee',
   BRL: 'Brazilian Real',
@@ -15,12 +15,13 @@ const currencyNames: Record<string, string> = {
 };
 
 const currencyColors: Record<string, string> = {
-  CNH: '#ed9030',
+  CNY: '#ed9030',
   BRL: '#ed9030', 
   ZAR: '#ed9030',
   THB: '#ed9030',
   INR: '#ed9030',
-  IDR: '#ed9030'
+  IDR: '#ed9030',
+  USD: '#ed9030'
 };
 
 export default function ExchangeRates() {
@@ -91,7 +92,7 @@ export default function ExchangeRates() {
                   <span className="text-white font-mono">
                     {(() => {
                       const rate = basket.benchmarkRates[currency];
-                      console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
+                      //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
                       if (!rate || isNaN(rate)) return '0.0000';
                       if (rate === 1) return '1.0000';
                       if (rate < 0.0001) return rate.toFixed(6);

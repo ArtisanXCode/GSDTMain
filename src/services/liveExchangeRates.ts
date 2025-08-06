@@ -13,20 +13,20 @@ export interface BasketCalculation {
 }
 
 // GSDC basket currencies
-export const BASKET_CURRENCIES = ['CNH', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD'];
+export const BASKET_CURRENCIES = ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD'];
 export const REFERENCE_CURRENCIES = ['USD'];
 
 // Live exchange rate API service
 class LiveExchangeRateService {
-  private apiKey = 'demo'; // Replace with actual API key
+  //private apiKey = 'demo'; // Replace with actual API key
   private baseUrl = 'https://api.exchangerate-api.com/v4/latest';
 
   async fetchLiveRates(): Promise<Record<string, number>> {
     try {
       // Fetch USD as base currency to get all rates
-      const response = await fetch(`${this.baseUrl}/USD`);
+      const response = await fetch(`${this.baseUrl}/USD`);      
       const data = await response.json();
-
+      console.log(data);
       if (!data.rates) {
         throw new Error('Invalid API response');
       }
@@ -50,16 +50,16 @@ class LiveExchangeRateService {
           const benchmarkRate = baseRates[benchmark];
           const currencyRate = baseRates[currency];
 
-          console.log(`Calculating ${currency}/${benchmark}: benchmarkRate=${benchmarkRate}, currencyRate=${currencyRate}`);
+          //console.log(`Calculating ${currency}/${benchmark}: benchmarkRate=${benchmarkRate}, currencyRate=${currencyRate}`);
 
           if (benchmarkRate && currencyRate && benchmarkRate > 0 && currencyRate > 0) {
             // Cross rate calculation: how many benchmark currency units per 1 target currency unit
             // This gives us the reciprocal rate (e.g., USD per 1 INR instead of INR per 1 USD)
             const crossRate = benchmarkRate / currencyRate;
-            console.log(`Cross rate calculation: ${benchmarkRate} / ${currencyRate} = ${crossRate}`);
+            //console.log(`Cross rate calculation: ${benchmarkRate} / ${currencyRate} = ${crossRate}`);
             crossRates[benchmark][currency] = Math.round(crossRate * 1000000) / 1000000; // Round to 6 decimal places for precision
           } else {
-            console.log(`Invalid rates for ${currency}/${benchmark}`);
+            //console.log(`Invalid rates for ${currency}/${benchmark}`);
             crossRates[benchmark][currency] = 0;
           }
         }
