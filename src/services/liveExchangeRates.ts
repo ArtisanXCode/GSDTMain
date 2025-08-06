@@ -40,7 +40,7 @@ class LiveExchangeRateService {
   }
 
   private getMockRates(): Record<string, number> {
-    // Updated rates to match screenshot expectations
+    // Rates based on screenshot values
     return {
       CNH: 7.2405,
       THB: 33.95,
@@ -71,15 +71,15 @@ class LiveExchangeRateService {
           const targetRate = baseRates[target];
           
           if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
-            // Convert via USD: base/target = (base/USD) / (target/USD)
-            crossRates[base][target] = baseRate / targetRate;
+            // Cross rate calculation: how many target currency units per 1 base currency unit
+            crossRates[base][target] = targetRate / baseRate;
           } else {
             crossRates[base][target] = 0;
           }
         }
       });
 
-      // Add USD rates - direct conversion (1 USD = X base currency units)
+      // Add USD rates - how many base currency units per 1 USD
       const baseRate = baseRates[base];
       if (baseRate && baseRate > 0) {
         crossRates[base]['USD'] = baseRate;
@@ -94,30 +94,26 @@ class LiveExchangeRateService {
   calculateGSDCRates(crossRates: Record<string, Record<string, number>>): Record<string, number> {
     const gsdcRates: Record<string, number> = {};
 
-    // GSDC calculation based on basket approach
-    // Each GSDC token represents 1 unit of each basket currency
+    // GSDC calculation: sum of all basket currency rates relative to each benchmark
     BASKET_CURRENCIES.forEach(benchmark => {
       let gsdcValue = 0;
-      let validCurrencies = 0;
 
       BASKET_CURRENCIES.forEach(currency => {
         const rate = crossRates[currency]?.[benchmark];
-        if (rate !== undefined && !isNaN(rate)) {
+        if (rate !== undefined && !isNaN(rate) && rate > 0) {
           gsdcValue += rate;
-          validCurrencies++;
         }
       });
 
-      // Set the GSDC rate regardless of validation count for demonstration
       gsdcRates[benchmark] = parseFloat(gsdcValue.toFixed(4));
     });
 
-    // Calculate GSDC/USD as sum of USD values of each basket component
+    // Calculate GSDC/USD: sum all basket currencies in USD terms
     let gsdcUsdValue = 0;
     BASKET_CURRENCIES.forEach(currency => {
       const rate = crossRates[currency]?.['USD'];
       if (rate && !isNaN(rate) && rate > 0) {
-        // Convert to USD value: 1 unit of currency / rate = USD value
+        // 1 unit of currency converted to USD
         gsdcUsdValue += (1 / rate);
       }
     });
