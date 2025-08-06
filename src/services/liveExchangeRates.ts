@@ -13,7 +13,7 @@ export interface BasketCalculation {
 }
 
 // GSDC basket currencies
-export const BASKET_CURRENCIES = ['CNH', 'BRL', 'ZAR', 'THB', 'INR', 'IDR', 'USD'];
+export const BASKET_CURRENCIES = ['CNH', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD'];
 export const REFERENCE_CURRENCIES = ['USD'];
 
 // Live exchange rate API service
