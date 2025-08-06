@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -6,7 +5,7 @@ import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchang
 
 const currencyNames: Record<string, string> = {
   CNY: 'Chinese Yuan',
-  THB: 'Thai Baht', 
+  THB: 'Thai Baht',
   INR: 'Indian Rupee',
   BRL: 'Brazilian Real',
   ZAR: 'South African Rand',
@@ -16,7 +15,7 @@ const currencyNames: Record<string, string> = {
 
 const currencyColors: Record<string, string> = {
   CNY: '#ed9030',
-  BRL: '#ed9030', 
+  BRL: '#ed9030',
   ZAR: '#ed9030',
   THB: '#ed9030',
   INR: '#ed9030',
@@ -67,7 +66,7 @@ export default function ExchangeRates() {
       </div>
 
       {/* Tokenomics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {data.map((basket) => (
           <motion.div
             key={basket.currency}
@@ -106,7 +105,7 @@ export default function ExchangeRates() {
             </div>
 
             {/* GSDC Rate */}
-            <div 
+            <div
               className="border-t-2 pt-3"
               style={{ borderColor: currencyColors[basket.currency] }}
             >
@@ -114,7 +113,7 @@ export default function ExchangeRates() {
                 <span className="font-semibold" style={{ color: currencyColors[basket.currency] }}>
                   GSDC/{basket.currency}
                 </span>
-                <span 
+                <span
                   className="text-lg font-bold"
                   style={{ color: currencyColors[basket.currency] }}
                 >
@@ -132,8 +131,6 @@ export default function ExchangeRates() {
         ))}
       </div>
 
-      
-
       {error && (
         <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
           <p className="text-red-400 text-sm">{error}</p>
@@ -146,9 +143,9 @@ export default function ExchangeRates() {
       {/* Disclaimer */}
       <div className="mt-8 text-xs text-white/50 text-center">
         <p>
-          Regrettably due to both primary and secondary sanctions served by the 
-          U.S. Office of Foreign Assets Control (OFAC) and the European External 
-          Action Service (EEAS), we were unable to include the Russian Ruble (RUB) 
+          Regrettably due to both primary and secondary sanctions served by the
+          U.S. Office of Foreign Assets Control (OFAC) and the European External
+          Action Service (EEAS), we were unable to include the Russian Ruble (RUB)
           and Russian Federation securities (Government Bonds) in the currency basket and reserves.
         </p>
       </div>
