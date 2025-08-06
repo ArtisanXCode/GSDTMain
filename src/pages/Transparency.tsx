@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { ArrowDownTrayIcon, LinkIcon } from '@heroicons/react/24/outline';
@@ -149,7 +148,7 @@ export default function Transparency() {
       {/* Main Content */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          
+
           {/* GSDC Circulation Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -166,7 +165,7 @@ export default function Transparency() {
                   Total supply across all supported networks
                 </p>
               </div>
-              
+
               <div
                 className="p-8"
                 style={{ backgroundColor: "#2a4661" }}
@@ -213,7 +212,7 @@ export default function Transparency() {
                           <span className="text-sm">Explorer</span>
                         </a>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-6">
                         <div>
                           <div className="text-white/70 text-sm">Supply</div>
@@ -247,7 +246,7 @@ export default function Transparency() {
                   Detailed breakdown of reserve assets backing GSDC tokens
                 </p>
               </div>
-              
+
               <div
                 className="p-8"
                 style={{ backgroundColor: "#2a4661" }}
@@ -295,7 +294,7 @@ export default function Transparency() {
                           </a>
                         )}
                       </div>
-                      
+
                       <div className="grid grid-cols-3 gap-6">
                         <div>
                           <div className="text-white/70 text-sm">Amount</div>

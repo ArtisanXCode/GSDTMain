@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useGSDCPrice } from "../services/exchangeRates";
 import { format } from "date-fns";
 import { ArrowPathIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
@@ -53,7 +54,7 @@ export default function LiveExchangeRates({
 
   const containerClasses = {
     default: "bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl",
-    compact: "bg-white/15 backdrop-blur-lg rounded-2xl p-4 shadow-lg border border-white/20",
+    compact: "bg-white/20 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30",
     hero: "bg-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-2xl border border-white/20"
   };
 
@@ -90,40 +91,59 @@ export default function LiveExchangeRates({
     : Object.keys(gsdcRates).filter(currency => gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
+    // Filter to show only GSDC basket currencies + USD
+    const compactCurrencies = ["USD", "CNH", "BRL", "INR", "ZAR", "IDR", "THB"].filter(
+      currency => gsdcRates && gsdcRates[currency] > 0
+    );
+
     return (
-      <div className={`${containerClasses[variant]} ${className}`}>
+      <div className={`bg-white/20 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30 ${className}`}>
         <div className="flex justify-between items-center mb-3">
-          <h4 className="text-lg font-semibold text-white">GSDC Live Rates</h4>
+          <h4 className="text-lg font-bold text-white">GSDC Live Rates</h4>
           {lastUpdated && (
             <div className="flex items-center space-x-1">
-              <ArrowPathIcon className="h-3 w-3 text-gray-300" />
-              <p className="text-xs text-gray-300">
+              <ArrowPathIcon className="h-3 w-3 text-white/80" />
+              <p className="text-xs text-white/80">
                 {format(lastUpdated, "HH:mm")}
               </p>
             </div>
           )}
         </div>
-        <div className="space-y-2">
-          {displayCurrencies.map((currency) => (
+        
+        <div className="grid grid-cols-2 gap-2">
+          {compactCurrencies.slice(0, 6).map((currency) => (
             <motion.div
               key={currency}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="flex justify-between items-center py-2 px-3 bg-white/10 rounded-lg hover:bg-white/15 transition-colors"
+              className="bg-white/15 rounded-xl p-3 text-center hover:bg-white/20 transition-all duration-200 hover:scale-105"
             >
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-white">
-                  GSDC/{currency}
-                </span>
+              <div className="text-xs font-medium text-white/90 mb-1">
+                GSDC/{currency}
               </div>
-              <div className="text-right">
-                <span className="text-sm font-semibold text-white">
-                  {currencySymbols[currency]}{gsdcRates[currency]?.toFixed(4)}
-                </span>
+              <div className="text-sm font-bold text-white">
+                {currencySymbols[currency]}{gsdcRates[currency]?.toFixed(4)}
               </div>
             </motion.div>
           ))}
+        </div>
+        
+        {compactCurrencies.length > 6 && (
+          <div className="mt-3 text-center">
+            <Link 
+              to="/live-exchange-rates" 
+              className="text-xs text-white/80 hover:text-white transition-colors underline"
+            >
+              View all {compactCurrencies.length} rates →
+            </Link>
+          </div>
+        )}
+        
+        <div className="mt-3 pt-3 border-t border-white/20">
+          <p className="text-xs text-white/70 text-center leading-relaxed">
+            Real-time GSDC rates calculated from basket composition
+          </p>
         </div>
       </div>
     );

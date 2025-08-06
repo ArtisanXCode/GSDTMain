@@ -143,14 +143,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Live Exchange Rates Card */}
+            {/* Live Exchange Rates Floating Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="w-full max-w-sm"
+              className="w-full max-w-md"
             >
-              <LiveExchangeRates variant="compact" showTitle={true} />
+              <LiveExchangeRates variant="compact" showTitle={true} className="shadow-2xl" />
             </motion.div>
           </div>
         </motion.div>
