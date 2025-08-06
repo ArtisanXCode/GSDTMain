@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from '../lib/supabase';
+import { CURRENCY_NAMES } from '../config/api';
 
 const NOWPAYMENTS_API_KEY = import.meta.env.VITE_NOWPAYMENTS_API_KEY || 'test_api_key';
 const NOWPAYMENTS_API_URL = 'https://api.nowpayments.io/v1';
@@ -52,17 +53,28 @@ export interface CurrencyInfo {
   minAmount: number;
 }
 
-export const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
-  { code: 'BTC', name: 'Bitcoin', minAmount: 0.001 },
-  { code: 'ETH', name: 'Ethereum', minAmount: 0.01 },
+// Generate supported currencies from environment configuration plus crypto currencies
+const CRYPTO_CURRENCIES: CurrencyInfo[] = [
   { code: 'USDT', name: 'Tether USD', minAmount: 10 },
   { code: 'USDC', name: 'USD Coin', minAmount: 10 },
+  { code: 'BTC', name: 'Bitcoin', minAmount: 0.001 },
+  { code: 'ETH', name: 'Ethereum', minAmount: 0.01 },
   { code: 'BNB', name: 'Binance Coin', minAmount: 0.1 },
-  { code: 'BUSD', name: 'Binance USD', minAmount: 10 },
-  { code: 'DAI', name: 'Dai', minAmount: 10 },
+  { code: 'ADA', name: 'Cardano', minAmount: 10 },
+  { code: 'DOT', name: 'Polkadot', minAmount: 1 },
   { code: 'MATIC', name: 'Polygon', minAmount: 10 },
-  { code: 'SOL', name: 'Solana', minAmount: 1 },
-  { code: 'DOT', name: 'Polkadot', minAmount: 1 }
+  { code: 'LTC', name: 'Litecoin', minAmount: 0.1 },
+  { code: 'XRP', name: 'Ripple', minAmount: 10 },
+];
+
+const SUPPORTED_CURRENCIES: CurrencyInfo[] = [
+  ...CRYPTO_CURRENCIES,
+  // Add fiat currencies from environment configuration
+  ...Object.keys(CURRENCY_NAMES).map(code => ({
+    code,
+    name: CURRENCY_NAMES[code],
+    minAmount: 10
+  }))
 ];
 
 // Create a payment request
@@ -159,7 +171,7 @@ export const getPaymentStatus = async (paymentId: string): Promise<PaymentStatus
       // Simulate different payment statuses for testing
       const statuses = ['waiting', 'confirming', 'confirmed', 'sending', 'finished'];
       const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-      
+
       return {
         payment_id: paymentId,
         payment_status: randomStatus,

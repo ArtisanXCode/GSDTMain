@@ -13,6 +13,8 @@ import {
 } from "../services/fiatMinting";
 import { format } from "date-fns";
 import { getUserKYCStatus, KYCStatus } from "../services/kyc";
+// Import currency configuration from environment
+import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES } from "../config/api";
 
 export default function FiatMinting() {
   const { address, isConnected } = useWallet();
@@ -33,16 +35,12 @@ export default function FiatMinting() {
   );
   const [checkingKYC, setCheckingKYC] = useState(true);
 
-  // Available currencies with their display names
-  const currencies = [
-    { code: "USD", name: "US Dollar (USD)" },
-    { code: "CNH", name: "Chinese Yuan (CNH)" },
-    { code: "RUB", name: "Russian Ruble (RUB)" },
-    { code: "INR", name: "Indian Rupee (INR)" },
-    { code: "BRL", name: "Brazilian Real (BRL)" },
-    { code: "ZAR", name: "South African Rand (ZAR)" },
-    { code: "IDR", name: "Indonesian Rupiah (IDR)" },
-  ];
+  // Generate currencies array from environment configuration
+  const currencies = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES.map(code => ({
+    code,
+    name: CURRENCY_NAMES[code] || code
+  }));
+
 
   // Check KYC status
   useEffect(() => {
@@ -118,7 +116,7 @@ export default function FiatMinting() {
       // For GSDC (stablecoin), maintain 1:1 with USD
       const gsdcAmount = usdAmount;
       const result = gsdcAmount.toFixed(6);
-      
+
       console.log(`Final GSDC amount: ${result}`);
       setGsdtAmount(result);
     } catch (err) {
@@ -150,10 +148,10 @@ export default function FiatMinting() {
     // Check minimum amount
     const fiatAmount = parseFloat(amount);
     const minAmount = parseFloat(minMintAmount);
-    
+
     console.log("Debug - Fiat amount:", fiatAmount, "Min amount:", minAmount);
     console.log("Debug - GSDT amount:", gsdtAmount);
-    
+
     if (fiatAmount < minAmount) {
       setError(`Minimum amount is ${minMintAmount} ${currency}`);
       return;

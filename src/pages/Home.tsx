@@ -42,14 +42,17 @@ const features = [
   },
 ];
 
-const currencies = [
-  { code: "CNH", name: "Chinese Yuan", symbol: "¥" },
-  { code: "THB", name: "Thailand Baht", symbol: "฿" },
-  { code: "INR", name: "Indian Rupee", symbol: "₹" },
-  { code: "BRL", name: "Brazilian Real", symbol: "R$" },
-  { code: "ZAR", name: "South African Rand", symbol: "R" },
-  { code: "IDR", name: "Indonesian Rupiah", symbol: "Rp" },
-];
+// Import currency configuration from environment
+import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES, CURRENCY_SYMBOLS } from "../config/api";
+
+// Generate currencies array from environment configuration
+const currencies = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
+  .filter(code => code !== 'USD') // Exclude USD from basket display
+  .map(code => ({
+    code,
+    name: CURRENCY_NAMES[code] || code,
+    symbol: CURRENCY_SYMBOLS[code] || code
+  }));
 
 const metrics = [
   { id: 1, stat: "10M+", emphasis: "GSDC", rest: "in circulation" },
