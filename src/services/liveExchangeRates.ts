@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from 'react';
+import { API_CONFIG, EXCHANGE_RATE_CONFIG } from '../config/api';
 
 export interface LiveExchangeRate {
   currency: string;
@@ -12,27 +14,50 @@ export interface BasketCalculation {
   gsdcRate: number;
 }
 
-// GSDC basket currencies - using CNY instead of CNH to match API
-export const BASKET_CURRENCIES = ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD'];
-export const REFERENCE_CURRENCIES = ['USD'];
+export interface GSDCRatesData {
+  gsdcRates: Record<string, number>;
+  isLoading: boolean;
+  isError: boolean;
+  timestamp: string | null;
+  refetch: () => Promise<void>;
+}
 
-// Live exchange rate API service
-class LiveExchangeRateService {
-  //private apiKey = 'demo'; // Replace with actual API key
-  private baseUrl = 'https://api.exchangerate-api.com/v4/latest';
+// Re-export constants for backward compatibility
+export const BASKET_CURRENCIES = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES;
+export const REFERENCE_CURRENCIES = EXCHANGE_RATE_CONFIG.REFERENCE_CURRENCIES;
+
+// Unified exchange rate API service
+class UnifiedExchangeRateService {
+  private cache: { data: Record<string, number>; timestamp: number } | null = null;
 
   async fetchLiveRates(): Promise<Record<string, number>> {
+    // Check cache first
+    if (this.cache && Date.now() - this.cache.timestamp < EXCHANGE_RATE_CONFIG.CACHE_DURATION) {
+      return this.cache.data;
+    }
+
     try {
       // Fetch USD as base currency to get all rates
-      const response = await fetch(`${this.baseUrl}/USD`);      
+      const response = await fetch(`${API_CONFIG.EXCHANGE_RATE_API_URL}/USD`);      
       const data = await response.json();      
       if (!data.rates) {
         throw new Error('Invalid API response');
       }
 
+      // Cache the data
+      this.cache = {
+        data: data.rates,
+        timestamp: Date.now()
+      };
+
       return data.rates;
     } catch (error) {
       console.error('Error fetching live rates:', error);
+      // Return cached data if available, otherwise throw
+      if (this.cache) {
+        return this.cache.data;
+      }
+      throw error;
     }
   }
 
@@ -49,16 +74,11 @@ class LiveExchangeRateService {
           const benchmarkRate = baseRates[benchmark];
           const currencyRate = baseRates[currency];
 
-          //console.log(`Calculating ${currency}/${benchmark}: benchmarkRate=${benchmarkRate}, currencyRate=${currencyRate}`);
-
           if (benchmarkRate && currencyRate && benchmarkRate > 0 && currencyRate > 0) {
             // Cross rate calculation: how many benchmark currency units per 1 target currency unit
-            // This gives us the reciprocal rate (e.g., USD per 1 INR instead of INR per 1 USD)
             const crossRate = benchmarkRate / currencyRate;
-            //console.log(`Cross rate calculation: ${benchmarkRate} / ${currencyRate} = ${crossRate}`);
             crossRates[benchmark][currency] = Math.round(crossRate * 1000000) / 1000000; // Round to 6 decimal places for precision
           } else {
-            //console.log(`Invalid rates for ${currency}/${benchmark}`);
             crossRates[benchmark][currency] = 0;
           }
         }
@@ -74,7 +94,6 @@ class LiveExchangeRateService {
       }
     });
 
-    console.log('Final crossRates:', crossRates);
     return crossRates;
   }
 
@@ -123,11 +142,21 @@ class LiveExchangeRateService {
       gsdcRate: gsdcRates[currency]
     }));
   }
+
+  async getGSDCRates(): Promise<Record<string, number>> {
+    const liveRates = await this.fetchLiveRates();
+    const crossRates = this.calculateCrossRates(liveRates);
+    return this.calculateGSDCRates(crossRates);
+  }
+
+  clearCache() {
+    this.cache = null;
+  }
 }
 
-export const liveExchangeRateService = new LiveExchangeRateService();
+export const unifiedExchangeRateService = new UnifiedExchangeRateService();
 
-// Hook for live exchange rates
+// Hook for live exchange rates (for detailed page)
 export const useLiveExchangeRates = () => {
   const [data, setData] = useState<BasketCalculation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +166,7 @@ export const useLiveExchangeRates = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const tokenomicsData = await liveExchangeRateService.getTokenomicsData();
+      const tokenomicsData = await unifiedExchangeRateService.getTokenomicsData();
       setData(tokenomicsData);
       setLastUpdated(new Date());
       setError(null);
@@ -152,9 +181,48 @@ export const useLiveExchangeRates = () => {
     fetchData();
 
     // Update every 30 seconds
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, EXCHANGE_RATE_CONFIG.UPDATE_INTERVAL);
     return () => clearInterval(interval);
   }, []);
 
   return { data, loading, error, lastUpdated, refetch: fetchData };
+};
+
+// Hook for GSDC rates (for home page compact view)
+export const useGSDCPrice = (): GSDCRatesData => {
+  const [gsdcRates, setGsdcRates] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [timestamp, setTimestamp] = useState<string | null>(null);
+
+  const fetchGSDCRates = async () => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const rates = await unifiedExchangeRateService.getGSDCRates();
+      setGsdcRates(rates);
+      setTimestamp(new Date().toISOString());
+    } catch (error) {
+      console.error('Error fetching GSDC rates:', error);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGSDCRates();
+
+    // Update every 30 seconds
+    const interval = setInterval(fetchGSDCRates, EXCHANGE_RATE_CONFIG.UPDATE_INTERVAL);
+    return () => clearInterval(interval);
+  }, []);
+
+  return {
+    gsdcRates,
+    isLoading,
+    isError,
+    timestamp,
+    refetch: fetchGSDCRates
+  };
 };

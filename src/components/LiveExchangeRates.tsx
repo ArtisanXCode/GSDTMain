@@ -2,41 +2,16 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useGSDCPrice } from "../services/exchangeRates";
+import { useGSDCPrice } from "../services/liveExchangeRates";
 import { format } from "date-fns";
 import { ArrowPathIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { CURRENCY_SYMBOLS, CURRENCY_NAMES } from "../config/api";
 
 interface Props {
   variant?: 'default' | 'compact' | 'hero';
   showTitle?: boolean;
   className?: string;
 }
-
-const currencySymbols: Record<string, string> = {
-  USD: "$",
-  CNH: "¥",
-  BRL: "R$",
-  INR: "₹",
-  ZAR: "R",
-  IDR: "Rp",
-  THB: "฿",
-  JPY: "¥",
-  EUR: "€",
-  CAD: "C$"
-};
-
-const currencyNames: Record<string, string> = {
-  USD: "US Dollar",
-  CNH: "Chinese Yuan",
-  BRL: "Brazilian Real", 
-  INR: "Indian Rupee",
-  ZAR: "South African Rand",
-  IDR: "Indonesian Rupiah",
-  THB: "Thai Baht",
-  JPY: "Japanese Yen",
-  EUR: "Euro",
-  CAD: "Canadian Dollar"
-};
 
 export default function LiveExchangeRates({ 
   variant = 'default', 
@@ -191,10 +166,10 @@ export default function LiveExchangeRates({
                 GSDC/{currency}
               </div>
               <div className="text-2xl font-extrabold text-white mb-1">
-                {currencySymbols[currency]}{gsdcRates[currency]?.toFixed(4)}
+                {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(4)}
               </div>
               <div className="text-xs text-white/70">
-                {currencyNames[currency]}
+                {CURRENCY_NAMES[currency]}
               </div>
             </motion.div>
           ))}
@@ -258,10 +233,10 @@ export default function LiveExchangeRates({
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm font-bold text-white">
-                  {currencySymbols[currency]}{gsdcRates[currency]?.toFixed(6)}
+                  {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(6)}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-300">
-                  {currencyNames[currency]}
+                  {CURRENCY_NAMES[currency]}
                 </td>
               </motion.tr>
             ))}

@@ -2,16 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
+import { CURRENCY_NAMES } from '../config/api';
 
-const currencyNames: Record<string, string> = {
-  CNY: 'Chinese Yuan',
-  THB: 'Thai Baht',
-  INR: 'Indian Rupee',
-  BRL: 'Brazilian Real',
-  ZAR: 'South African Rand',
-  IDR: 'Indonesian Rupiah',
-  USD: 'US Dollar'
-};
+// Using global currency names from config
 
 const currencyColors: Record<string, string> = {
   CNY: '#ed9030',
