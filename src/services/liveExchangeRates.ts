@@ -94,12 +94,14 @@ class LiveExchangeRateService {
   calculateGSDCRates(crossRates: Record<string, Record<string, number>>): Record<string, number> {
     const gsdcRates: Record<string, number> = {};
 
-    // For each benchmark currency, calculate GSDC rate
+    // GSDC represents 1 unit of each basket currency
+    // So GSDC/BRL = 1*CNH/BRL + 1*BRL/BRL + 1*ZAR/BRL + 1*THB/BRL + 1*INR/BRL + 1*IDR/BRL
+    // Which simplifies to: CNH/BRL + 1 + ZAR/BRL + THB/BRL + INR/BRL + IDR/BRL
+
     BASKET_CURRENCIES.forEach(benchmark => {
       let gsdcValue = 0;
       let validCurrencies = 0;
 
-      // Sum all basket currencies converted to benchmark
       BASKET_CURRENCIES.forEach(currency => {
         const rate = crossRates[currency]?.[benchmark];
         if (rate && !isNaN(rate) && rate > 0) {
@@ -108,8 +110,8 @@ class LiveExchangeRateService {
         }
       });
 
-      // Only set rate if we have valid data
-      gsdcRates[benchmark] = validCurrencies > 0 ? gsdcValue : 0;
+      // Only set rate if we have data for all basket currencies
+      gsdcRates[benchmark] = validCurrencies === BASKET_CURRENCIES.length ? gsdcValue : 0;
     });
 
     // Calculate GSDC/USD
@@ -119,12 +121,15 @@ class LiveExchangeRateService {
     BASKET_CURRENCIES.forEach(currency => {
       const rate = crossRates[currency]?.['USD'];
       if (rate && !isNaN(rate) && rate > 0) {
-        gsdcUsdValue += rate;
+        // Each rate is currency/USD (e.g., CNH/USD = 7.24 CNH per USD)
+        // To get USD value of 1 unit of currency: 1/rate
+        // So for GSDC/USD, we sum: 1/CNH_rate + 1/BRL_rate + ... (USD value of each component)
+        gsdcUsdValue += (1 / rate);
         validUsdCurrencies++;
       }
     });
 
-    gsdcRates['USD'] = validUsdCurrencies > 0 ? gsdcUsdValue : 0;
+    gsdcRates['USD'] = validUsdCurrencies === BASKET_CURRENCIES.length ? gsdcUsdValue : 0;
 
     return gsdcRates;
   }
