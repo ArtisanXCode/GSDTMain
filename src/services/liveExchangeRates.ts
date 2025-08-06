@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 export interface LiveExchangeRate {
@@ -21,17 +20,17 @@ export const REFERENCE_CURRENCIES = ['USD'];
 class LiveExchangeRateService {
   private apiKey = 'demo'; // Replace with actual API key
   private baseUrl = 'https://api.exchangerate-api.com/v4/latest';
-  
+
   async fetchLiveRates(): Promise<Record<string, number>> {
     try {
       // Fetch USD as base currency to get all rates
       const response = await fetch(`${this.baseUrl}/USD`);
       const data = await response.json();
-      
+
       if (!data.rates) {
         throw new Error('Invalid API response');
       }
-      
+
       return data.rates;
     } catch (error) {
       console.error('Error fetching live rates:', error);
@@ -39,7 +38,7 @@ class LiveExchangeRateService {
       return this.getMockRates();
     }
   }
-  
+
   private getMockRates(): Record<string, number> {
     return {
       CNH: 7.2405,
@@ -56,10 +55,10 @@ class LiveExchangeRateService {
       AUD: 1.52
     };
   }
-  
+
   calculateCrossRates(baseRates: Record<string, number>): Record<string, Record<string, number>> {
     const crossRates: Record<string, Record<string, number>> = {};
-    
+
     // Calculate all cross rates between basket currencies
     BASKET_CURRENCIES.forEach(base => {
       crossRates[base] = {};
@@ -67,39 +66,41 @@ class LiveExchangeRateService {
         if (base === target) {
           crossRates[base][target] = 1.0000;
         } else {
-          // Ensure rates exist and are valid numbers
-          const baseRate = baseRates[base];
-          const targetRate = baseRates[target];
-          
-          if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
-            // Convert via USD: base/target = (target/USD) / (base/USD)
-            crossRates[base][target] = targetRate / baseRate;
+          // Get rates in terms of USD (how many units per 1 USD)
+          const baseRatePerUsd = baseRates[base]; // e.g., CNH per USD = 7.2405
+          const targetRatePerUsd = baseRates[target]; // e.g., BRL per USD = 5.85
+
+          if (baseRatePerUsd && targetRatePerUsd && baseRatePerUsd > 0 && targetRatePerUsd > 0) {
+            // To get base/target (e.g., CNH/BRL), we need:
+            // How many target units equal 1 base unit
+            // CNH/BRL = (BRL per USD) / (CNH per USD) = 5.85 / 7.2405 = 0.8077
+            crossRates[base][target] = targetRatePerUsd / baseRatePerUsd;
           } else {
             crossRates[base][target] = 0;
           }
         }
       });
-      
-      // Add USD rates - direct conversion from USD to base currency
+
+      // Add USD rates - how many base units per 1 USD
       const baseRate = baseRates[base];
       if (baseRate && baseRate > 0) {
-        crossRates[base]['USD'] = 1 / baseRate;
+        crossRates[base]['USD'] = baseRate;
       } else {
         crossRates[base]['USD'] = 0;
       }
     });
-    
+
     return crossRates;
   }
-  
+
   calculateGSDCRates(crossRates: Record<string, Record<string, number>>): Record<string, number> {
     const gsdcRates: Record<string, number> = {};
-    
+
     // For each benchmark currency, calculate GSDC rate
     BASKET_CURRENCIES.forEach(benchmark => {
       let gsdcValue = 0;
       let validCurrencies = 0;
-      
+
       // Sum all basket currencies converted to benchmark
       BASKET_CURRENCIES.forEach(currency => {
         const rate = crossRates[currency]?.[benchmark];
@@ -108,15 +109,15 @@ class LiveExchangeRateService {
           validCurrencies++;
         }
       });
-      
+
       // Only set rate if we have valid data
       gsdcRates[benchmark] = validCurrencies > 0 ? gsdcValue : 0;
     });
-    
+
     // Calculate GSDC/USD
     let gsdcUsdValue = 0;
     let validUsdCurrencies = 0;
-    
+
     BASKET_CURRENCIES.forEach(currency => {
       const rate = crossRates[currency]?.['USD'];
       if (rate && !isNaN(rate) && rate > 0) {
@@ -124,17 +125,17 @@ class LiveExchangeRateService {
         validUsdCurrencies++;
       }
     });
-    
+
     gsdcRates['USD'] = validUsdCurrencies > 0 ? gsdcUsdValue : 0;
-    
+
     return gsdcRates;
   }
-  
+
   async getTokenomicsData(): Promise<BasketCalculation[]> {
     const liveRates = await this.fetchLiveRates();
     const crossRates = this.calculateCrossRates(liveRates);
     const gsdcRates = this.calculateGSDCRates(crossRates);
-    
+
     return BASKET_CURRENCIES.map(currency => ({
       currency,
       benchmarkRates: crossRates[currency],
@@ -151,7 +152,7 @@ export const useLiveExchangeRates = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -165,14 +166,14 @@ export const useLiveExchangeRates = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchData();
-    
+
     // Update every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
-  
+
   return { data, loading, error, lastUpdated, refetch: fetchData };
 };
