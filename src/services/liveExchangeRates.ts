@@ -72,7 +72,8 @@ class LiveExchangeRateService {
           
           if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
             // Cross rate calculation: how many target currency units per 1 base currency unit
-            crossRates[base][target] = targetRate / baseRate;
+            const crossRate = targetRate / baseRate;
+            crossRates[base][target] = parseFloat(crossRate.toFixed(6));
           } else {
             crossRates[base][target] = 0;
           }

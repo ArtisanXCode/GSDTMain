@@ -92,6 +92,7 @@ export default function ExchangeRates() {
                     {(() => {
                       const rate = basket.benchmarkRates[currency];
                       if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                      if (rate < 0.0001) return rate.toFixed(6);
                       return rate.toFixed(4);
                     })()}
                   </span>
