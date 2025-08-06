@@ -24,11 +24,11 @@ export default function LiveExchangeRatesPage() {
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Complete Exchange Rates
+              GSDC Tokenomics
             </h1>
             <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              Comprehensive view of GSDC rates against all supported currencies with detailed 
-              calculation methodology.
+              Live calculation of GSDC exchange rates using real-time market data from 
+              the six-currency basket composition.
             </p>
           </div>
         </motion.div>
@@ -55,14 +55,14 @@ export default function LiveExchangeRatesPage() {
               className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
               style={{ color: "#ed9030" }}
             >
-              REAL-TIME GSDC <br/> EXCHANGE RATES
+              LIVE GSDC <br/> TOKENOMICS CALCULATION
             </p>
             <p className="text-lg leading-6 text-black max-w-2xl mx-auto font-regular">
-              Stay updated with live exchange rates for GSDC against major global currencies.
+              Real-time calculation of GSDC rates based on live market data from our six-currency basket.
               <br />
-              Our transparent methodology ensures accurate and reliable pricing information
+              Each GSDC token represents 1 unit of each currency in the diversified basket,
               <br />
-              for all your trading and investment decisions.
+              providing transparent and dynamic valuation across global markets.
             </p>
           </div>
 
@@ -75,10 +75,10 @@ export default function LiveExchangeRatesPage() {
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-3xl font-semibold text-white mb-1">
-                    Live Exchange Rates
+                    Live Tokenomics Dashboard
                   </h3>
                   <p className="text-sm text-white/70">
-                    Real-time GSDC exchange rates against major currencies
+                    Real-time GSDC basket calculation with live market rates
                   </p>
                 </div>
               </div>

@@ -1,162 +1,193 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getExchangeRates, ExchangeRate } from '../services/exchangeRates';
-import { format } from 'date-fns';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
+
+const currencyNames: Record<string, string> = {
+  CNH: 'Chinese Yuan',
+  THB: 'Thai Baht', 
+  INR: 'Indian Rupee',
+  BRL: 'Brazilian Real',
+  ZAR: 'South African Rand',
+  IDR: 'Indonesian Rupiah',
+  USD: 'US Dollar'
+};
+
+const currencyColors: Record<string, string> = {
+  CNH: '#ed9030',
+  BRL: '#ed9030', 
+  ZAR: '#ed9030',
+  THB: '#ed9030',
+  INR: '#ed9030',
+  IDR: '#ed9030'
+};
 
 export default function ExchangeRates() {
-  const [rates, setRates] = useState<ExchangeRate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  const fetchRates = async () => {
-    try {
-      setLoading(true);
-      const data = await getExchangeRates();
-      setRates(data);
-      setLastUpdated(new Date());
-      setError(null);
-    } catch (err: any) {
-      console.error('Error fetching rates:', err);
-      setError(err.message || 'Error fetching exchange rates');
-      // Show mock data for demonstration
-      setRates([
-        { id: '1', currency_from: 'GSDC', currency_to: 'USD', rate: 1.00, last_updated: new Date().toISOString() },
-        { id: '2', currency_from: 'GSDC', currency_to: 'EUR', rate: 0.92, last_updated: new Date().toISOString() },
-        { id: '3', currency_from: 'GSDC', currency_to: 'GBP', rate: 0.79, last_updated: new Date().toISOString() },
-        { id: '4', currency_from: 'GSDC', currency_to: 'JPY', rate: 149.50, last_updated: new Date().toISOString() },
-        { id: '5', currency_from: 'GSDC', currency_to: 'CAD', rate: 1.36, last_updated: new Date().toISOString() },
-        { id: '6', currency_from: 'GSDC', currency_to: 'AUD', rate: 1.52, last_updated: new Date().toISOString() },
-        { id: '7', currency_from: 'GSDC', currency_to: 'CHF', rate: 0.88, last_updated: new Date().toISOString() },
-        { id: '8', currency_from: 'GSDC', currency_to: 'CNY', rate: 7.24, last_updated: new Date().toISOString() }
-      ]);
-      setLastUpdated(new Date());
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRates();
-    const interval = setInterval(fetchRates, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, []);
+  const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
 
   const handleRefresh = () => {
-    fetchRates();
+    refetch();
   };
 
-  if (loading && rates.length === 0) {
+  if (loading && data.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-        <p className="mt-4 text-white/70">Loading exchange rates...</p>
+        <p className="mt-4 text-white/70">Loading tokenomics data...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header with refresh button */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-white/70">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">GSDC Tokenomics</h2>
+        <p className="text-white/80 text-lg mb-4">
+          Each unit of GSDC consists of 1 unit of each of the 6 currencies in the basket.
+        </p>
+        <div className="flex justify-center items-center space-x-6 text-sm text-white/70">
+          <div>
             Status: <span className="text-green-400">Live</span>
           </div>
-          <div className="text-sm text-white/70">
-            Last Updated: {lastUpdated ? format(lastUpdated, 'HH:mm:ss') : 'Never'}
+          <div>
+            Last Updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
           </div>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center space-x-2 px-3 py-1 hover:text-white transition-colors"
+          >
+            <ArrowPathIcon className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
-        <button
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center space-x-2 px-4 py-2 text-sm text-white/70 hover:text-white transition-colors"
-        >
-          <ArrowPathIcon className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh</span>
-        </button>
       </div>
 
-      {/* Exchange Rates Table */}
-      <div className="overflow-x-auto" style={{ backgroundColor: "#2a4661" }}>
-        <table className="w-full">
-          <thead style={{ backgroundColor: "#5a7a96" }}>
-            <tr className="border-b border-white/20">
-              <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
-                FROM CURRENCY
-              </th>
-              <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
-                TO CURRENCY
-              </th>
-              <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
-                EXCHANGE RATE
-              </th>
-              <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
-                LAST UPDATED
-              </th>
-              <th className="text-left py-3 px-4 text-white/70 font-medium uppercase text-xs">
-                STATUS
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-                  <p className="mt-4 text-white/70">
-                    Loading exchange rates...
-                  </p>
-                </td>
-              </tr>
-            ) : rates.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8">
-                  <p className="text-white/70">No exchange rates available</p>
-                </td>
-              </tr>
-            ) : (
-              rates.map((rate, index) => (
-                <motion.tr
-                  key={rate.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="border-b border-white/10 hover:bg-white/5"
+      {/* Tokenomics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {data.map((basket) => (
+          <motion.div
+            key={basket.currency}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
+          >
+            {/* Header */}
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-white">
+                {basket.currency} as Benchmark Reference
+              </h3>
+            </div>
+
+            {/* Cross Rates */}
+            <div className="space-y-2 mb-4">
+              {BASKET_CURRENCIES.map((currency) => (
+                <div key={currency} className="flex justify-between text-sm">
+                  <span className="text-white/80">
+                    {currency}/{basket.currency}
+                  </span>
+                  <span className="text-white font-mono">
+                    {basket.benchmarkRates[currency]?.toFixed(4) || '0.0000'}
+                  </span>
+                </div>
+              ))}
+              
+              {/* USD Rate */}
+              <div className="flex justify-between text-sm border-t border-white/20 pt-2">
+                <span className="text-white/80">
+                  {basket.currency}/USD
+                </span>
+                <span className="text-white font-mono">
+                  {basket.benchmarkRates['USD']?.toFixed(4) || '0.0000'}
+                </span>
+              </div>
+            </div>
+
+            {/* GSDC Rate */}
+            <div 
+              className="border-t-2 pt-3"
+              style={{ borderColor: currencyColors[basket.currency] }}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-semibold" style={{ color: currencyColors[basket.currency] }}>
+                  GSDC/{basket.currency}
+                </span>
+                <span 
+                  className="text-lg font-bold"
+                  style={{ color: currencyColors[basket.currency] }}
                 >
-                  <td className="py-4 px-4 text-white text-sm font-medium">
-                    {rate.currency_from}
-                  </td>
-                  <td className="py-4 px-4 text-white text-sm font-medium">
-                    {rate.currency_to}
-                  </td>
-                  <td className="py-4 px-4 text-white text-sm">
-                    {rate.rate.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6
-                    })}
-                  </td>
-                  <td className="py-4 px-4 text-white/70 text-sm">
-                    {format(new Date(rate.last_updated), 'dd/MM/yyyy HH:mm')}
-                  </td>
-                  <td className="py-4 px-4 text-sm">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      LIVE
-                    </span>
-                  </td>
-                </motion.tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  {basket.gsdcRate.toFixed(4)}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      {/* USD Benchmark - Special Display */}
+      {data.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-blue-900/50 to-blue-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-400/30"
+        >
+          <div className="text-center mb-4">
+            <h3 className="text-xl font-semibold text-white">
+              USD as Benchmark Reference
+            </h3>
+            <p className="text-white/70 text-sm">Primary reference for international markets</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {BASKET_CURRENCIES.map((currency) => {
+              const usdRate = data.find(d => d.currency === currency)?.benchmarkRates['USD'] || 0;
+              return (
+                <div key={currency} className="text-center">
+                  <div className="text-white/80 text-sm mb-1">{currency}/USD</div>
+                  <div className="text-white font-mono text-lg">
+                    {(1/usdRate).toFixed(4)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="border-t border-blue-400/30 mt-4 pt-4 text-center">
+            <div className="flex justify-center items-center space-x-4">
+              <span className="text-blue-300 font-semibold text-lg">GSDC/USD</span>
+              <span className="text-blue-300 text-2xl font-bold">
+                {data.find(d => d.currency === 'CNH')?.benchmarkRates ? 
+                  BASKET_CURRENCIES.reduce((sum, currency) => {
+                    const basket = data.find(d => d.currency === currency);
+                    return sum + (basket?.benchmarkRates['USD'] || 0);
+                  }, 0).toFixed(4) : '0.0000'
+                }
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {error && (
         <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
           <p className="text-red-400 text-sm">{error}</p>
+          <p className="text-red-300 text-xs mt-1">
+            Showing cached data. Live rates will resume automatically.
+          </p>
         </div>
       )}
+
+      {/* Disclaimer */}
+      <div className="mt-8 text-xs text-white/50 text-center">
+        <p>
+          Regrettably due to both primary and secondary sanctions served by the 
+          U.S. Office of Foreign Assets Control (OFAC) and the European External 
+          Action Service (EEAS), we were unable to include the Russian Ruble (RUB) 
+          and Russian Federation securities (Government Bonds) in the currency basket and reserves.
+        </p>
+      </div>
     </div>
   );
 }
