@@ -169,7 +169,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full text-white py-3 px-4 rounded-full font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
+              style={{
+                background: loading ? "#ed9030" : "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                opacity: loading ? 0.7 : 1
+              }}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -188,7 +192,8 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              className="font-medium transition-colors hover:opacity-80"
+              style={{ color: "#e74134" }}
             >
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </button>

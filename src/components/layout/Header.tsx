@@ -291,7 +291,10 @@ const Header = () => {
                     setLoginModalOpen(true);
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  className="block w-full text-center px-4 py-2 rounded-full text-base font-semibold text-white transition-all duration-200 hover:opacity-90 shadow-lg mx-3"
+                  style={{
+                    background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                  }}
                 >
                   Login / Sign Up
                 </button>
