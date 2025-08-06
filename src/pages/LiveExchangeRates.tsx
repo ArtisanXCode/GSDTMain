@@ -57,7 +57,7 @@ export default function LiveExchangeRatesPage() {
             >
               LIVE GSDC <br/> TOKENOMICS CALCULATION
             </p>
-            <p className="text-lg leading-6 text-black max-w-2xl mx-auto font-regular">
+            <p className="text-lg leading-6 text-black max-w-4xl mx-auto font-regular">
               Real-time calculation of GSDC rates based on live market data from our six-currency basket.
               <br />
               Each GSDC token represents 1 unit of each currency in the diversified basket,
@@ -71,18 +71,7 @@ export default function LiveExchangeRatesPage() {
             className="rounded-lg overflow-hidden"
             style={{ backgroundColor: "#2a4661" }}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-3xl font-semibold text-white mb-1">
-                    Live Tokenomics Dashboard
-                  </h3>
-                  <p className="text-sm text-white/70">
-                    Real-time GSDC basket calculation with live market rates
-                  </p>
-                </div>
-              </div>
-
+            <div className="p-6">              
               {/* Exchange Rates Component */}
               <ExchangeRates />
             </div>

@@ -25,8 +25,7 @@ class LiveExchangeRateService {
     try {
       // Fetch USD as base currency to get all rates
       const response = await fetch(`${this.baseUrl}/USD`);      
-      const data = await response.json();
-      console.log(data);
+      const data = await response.json();      
       if (!data.rates) {
         throw new Error('Invalid API response');
       }
