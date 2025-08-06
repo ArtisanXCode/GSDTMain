@@ -72,59 +72,69 @@ export default function ExchangeRates() {
             key={basket.currency}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
+            className="rounded-lg overflow-hidden border border-white/20"
           >
             {/* Header */}
-            <div className="text-center mb-4">
+            <div 
+              className="text-center py-3 px-4"
+              style={{ backgroundColor: "#2a4661" }}
+            >
               <h3 className="text-lg font-semibold text-white">
                 {basket.currency} as Benchmark Reference
               </h3>
             </div>
 
+            {/* Content */}
+            <div 
+              className="p-6"
+              style={{ backgroundColor: "#6d97bf" }}
+            >
+
             {/* Cross Rates */}
-            <div className="space-y-2 mb-4">
-              {BASKET_CURRENCIES.map((currency) => (
-                <div key={currency} className="flex justify-between text-sm">
-                  <span className="text-white/80">
-                    {currency}/{basket.currency}
+              <div className="space-y-2 mb-4">
+                {BASKET_CURRENCIES.map((currency) => (
+                  <div key={currency} className="flex justify-between text-sm">
+                    <span className="text-white">
+                      {currency}/{basket.currency}
+                    </span>
+                    <span className="text-white font-mono font-semibold">
+                      {(() => {
+                        const rate = basket.benchmarkRates[currency];
+                        //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
+                        if (!rate || isNaN(rate)) return '0.0000';
+                        if (rate === 1) return '1.0000';
+                        if (rate < 0.0001) return rate.toFixed(6);
+                        if (rate < 0.01) return rate.toFixed(6);
+                        if (rate < 1) return rate.toFixed(4);
+                        return rate.toFixed(4);
+                      })()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+            {/* GSDC Rate */}
+              <div
+                className="border-t-2 pt-3"
+                style={{ borderColor: currencyColors[basket.currency] }}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold" style={{ color: currencyColors[basket.currency] }}>
+                    GSDC/{basket.currency}
                   </span>
-                  <span className="text-white font-mono">
+                  <span
+                    className="text-lg font-bold"
+                    style={{ color: currencyColors[basket.currency] }}
+                  >
                     {(() => {
-                      const rate = basket.benchmarkRates[currency];
-                      //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
-                      if (!rate || isNaN(rate)) return '0.0000';
-                      if (rate === 1) return '1.0000';
+                      const rate = basket.gsdcRate;
+                      if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
                       if (rate < 0.0001) return rate.toFixed(6);
                       if (rate < 0.01) return rate.toFixed(6);
-                      if (rate < 1) return rate.toFixed(4);
                       return rate.toFixed(4);
                     })()}
                   </span>
                 </div>
-              ))}
-            </div>
-
-            {/* GSDC Rate */}
-            <div
-              className="border-t-2 pt-3"
-              style={{ borderColor: currencyColors[basket.currency] }}
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-semibold" style={{ color: currencyColors[basket.currency] }}>
-                  GSDC/{basket.currency}
-                </span>
-                <span
-                  className="text-lg font-bold"
-                  style={{ color: currencyColors[basket.currency] }}
-                >
-                  {(() => {
-                    const rate = basket.gsdcRate;
-                    if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
-                    if (rate < 0.0001) return rate.toFixed(6);
-                    if (rate < 0.01) return rate.toFixed(6);
-                    return rate.toFixed(4);
-                  })()}
-                </span>
               </div>
             </div>
           </motion.div>
