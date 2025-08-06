@@ -47,7 +47,7 @@ class LiveExchangeRateService {
       INR: 83.12,
       BRL: 5.85,
       ZAR: 18.25,
-      IDR: 15750,
+      IDR: 15750.50,
       USD: 1.0000,
       EUR: 0.92,
       JPY: 149.50,
@@ -67,15 +67,26 @@ class LiveExchangeRateService {
         if (base === target) {
           crossRates[base][target] = 1.0000;
         } else {
-          // Convert via USD: base/target = (base/USD) / (target/USD)
-          const baseToUSD = 1 / baseRates[base];
-          const targetToUSD = 1 / baseRates[target];
-          crossRates[base][target] = baseToUSD / targetToUSD;
+          // Ensure rates exist and are valid numbers
+          const baseRate = baseRates[base];
+          const targetRate = baseRates[target];
+          
+          if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
+            // Convert via USD: base/target = (target/USD) / (base/USD)
+            crossRates[base][target] = targetRate / baseRate;
+          } else {
+            crossRates[base][target] = 0;
+          }
         }
       });
       
-      // Add USD rates
-      crossRates[base]['USD'] = 1 / baseRates[base];
+      // Add USD rates - direct conversion from USD to base currency
+      const baseRate = baseRates[base];
+      if (baseRate && baseRate > 0) {
+        crossRates[base]['USD'] = 1 / baseRate;
+      } else {
+        crossRates[base]['USD'] = 0;
+      }
     });
     
     return crossRates;
@@ -87,21 +98,34 @@ class LiveExchangeRateService {
     // For each benchmark currency, calculate GSDC rate
     BASKET_CURRENCIES.forEach(benchmark => {
       let gsdcValue = 0;
+      let validCurrencies = 0;
       
       // Sum all basket currencies converted to benchmark
       BASKET_CURRENCIES.forEach(currency => {
-        gsdcValue += crossRates[currency][benchmark];
+        const rate = crossRates[currency]?.[benchmark];
+        if (rate && !isNaN(rate) && rate > 0) {
+          gsdcValue += rate;
+          validCurrencies++;
+        }
       });
       
-      gsdcRates[benchmark] = gsdcValue;
+      // Only set rate if we have valid data
+      gsdcRates[benchmark] = validCurrencies > 0 ? gsdcValue : 0;
     });
     
     // Calculate GSDC/USD
     let gsdcUsdValue = 0;
+    let validUsdCurrencies = 0;
+    
     BASKET_CURRENCIES.forEach(currency => {
-      gsdcUsdValue += crossRates[currency]['USD'];
+      const rate = crossRates[currency]?.['USD'];
+      if (rate && !isNaN(rate) && rate > 0) {
+        gsdcUsdValue += rate;
+        validUsdCurrencies++;
+      }
     });
-    gsdcRates['USD'] = gsdcUsdValue;
+    
+    gsdcRates['USD'] = validUsdCurrencies > 0 ? gsdcUsdValue : 0;
     
     return gsdcRates;
   }

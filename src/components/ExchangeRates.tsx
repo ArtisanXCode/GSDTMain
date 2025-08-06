@@ -89,7 +89,11 @@ export default function ExchangeRates() {
                     {currency}/{basket.currency}
                   </span>
                   <span className="text-white font-mono">
-                    {basket.benchmarkRates[currency]?.toFixed(4) || '0.0000'}
+                    {(() => {
+                      const rate = basket.benchmarkRates[currency];
+                      if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                      return rate.toFixed(4);
+                    })()}
                   </span>
                 </div>
               ))}
@@ -100,7 +104,11 @@ export default function ExchangeRates() {
                   {basket.currency}/USD
                 </span>
                 <span className="text-white font-mono">
-                  {basket.benchmarkRates['USD']?.toFixed(4) || '0.0000'}
+                  {(() => {
+                    const rate = basket.benchmarkRates['USD'];
+                    if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                    return rate.toFixed(4);
+                  })()}
                 </span>
               </div>
             </div>
@@ -118,7 +126,11 @@ export default function ExchangeRates() {
                   className="text-lg font-bold"
                   style={{ color: currencyColors[basket.currency] }}
                 >
-                  {basket.gsdcRate.toFixed(4)}
+                  {(() => {
+                    const rate = basket.gsdcRate;
+                    if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                    return rate.toFixed(4);
+                  })()}
                 </span>
               </div>
             </div>
@@ -147,7 +159,10 @@ export default function ExchangeRates() {
                 <div key={currency} className="text-center">
                   <div className="text-white/80 text-sm mb-1">{currency}/USD</div>
                   <div className="text-white font-mono text-lg">
-                    {(1/usdRate).toFixed(4)}
+                    {(() => {
+                      if (!usdRate || isNaN(usdRate) || usdRate <= 0) return '0.0000';
+                      return (1/usdRate).toFixed(4);
+                    })()}
                   </div>
                 </div>
               );
@@ -158,12 +173,21 @@ export default function ExchangeRates() {
             <div className="flex justify-center items-center space-x-4">
               <span className="text-blue-300 font-semibold text-lg">GSDC/USD</span>
               <span className="text-blue-300 text-2xl font-bold">
-                {data.find(d => d.currency === 'CNH')?.benchmarkRates ? 
-                  BASKET_CURRENCIES.reduce((sum, currency) => {
+                {(() => {
+                  let sum = 0;
+                  let validCount = 0;
+                  
+                  BASKET_CURRENCIES.forEach(currency => {
                     const basket = data.find(d => d.currency === currency);
-                    return sum + (basket?.benchmarkRates['USD'] || 0);
-                  }, 0).toFixed(4) : '0.0000'
-                }
+                    const rate = basket?.benchmarkRates['USD'];
+                    if (rate && !isNaN(rate) && rate > 0) {
+                      sum += rate;
+                      validCount++;
+                    }
+                  });
+                  
+                  return validCount > 0 ? sum.toFixed(4) : '0.0000';
+                })()}
               </span>
             </div>
           </div>
