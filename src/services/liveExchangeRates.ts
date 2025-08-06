@@ -13,7 +13,7 @@ export interface BasketCalculation {
 }
 
 // GSDC basket currencies
-export const BASKET_CURRENCIES = ['CNH', 'BRL', 'ZAR', 'THB', 'INR', 'IDR'];
+export const BASKET_CURRENCIES = ['CNH', 'BRL', 'ZAR', 'THB', 'INR', 'IDR', 'USD'];
 export const REFERENCE_CURRENCIES = ['USD'];
 
 // Live exchange rate API service
@@ -34,29 +34,7 @@ class LiveExchangeRateService {
       return data.rates;
     } catch (error) {
       console.error('Error fetching live rates:', error);
-      // Return mock data for development
-      return this.getMockRates();
     }
-  }
-
-  private getMockRates(): Record<string, number> {
-    // Rates based on screenshot values
-    const rates = {
-      CNH: 7.2405,
-      THB: 33.95,
-      INR: 83.12,
-      BRL: 5.85,
-      ZAR: 18.25,
-      IDR: 15750.50,
-      USD: 1.0000,
-      EUR: 0.92,
-      JPY: 149.50,
-      GBP: 0.79,
-      CAD: 1.36,
-      AUD: 1.52
-    };
-    console.log('Mock rates loaded:', rates);
-    return rates;
   }
 
   calculateCrossRates(baseRates: Record<string, number>): Record<string, Record<string, number>> {
