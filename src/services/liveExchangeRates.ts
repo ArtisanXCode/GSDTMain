@@ -49,9 +49,9 @@ class LiveExchangeRateService {
         } else {
           const baseRate = baseRates[base];
           const targetRate = baseRates[target];
-          
+
           console.log(`Calculating ${target}/${base}: baseRate=${baseRate}, targetRate=${targetRate}`);
-          
+
           if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
             // Cross rate calculation: how many target currency units per 1 base currency unit
             const crossRate = targetRate / baseRate;
@@ -81,10 +81,12 @@ class LiveExchangeRateService {
     const gsdcRates: Record<string, number> = {};
 
     // GSDC calculation: sum of all basket currency rates relative to each benchmark
-    BASKET_CURRENCIES.forEach(benchmark => {
+    const basketCurrenciesExcludingUSD = BASKET_CURRENCIES.filter(cur => cur !== 'USD');
+
+    basketCurrenciesExcludingUSD.forEach(benchmark => {
       let gsdcValue = 0;
 
-      BASKET_CURRENCIES.forEach(currency => {
+      basketCurrenciesExcludingUSD.forEach(currency => {
         const rate = crossRates[currency]?.[benchmark];
         if (rate !== undefined && !isNaN(rate) && rate > 0) {
           gsdcValue += rate;
@@ -97,13 +99,14 @@ class LiveExchangeRateService {
     // Calculate GSDC/USD: sum all basket currencies in USD terms
     let gsdcUsdValue = 0;
     BASKET_CURRENCIES.forEach(currency => {
-      const rate = crossRates[currency]?.['USD'];
-      if (rate && !isNaN(rate) && rate > 0) {
-        // 1 unit of currency converted to USD
-        gsdcUsdValue += (1 / rate);
+      if (currency !== 'USD') {
+        const rate = crossRates[currency]?.['USD'];
+        if (rate && !isNaN(rate) && rate > 0) {
+          // 1 unit of currency converted to USD
+          gsdcUsdValue += (1 / rate);
+        }
       }
     });
-
     gsdcRates['USD'] = parseFloat(gsdcUsdValue.toFixed(4));
 
     return gsdcRates;

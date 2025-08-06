@@ -92,7 +92,8 @@ export default function ExchangeRates() {
                     {(() => {
                       const rate = basket.benchmarkRates[currency];
                       console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
-                      if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
+                      if (!rate || isNaN(rate)) return '0.0000';
+                      if (rate === 1) return '1.0000';
                       if (rate < 0.0001) return rate.toFixed(6);
                       if (rate < 1) return rate.toFixed(4);
                       return rate.toFixed(4);
@@ -100,20 +101,6 @@ export default function ExchangeRates() {
                   </span>
                 </div>
               ))}
-              
-              {/* USD Rate */}
-              <div className="flex justify-between text-sm border-t border-white/20 pt-2">
-                <span className="text-white/80">
-                  {basket.currency}/USD
-                </span>
-                <span className="text-white font-mono">
-                  {(() => {
-                    const rate = basket.benchmarkRates['USD'];
-                    if (!rate || isNaN(rate) || rate <= 0) return '0.0000';
-                    return rate.toFixed(4);
-                  })()}
-                </span>
-              </div>
             </div>
 
             {/* GSDC Rate */}
@@ -141,61 +128,7 @@ export default function ExchangeRates() {
         ))}
       </div>
 
-      {/* USD Benchmark - Special Display */}
-      {data.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-900/50 to-blue-800/50 backdrop-blur-sm rounded-lg p-6 border border-blue-400/30"
-        >
-          <div className="text-center mb-4">
-            <h3 className="text-xl font-semibold text-white">
-              USD as Benchmark Reference
-            </h3>
-            <p className="text-white/70 text-sm">Primary reference for international markets</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {BASKET_CURRENCIES.map((currency) => {
-              const usdRate = data.find(d => d.currency === currency)?.benchmarkRates['USD'] || 0;
-              return (
-                <div key={currency} className="text-center">
-                  <div className="text-white/80 text-sm mb-1">{currency}/USD</div>
-                  <div className="text-white font-mono text-lg">
-                    {(() => {
-                      if (!usdRate || isNaN(usdRate) || usdRate <= 0) return '0.0000';
-                      return (1/usdRate).toFixed(4);
-                    })()}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="border-t border-blue-400/30 mt-4 pt-4 text-center">
-            <div className="flex justify-center items-center space-x-4">
-              <span className="text-blue-300 font-semibold text-lg">GSDC/USD</span>
-              <span className="text-blue-300 text-2xl font-bold">
-                {(() => {
-                  let sum = 0;
-                  let validCount = 0;
-                  
-                  BASKET_CURRENCIES.forEach(currency => {
-                    const basket = data.find(d => d.currency === currency);
-                    const rate = basket?.benchmarkRates['USD'];
-                    if (rate && !isNaN(rate) && rate > 0) {
-                      sum += rate;
-                      validCount++;
-                    }
-                  });
-                  
-                  return validCount > 0 ? sum.toFixed(4) : '0.0000';
-                })()}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-      )}
+      
 
       {error && (
         <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
