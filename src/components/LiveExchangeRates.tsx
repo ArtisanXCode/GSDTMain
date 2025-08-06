@@ -96,6 +96,23 @@ export default function LiveExchangeRates({
       currency => gsdcRates && gsdcRates[currency] > 0
     );
 
+    // Function to format GSDC rate with appropriate precision
+    const formatGSDCRate = (rate: number, currency: string): string => {
+      if (currency === 'USD') {
+        return rate.toFixed(4);
+      } else if (rate >= 1000) {
+        return rate.toFixed(0);
+      } else if (rate >= 100) {
+        return rate.toFixed(1);
+      } else if (rate >= 10) {
+        return rate.toFixed(2);
+      } else if (rate >= 1) {
+        return rate.toFixed(4);
+      } else {
+        return rate.toFixed(6);
+      }
+    };
+
     return (
       <div className={`bg-white/20 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30 ${className}`}>
         <div className="flex justify-between items-center mb-3">
@@ -123,7 +140,7 @@ export default function LiveExchangeRates({
                 GSDC/{currency}
               </div>
               <div className="text-sm font-bold text-white">
-                {currencySymbols[currency]}{gsdcRates[currency]?.toFixed(4)}
+                {formatGSDCRate(gsdcRates[currency] || 0, currency)}
               </div>
             </motion.div>
           ))}
