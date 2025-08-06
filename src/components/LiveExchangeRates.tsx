@@ -113,7 +113,7 @@ export default function LiveExchangeRates({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className="bg-white/15 rounded-xl p-3 text-center hover:bg-white/20 transition-all duration-200 hover:scale-105"
+                className="bg-white/15 rounded-xl p-3 text-center hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/30"
               >
                 <div className="text-xs font-medium text-white/90 mb-1">
                   GSDC/{currency}
