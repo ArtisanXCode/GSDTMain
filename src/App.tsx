@@ -39,6 +39,8 @@ export default function App() {
               <Route path="/about" element={<About />} />
               <Route path="/live-exchange-rates" element={<LiveExchangeRatesPage />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/transparency" element={<Transparency />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/token-minting" element={<TokenMinting />} />
               <Route path="/transactions" element={<TransactionList />} />
               <Route path="/terms" element={<Terms />} />
@@ -132,7 +134,7 @@ export default function App() {
 
               {/* Dynamic CMS Pages */}
               <Route path="/page/:slug" element={<DynamicPage />} />
-              
+
               {/* Legal Pages */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
             </Routes>
