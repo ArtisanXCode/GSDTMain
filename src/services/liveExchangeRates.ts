@@ -66,22 +66,20 @@ class LiveExchangeRateService {
         if (base === target) {
           crossRates[base][target] = 1.0000;
         } else {
-          // Get rates in terms of USD (how many units per 1 USD)
-          const baseRatePerUsd = baseRates[base]; // e.g., CNH per USD = 7.2405
-          const targetRatePerUsd = baseRates[target]; // e.g., BRL per USD = 5.85
-
-          if (baseRatePerUsd && targetRatePerUsd && baseRatePerUsd > 0 && targetRatePerUsd > 0) {
-            // To get base/target (e.g., CNH/BRL), we need:
-            // How many target units equal 1 base unit
-            // CNH/BRL = (BRL per USD) / (CNH per USD) = 5.85 / 7.2405 = 0.8077
-            crossRates[base][target] = targetRatePerUsd / baseRatePerUsd;
+          const baseRate = baseRates[base];
+          const targetRate = baseRates[target];
+          
+          if (baseRate && targetRate && baseRate > 0 && targetRate > 0) {
+            // Convert via USD: base/target = (base/USD) / (target/USD)
+            // This gives us how many target units equal 1 base unit
+            crossRates[base][target] = baseRate / targetRate;
           } else {
             crossRates[base][target] = 0;
           }
         }
       });
 
-      // Add USD rates - how many base units per 1 USD
+      // Add USD rates - direct rate from API (base currency per USD)
       const baseRate = baseRates[base];
       if (baseRate && baseRate > 0) {
         crossRates[base]['USD'] = baseRate;
