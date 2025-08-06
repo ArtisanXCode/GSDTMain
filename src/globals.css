@@ -156,84 +156,40 @@ body {
 
   /* Phoenix Icon Size Management */
   .phoenix-icon-parent {
-    position: absolute; 
-    right: 10%; 
-    top: -120px;
-  }
-  .phoenix-icon-small {
-    width: 64px;
-    height: 64px;
-  }
-
-  .phoenix-icon-medium {
-    width: 128px;
-    height: 128px;
+    position: absolute;
+    right: 4rem;
+    top: -6rem;
+    z-index: 10;
   }
 
   .phoenix-icon-large {
-    width: 250px;
-    height: 250px;
+    width: 12rem;
+    height: 12rem;
+    object-fit: contain;
   }
 
-  .phoenix-icon-xlarge {
-    width: 768px;
-    height: 768px;
+  /* CMS Content Styles */
+  .prose * {
+    color: #374151 !important;
   }
 
-  .phoenix-icon-xxlarge {
-    width: 1024px;
-    height: 1024px;
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #111827 !important;
+    font-weight: 600;
   }
 
-  /* Custom size class - you can modify this directly */
-  .phoenix-icon-custom {
-    width: 400px;
-    height: 400px;
+  .prose a {
+    color: #2563eb !important;
+    text-decoration: underline;
   }
 
-  /* Size variations for different use cases */
-  .phoenix-icon-256 {
-    width: 256px;
-    height: 256px;
+  .prose strong, .prose b {
+    color: #111827 !important;
+    font-weight: 600;
   }
 
-  .phoenix-icon-384 {
-    width: 384px;
-    height: 384px;
-  }
-
-  .phoenix-icon-512 {
-    width: 512px;
-    height: 512px;
-  }
-
-  .phoenix-icon-640 {
-    width: 640px;
-    height: 640px;
-  }
-
-  .phoenix-icon-768 {
-    width: 768px;
-    height: 768px;
-  }
-
-  /* Responsive phoenix icon */
-  .phoenix-icon-responsive {
-    width: 128px;
-    height: 128px;
-  }
-
-  @media (min-width: 640px) {
-    .phoenix-icon-responsive {
-      width: 200px;
-      height: 200px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .phoenix-icon-responsive {
-      width: 256px;
-      height: 256px;
-    }
+  .prose blockquote {
+    color: #6b7280 !important;
+    border-left-color: #d1d5db;
   }
 }

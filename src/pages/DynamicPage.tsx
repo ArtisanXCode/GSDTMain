@@ -108,7 +108,8 @@ export default function DynamicPage() {
           >
             <div className="px-6 py-8 sm:p-10">
               <div 
-                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700"
+                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700 prose-a:text-blue-600 prose-blockquote:text-gray-600 text-gray-700"
+                style={{ color: '#374151' }}
                 dangerouslySetInnerHTML={{ __html: page.content }}
               />
             </div>
