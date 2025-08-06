@@ -12,7 +12,7 @@ export interface BasketCalculation {
   gsdcRate: number;
 }
 
-// GSDC basket currencies
+// GSDC basket currencies - using CNY instead of CNH to match API
 export const BASKET_CURRENCIES = ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD'];
 export const REFERENCE_CURRENCIES = ['USD'];
 
