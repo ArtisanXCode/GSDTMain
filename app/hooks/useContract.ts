@@ -3,9 +3,7 @@
 
 import { useContract, useProvider, useSigner } from 'wagmi';
 import { Contract } from 'ethers';
-import GSDC_ABI from '../contracts/GSDC.json';
-
-const GSDC_ADDRESS = '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804';
+import { GSDC_ADDRESS, GSDC_ABI } from '../contracts/GSDC.json';
 
 export function useGSDCContract() {
   const provider = useProvider();

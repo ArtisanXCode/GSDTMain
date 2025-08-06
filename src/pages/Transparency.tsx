@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { ArrowDownTrayIcon, LinkIcon } from '@heroicons/react/24/outline';
+import { GSDC_ADDRESS, GSDC_ABI } from '../contracts/GSDC';
 
 interface CirculationData {
   network: string;
@@ -36,17 +37,17 @@ export default function Transparency() {
       setCirculationData([
         {
           network: 'Ethereum',
-          address: '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804',
+          address: GSDC_ADDRESS,
           supply: '1,000,000',
           holders: 1,
-          explorer: 'https://etherscan.io/token/0x892404Da09f3D7871C49Cd6d6C167F8EB176C804'
+          explorer: 'https://etherscan.io/token/'+GSDC_ADDRESS
         },
         {
           network: 'BSC Testnet',
-          address: '0x892404Da09f3D7871C49Cd6d6C167F8EB176C804',
+          address: GSDC_ADDRESS,
           supply: '500,000',
           holders: 25,
-          explorer: 'https://testnet.bscscan.com/token/0x892404Da09f3D7871C49Cd6d6C167F8EB176C804'
+          explorer: 'https://testnet.bscscan.com/token/'+GSDC_ADDRESS
         }
       ]);
 
