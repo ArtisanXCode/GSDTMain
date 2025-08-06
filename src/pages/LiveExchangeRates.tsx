@@ -47,7 +47,7 @@ export default function LiveExchangeRatesPage() {
         </div>
       </div>
 
-      {/* Main content section with theme background */}
+      {/* Main content section with KYC-style table */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -66,8 +66,27 @@ export default function LiveExchangeRatesPage() {
             </p>
           </div>
 
-          {/* Exchange Rates Component */}
-          <ExchangeRates />
+          {/* Exchange Rates Table with KYC Design */}
+          <div
+            className="rounded-lg overflow-hidden"
+            style={{ backgroundColor: "#2a4661" }}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-3xl font-semibold text-white mb-1">
+                    Live Exchange Rates
+                  </h3>
+                  <p className="text-sm text-white/70">
+                    Real-time GSDC exchange rates against major currencies
+                  </p>
+                </div>
+              </div>
+
+              {/* Exchange Rates Component */}
+              <ExchangeRates />
+            </div>
+          </div>
         </div>
       </div>
       
