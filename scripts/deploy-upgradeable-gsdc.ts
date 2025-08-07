@@ -1,13 +1,21 @@
 
-import { ethers, upgrades } from "hardhat";
+import { ethers, upgrades, run } from "hardhat";
 
 async function main() {
-  console.log("Deploying Upgradeable GSDC...");
+  console.log("Deploying Upgradeable GSDC to BSC Testnet...");
 
   try {
     const [deployer] = await ethers.getSigners();
     console.log("Deploying with account:", deployer.address);
-    console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
+    console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "BNB");
+
+    // Check if we're on BSC testnet
+    const network = await ethers.provider.getNetwork();
+    console.log("Network:", network.name, "Chain ID:", network.chainId);
+
+    if (network.chainId !== 97n) {
+      console.warn("Warning: Not deploying to BSC Testnet (Chain ID 97)");
+    }
 
     // Verify that upgrades is available
     if (!upgrades) {
@@ -39,29 +47,48 @@ async function main() {
     const hasSuperAdminRole = await gsdc.hasRole(await gsdc.SUPER_ADMIN_ROLE(), deployer.address);
     const hasApproverRole = await gsdc.hasRole(await gsdc.APPROVER_ROLE(), deployer.address);
 
-    console.log("Contract verification:");
+    console.log("\nContract verification:");
     console.log("- Name:", name);
     console.log("- Symbol:", symbol);
     console.log("- Has DEFAULT_ADMIN_ROLE:", hasAdminRole);
     console.log("- Has SUPER_ADMIN_ROLE:", hasSuperAdminRole);
     console.log("- Has APPROVER_ROLE:", hasApproverRole);
 
-    // Grant APPROVER_ROLE to additional accounts if needed
-    const APPROVER_ROLE = await gsdc.APPROVER_ROLE();
-    console.log("APPROVER_ROLE hash:", APPROVER_ROLE);
+    // Wait for a few block confirmations before verification
+    console.log("\nWaiting for block confirmations...");
+    await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 1 minute
+
+    // Verify the contract on BSCScan
+    if (process.env.BSCSCAN_API_KEY) {
+      try {
+        console.log("\nVerifying contract on BSCScan...");
+        await run("verify:verify", {
+          address: implementationAddress,
+          constructorArguments: [],
+        });
+        console.log("Contract verified successfully!");
+      } catch (error: any) {
+        console.log("Verification failed:", error.message);
+        if (error.message.includes("Already Verified")) {
+          console.log("Contract was already verified");
+        }
+      }
+    } else {
+      console.log("Skipping verification: BSCSCAN_API_KEY not provided");
+    }
 
     console.log("\nDeployment completed successfully!");
     console.log("Save these addresses for your frontend configuration:");
-    console.log("- Proxy Address:", gsdcAddress);
+    console.log("- Proxy Address (use this in your frontend):", gsdcAddress);
     console.log("- Implementation Address:", implementationAddress);
+    console.log("\nTo interact with the contract, always use the Proxy Address:", gsdcAddress);
 
   } catch (error: any) {
     console.error("Deployment failed:", error.message);
-    if (error.message.includes('deployProxy')) {
+    if (error.message.includes('insufficient funds')) {
       console.error("\nTroubleshooting:");
-      console.error("1. Make sure @openzeppelin/hardhat-upgrades is installed");
-      console.error("2. Verify hardhat.config.ts imports the plugin correctly");
-      console.error("3. Try running: npm install --save-dev @openzeppelin/hardhat-upgrades");
+      console.error("1. Make sure you have enough BNB for gas fees");
+      console.error("2. Get testnet BNB from: https://testnet.bnbchain.org/faucet-smart");
     }
     throw error;
   }
