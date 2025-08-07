@@ -74,13 +74,37 @@ export default function ExchangeRates() {
             {/* Cross Rates */}
               <div className="space-y-2 mb-4">
                 {BASKET_CURRENCIES.map((currency) => {
-                  // Filter out USD cross-rate pairs (USD/CNY, USD/THB, etc.)
-                  if (basket.currency === 'USD' && currency !== 'USD') {
-                    return null;
+                  // For USD benchmark: show USD/[other currencies] but not USD/USD
+                  if (basket.currency === 'USD') {
+                    if (currency === 'USD') {
+                      return null; // Skip USD/USD
+                    }
+                    // Show USD/CNY, USD/THB, etc. in USD benchmark box
+                    return (
+                      <div key={currency} className="flex justify-between text-sm">
+                        <span className="text-white">
+                          USD/{currency}
+                        </span>
+                        <span className="text-white font-mono font-semibold">
+                          {(() => {
+                            const rate = basket.benchmarkRates[currency];
+                            if (!rate || isNaN(rate)) return '0.0000';
+                            // For USD benchmark, we need the inverse rate (USD/currency)
+                            const usdRate = 1 / rate;
+                            if (usdRate === 1) return '1.0000';
+                            if (usdRate < 0.0001) return usdRate.toFixed(6);
+                            if (usdRate < 0.01) return usdRate.toFixed(6);
+                            if (usdRate < 1) return usdRate.toFixed(4);
+                            return usdRate.toFixed(4);
+                          })()}
+                        </span>
+                      </div>
+                    );
                   }
-                  // Remove USD/USD from USD benchmark
-                  if (basket.currency === 'USD' && currency === 'USD') {
-                    return null;
+                  
+                  // For non-USD benchmarks: show all currencies except USD cross-rates
+                  if (currency === 'USD') {
+                    return null; // Remove USD/[benchmark] from all non-USD boxes
                   }
 
                   return (
@@ -91,7 +115,6 @@ export default function ExchangeRates() {
                       <span className="text-white font-mono font-semibold">
                         {(() => {
                           const rate = basket.benchmarkRates[currency];
-                          //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
                           if (!rate || isNaN(rate)) return '0.0000';
                           if (rate === 1) return '1.0000';
                           if (rate < 0.0001) return rate.toFixed(6);
