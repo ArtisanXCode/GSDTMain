@@ -75,7 +75,7 @@ export default function LiveExchangeRates({
     return (
       <div className={`bg-white/20 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30 ${className}`}>
         <div className="flex justify-between items-center mb-3">
-          <h4 className="text-lg font-bold text-white">GSDC Live Rates 123</h4>
+          <h4 className="text-lg font-bold text-white">GSDC Live Rates</h4>
           {lastUpdated && (
             <div className="flex items-center space-x-1">
               <ArrowPathIcon className="h-3 w-3 text-white/80" />
