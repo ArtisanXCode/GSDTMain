@@ -25,6 +25,7 @@ import TokenMinting from './pages/TokenMinting';
 import CMSPages from './pages/admin/CMSPages';
 import AdminPendingTransactions from './pages/admin/PendingTransactions';
 import LiveExchangeRatesPage from "./pages/LiveExchangeRates";
+import HistoricalAnalyticsPage from './pages/HistoricalAnalytics';
 import DynamicPage from './pages/DynamicPage';
 
 export default function App() {
@@ -38,6 +39,8 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/live-exchange-rates" element={<LiveExchangeRatesPage />} />
+              <Route path="/historical-analytics" element={<HistoricalAnalyticsPage />} />
+              <Route path="/transaction-list" element={<TransactionListPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/transparency" element={<Transparency />} />
               <Route path="/dashboard" element={<Dashboard />} />

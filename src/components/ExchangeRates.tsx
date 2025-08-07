@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
 import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
+import HistoricalChart from './HistoricalChart';
 
 export default function ExchangeRates() {
   const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
+  const [showHistorical, setShowHistorical] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('CNY');
 
   const handleRefresh = () => {
     refetch();
@@ -28,7 +31,7 @@ export default function ExchangeRates() {
         <p className="text-white/80 text-lg mb-4">
           Each unit of GSDC consists of 1 unit of each of the 6 currencies in the basket.
         </p>
-        <div className="flex justify-center items-center space-x-6 text-sm text-white/70">
+        <div className="flex flex-wrap justify-center items-center space-x-6 text-sm text-white/70">
           <div>
             Status: <span className="text-green-400">Live</span>
           </div>
@@ -43,11 +46,44 @@ export default function ExchangeRates() {
             <ArrowPathIcon className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
+          <button
+            onClick={() => setShowHistorical(!showHistorical)}
+            className="flex items-center space-x-2 px-3 py-1 hover:text-white transition-colors"
+          >
+            <ChartBarIcon className="h-4 w-4" />
+            <span>{showHistorical ? 'Live Rates' : 'Historical'}</span>
+          </button>
         </div>
       </div>
 
-      {/* Tokenomics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Historical view or Live rates */}
+      {showHistorical ? (
+        <div className="space-y-6">
+          {/* Currency selector for historical view */}
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            {BASKET_CURRENCIES.filter(c => c !== 'USD').map((currency) => (
+              <button
+                key={currency}
+                onClick={() => setSelectedCurrency(currency)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  selectedCurrency === currency
+                    ? 'bg-white text-gray-900'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                GSDC/{currency}
+              </button>
+            ))}
+          </div>
+          
+          {/* Historical chart */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <HistoricalChart currency={selectedCurrency} />
+          </div>
+        </div>
+      ) : (
+        /* Tokenomics Grid */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {data.map((basket) => (
           <motion.div
             key={basket.currency}
@@ -154,7 +190,8 @@ export default function ExchangeRates() {
             </div>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
 
       {error && (
         <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30 rounded-lg">

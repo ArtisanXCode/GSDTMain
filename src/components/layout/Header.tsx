@@ -43,6 +43,7 @@ const Header = () => {
     { name: "EXCHANGE RATES", href: "/live-exchange-rates", requireAuth: false },
     { name: "DASHBOARD", href: "/dashboard", requireAuth: true },
     { name: "CONTACT", href: "/contact" },
+    { name: "HISTORICAL DATA", href: "/historical-analytics" },
   ];
 
   const isActivePath = (path: string) => {
