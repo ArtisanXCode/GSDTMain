@@ -56,7 +56,7 @@ export default function ExchangeRates() {
             className="rounded-lg overflow-hidden border border-white/20"
           >
             {/* Header */}
-            <div 
+            <div
               className="text-center py-3"
               style={{ backgroundColor: "#6d97bf" }}
             >
@@ -66,32 +66,43 @@ export default function ExchangeRates() {
             </div>
 
             {/* Content */}
-            <div 
+            <div
               className="p-6"
               style={{ backgroundColor: "#2a4661" }}
             >
 
             {/* Cross Rates */}
               <div className="space-y-2 mb-4">
-                {BASKET_CURRENCIES.map((currency) => (
-                  <div key={currency} className="flex justify-between text-sm">
-                    <span className="text-white">
-                      {currency}/{basket.currency}
-                    </span>
-                    <span className="text-white font-mono font-semibold">
-                      {(() => {
-                        const rate = basket.benchmarkRates[currency];
-                        //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
-                        if (!rate || isNaN(rate)) return '0.0000';
-                        if (rate === 1) return '1.0000';
-                        if (rate < 0.0001) return rate.toFixed(6);
-                        if (rate < 0.01) return rate.toFixed(6);
-                        if (rate < 1) return rate.toFixed(4);
-                        return rate.toFixed(4);
-                      })()}
-                    </span>
-                  </div>
-                ))}
+                {BASKET_CURRENCIES.map((currency) => {
+                  // Filter out USD cross-rate pairs (USD/CNY, USD/THB, etc.)
+                  if (basket.currency === 'USD' && currency !== 'USD') {
+                    return null;
+                  }
+                  // Remove USD/USD from USD benchmark
+                  if (basket.currency === 'USD' && currency === 'USD') {
+                    return null;
+                  }
+
+                  return (
+                    <div key={currency} className="flex justify-between text-sm">
+                      <span className="text-white">
+                        {currency}/{basket.currency}
+                      </span>
+                      <span className="text-white font-mono font-semibold">
+                        {(() => {
+                          const rate = basket.benchmarkRates[currency];
+                          //console.log(`Display rate for ${currency}/${basket.currency}:`, rate);
+                          if (!rate || isNaN(rate)) return '0.0000';
+                          if (rate === 1) return '1.0000';
+                          if (rate < 0.0001) return rate.toFixed(6);
+                          if (rate < 0.01) return rate.toFixed(6);
+                          if (rate < 1) return rate.toFixed(4);
+                          return rate.toFixed(4);
+                        })()}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
 
             {/* GSDC Rate */}
