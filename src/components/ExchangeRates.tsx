@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
 import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
+import HistoricalChart from './HistoricalChart';
 
 export default function ExchangeRates() {
   const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
@@ -162,33 +163,12 @@ export default function ExchangeRates() {
                   </div>
 
                   {/* Chart Area */}
-                  <div className="h-48 bg-white/5 rounded-lg border border-white/20 p-4 relative">
-                    {/* Performance indicator */}
-                    <div className="absolute top-4 right-4 text-orange-400 font-bold text-lg">
-                      {(2.5 + Math.random() * 1).toFixed(3)}%
-                    </div>
-                    
-                    {/* Mock chart bars */}
-                    <div className="h-full flex items-end justify-between px-2 pb-8">
-                      {Array.from({ length: 12 }, (_, i) => (
-                        <div
-                          key={i}
-                          className="w-3 bg-gradient-to-t from-orange-500 to-orange-300 rounded-t opacity-70 transition-all hover:opacity-100"
-                          style={{ 
-                            height: `${Math.random() * 60 + 20}%`,
-                            animationDelay: `${i * 0.1}s`
-                          }}
-                        />
-                      ))}
-                    </div>
-                    
-                    {/* Mock trend line */}
-                    <div className="absolute bottom-12 left-6 right-6 h-0.5 bg-gradient-to-r from-blue-400 to-green-400 opacity-60" />
-                    
-                    {/* Chart label */}
-                    <div className="absolute bottom-2 left-4 text-white/50 text-xs">
-                      {boxSelectedPeriod} trend
-                    </div>
+                  <div className="h-64 bg-white/5 rounded-lg border border-white/20 p-4 relative">
+                    <HistoricalChart 
+                      data={[]} // Will use mock data generation
+                      currency={benchmarkData.currency}
+                      timeframe={boxSelectedPeriod === '3 months' ? '3M' : boxSelectedPeriod === '6 months' ? '6M' : boxSelectedPeriod === '1 year' ? '1Y' : '2Y'}
+                    />
                   </div>
 
                   {/* Chart Stats */}
