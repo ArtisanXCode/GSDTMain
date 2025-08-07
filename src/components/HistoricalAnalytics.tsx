@@ -6,7 +6,7 @@ import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES } from '../config/api';
 import { TimeFrame } from '../services/historicalRates';
 import { 
   ChartBarIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   ShieldCheckIcon,
   InformationCircleIcon 
 } from '@heroicons/react/24/outline';
@@ -92,7 +92,7 @@ export default function HistoricalAnalytics() {
           className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
         >
           <div className="flex items-center mb-4">
-            <TrendingUpIcon className="h-8 w-8 text-green-400 mr-3" />
+            <ArrowTrendingUpIcon className="h-8 w-8 text-green-400 mr-3" />
             <h3 className="text-xl font-bold text-white">Stability Metrics</h3>
           </div>
           <p className="text-white/80 text-sm leading-relaxed">
