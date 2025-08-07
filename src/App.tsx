@@ -26,6 +26,7 @@ import CMSPages from './pages/admin/CMSPages';
 import AdminPendingTransactions from './pages/admin/PendingTransactions';
 import LiveExchangeRatesPage from "./pages/LiveExchangeRates";
 import DynamicPage from './pages/DynamicPage';
+import HistoricalAnalyticsPage from './pages/HistoricalAnalytics'; // Assuming this component exists
 
 export default function App() {
   return (
@@ -40,9 +41,7 @@ export default function App() {
               <Route path="/live-exchange-rates" element={<LiveExchangeRatesPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/transparency" element={<Transparency />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/token-minting" element={<TokenMinting />} />
-              <Route path="/transactions" element={<TransactionList />} />
+              <Route path="/historical-analytics" element={<HistoricalAnalyticsPage />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route
@@ -53,6 +52,8 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/token-minting" element={<TokenMinting />} />
+              <Route path="/transactions" element={<TransactionList />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="/admin/cms-pages" element={<CMSPages />} />
