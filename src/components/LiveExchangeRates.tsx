@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -85,7 +84,7 @@ export default function LiveExchangeRates({
             </div>
           )}
         </div>
-        
+
         <div className="grid grid-cols-2 gap-2">
           {COMPACT_CURRENCIES.map((currency) => {
             const rate = gsdcRates?.[currency] || 0;
@@ -107,7 +106,7 @@ export default function LiveExchangeRates({
             );
           })}
         </div>
-        
+
         <div className="mt-3 text-center">
           <Link 
             to="/live-exchange-rates" 
@@ -116,7 +115,7 @@ export default function LiveExchangeRates({
             View detailed rates →
           </Link>
         </div>
-        
+
         <div className="mt-3 pt-3 border-t border-white/20">
           <p className="text-xs text-white/70 text-center leading-relaxed">
             Real-time GSDC rates calculated from basket composition
@@ -127,6 +126,22 @@ export default function LiveExchangeRates({
   }
 
   if (variant === 'hero') {
+    // Function to format GSDC rate with appropriate precision and styling for hero variant
+    const formatHeroGSDCRate = (rate: number, currency: string): string => {
+      const precision = CURRENCY_PRECISION[currency] || 4;
+      // Ensure the number is formatted with the correct precision and does not wrap
+      // For example, Rp6876.0801 should not break
+      return `${CURRENCY_SYMBOLS[currency]}${rate.toFixed(precision)}`;
+    };
+
+    // Helper to format currency name without wrapping
+    const formatCurrencyName = (name: string): string => {
+        // This function is a placeholder and might need to be adjusted based on actual implementation of currency names
+        // For now, we assume direct usage or a simple trim, but the CSS class handles the wrapping
+        return name;
+    }
+
+
     return (
       <div className={`${containerClasses[variant]} ${className}`}>
         {showTitle && (
@@ -136,25 +151,28 @@ export default function LiveExchangeRates({
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {displayCurrencies.slice(0, 6).map((currency) => (
-            <motion.div
-              key={currency}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white/10 rounded-xl p-4 text-center hover:bg-white/15 transition-colors"
-            >
-              <div className="text-lg font-bold text-white mb-1">
-                GSDC/{currency}
-              </div>
-              <div className="text-2xl font-extrabold text-white mb-1">
-                {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(4)}
-              </div>
-              <div className="text-xs text-white/70">
-                {CURRENCY_NAMES[currency]}
-              </div>
-            </motion.div>
-          ))}
+          {displayCurrencies.slice(0, 6).map((currency) => {
+            const rate = gsdcRates?.[currency] || 0;
+            return (
+              <motion.div
+                key={currency}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white/10 rounded-xl p-4 text-center hover:bg-white/15 transition-colors"
+              >
+                <div className="text-lg font-bold text-white mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  GSDC/{currency}
+                </div>
+                <div className="text-2xl font-extrabold text-white mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {formatHeroGSDCRate(rate, currency)}
+                </div>
+                <div className="text-sm text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {CURRENCY_NAMES[currency]}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
         {lastUpdated && (
           <div className="flex justify-center items-center mt-4 space-x-2">
@@ -184,7 +202,7 @@ export default function LiveExchangeRates({
           )}
         </div>
       )}
-      
+
       <div className="overflow-hidden rounded-lg">
         <table className="min-w-full divide-y divide-gray-200/20">
           <thead>
@@ -225,7 +243,7 @@ export default function LiveExchangeRates({
           </tbody>
         </table>
       </div>
-      
+
       <div className="mt-4 p-3 bg-white/5 rounded-lg">
         <p className="text-xs text-gray-300 leading-relaxed">
           <strong>Calculation:</strong> GSDC rates are calculated based on the basket of currencies (CNH, BRL, INR, ZAR, IDR, THB). 
