@@ -185,6 +185,38 @@ export const useAdmin = () => {
     };
   }, [address, isConnected]);
 
+  // Manual role check method that bypasses circuit breaker
+  const checkRoleManually = useCallback(async (targetAddress?: string): Promise<AdminRole | null> => {
+    const addressToCheck = targetAddress || address;
+    if (!addressToCheck) return null;
+
+    try {
+      // Check localStorage first
+      const storedRole = localStorage.getItem("adminRole");
+      const storedAddress = localStorage.getItem("adminAddress");
+      
+      if (storedRole && storedAddress && 
+          storedAddress.toLowerCase() === addressToCheck.toLowerCase()) {
+        return storedRole as AdminRole;
+      }
+
+      // Direct database call bypassing circuit breaker
+      const role = await getUserRole(addressToCheck);
+      
+      if (role && addressToCheck === address) {
+        // Update localStorage if this is for the current user
+        localStorage.setItem("adminRole", role);
+        localStorage.setItem("adminAddress", addressToCheck);
+        localStorage.setItem("adminAuth", "true");
+      }
+      
+      return role;
+    } catch (error) {
+      console.error("Manual role check failed:", error);
+      return null;
+    }
+  }, [address]);
+
   return {
     isAdmin,
     adminRole,
@@ -197,5 +229,6 @@ export const useAdmin = () => {
     isPriceUpdater,
     isRegularAdmin,
     isModerator,
+    checkRoleManually,
   };
 };

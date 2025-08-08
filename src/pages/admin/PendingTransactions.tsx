@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 export default function PendingTransactionsPage() {
   const { account, isConnected } = useWallet();
   const { contract } = useContract();
-  const { isAdmin, isSuperAdmin, loading: adminLoading } = useAdmin();
+  const { isAdmin, isSuperAdmin, loading: adminLoading, checkRoleManually } = useAdmin();
   const [hasApprovalPermissions, setHasApprovalPermissions] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -308,27 +308,54 @@ export default function PendingTransactionsPage() {
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <h3 className="font-semibold text-blue-900 mb-2">
-                    How it works:
-                  </h3>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>
-                      • All sensitive transactions have a 90-minute cooldown
-                      period
-                    </li>
-                    <li>
-                      • Transactions can be approved or rejected during this
-                      period
-                    </li>
-                    <li>
-                      • If no action is taken, transactions auto-execute after
-                      90 minutes
-                    </li>
-                    <li>
-                      • Only APPROVER_ROLE and SUPER_ADMIN_ROLE can
-                      approve/reject
-                    </li>
-                  </ul>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-blue-900 mb-2">
+                        How it works:
+                      </h3>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>
+                          • All sensitive transactions have a 90-minute cooldown
+                          period
+                        </li>
+                        <li>
+                          • Transactions can be approved or rejected during this
+                          period
+                        </li>
+                        <li>
+                          • If no action is taken, transactions auto-execute after
+                          90 minutes
+                        </li>
+                        <li>
+                          • Only APPROVER_ROLE and SUPER_ADMIN_ROLE can
+                          approve/reject
+                        </li>
+                      </ul>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (checkRoleManually && account) {
+                          toast.loading("Checking permissions...");
+                          try {
+                            const role = await checkRoleManually(account);
+                            toast.dismiss();
+                            if (role) {
+                              toast.success(`Role found: ${role}`);
+                              checkPermissions(); // Re-check permissions
+                            } else {
+                              toast.error("No admin role found");
+                            }
+                          } catch (error) {
+                            toast.dismiss();
+                            toast.error("Failed to check role");
+                          }
+                        }
+                      }}
+                      className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Check Role
+                    </button>
+                  </div>
                 </div>
 
                 <PendingTransactions onRefresh={handleRefresh} />
