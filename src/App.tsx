@@ -43,7 +43,7 @@ export default function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/admin/login" element={<AdminLogin />} />
-              
+
               {/* Protected routes - require authentication */}
               <Route
                 path="/live-exchange-rates"
@@ -94,8 +94,14 @@ export default function App() {
                 }
               />
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="/admin/cms-pages" element={<CMSPages />} />
-
+              <Route
+                path="/admin/cms-pages"
+                element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <CMSPages />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/admin/dashboard"
                 element={
@@ -183,7 +189,7 @@ export default function App() {
 
               {/* Legal Pages - Public */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
-              
+
               {/* Catch-all for any unmatched routes - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
