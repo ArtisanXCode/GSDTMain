@@ -63,14 +63,14 @@ const Header = () => {
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 justify-between items-center">
+            <div className="flex h-20 justify-between items-center">
               {/* Logo */}
               <div className="flex items-center">
                 <Link to="/" className="flex flex-shrink-0 items-center">
                   <img
                     src="/logo_gsdc_white.png"
                     alt="The Global South"
-                    className="h-10 w-auto"
+                    className="h-16 w-auto"
                   />
                 </Link>
               </div>

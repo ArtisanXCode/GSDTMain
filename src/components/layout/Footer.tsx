@@ -42,14 +42,6 @@ export default function Footer() {
                 CONTACT
               </Link>
             </div>
-            <div className="pb-6">
-              <Link
-                to="/faqs"
-                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
-              >
-                FAQs
-              </Link>
-            </div>
             
             {/* Legal Section */}
             <div className="pb-6">
@@ -90,6 +82,14 @@ export default function Footer() {
                 className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
               >
                 RISK DISCLOSURE
+              </Link>
+            </div>
+            <div className="pb-6">
+              <Link
+                to="/faqs"
+                className="text-sm leading-6 text-white font-semibold hover:text-white/80 transition-colors duration-200 uppercase"
+              >
+                FAQs
               </Link>
             </div>
           </nav>
