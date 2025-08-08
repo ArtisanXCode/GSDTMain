@@ -264,7 +264,8 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
     }
 
     // Try to estimate gas first to catch permission errors early
-    try {
+    console.log(userAddress);
+    try {      
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
       console.error("Gas estimation failed:", gasError);
