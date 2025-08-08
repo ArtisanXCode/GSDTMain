@@ -20,9 +20,6 @@ export default function PendingTransactionsPage() {
 
   const checkPermissions = async () => {
 
-    console.log(isConnected);
-    console.log(address);
-    
     if (!isConnected || !address) {
       setLoading(false);
       return;
