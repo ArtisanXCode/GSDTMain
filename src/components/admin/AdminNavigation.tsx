@@ -14,11 +14,11 @@ export default function AdminNavigation({ className = "" }: AdminNavigationProps
     { name: "Role Management", path: "/admin/role-management" },
     { name: "Fiat Mint Requests", path: "/admin/fiat-requests" },
     { name: "Proof of Reserves", path: "/admin/reserves" },
-    { name: "Exchange Rates", path: "/admin/exchange-rates" },
+    /*{ name: "Exchange Rates", path: "/admin/exchange-rates" },*/
     { name: "Pending Transactions", path: "/admin/pending-transactions" },
-    //{ name: "Pending Transactions", path: "/admin/pending-transactions" },
+    /*{ name: "Pending Transactions", path: "/admin/pending-transactions" },*/
     { name: "CMS Pages", path: "/admin/cms-pages" },
-    //{ name: "Contact Details", path: "/admin/contact-details" }
+    /*{ name: "Contact Details", path: "/admin/contact-details" }*/
   ];
 
   const isActivePath = (path: string) => location.pathname === path;
