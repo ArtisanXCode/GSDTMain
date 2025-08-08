@@ -36,14 +36,39 @@ export default function App() {
           <Header />
           <main className="flex-grow">
             <Routes>
+              {/* Public routes - only basic info pages and auth */}
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/live-exchange-rates" element={<LiveExchangeRatesPage />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/transparency" element={<Transparency />} />
-              <Route path="/historical-analytics" element={<HistoricalAnalyticsPage />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              
+              {/* Protected routes - require authentication */}
+              <Route
+                path="/live-exchange-rates"
+                element={
+                  <ProtectedRoute>
+                    <LiveExchangeRatesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/transparency"
+                element={
+                  <ProtectedRoute>
+                    <Transparency />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/historical-analytics"
+                element={
+                  <ProtectedRoute>
+                    <HistoricalAnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/dashboard"
                 element={
@@ -52,9 +77,22 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/token-minting" element={<TokenMinting />} />
-              <Route path="/transactions" element={<TransactionList />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/token-minting"
+                element={
+                  <ProtectedRoute>
+                    <TokenMinting />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/transactions"
+                element={
+                  <ProtectedRoute>
+                    <TransactionList />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="/admin/cms-pages" element={<CMSPages />} />
 
@@ -133,10 +171,17 @@ export default function App() {
               {/* Legal Pages */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
 
-              {/* Dynamic CMS Pages */}
-              <Route path="/page/:slug" element={<DynamicPage />} />
+              {/* Dynamic CMS Pages - Protected */}
+              <Route
+                path="/page/:slug"
+                element={
+                  <ProtectedRoute>
+                    <DynamicPage />
+                  </ProtectedRoute>
+                }
+              />
 
-              {/* Legal Pages */}
+              {/* Legal Pages - Public */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
             </Routes>
           </main>

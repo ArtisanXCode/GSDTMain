@@ -6,41 +6,12 @@ import {
   ShieldCheckIcon,
   CogIcon,
 } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import LiveExchangeRates from "../components/LiveExchangeRates";
+import { useWallet } from '../hooks/useWallet';
+import { useAuth } from '../contexts/AuthContext';
 
-const features = [
-  {
-    name: "Global Accessibility",
-    description:
-      "Access GSDC markets from anywhere in the world with minimal barriers to entry.",
-    icon: GlobeAltIcon,
-  },
-  {
-    name: "Cost-Effective",
-    description:
-      "Reduce transaction costs and eliminate traditional banking fees.",
-    icon: BanknotesIcon,
-  },
-  {
-    name: "Instant Settlement",
-    description: "Experience near-instantaneous cross-border settlements.",
-    icon: ChartBarIcon,
-  },
-  {
-    name: "Regulatory Compliance",
-    description:
-      "Built with compliance at its core, following all relevant regulations.",
-    icon: ShieldCheckIcon,
-  },
-  {
-    name: "Advanced Technology",
-    description:
-      "Powered by cutting-edge blockchain technology for maximum security and efficiency.",
-    icon: CogIcon,
-  },
-];
 
 // Import currency configuration from environment
 import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES, CURRENCY_SYMBOLS } from "../config/api";
@@ -62,6 +33,25 @@ const metrics = [
 ];
 
 export default function Home() {
+  const { isConnected } = useWallet();
+  const { isAuthenticated } = useAuth();
+  const [tokenInfo, setTokenInfo] = useState<{
+    symbol: string;
+    totalSupply: string;
+  } | null>(null);
+  const location = useLocation();
+  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
+
+  // Check if user was redirected here from a protected page
+  useEffect(() => {
+    if (location.state?.message && !isAuthenticated) {
+      setShowRedirectMessage(true);
+      // Clear the message after showing it
+      setTimeout(() => setShowRedirectMessage(false), 8000);
+    }
+  }, [location.state, isAuthenticated]);
+
+
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const nextSlide = () => {
@@ -88,76 +78,74 @@ export default function Home() {
   return (
     <div className="bg-white">
       {/* Hero section with background image and color combination */}
-      <div
-        className="relative isolate text-white min-h-screen flex items-center overflow-hidden"
-        style={{
-          backgroundImage: `url('/headers/home_header.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        {/* Orange globe/sphere pattern overlay */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-black/10"></div>
         <div
-          className="absolute inset-0 opacity-40"
+          className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center relative"
           style={{
-            backgroundPosition: "right center",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "600px 600px",
+            backgroundImage: "url('/headers/home_header.png')"
           }}
-        />
-
-        {/* Orange and yellow floating dots */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-24 lg:py-32 z-10"
         >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-                Global South
-                <br />
-                <span className="text-white-900">Digital Currency</span>
-              </h1>
-              <p className="text-lg leading-8 text-white/90 mb-10 font-bold">
-                GSDC is a revolutionary stablecoin offering enhanced financial
-                accessibility with innovative blockchain technology and
-                real-world asset backing.
-              </p>
-              <div className="flex items-center gap-x-6">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="rounded-full bg-white px-8 py-4 text-base font-semibold text-gray-900 shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
-                >
-                  <Link to="/dashboard">Get started</Link>
-                </motion.button>
-                <motion.button
-                  whileHover={{ x: 5 }}
-                  className="text-base font-semibold leading-6 text-white"
-                >
-                  <Link to="/about">
-                    Learn more <span aria-hidden="true">→</span>
-                  </Link>
-                </motion.button>
-              </div>
-            </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-center text-white px-4 max-w-4xl mx-auto"
+          >
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              The Future of Digital Currency
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              Experience secure, transparent, and instant global transactions with GSDC
+            </p>
 
-            {/* Live Exchange Rates Floating Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="w-full max-w-md"
-            >
-              <LiveExchangeRates variant="compact" showTitle={true} className="shadow-2xl" />
-            </motion.div>
-          </div>
-        </motion.div>
+            {!isAuthenticated && (
+              <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-400 rounded-lg">
+                <p className="text-lg font-semibold mb-2">
+                  {showRedirectMessage ? '🚫 Authentication Required' : '🔒 Full Platform Access Requires Login'}
+                </p>
+                <p className="text-sm opacity-90">
+                  {showRedirectMessage
+                    ? location.state?.message || 'Please log in to access this page'
+                    : 'Login to access live exchange rates, token minting, transaction history, and all platform features'
+                  }
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to={isAuthenticated ? "/dashboard" : "/"}
+                  onClick={!isAuthenticated ? (e) => {
+                    e.preventDefault();
+                    // This will trigger the login modal via the header component
+                    document.querySelector('[data-login-trigger]')?.click();
+                  } : undefined}
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-full hover:shadow-2xl transition-all duration-300"
+                >
+                  {isAuthenticated ? 'Go to Dashboard' : 'Login to Get Started'}
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/about"
+                  className="inline-block px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300"
+                >
+                  Learn More
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
       </div>
+
 
       {/* Centered Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
@@ -456,21 +444,32 @@ export default function Home() {
             currency.
           </motion.p>
           <div className="flex items-center justify-center gap-x-6">
-            <motion.button
-              className="rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-orange shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link to="/dashboard">Get started</Link>
-            </motion.button>
-            <motion.button
-              className="text-base font-semibold leading-6 text-white"
+              <Link
+                to={isAuthenticated ? "/dashboard" : "/"}
+                onClick={!isAuthenticated ? (e) => {
+                  e.preventDefault();
+                  // This will trigger the login modal via the header component
+                  document.querySelector('[data-login-trigger]')?.click();
+                } : undefined}
+                className="rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-orange shadow-lg hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all duration-200"
+              >
+                {isAuthenticated ? 'Go to Dashboard' : 'Login to Get Started'}
+              </Link>
+            </motion.div>
+            <motion.div
               whileHover={{ x: 5 }}
             >
-              <Link to="/about">
+              <Link
+                to="/about"
+                className="text-base font-semibold leading-6 text-white"
+              >
                 Learn more <span aria-hidden="true">→</span>
               </Link>
-            </motion.button>
+            </motion.div>
           </div>
         </motion.div>
       </div>

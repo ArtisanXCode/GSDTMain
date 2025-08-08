@@ -38,11 +38,16 @@ const Header = () => {
   };
 
   const navigation = [
-    { name: "ABOUT", href: "/about" },
-    { name: "TRANSPARENCY", href: "/transparency" },
-    { name: "EXCHANGE RATES", href: "/live-exchange-rates", requireAuth: false },
-    { name: "DASHBOARD", href: "/dashboard", requireAuth: true },
-    { name: "CONTACT", href: "/contact" },
+    { name: 'Home', href: '/', current: false, requireAuth: false },
+    { name: 'About', href: '/about', current: false, requireAuth: false },
+    { name: 'Contact', href: '/contact', current: false, requireAuth: false },
+    // Protected navigation items
+    { name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },
+    { name: 'Live Exchange Rates', href: '/live-exchange-rates', current: false, requireAuth: true },
+    { name: 'Historical Analytics', href: '/historical-analytics', current: false, requireAuth: true },
+    { name: 'Token Minting', href: '/token-minting', current: false, requireAuth: true },
+    { name: 'Transactions', href: '/transactions', current: false, requireAuth: true },
+    { name: 'Transparency', href: '/transparency', current: false, requireAuth: true },
   ];
 
   const isActivePath = (path: string) => {
@@ -92,6 +97,7 @@ const Header = () => {
                 {!isAuthenticated ? (
                   <button
                     onClick={() => setLoginModalOpen(true)}
+                    data-login-trigger
                     className="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" style={{
                       background: loading ? "#ed9030" : "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
                       opacity: loading ? 0.7 : 1
@@ -294,6 +300,7 @@ const Header = () => {
                     setLoginModalOpen(true);
                     setMobileMenuOpen(false);
                   }}
+                  data-login-trigger
                   className="block w-full text-center px-4 py-2 rounded-full text-base font-semibold text-white transition-all duration-200 hover:opacity-90 shadow-lg mx-3"
                   style={{
                     background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
