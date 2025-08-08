@@ -15,6 +15,10 @@ export default function ExchangeRates() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
+      // Clear the cache to force fresh API call
+      const { unifiedExchangeRateService } = await import('../services/liveExchangeRates');
+      unifiedExchangeRateService.clearCache();
+      
       await refetch();
       // Force a small delay to show the refresh is working
       setTimeout(() => {

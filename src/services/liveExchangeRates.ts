@@ -189,6 +189,8 @@ export const useLiveExchangeRates = () => {
     setLoading(true);
     setError(null);
     try {
+      // Clear cache to ensure fresh data
+      unifiedExchangeRateService.clearCache();
       await fetchRates();
     } catch (err) {
       console.error('Error during refetch:', err);
