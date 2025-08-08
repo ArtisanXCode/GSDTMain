@@ -1,4 +1,3 @@
-
 import { ethers } from 'ethers';
 import { supabase } from '../lib/supabase';
 
@@ -72,7 +71,7 @@ const generateMockTransactions = (count: number): Transaction[] => {
 const generateMockDeposits = (count: number): FiatDeposit[] => {
   const currencies = ['USD', 'EUR', 'GBP', 'JPY'];
   const paymentMethods = ['Bank Transfer', 'Credit Card', 'Wire Transfer', 'SEPA'];
-  
+
   return Array.from({ length: count }, (_, i) => ({
     id: (i + 1).toString(),
     userId: `0x${Math.random().toString(36).substring(2, 10)}...${Math.random().toString(36).substring(2, 6)}`,
@@ -150,7 +149,7 @@ export const flagTransaction = async (txId: string, reason: string) => {
 // Fraud detection helpers
 export const calculateRiskScore = (tx: Transaction): number => {
   let score = 0;
-  
+
   // Amount-based risk
   const amount = parseFloat(ethers.utils.formatEther(tx.amount));
   if (amount > 100000) score += 30;

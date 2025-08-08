@@ -4,6 +4,9 @@ import { SMART_CONTRACT_ROLES } from '../../constants/roles';
 // Use the roles from constants directly
 export type AdminRole = typeof SMART_CONTRACT_ROLES[keyof typeof SMART_CONTRACT_ROLES];
 
+// Create AdminRole enum for compatibility with existing code
+export const AdminRole = SMART_CONTRACT_ROLES;
+
 export interface AdminUser {
   id: string;
   user_address: string;
