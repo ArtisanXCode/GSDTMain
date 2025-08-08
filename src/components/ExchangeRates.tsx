@@ -150,7 +150,7 @@ export default function ExchangeRates() {
                     <div className="flex justify-between items-center text-sm mt-2">
                       <span className="text-gray-300">Range:</span>
                       <span className="text-white font-medium">
-                        {(benchmarkData.gsdcRate * 0.99).toFixed(4)} - {(benchmarkData.gsdcRate * 1.01).toFixed(4)}
+                        {(benchmarkData.gsdcRate * 0.995).toFixed(6)} - {(benchmarkData.gsdcRate * 1.005).toFixed(6)}
                       </span>
                     </div>
                   </div>

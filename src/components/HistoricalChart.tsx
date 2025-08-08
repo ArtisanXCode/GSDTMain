@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -11,6 +12,7 @@ import {
   Legend,
   ChartOptions,
 } from 'chart.js';
+import { unifiedExchangeRateService } from '../services/liveExchangeRates';
 
 ChartJS.register(
   CategoryScale,
@@ -31,87 +33,80 @@ interface HistoricalChartProps {
 export default function HistoricalChart({ currency, period, color = '#3B82F6' }: HistoricalChartProps) {
   const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const seedRef = useRef<string>('');
+  const [currentGSDCRate, setCurrentGSDCRate] = useState<number>(0);
 
   useEffect(() => {
-    // Create a stable seed based on currency and period
-    const seed = `${currency}-${period}`;
+    const generateHistoricalData = async () => {
+      setLoading(true);
 
-    // Only regenerate data if the seed changes (currency or period changes)
-    if (seedRef.current === seed && chartData) {
-      return;
-    }
+      try {
+        // Get current live GSDC rate
+        const gsdcRates = await unifiedExchangeRateService.getGSDCRates();
+        const currentRate = gsdcRates[currency] || 0;
+        setCurrentGSDCRate(currentRate);
 
-    seedRef.current = seed;
+        if (currentRate === 0) {
+          setLoading(false);
+          return;
+        }
 
-    // Simulate loading historical data with stable generation
-    const generateStableData = () => {
-      const days = period === '3 months' ? 90 : 
-                   period === '6 months' ? 180 : 
-                   period === '1 year' ? 365 : 730;
+        // Generate dates based on period
+        const days = period === '3 months' ? 90 : 
+                     period === '6 months' ? 180 : 
+                     period === '1 year' ? 365 : 730;
 
-      const labels = [];
-      const data = [];
+        const labels = [];
+        const data = [];
+        const now = new Date();
 
-      // Create a stable random seed based on currency and period
-      let seedValue = 0;
-      for (let i = 0; i < seed.length; i++) {
-        seedValue += seed.charCodeAt(i);
+        // Generate weekly data points (approximately)
+        const totalPoints = Math.min(Math.floor(days / 7), 52);
+        
+        for (let i = totalPoints - 1; i >= 0; i--) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - (i * 7));
+          labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+          // Generate historical values with small variations around current rate
+          // The most recent point should be exactly the current rate
+          if (i === 0) {
+            data.push(Number(currentRate.toFixed(6)));
+          } else {
+            // Add small realistic variations (±0.5% max) for historical data
+            const variation = (Math.random() - 0.5) * 0.01; // ±0.5%
+            const historicalRate = currentRate * (1 + variation);
+            data.push(Number(historicalRate.toFixed(6)));
+          }
+        }
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: `GSDC/${currency}`,
+              data,
+              borderColor: color,
+              backgroundColor: `${color}20`,
+              borderWidth: 2,
+              fill: false,
+              tension: 0.4,
+              pointBackgroundColor: color,
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Error generating historical data:', error);
+      } finally {
+        setLoading(false);
       }
-
-      // Use a simple PRNG with the seed for consistent results
-      const seededRandom = (seed: number) => {
-        const x = Math.sin(seed) * 10000;
-        return x - Math.floor(x);
-      };
-
-      // Set Y-axis range from 0 to 10 for all currencies
-      const minValue = 0;
-      const maxValue = 10;
-      const range = maxValue - minValue;
-
-      for (let i = 0; i < Math.min(days / 7, 52); i++) { // Weekly data points
-        const date = new Date();
-        date.setDate(date.getDate() - (i * 7));
-        labels.unshift(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-
-        // Generate stable values using seeded random
-        const randomValue = seededRandom(seedValue + i);
-        const basePercentage = 0.3 + (randomValue * 0.4); // Between 30% and 70% of range
-        const value = minValue + (range * basePercentage);
-        data.unshift(Number(value.toFixed(2)));
-      }
-
-      return { labels, data };
     };
 
-    setLoading(true);
-
-    // Simulate API call delay
-    setTimeout(() => {
-      const stableData = generateStableData();
-      setChartData({
-        labels: stableData.labels,
-        datasets: [
-          {
-            label: `GSDC/${currency}`,
-            data: stableData.data,
-            borderColor: color,
-            backgroundColor: `${color}20`,
-            borderWidth: 2,
-            fill: false,
-            tension: 0.4,
-            pointBackgroundColor: color,
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-        ],
-      });
-      setLoading(false);
-    }, 300);
-  }, [currency, period, color, chartData]);
+    generateHistoricalData();
+  }, [currency, period, color]);
 
   const options: ChartOptions<'line'> = {
     responsive: true,
@@ -153,8 +148,6 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         },
       },
       y: {
-        min: 0,
-        max: 10,
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
           drawBorder: false,
@@ -164,9 +157,8 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
           font: {
             size: 10,
           },
-          stepSize: 1,
           callback: function(value) {
-            return Number(value).toFixed(0);
+            return Number(value).toFixed(4);
           },
         },
       },
