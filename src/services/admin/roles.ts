@@ -87,7 +87,7 @@ export const assignUserRole = async (
     // Update database
     const { data: existingRole } = await supabase
       .from('admin_roles')
-      .select('id')
+      .select('role')
       .eq('user_address', address.toLowerCase())
       .single();
 
