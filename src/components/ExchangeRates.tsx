@@ -63,14 +63,14 @@ export default function ExchangeRates() {
       </div>
 
       {/* Main Content - All Benchmark Boxes with Individual Charts */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <div className="space-y-6">
         {benchmarkCurrencies.map((benchmarkData) => (
           <div 
             key={benchmarkData.currency}
             className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20"
           >
-            {/* Left side - Benchmark Info */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+            {/* Full width layout - Benchmark Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 h-full"></div>
               <div className="p-6 border-r border-white/20">
                 <div>
                   <h2 className="text-xl font-bold mb-4 flex items-center">
