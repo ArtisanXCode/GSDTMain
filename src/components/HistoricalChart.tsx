@@ -148,6 +148,16 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         },
       },
       y: {
+        min: 0,
+        max: (() => {
+          // Dynamic max based on current GSDC rate
+          if (currentGSDCRate <= 1) return 2;
+          if (currentGSDCRate <= 5) return Math.ceil(currentGSDCRate * 2.5);
+          if (currentGSDCRate <= 15) return Math.ceil(currentGSDCRate * 1.5);
+          if (currentGSDCRate <= 30) return Math.ceil(currentGSDCRate * 1.4);
+          if (currentGSDCRate <= 50) return Math.ceil(currentGSDCRate * 1.3);
+          return Math.ceil(currentGSDCRate * 1.2);
+        })(),
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
           drawBorder: false,
@@ -157,6 +167,15 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
           font: {
             size: 10,
           },
+          stepSize: (() => {
+            const maxValue = currentGSDCRate <= 1 ? 2 :
+                           currentGSDCRate <= 5 ? Math.ceil(currentGSDCRate * 2.5) :
+                           currentGSDCRate <= 15 ? Math.ceil(currentGSDCRate * 1.5) :
+                           currentGSDCRate <= 30 ? Math.ceil(currentGSDCRate * 1.4) :
+                           currentGSDCRate <= 50 ? Math.ceil(currentGSDCRate * 1.3) :
+                           Math.ceil(currentGSDCRate * 1.2);
+            return maxValue / 8; // Show about 8 ticks
+          })(),
           callback: function(value) {
             return Number(value).toFixed(4);
           },
