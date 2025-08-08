@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useWallet } from "../../hooks/useWallet";
 import { useContract } from "../../hooks/useContract";
+import { useAdmin } from "../../hooks/useAdmin";
 import PendingTransactions from "../../components/admin/PendingTransactions";
 import AdminNavigation from "../../components/admin/AdminNavigation";
 import { toast } from "react-hot-toast";
@@ -9,15 +10,16 @@ import { toast } from "react-hot-toast";
 export default function PendingTransactionsPage() {
   const { account, isConnected } = useWallet();
   const { contract } = useContract();
+  const { isAdmin, isSuperAdmin, loading: adminLoading } = useAdmin();
   const [hasApprovalPermissions, setHasApprovalPermissions] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkPermissions();
-  }, [contract, account, isConnected]);
+  }, [contract, account, isConnected, isAdmin, isSuperAdmin, adminLoading]);
 
   const checkPermissions = async () => {
-    if (!contract || !account || !isConnected) {
+    if (!isConnected || !account) {
       setLoading(false);
       return;
     }
@@ -25,19 +27,37 @@ export default function PendingTransactionsPage() {
     try {
       setLoading(true);
 
-      // Check if user has APPROVER_ROLE or SUPER_ADMIN_ROLE
-      const APPROVER_ROLE = await contract.APPROVER_ROLE();
-      const SUPER_ADMIN_ROLE = await contract.SUPER_ADMIN_ROLE();
+      // First check database admin roles (faster and more reliable)
+      if (isSuperAdmin || isAdmin) {
+        setHasApprovalPermissions(true);
+        setLoading(false);
+        return;
+      }
 
-      const [hasApproverRole, hasSuperAdminRole] = await Promise.all([
-        contract.hasRole(APPROVER_ROLE, account),
-        contract.hasRole(SUPER_ADMIN_ROLE, account),
-      ]);
+      // Fallback to smart contract role checking if available
+      if (contract) {
+        try {
+          const APPROVER_ROLE = await contract.APPROVER_ROLE();
+          const SUPER_ADMIN_ROLE = await contract.SUPER_ADMIN_ROLE();
 
-      setHasApprovalPermissions(hasApproverRole || hasSuperAdminRole);
+          const [hasApproverRole, hasSuperAdminRole] = await Promise.all([
+            contract.hasRole(APPROVER_ROLE, account),
+            contract.hasRole(SUPER_ADMIN_ROLE, account),
+          ]);
+
+          setHasApprovalPermissions(hasApproverRole || hasSuperAdminRole);
+        } catch (contractError) {
+          console.warn("Smart contract role check failed, using database roles only");
+          setHasApprovalPermissions(isSuperAdmin || isAdmin);
+        }
+      } else {
+        // If no contract, rely on database roles
+        setHasApprovalPermissions(isSuperAdmin || isAdmin);
+      }
     } catch (error) {
       console.error("Error checking permissions:", error);
-      toast.error("Failed to check permissions");
+      // Fallback to database admin roles if contract check fails
+      setHasApprovalPermissions(isSuperAdmin || isAdmin);
     } finally {
       setLoading(false);
     }
@@ -48,7 +68,7 @@ export default function PendingTransactionsPage() {
     checkPermissions();
   };
 
-  if (loading) {
+  if (loading || adminLoading) {
     return (
       <div className="bg-white min-h-screen">
         <div
