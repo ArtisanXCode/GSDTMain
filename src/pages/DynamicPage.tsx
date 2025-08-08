@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -14,21 +13,21 @@ export default function DynamicPage() {
   useEffect(() => {
     const loadPage = async () => {
       if (!slug) return;
-      
+
       try {
         setLoading(true);
         setError(null);
-        
+
         // Check if this is a legal page route
         const isLegalPage = window.location.pathname.startsWith('/legal/');
         const pageSlug = isLegalPage ? `legal-${slug}` : slug;
-        
+
         const data = await getPageBySlug(pageSlug);
         if (!data) {
           navigate('/404', { replace: true });
           return;
         }
-        
+
         setPage(data);
       } catch (err: any) {
         console.error('Error loading page:', err);
@@ -40,6 +39,72 @@ export default function DynamicPage() {
 
     loadPage();
   }, [slug, navigate]);
+
+  useEffect(() => {
+    if (page) {
+      // Initialize FAQ accordion functionality
+      initializeFAQAccordion();
+    }
+  }, [page]);
+
+  const initializeFAQAccordion = () => {
+    setTimeout(() => {
+      const faqQuestions = document.querySelectorAll('.faq-question');
+
+      faqQuestions.forEach(question => {
+        // Remove existing listeners
+        question.replaceWith(question.cloneNode(true));
+      });
+
+      // Re-attach listeners to fresh elements
+      const freshQuestions = document.querySelectorAll('.faq-question');
+      freshQuestions.forEach(question => {
+        question.addEventListener('click', () => {
+          const answer = question.nextElementSibling;
+          const isActive = question.classList.contains('active');
+
+          // Close all other accordions
+          freshQuestions.forEach(q => {
+            q.classList.remove('active');
+            if (q.nextElementSibling) {
+              q.nextElementSibling.classList.remove('active');
+            }
+          });
+
+          // Toggle current accordion
+          if (!isActive) {
+            question.classList.add('active');
+            if (answer) {
+              answer.classList.add('active');
+            }
+          }
+        });
+      });
+
+      // Initialize search functionality
+      const searchInput = document.querySelector('.faq-search') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+          const accordions = document.querySelectorAll('.faq-accordion');
+
+          accordions.forEach(accordion => {
+            const question = accordion.querySelector('.faq-question');
+            const answer = accordion.querySelector('.faq-answer');
+            const questionText = question?.textContent?.toLowerCase() || '';
+            const answerText = answer?.textContent?.toLowerCase() || '';
+
+            if (questionText.includes(searchTerm) || answerText.includes(searchTerm)) {
+              (accordion as HTMLElement).style.display = 'block';
+            } else {
+              (accordion as HTMLElement).style.display = 'none';
+            }
+          });
+        });
+      }
+    }, 100);
+  };
+
 
   if (loading) {
     return (
@@ -63,7 +128,7 @@ export default function DynamicPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div 
+      <div
         className="relative py-24 sm:py-32"
         style={{
           backgroundImage: `linear-gradient(135deg, #0a1217c7 0%, #132536d4 100%), url(/headers/dashboard_header.png)`,
@@ -88,8 +153,8 @@ export default function DynamicPage() {
               transition={{ delay: 0.1 }}
               className="mt-6 text-lg leading-8 text-gray-300"
             >
-              {window.location.pathname.startsWith('/legal/') ? 
-                'Legal information and compliance documentation' : 
+              {window.location.pathname.startsWith('/legal/') ?
+                'Legal information and compliance documentation' :
                 'Important information and resources'
               }
             </motion.p>
@@ -107,7 +172,7 @@ export default function DynamicPage() {
             className="bg-white rounded-xl shadow-lg overflow-hidden"
           >
             <div className="px-6 py-8 sm:p-10">
-              <div 
+              <div
                 className="prose prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: page.content }}
               />
