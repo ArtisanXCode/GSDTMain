@@ -10,9 +10,20 @@ export default function ExchangeRates() {
   const [selectedPeriod, setSelectedPeriod] = useState('3 months');
   const [boxPeriods, setBoxPeriods] = useState<{[key: string]: string}>({});
   const [selectedBenchmark, setSelectedBenchmark] = useState<string>('CNY');
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleRefresh = () => {
-    refetch();
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+      // Force a small delay to show the refresh is working
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 500);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      setRefreshing(false);
+    }
   };
 
   if (loading && data.length === 0) {
@@ -55,10 +66,11 @@ export default function ExchangeRates() {
         </div>
         <button
           onClick={handleRefresh}
-          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
+          disabled={refreshing || loading}
+          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg transition-colors"
         >
-          <ArrowPathIcon className="h-5 w-5" />
-          <span>Refresh</span>
+          <ArrowPathIcon className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
+          <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
         </button>
       </div>
 

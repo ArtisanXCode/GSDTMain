@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { API_CONFIG, EXCHANGE_RATE_CONFIG } from '../config/api';
 
 export interface LiveExchangeRate {
@@ -163,29 +162,42 @@ export const useLiveExchangeRates = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchData = async () => {
+  const fetchRates = useCallback(async () => {
     try {
-      setLoading(true);
       const tokenomicsData = await unifiedExchangeRateService.getTokenomicsData();
       setData(tokenomicsData);
       setLastUpdated(new Date());
-      setError(null);
+      setError(null); // Clear error on successful fetch
     } catch (err: any) {
+      console.error('Error fetching rates:', err);
       setError(err.message || 'Failed to fetch live rates');
-    } finally {
-      setLoading(false);
+      setData([]); // Clear data on error
+      setLastUpdated(null); // Clear last updated on error
+      throw err; // Re-throw to be caught by refetch
     }
-  };
+  }, []); // No dependencies, fetchRates is stable
 
   useEffect(() => {
-    fetchData();
+    fetchRates();
 
     // Update every 30 seconds
-    const interval = setInterval(fetchData, EXCHANGE_RATE_CONFIG.UPDATE_INTERVAL);
+    const interval = setInterval(fetchRates, EXCHANGE_RATE_CONFIG.UPDATE_INTERVAL);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchRates]); // fetchRates is stable due to useCallback
 
-  return { data, loading, error, lastUpdated, refetch: fetchData };
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await fetchRates();
+    } catch (err) {
+      console.error('Error during refetch:', err);
+    } finally {
+      setLoading(false); // Ensure loading is set to false after refetch attempt
+    }
+  }, [fetchRates]);
+
+  return { data, loading, error, lastUpdated, refetch };
 };
 
 // Hook for GSDC rates (for home page compact view)
