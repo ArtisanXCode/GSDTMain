@@ -32,9 +32,14 @@ export const getAdminUsers = async (): Promise<AdminUser[]> => {
 
 export const getUserRole = async (address: string): Promise<AdminRole | null> => {
   try {
+    // Validate address format
+    if (!address || typeof address !== 'string') {
+      return null;
+    }
+
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased timeout
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const { data, error } = await supabase
       .from('admin_roles')
@@ -47,10 +52,10 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
 
     if (error) {
       console.error('Database error in getUserRole:', error);
-      // Don't return null immediately, try hardcoded fallback      
       return null;
     }
 
+    // Return the role if found, null if not found
     return data?.role as AdminRole || null;
   } catch (error: any) {
     console.error('Error getting user role:', error);
@@ -182,8 +187,13 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
   }
 };
 
-export const createBootstrapSuperAdmin = async (address: string): Promise<boolean> => {
+export const createBootstrapSuperAdmin = async (address: string, name?: string, email?: string): Promise<boolean> => {
   try {
+    // Validate address
+    if (!address || typeof address !== 'string') {
+      throw new Error('Valid wallet address is required');
+    }
+
     // Check if any super admin already exists
     const { data: existingSuperAdmin } = await supabase
       .from('admin_roles')
@@ -195,12 +205,20 @@ export const createBootstrapSuperAdmin = async (address: string): Promise<boolea
       throw new Error('Super admin already exists');
     }
 
+    // Check if this address already has a role
+    const existingRole = await getUserRole(address);
+    if (existingRole) {
+      throw new Error('Address already has an assigned role');
+    }
+
     // Insert the first super admin directly
     const { error } = await supabase
       .from('admin_roles')
       .insert([{
         user_address: address.toLowerCase(),
         role: SMART_CONTRACT_ROLES.SUPER_ADMIN,
+        name: name || 'Super Admin',
+        email: email || null,
         created_at: new Date().toISOString()
       }]);
 
