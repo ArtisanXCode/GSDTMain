@@ -137,13 +137,11 @@ export default function ExchangeRates() {
                     <div className="absolute top-2 right-2 z-10 flex space-x-1">
                       <button
                         onClick={() => {
-                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
-                          if (chartElement) {
-                            const currentScale = chartElement.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || '1';
-                            const newScale = Math.min(parseFloat(currentScale) * 1.2, 3);
-                            chartElement.style.transform = `scale(${newScale})`;
-                            chartElement.style.transformOrigin = 'center center';
-                          }
+                          // Get the chart instance using the ref that will be passed from HistoricalChart
+                          const event = new CustomEvent('chartZoom', { 
+                            detail: { action: 'zoomIn', currency: benchmarkData.currency }
+                          });
+                          window.dispatchEvent(event);
                         }}
                         className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
                         title="Zoom In"
@@ -152,13 +150,10 @@ export default function ExchangeRates() {
                       </button>
                       <button
                         onClick={() => {
-                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
-                          if (chartElement) {
-                            const currentScale = chartElement.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || '1';
-                            const newScale = Math.max(parseFloat(currentScale) / 1.2, 0.5);
-                            chartElement.style.transform = `scale(${newScale})`;
-                            chartElement.style.transformOrigin = 'center center';
-                          }
+                          const event = new CustomEvent('chartZoom', { 
+                            detail: { action: 'zoomOut', currency: benchmarkData.currency }
+                          });
+                          window.dispatchEvent(event);
                         }}
                         className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
                         title="Zoom Out"
@@ -167,10 +162,10 @@ export default function ExchangeRates() {
                       </button>
                       <button
                         onClick={() => {
-                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
-                          if (chartElement) {
-                            chartElement.style.transform = 'scale(1)';
-                          }
+                          const event = new CustomEvent('chartZoom', { 
+                            detail: { action: 'resetZoom', currency: benchmarkData.currency }
+                          });
+                          window.dispatchEvent(event);
                         }}
                         className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
                         title="Reset Zoom"

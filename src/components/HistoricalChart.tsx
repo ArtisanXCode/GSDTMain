@@ -36,6 +36,34 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
   const [chartData, setChartData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentGSDCRate, setCurrentGSDCRate] = useState<number>(0);
+  const chartRef = useRef<ChartJS<'line'>>(null);
+
+  useEffect(() => {
+    // Add event listeners for zoom controls
+    const handleZoomEvent = (event: CustomEvent) => {
+      if (event.detail.currency !== currency || !chartRef.current) return;
+      
+      const chart = chartRef.current;
+      
+      switch (event.detail.action) {
+        case 'zoomIn':
+          chart.zoom(1.1);
+          break;
+        case 'zoomOut':
+          chart.zoom(0.9);
+          break;
+        case 'resetZoom':
+          chart.resetZoom();
+          break;
+      }
+    };
+
+    window.addEventListener('chartZoom', handleZoomEvent as EventListener);
+    
+    return () => {
+      window.removeEventListener('chartZoom', handleZoomEvent as EventListener);
+    };
+  }, [currency]);
 
   useEffect(() => {
     const generateHistoricalData = async () => {
@@ -217,7 +245,7 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
           <p className="text-white/70">Loading chart...</p>
         </div>
       ) : (
-        chartData && <Line data={chartData} options={options} />
+        chartData && <Line ref={chartRef} data={chartData} options={options} />
       )}
     </div>
   );
