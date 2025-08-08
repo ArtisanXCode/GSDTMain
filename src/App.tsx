@@ -138,7 +138,7 @@ export default function App() {
                 path="/admin/pending-roles"
                 element={
                   <ProtectedRoute requireAdmin={true}>
-                    <PendingRoles />
+                    <AdminPendingTransactions />
                   </ProtectedRoute>
                 }
               />

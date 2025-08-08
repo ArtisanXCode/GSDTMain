@@ -19,7 +19,7 @@ interface PendingTransaction {
   data: string;
 }
 
-export default function PendingRoles() {
+export default function PendingTransactions() {
   const { address } = useWallet();
   const { isSuperAdmin, isApprover } = useAdmin();
   const [pendingTransactions, setPendingTransactions] = useState<PendingTransaction[]>([]);
