@@ -183,6 +183,9 @@ export default function App() {
 
               {/* Legal Pages - Public */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
+              
+              {/* Catch-all for any unmatched routes - redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
           <Footer />

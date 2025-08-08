@@ -6,7 +6,7 @@ import {
   ShieldCheckIcon,
   CogIcon,
 } from "@heroicons/react/24/outline";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LiveExchangeRates from "../components/LiveExchangeRates";
 import { useWallet } from '../hooks/useWallet';
@@ -63,16 +63,36 @@ export default function Home() {
     totalSupply: string;
   } | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const [showRedirectMessage, setShowRedirectMessage] = useState(false);
 
-  // Check if user was redirected here from a protected page
+  // Check for redirect message from protected routes
   useEffect(() => {
-    if (location.state?.message && !isAuthenticated) {
+    if (location.state?.message) {
       setShowRedirectMessage(true);
-      // Clear the message after showing it
-      setTimeout(() => setShowRedirectMessage(false), 8000);
+      const timer = setTimeout(() => setShowRedirectMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+
+    // Auto-show login modal if redirected from protected route
+    if (location.state?.showLogin && !isAuthenticated) {
+      const timer = setTimeout(() => {
+        const loginTrigger = document.querySelector('[data-login-trigger]') as HTMLButtonElement;
+        if (loginTrigger) {
+          loginTrigger.click();
+        }
+      }, 1000); // Small delay to ensure page is loaded
+      return () => clearTimeout(timer);
     }
   }, [location.state, isAuthenticated]);
+
+  useEffect(() => {
+    const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+    if (redirectPath && isAuthenticated) {
+      sessionStorage.removeItem('redirectAfterLogin');
+      navigate(redirectPath);
+    }
+  }, [isAuthenticated, navigate]);
 
 
   const [currentSlide, setCurrentSlide] = useState(0);
