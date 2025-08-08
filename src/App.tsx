@@ -174,7 +174,10 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* Legal Pages */}
+              {/* Public FAQs route */}
+              <Route path="/faqs" element={<DynamicPage />} />
+
+              {/* Legal Pages - Public */}
               <Route path="/legal/:slug" element={<DynamicPage />} />
 
               {/* Dynamic CMS Pages - Protected */}
@@ -186,9 +189,6 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-
-              {/* Legal Pages - Public */}
-              <Route path="/legal/:slug" element={<DynamicPage />} />
 
               {/* Catch-all for any unmatched routes - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />

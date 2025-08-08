@@ -12,15 +12,22 @@ export default function DynamicPage() {
 
   useEffect(() => {
     const loadPage = async () => {
-      if (!slug) return;
-
       try {
         setLoading(true);
         setError(null);
 
-        // Check if this is a legal page route
-        const isLegalPage = window.location.pathname.startsWith('/legal/');
-        const pageSlug = isLegalPage ? `legal-${slug}` : slug;
+        let pageSlug: string;
+
+        // Handle direct routes like /faqs
+        if (window.location.pathname === '/faqs') {
+          pageSlug = 'faqs';
+        } else if (!slug) {
+          return;
+        } else {
+          // Check if this is a legal page route
+          const isLegalPage = window.location.pathname.startsWith('/legal/');
+          pageSlug = isLegalPage ? `legal-${slug}` : slug;
+        }
 
         const data = await getPageBySlug(pageSlug);
         if (!data) {
