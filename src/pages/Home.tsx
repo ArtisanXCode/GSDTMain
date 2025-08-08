@@ -124,68 +124,81 @@ export default function Home() {
       <div className="relative">
         <div className="absolute inset-0 bg-black/10"></div>
         <div
-          className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center relative"
+          className="min-h-screen bg-cover bg-center bg-no-repeat relative"
           style={{
             backgroundImage: "url('/headers/home_header.png')"
           }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-center text-white px-4 max-w-4xl mx-auto"
-          >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              The Future of Digital Currency
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90">
-              Experience secure, transparent, and instant global transactions with GSDC
-            </p>
+          <div className="flex items-center justify-between h-screen px-4 lg:px-8 max-w-7xl mx-auto">
+            {/* Left side content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-white flex-1 max-w-2xl"
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                The Future of Digital Currency
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 opacity-90">
+                Experience secure, transparent, and instant global transactions with GSDC
+              </p>
 
-            {!isAuthenticated && (
-              <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-400 rounded-lg">
-                <p className="text-lg font-semibold mb-2">
-                  {showRedirectMessage ? '🚫 Authentication Required' : '🔒 Full Platform Access Requires Login'}
-                </p>
-                <p className="text-sm opacity-90">
-                  {showRedirectMessage
-                    ? location.state?.message || 'Please log in to access this page'
-                    : 'Login to access live exchange rates, token minting, transaction history, and all platform features'
-                  }
-                </p>
+              {!isAuthenticated && (
+                <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-400 rounded-lg">
+                  <p className="text-lg font-semibold mb-2">
+                    {showRedirectMessage ? '🚫 Authentication Required' : '🔒 Full Platform Access Requires Login'}
+                  </p>
+                  <p className="text-sm opacity-90">
+                    {showRedirectMessage
+                      ? location.state?.message || 'Please log in to access this page'
+                      : 'Login to access live exchange rates, token minting, transaction history, and all platform features'
+                    }
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link
+                    to={isAuthenticated ? "/dashboard" : "/"}
+                    onClick={!isAuthenticated ? (e) => {
+                      e.preventDefault();
+                      // This will trigger the login modal via the header component
+                      document.querySelector('[data-login-trigger]')?.click();
+                    } : undefined}
+                    className="inline-block px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-full hover:shadow-2xl transition-all duration-300"
+                  >
+                    {isAuthenticated ? 'Go to Dashboard' : 'Login to Get Started'}
+                  </Link>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link
+                    to="/about"
+                    className="inline-block px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300"
+                  >
+                    Learn More
+                  </Link>
+                </motion.div>
               </div>
-            )}
+            </motion.div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to={isAuthenticated ? "/dashboard" : "/"}
-                  onClick={!isAuthenticated ? (e) => {
-                    e.preventDefault();
-                    // This will trigger the login modal via the header component
-                    document.querySelector('[data-login-trigger]')?.click();
-                  } : undefined}
-                  className="inline-block px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-full hover:shadow-2xl transition-all duration-300"
-                >
-                  {isAuthenticated ? 'Go to Dashboard' : 'Login to Get Started'}
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/about"
-                  className="inline-block px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-gray-900 transition-all duration-300"
-                >
-                  Learn More
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
+            {/* Right side Live Exchange Rates */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="hidden lg:block flex-1 max-w-lg ml-8"
+            >
+              <LiveExchangeRates variant="hero" showTitle={true} />
+            </motion.div>
+          </div>
         </div>
       </div>
 
