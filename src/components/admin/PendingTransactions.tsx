@@ -1,10 +1,10 @@
-
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useContract } from '../../hooks/useContract';
 import { toast } from 'react-hot-toast';
 import { handleBlockchainError } from '../../lib/web3';
+import { ethers } from 'ethers'; // Import ethers
 
 interface PendingTransaction {
   id: string;
@@ -48,6 +48,20 @@ const transactionTypeNames = {
   [TransactionType.ROLE_REVOKE]: 'Revoke Role'
 };
 
+// Placeholder functions for type and status labels
+const getTransactionTypeLabel = (type: TransactionType): string => transactionTypeNames[type] || 'Unknown';
+const getTransactionStatusLabel = (status: TransactionStatus): string => {
+  switch (status) {
+    case TransactionStatus.PENDING: return 'Pending';
+    case TransactionStatus.APPROVED: return 'Approved';
+    case TransactionStatus.REJECTED: return 'Rejected';
+    case TransactionStatus.EXECUTED: return 'Executed';
+    case TransactionStatus.AUTO_EXECUTED: return 'Auto Executed';
+    default: return 'Unknown';
+  }
+};
+
+
 interface Props {
   onRefresh?: () => void;
 }
@@ -64,42 +78,88 @@ export default function PendingTransactions({ onRefresh }: Props) {
   useEffect(() => {
     if (contract && isConnected) {
       fetchPendingTransactions();
+    } else {
+      setTransactions([]); // Clear transactions if not connected
+      setLoading(false);
     }
   }, [contract, isConnected]);
 
   const fetchPendingTransactions = async () => {
-    if (!contract) return;
+    if (!contract) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
-      const pendingIds = await contract.getPendingTransactionIds();
-      
-      const txPromises = pendingIds.map(async (id: any) => {
-        const tx = await contract.getPendingTransaction(id);
-        const now = new Date();
-        const executeAfter = new Date(tx.executeAfter.toNumber() * 1000);
-        
-        return {
-          id: id.toString(),
-          txType: tx.txType,
-          status: tx.status,
-          initiator: tx.initiator,
-          target: tx.target,
-          amount: tx.amount.toString(),
-          timestamp: new Date(tx.timestamp.toNumber() * 1000),
-          executeAfter,
-          rejectionReason: tx.rejectionReason,
-          approver: tx.approver,
-          canAutoExecute: now >= executeAfter && tx.status === TransactionStatus.PENDING
-        };
+
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout - please check your connection')), 15000);
       });
 
-      const pendingTxs = await Promise.all(txPromises);
-      setTransactions(pendingTxs);
+      // Check if contract has required methods
+      if (!contract.getPendingTransactionIds || !contract.getPendingTransaction) {
+        throw new Error('Contract does not support pending transactions feature');
+      }
+
+      // Get pending transaction IDs with timeout
+      const pendingIds = await Promise.race([
+        contract.getPendingTransactionIds(),
+        timeoutPromise
+      ]);
+
+      if (!pendingIds || pendingIds.length === 0) {
+        setTransactions([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch details for each pending transaction with individual error handling
+      const transactionPromises = pendingIds.map(async (id: any) => {
+        try {
+          const tx = await contract.getPendingTransaction(id);
+          return {
+            id: id.toString(),
+            txType: getTransactionTypeLabel(tx.txType),
+            status: getTransactionStatusLabel(tx.status),
+            initiator: tx.initiator,
+            target: tx.target,
+            amount: ethers.utils.formatEther(tx.amount || '0'),
+            timestamp: new Date(tx.timestamp.toNumber() * 1000),
+            executeAfter: new Date(tx.executeAfter.toNumber() * 1000),
+            rejectionReason: tx.rejectionReason || '',
+            approver: tx.approver || '',
+            canAutoExecute: tx.canAutoExecute || false
+          };
+        } catch (txError) {
+          console.warn(`Failed to fetch transaction ${id}:`, txError);
+          return null;
+        }
+      });
+
+      const fetchedTransactions = await Promise.all(transactionPromises);
+      // Filter out failed transactions
+      const validTransactions = fetchedTransactions.filter(tx => tx !== null);
+      setTransactions(validTransactions);
+
+      if (validTransactions.length === 0 && pendingIds.length > 0) {
+        toast.error('No valid pending transactions could be loaded');
+      }
     } catch (error: any) {
       console.error('Error fetching pending transactions:', error);
-      const errorMessage = handleBlockchainError(error);
+      let errorMessage = 'Failed to fetch pending transactions';
+
+      if (error.message.includes('timeout')) {
+        errorMessage = 'Request timed out. Please check your connection and try again.';
+      } else if (error.message.includes('support')) {
+        errorMessage = 'This contract version does not support pending transactions.';
+      } else {
+        errorMessage = handleBlockchainError(error);
+      }
+
       toast.error(errorMessage);
+      setTransactions([]);
     } finally {
       setLoading(false);
     }
@@ -112,7 +172,7 @@ export default function PendingTransactions({ onRefresh }: Props) {
       setProcessing(true);
       const tx = await contract.approveTransaction(txId);
       await tx.wait();
-      
+
       toast.success('Transaction approved and executed');
       fetchPendingTransactions();
       onRefresh?.();
@@ -132,7 +192,7 @@ export default function PendingTransactions({ onRefresh }: Props) {
       setProcessing(true);
       const tx = await contract.rejectTransaction(selectedTx.id, rejectionReason);
       await tx.wait();
-      
+
       toast.success('Transaction rejected');
       setShowRejectModal(false);
       setSelectedTx(null);
@@ -155,7 +215,7 @@ export default function PendingTransactions({ onRefresh }: Props) {
       setProcessing(true);
       const tx = await contract.executeTransaction(txId);
       await tx.wait();
-      
+
       toast.success('Transaction executed');
       fetchPendingTransactions();
       onRefresh?.();
@@ -169,7 +229,7 @@ export default function PendingTransactions({ onRefresh }: Props) {
   };
 
   const formatAmount = (amount: string, txType: TransactionType): string => {
-    if (txType === TransactionType.MINT || txType === TransactionType.BURN) {
+    if (txType === TransactionType.MINT || txType === TransactionType.BURN || txType === TransactionType.TRANSFER) {
       const divisor = Math.pow(10, 18);
       return (parseFloat(amount) / divisor).toFixed(2) + ' GSDC';
     }
@@ -179,13 +239,13 @@ export default function PendingTransactions({ onRefresh }: Props) {
   const getTimeRemaining = (executeAfter: Date): string => {
     const now = new Date();
     const remaining = executeAfter.getTime() - now.getTime();
-    
+
     if (remaining <= 0) return 'Ready for auto-execution';
-    
+
     const minutes = Math.floor(remaining / (1000 * 60));
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${remainingMinutes}m remaining`;
     }
@@ -194,9 +254,10 @@ export default function PendingTransactions({ onRefresh }: Props) {
 
   if (loading) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-12 bg-gray-50 rounded-lg">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading pending transactions...</p>
+        <p className="mt-4 text-gray-500">Loading pending transactions...</p>
+        <p className="mt-2 text-sm text-gray-400">This may take a few moments</p>
       </div>
     );
   }
@@ -215,7 +276,13 @@ export default function PendingTransactions({ onRefresh }: Props) {
 
       {transactions.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No pending transactions</p>
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
+            <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No pending transactions</h3>
+          <p className="mt-1 text-sm text-gray-500">All transactions have been processed or there are no pending approvals.</p>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -264,7 +331,7 @@ export default function PendingTransactions({ onRefresh }: Props) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {transactionTypeNames[tx.txType]}
+                          {tx.txType}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -277,8 +344,8 @@ export default function PendingTransactions({ onRefresh }: Props) {
                         {tx.initiator.slice(0, 6)}...{tx.initiator.slice(-4)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                          Pending
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${tx.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : tx.status === 'Approved' ? 'bg-green-100 text-green-800' : tx.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+                          {tx.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
