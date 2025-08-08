@@ -248,7 +248,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
     // Get contract with signer
     const contract = getContract();
     if (!contract) {
-      throw new Error("Contract not initialized. Please connect your wallet.");
+      throw new Error("Contract not initialized. Please connect your wallet 123.");
     }
 
     // Verify this is a contract with signer, not read-only
@@ -467,7 +467,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       throw new Error(`Smart contract error: ${revertReason}`);
     } else if (error.message?.includes("Contract not initialized")) {
       throw new Error(
-        "Contract not initialized. Please connect your wallet and try again.",
+        "Contract not initialized. Please connect your wallet and try again 234.",
       );
     } else if (error.message?.includes("KYC request not found")) {
       throw new Error(
@@ -538,7 +538,7 @@ export const rejectKYCRequest = async (
     // Get contract with signer
     const contract = getContract();
     if (!contract) {
-      throw new Error("Contract not initialized. Please connect your wallet.");
+      throw new Error("Contract not initialized. Please connect your wallet 345.");
     }
 
     // Verify this is a contract with signer, not read-only
