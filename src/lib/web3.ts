@@ -45,6 +45,65 @@ export const getReadOnlyNFTContract = () => {
   return new ethers.Contract(NFT_contractAddress, NFT_abi, defaultProvider);
 };
 
+// Connect wallet function
+export const connectWallet = async (): Promise<string | null> => {
+  try {
+    if (!window.ethereum) {
+      throw new Error('MetaMask is not installed');
+    }
+    
+    // Request account access
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    
+    if (accounts && accounts.length > 0) {
+      return accounts[0];
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to connect wallet:', error);
+    throw error;
+  }
+};
+
+// Get current wallet address
+export const getAddress = async (): Promise<string | null> => {
+  try {
+    if (!window.ethereum) {
+      return null;
+    }
+    
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_accounts' 
+    });
+    
+    return accounts && accounts.length > 0 ? accounts[0] : null;
+  } catch (error) {
+    console.error('Failed to get address:', error);
+    return null;
+  }
+};
+
+// Check if wallet is connected
+export const isConnected = async (): Promise<boolean> => {
+  try {
+    if (!window.ethereum) {
+      return false;
+    }
+    
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_accounts' 
+    });
+    
+    return accounts && accounts.length > 0;
+  } catch (error) {
+    console.error('Failed to check connection:', error);
+    return false;
+  }
+};
+
 // Initialize web3 connection
 export const initializeWeb3 = async () => {
   try {
