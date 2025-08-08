@@ -7,6 +7,9 @@ export * from './admin/types';
 export * from './admin/roles';
 export * from './admin/transactions';
 
+// Explicitly export AdminRole for backward compatibility
+export { AdminRole } from './admin/types';
+
 // Transaction types for monitoring
 export enum TransactionType {
   MINT = 'MINT',
