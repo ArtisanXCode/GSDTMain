@@ -41,7 +41,7 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
       .select('role')
       .eq('user_address', address.toLowerCase())
       .abortSignal(controller.signal)
-      .single(); // Use maybeSingle instead of single
+      .maybeSingle(); // Use maybeSingle to handle no results gracefully
 
     clearTimeout(timeoutId);
 
