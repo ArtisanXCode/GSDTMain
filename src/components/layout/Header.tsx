@@ -65,7 +65,7 @@ const Header = () => {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between items-center">
               {/* Logo */}
-              <div className="flex items-center">
+              <div className="flex items-center"></div>
                 <Link to="/" className="flex flex-shrink-0 items-center">
                   <img
                     src="/logo_gsdc_white.png"

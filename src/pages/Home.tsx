@@ -25,6 +25,29 @@ const currencies = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
     symbol: CURRENCY_SYMBOLS[code] || code
   }));
 
+const features = [
+  {
+    name: "Global Accessibility",
+    description: "Access GSDC from anywhere in the world with seamless cross-border transactions and universal compatibility.",
+    icon: GlobeAltIcon,
+  },
+  {
+    name: "Stable Value",
+    description: "Backed by a diversified basket of Global South currencies, providing stability and reducing volatility.",
+    icon: BanknotesIcon,
+  },
+  {
+    name: "Real-time Analytics",
+    description: "Monitor exchange rates, transaction history, and market data with comprehensive analytics tools.",
+    icon: ChartBarIcon,
+  },
+  {
+    name: "Secure Platform",
+    description: "Advanced security protocols and smart contract audits ensure your assets are protected at all times.",
+    icon: ShieldCheckIcon,
+  },
+];
+
 const metrics = [
   { id: 1, stat: "10M+", emphasis: "GSDC", rest: "in circulation" },
   { id: 2, stat: "50+", emphasis: "Countries", rest: "supported" },
