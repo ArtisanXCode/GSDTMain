@@ -1,4 +1,3 @@
-
 export const SMART_CONTRACT_ROLES = {
   MINTER: 'MINTER',
   BURNER: 'BURNER',
