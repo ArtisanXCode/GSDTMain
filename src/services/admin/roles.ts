@@ -64,10 +64,26 @@ export const assignUserRole = async (
   assignedBy: string
 ): Promise<boolean> => {
   try {
-    // Check if the assigner is a super admin
-    const assignerRole = await getUserRole(assignedBy);
-    if (assignerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN) {
-      throw new Error('Only super admins can assign roles');
+    // Check if any super admin exists (bootstrap check)
+    const { data: existingSuperAdmin } = await supabase
+      .from('admin_roles')
+      .select('id')
+      .eq('role', SMART_CONTRACT_ROLES.SUPER_ADMIN)
+      .limit(1);
+
+    const isBootstrap = !existingSuperAdmin || existingSuperAdmin.length === 0;
+
+    // If not bootstrap, check if the assigner is a super admin
+    if (!isBootstrap) {
+      const assignerRole = await getUserRole(assignedBy);
+      if (assignerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN) {
+        throw new Error('Only super admins can assign roles');
+      }
+    } else {
+      // Bootstrap case: only allow creating SUPER_ADMIN roles
+      if (role !== SMART_CONTRACT_ROLES.SUPER_ADMIN) {
+        throw new Error('First user must be assigned SUPER_ADMIN role');
+      }
     }
 
     // Update smart contract
@@ -162,6 +178,36 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
     return true;
   } catch (error) {
     console.error('Error removing user role:', error);
+    throw error;
+  }
+};
+
+export const createBootstrapSuperAdmin = async (address: string): Promise<boolean> => {
+  try {
+    // Check if any super admin already exists
+    const { data: existingSuperAdmin } = await supabase
+      .from('admin_roles')
+      .select('id')
+      .eq('role', SMART_CONTRACT_ROLES.SUPER_ADMIN)
+      .limit(1);
+
+    if (existingSuperAdmin && existingSuperAdmin.length > 0) {
+      throw new Error('Super admin already exists');
+    }
+
+    // Insert the first super admin directly
+    const { error } = await supabase
+      .from('admin_roles')
+      .insert([{
+        user_address: address.toLowerCase(),
+        role: SMART_CONTRACT_ROLES.SUPER_ADMIN,
+        created_at: new Date().toISOString()
+      }]);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error creating bootstrap super admin:', error);
     throw error;
   }
 };
