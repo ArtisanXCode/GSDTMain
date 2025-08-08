@@ -55,3 +55,38 @@ export const TRANSACTION_STATUS = {
   EXECUTED: 3,
   AUTO_EXECUTED: 4,
 } as const;
+
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  FLAGGED = 'FLAGGED'
+}
+
+export enum TransactionType {
+  MINT = 'MINT',
+  BURN = 'BURN',
+  TRANSFER = 'TRANSFER',
+  REQUEST_REDEEM = 'REQUEST_REDEEM',
+  PROCESS_REDEEM = 'PROCESS_REDEEM',
+  UPDATE_KYC = 'UPDATE_KYC',
+  GRANT_ROLE = 'GRANT_ROLE',
+  REVOKE_ROLE = 'REVOKE_ROLE',
+  BLACKLIST = 'BLACKLIST',
+  KYC_UPDATE = 'KYC_UPDATE',
+  FIAT_DEPOSIT = 'FIAT_DEPOSIT',
+  REDEEM = 'REDEEM'
+}
+
+export interface Transaction {
+  id: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  amount: string;
+  fromAddress: string;
+  toAddress: string;
+  timestamp: Date;
+  blockNumber: number;
+  txHash: string;
+  riskScore?: number;
+}
