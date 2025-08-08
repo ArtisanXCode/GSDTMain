@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
@@ -9,18 +10,11 @@ export default function ExchangeRates() {
   const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
   const [selectedPeriod, setSelectedPeriod] = useState('3 months');
   const [boxPeriods, setBoxPeriods] = useState<{[key: string]: string}>({});
-  const [selectedBenchmark, setSelectedBenchmark] = useState<string>('');
+  const [selectedBenchmark, setSelectedBenchmark] = useState<string>('CNY');
 
   const handleRefresh = () => {
     refetch();
   };
-
-  useEffect(() => {
-    // Set the first benchmark as the default selected one if data is available
-    if (data && data.length > 0) {
-      setSelectedBenchmark(data[0].currency);
-    }
-  }, [data]);
 
   if (loading && data.length === 0) {
     return (
@@ -50,8 +44,6 @@ export default function ExchangeRates() {
   // Filter out USD from the data as per wireframe
   const benchmarkCurrencies = data.filter(item => item.currency !== 'USD');
 
-  const selectedBenchmarkData = data.find(item => item.currency === selectedBenchmark);
-
   return (
     <div className="min-h-screen bg-white/5 backdrop-blur-lg text-white p-8">
       {/* Header Section */}
@@ -59,8 +51,7 @@ export default function ExchangeRates() {
         <div>
           <h1 className="text-3xl font-bold mb-2">GSDC Stability Analysis</h1>
           <p className="text-gray-300 text-lg">
-            Real-time benchmark analysis showing the stability of GSDC versus each 
-            single currency in the basket composition.
+            Purpose: Show the stability of GSDC versus each single currency in the basket
           </p>
         </div>
         <button
@@ -74,58 +65,49 @@ export default function ExchangeRates() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Panel - Benchmark Selection */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <ChartBarIcon className="h-6 w-6 mr-2" />
-                {selectedBenchmark} Benchmark
-              </h2>
-              <p className="text-gray-300 text-sm mb-6">Real-time</p>
-            </div>
+        {/* Left Panel - All Benchmark Boxes */}
+        <div className="space-y-6">
+          {benchmarkCurrencies.map((benchmarkData) => (
+            <div 
+              key={benchmarkData.currency}
+              className={`bg-white/10 backdrop-blur-lg rounded-xl p-6 border transition-all cursor-pointer ${
+                selectedBenchmark === benchmarkData.currency
+                  ? 'border-blue-400 bg-blue-500/20'
+                  : 'border-white/20 hover:border-white/40'
+              }`}
+              onClick={() => setSelectedBenchmark(benchmarkData.currency)}
+            >
+              <div>
+                <h2 className="text-xl font-bold mb-4 flex items-center">
+                  <ChartBarIcon className="h-6 w-6 mr-2" />
+                  {benchmarkData.currency} Benchmark
+                </h2>
+                <p className="text-gray-300 text-sm mb-6">Real-time</p>
+              </div>
 
-            {/* Benchmark Currency Selection */}
-            <div className="grid grid-cols-2 gap-2 mb-6">
-              {benchmarkCurrencies.map((benchmarkData) => (
-                <button
-                  key={benchmarkData.currency}
-                  onClick={() => setSelectedBenchmark(benchmarkData.currency)}
-                  className={`p-3 rounded-lg text-left transition-colors ${
-                    selectedBenchmark === benchmarkData.currency
-                      ? 'bg-blue-500/30 border border-blue-400'
-                      : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                  }`}
-                >
-                  <div className="text-sm font-medium">{benchmarkData.currency}</div>
-                  <div className="text-xs text-gray-400">{CURRENCY_NAMES[benchmarkData.currency]}</div>
-                </button>
-              ))}
-            </div>
-
-            {/* Exchange Rates List for Selected Benchmark */}
-            {selectedBenchmarkData && (
+              {/* Exchange Rates List for this Benchmark */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                  <span className="text-white font-medium">GSDC/{selectedBenchmark}</span>
+                  <span className="text-white font-medium">GSDC/{benchmarkData.currency}</span>
                   <span className="text-white font-bold">
-                    {selectedBenchmarkData.gsdcRate.toFixed(6)}
+                    {benchmarkData.gsdcRate.toFixed(4)}
                   </span>
                 </div>
 
-                {Object.entries(selectedBenchmarkData.benchmarkRates)
-                  .filter(([currency]) => currency !== selectedBenchmark && currency !== 'USD')
+                {Object.entries(benchmarkData.benchmarkRates)
+                  .filter(([currency]) => currency !== benchmarkData.currency && currency !== 'USD')
+                  .slice(0, 4) // Show only first 4 pairs
                   .map(([currency, rate]) => (
                   <div key={currency} className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                    <span className="text-gray-300">{currency}/{selectedBenchmark}</span>
+                    <span className="text-gray-300">{currency}/{benchmarkData.currency}</span>
                     <span className="text-gray-200">
                       {typeof rate === 'number' ? rate.toFixed(6) : '0.000000'}
                     </span>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Right Panel - Chart for Selected Benchmark */}
@@ -164,6 +146,24 @@ export default function ExchangeRates() {
                 color={CURRENCY_COLORS[selectedBenchmark] || '#3B82F6'}
               />
             </div>
+
+            {/* Current Stats Display */}
+            {data.find(item => item.currency === selectedBenchmark) && (
+              <div className="mt-4 p-4 bg-white/5 rounded-lg">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-300">Current:</span>
+                  <span className="text-white font-medium">
+                    {data.find(item => item.currency === selectedBenchmark)?.gsdcRate.toFixed(6)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm mt-2">
+                  <span className="text-gray-300">Range:</span>
+                  <span className="text-white font-medium">
+                    {(data.find(item => item.currency === selectedBenchmark)?.gsdcRate * 0.99).toFixed(4)} - {(data.find(item => item.currency === selectedBenchmark)?.gsdcRate * 1.01).toFixed(4)}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
