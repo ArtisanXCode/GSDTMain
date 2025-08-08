@@ -63,109 +63,104 @@ export default function ExchangeRates() {
         </button>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Panel - All Benchmark Boxes */}
-        <div className="space-y-6">
-          {benchmarkCurrencies.map((benchmarkData) => (
-            <div 
-              key={benchmarkData.currency}
-              className={`bg-white/10 backdrop-blur-lg rounded-xl p-6 border transition-all cursor-pointer ${
-                selectedBenchmark === benchmarkData.currency
-                  ? 'border-blue-400 bg-blue-500/20'
-                  : 'border-white/20 hover:border-white/40'
-              }`}
-              onClick={() => setSelectedBenchmark(benchmarkData.currency)}
-            >
-              <div>
-                <h2 className="text-xl font-bold mb-4 flex items-center">
-                  <ChartBarIcon className="h-6 w-6 mr-2" />
-                  {benchmarkData.currency} Benchmark
-                </h2>
-                <p className="text-gray-300 text-sm mb-6">Real-time</p>
-              </div>
-
-              {/* Exchange Rates List for this Benchmark */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                  <span className="text-white font-medium">GSDC/{benchmarkData.currency}</span>
-                  <span className="text-white font-bold">
-                    {benchmarkData.gsdcRate.toFixed(4)}
-                  </span>
+      {/* Main Content - All Benchmark Boxes with Individual Charts */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {benchmarkCurrencies.map((benchmarkData) => (
+          <div 
+            key={benchmarkData.currency}
+            className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20"
+          >
+            {/* Left side - Benchmark Info */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+              <div className="p-6 border-r border-white/20">
+                <div>
+                  <h2 className="text-xl font-bold mb-4 flex items-center">
+                    <ChartBarIcon className="h-6 w-6 mr-2" />
+                    {benchmarkData.currency} Benchmark
+                  </h2>
+                  <p className="text-gray-300 text-sm mb-6">Real-time</p>
                 </div>
 
-                {Object.entries(benchmarkData.benchmarkRates)
-                  .filter(([currency]) => currency !== benchmarkData.currency && currency !== 'USD')
-                  .slice(0, 4) // Show only first 4 pairs
-                  .map(([currency, rate]) => (
-                  <div key={currency} className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                    <span className="text-gray-300">{currency}/{benchmarkData.currency}</span>
-                    <span className="text-gray-200">
-                      {typeof rate === 'number' ? rate.toFixed(6) : '0.000000'}
+                {/* Exchange Rates List for this Benchmark */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center bg-white/5 rounded-lg p-3">
+                    <span className="text-white font-medium">GSDC/{benchmarkData.currency}</span>
+                    <span className="text-white font-bold">
+                      {benchmarkData.gsdcRate.toFixed(4)}
                     </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Right Panel - Chart for Selected Benchmark */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold mb-2">Performance on Historical Data</h3>
-              <p className="text-gray-300 text-sm mb-4">Weekly Points - GSDC/{selectedBenchmark}</p>
-
-              {/* Period Selection */}
-              <div className="flex space-x-2 mb-4">
-                {periods.map((period) => (
-                  <button
-                    key={period}
-                    onClick={() => setBoxPeriods(prev => ({
-                      ...prev,
-                      [selectedBenchmark]: period
-                    }))}
-                    className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                      (boxPeriods[selectedBenchmark] || '3 months') === period
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                    }`}
-                  >
-                    {period}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Chart Container */}
-            <div className="bg-white/5 rounded-lg p-4 h-64">
-              <HistoricalChart
-                currency={selectedBenchmark}
-                period={boxPeriods[selectedBenchmark] || '3 months'}
-                color={CURRENCY_COLORS[selectedBenchmark] || '#3B82F6'}
-              />
-            </div>
-
-            {/* Current Stats Display */}
-            {data.find(item => item.currency === selectedBenchmark) && (
-              <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-300">Current:</span>
-                  <span className="text-white font-medium">
-                    {data.find(item => item.currency === selectedBenchmark)?.gsdcRate.toFixed(6)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm mt-2">
-                  <span className="text-gray-300">Range:</span>
-                  <span className="text-white font-medium">
-                    {(data.find(item => item.currency === selectedBenchmark)?.gsdcRate * 0.99).toFixed(4)} - {(data.find(item => item.currency === selectedBenchmark)?.gsdcRate * 1.01).toFixed(4)}
-                  </span>
+                  {Object.entries(benchmarkData.benchmarkRates)
+                    .filter(([currency]) => currency !== benchmarkData.currency && currency !== 'USD')
+                    .slice(0, 4) // Show only first 4 pairs
+                    .map(([currency, rate]) => (
+                    <div key={currency} className="flex justify-between items-center bg-white/5 rounded-lg p-3">
+                      <span className="text-gray-300">{currency}/{benchmarkData.currency}</span>
+                      <span className="text-gray-200">
+                        {typeof rate === 'number' ? rate.toFixed(6) : '0.000000'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
+
+              {/* Right side - Chart for this Benchmark */}
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-bold mb-2">Performance on Historical Data</h3>
+                    <p className="text-gray-300 text-sm mb-4">Weekly Points - GSDC/{benchmarkData.currency}</p>
+
+                    {/* Period Selection */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {periods.map((period) => (
+                        <button
+                          key={period}
+                          onClick={() => setBoxPeriods(prev => ({
+                            ...prev,
+                            [benchmarkData.currency]: period
+                          }))}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                            (boxPeriods[benchmarkData.currency] || '3 months') === period
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                          }`}
+                        >
+                          {period}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Chart Container */}
+                  <div className="bg-white/5 rounded-lg p-4 h-48">
+                    <HistoricalChart
+                      currency={benchmarkData.currency}
+                      period={boxPeriods[benchmarkData.currency] || '3 months'}
+                      color={CURRENCY_COLORS[benchmarkData.currency] || '#3B82F6'}
+                    />
+                  </div>
+
+                  {/* Current Stats Display */}
+                  <div className="p-4 bg-white/5 rounded-lg">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-300">Current:</span>
+                      <span className="text-white font-medium">
+                        {benchmarkData.gsdcRate.toFixed(6)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm mt-2">
+                      <span className="text-gray-300">Range:</span>
+                      <span className="text-white font-medium">
+                        {(benchmarkData.gsdcRate * 0.99).toFixed(4)} - {(benchmarkData.gsdcRate * 1.01).toFixed(4)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
