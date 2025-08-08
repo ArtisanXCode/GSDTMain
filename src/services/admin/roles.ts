@@ -6,13 +6,13 @@ import { SMART_CONTRACT_ROLES } from '../../constants/roles';
 
 // Role mapping to smart contract role hashes
 const ROLE_HASHES = {
-  [SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE]: ethers.constants.HashZero, // DEFAULT_ADMIN_ROLE
-  [SMART_CONTRACT_ROLES.MINTER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINTER_ROLE")),
-  [SMART_CONTRACT_ROLES.BURNER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BURNER_ROLE")),
-  [SMART_CONTRACT_ROLES.PAUSER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PAUSER_ROLE")),
-  [SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PRICE_UPDATER_ROLE")),
-  [SMART_CONTRACT_ROLES.BLACKLIST_MANAGER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BLACKLIST_MANAGER_ROLE")),
-  [SMART_CONTRACT_ROLES.APPROVER_ROLE]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("APPROVER_ROLE")),
+  [SMART_CONTRACT_ROLES.SUPER_ADMIN]: ethers.constants.HashZero, // DEFAULT_ADMIN_ROLE
+  [SMART_CONTRACT_ROLES.MINTER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINTER_ROLE")),
+  [SMART_CONTRACT_ROLES.BURNER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BURNER_ROLE")),
+  [SMART_CONTRACT_ROLES.PAUSER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PAUSER_ROLE")),
+  [SMART_CONTRACT_ROLES.PRICE_UPDATER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("PRICE_UPDATER_ROLE")),
+  [SMART_CONTRACT_ROLES.BLACKLIST_MANAGER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BLACKLIST_MANAGER_ROLE")),
+  [SMART_CONTRACT_ROLES.APPROVER]: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("APPROVER_ROLE")),
 };
 
 export const getAdminUsers = async (): Promise<AdminUser[]> => {
@@ -66,7 +66,7 @@ export const assignUserRole = async (
   try {
     // Check if the assigner is a super admin
     const assignerRole = await getUserRole(assignedBy);
-    if (assignerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE) {
+    if (assignerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN) {
       throw new Error('Only super admins can assign roles');
     }
 
@@ -121,7 +121,7 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
   try {
     // Check if the remover is a super admin
     const removerRole = await getUserRole(removedBy);
-    if (removerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE) {
+    if (removerRole !== SMART_CONTRACT_ROLES.SUPER_ADMIN) {
       throw new Error('Only super admins can remove roles');
     }
 
@@ -170,7 +170,7 @@ export const hasPermission = (userRole: AdminRole | null, requiredRole: AdminRol
   if (!userRole) return false;
 
   // Super admin has all permissions
-  if (userRole === SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE) return true;
+  if (userRole === SMART_CONTRACT_ROLES.SUPER_ADMIN) return true;
 
   // Exact role match for specific permissions
   return userRole === requiredRole;

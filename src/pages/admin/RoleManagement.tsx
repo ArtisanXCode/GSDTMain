@@ -10,6 +10,7 @@ import {
   assignUserRole,
   removeUserRole,
 } from "../../services/admin";
+import { SMART_CONTRACT_ROLES } from "../../constants/roles";
 import { UserPlusIcon } from "@heroicons/react/24/outline";
 import RoleCard from "../../components/admin/role-management/RoleCard";
 import RoleTable from "../../components/admin/role-management/RoleTable";
@@ -402,7 +403,7 @@ export default function RoleManagement() {
                 Available Smart Contract Roles:
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {Object.values(AdminRole).map((role) => (
+                {Object.values(SMART_CONTRACT_ROLES).map((role) => (
                   <RoleCard key={role} role={role} />
                 ))}
               </div>

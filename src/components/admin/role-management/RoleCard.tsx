@@ -18,19 +18,19 @@ export const getRoleIcon = (role: AdminRole) => {
   const iconClass = "h-5 w-5";
 
   switch (role) {
-    case SMART_CONTRACT_ROLES.SUPER_ADMIN_ROLE:
+    case SMART_CONTRACT_ROLES.SUPER_ADMIN:
       return <ShieldCheckIcon className={`${iconClass} text-orange-400`} />;
-    case SMART_CONTRACT_ROLES.MINTER_ROLE:
+    case SMART_CONTRACT_ROLES.MINTER:
       return <CurrencyDollarIcon className={`${iconClass} text-green-400`} />;
-    case SMART_CONTRACT_ROLES.BURNER_ROLE:
+    case SMART_CONTRACT_ROLES.BURNER:
       return <FireIcon className={`${iconClass} text-red-400`} />;
-    case SMART_CONTRACT_ROLES.PAUSER_ROLE:
+    case SMART_CONTRACT_ROLES.PAUSER:
       return <PauseIcon className={`${iconClass} text-yellow-400`} />;
-    case SMART_CONTRACT_ROLES.PRICE_UPDATER_ROLE:
+    case SMART_CONTRACT_ROLES.PRICE_UPDATER:
       return <ChartBarIcon className={`${iconClass} text-blue-400`} />;
-    case SMART_CONTRACT_ROLES.BLACKLIST_MANAGER_ROLE:
+    case SMART_CONTRACT_ROLES.BLACKLIST_MANAGER:
       return <UserMinusIcon className={`${iconClass} text-gray-400`} />;
-    case SMART_CONTRACT_ROLES.APPROVER_ROLE:
+    case SMART_CONTRACT_ROLES.APPROVER:
       return <CheckCircleIcon className={`${iconClass} text-purple-400`} />;
     default:
       return <ShieldCheckIcon className={`${iconClass} text-gray-400`} />;

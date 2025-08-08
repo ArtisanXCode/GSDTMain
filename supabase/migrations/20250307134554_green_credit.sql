@@ -25,7 +25,9 @@ ADD CONSTRAINT role_check CHECK (
     'MINTER',
     'BURNER',
     'PAUSER',
-    'PRICE_UPDATER'
+    'PRICE_UPDATER',
+    'BLACKLIST_MANAGER',
+    'APPROVER'
   )
 );
 
