@@ -185,7 +185,7 @@ export default function ExchangeRates() {
                         ⌂
                       </button>
                     </div>
-                    
+
                     <div id={`chart-${benchmarkData.currency}`} className="h-full transition-transform duration-200">
                       <HistoricalChart
                         currency={benchmarkData.currency}
