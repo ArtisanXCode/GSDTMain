@@ -8,21 +8,25 @@ import AdminNavigation from "../../components/admin/AdminNavigation";
 import { toast } from "react-hot-toast";
 
 export default function PendingTransactionsPage() {
-  const { account, isConnected } = useWallet();
+  const { address, isConnected } = useWallet();
   const { contract } = useContract();
-  const { isAdmin, isSuperAdmin, loading: adminLoading, checkRoleManually } = useAdmin();
+  const { isAdmin, isSuperAdmin, loading: adminLoading } = useAdmin();
   const [hasApprovalPermissions, setHasApprovalPermissions] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkPermissions();
-  }, [contract, account, isConnected, isAdmin, isSuperAdmin, adminLoading]);
+  }, [contract, address, isConnected, isAdmin, isSuperAdmin, adminLoading]);
 
   const checkPermissions = async () => {
-    if (!isConnected || !account) {
+
+    console.log(isConnected);
+    console.log(address);
+    
+    if (!isConnected || !address) {
       setLoading(false);
       return;
-    }
+    }    
 
     try {
       setLoading(true);
@@ -41,13 +45,15 @@ export default function PendingTransactionsPage() {
           const SUPER_ADMIN_ROLE = await contract.SUPER_ADMIN_ROLE();
 
           const [hasApproverRole, hasSuperAdminRole] = await Promise.all([
-            contract.hasRole(APPROVER_ROLE, account),
-            contract.hasRole(SUPER_ADMIN_ROLE, account),
+            contract.hasRole(APPROVER_ROLE, address),
+            contract.hasRole(SUPER_ADMIN_ROLE, address),
           ]);
 
           setHasApprovalPermissions(hasApproverRole || hasSuperAdminRole);
         } catch (contractError) {
-          console.warn("Smart contract role check failed, using database roles only");
+          console.warn(
+            "Smart contract role check failed, using database roles only",
+          );
           setHasApprovalPermissions(isSuperAdmin || isAdmin);
         }
       } else {
@@ -302,60 +308,33 @@ export default function PendingTransactionsPage() {
                   <div className="text-right">
                     <div className="text-sm text-gray-500">Connected as</div>
                     <div className="font-mono text-sm">
-                      {account?.slice(0, 6)}...{account?.slice(-4)}
+                      {address?.slice(0, 6)}...{address?.slice(-4)}
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-blue-900 mb-2">
-                        How it works:
-                      </h3>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>
-                          • All sensitive transactions have a 90-minute cooldown
-                          period
-                        </li>
-                        <li>
-                          • Transactions can be approved or rejected during this
-                          period
-                        </li>
-                        <li>
-                          • If no action is taken, transactions auto-execute after
-                          90 minutes
-                        </li>
-                        <li>
-                          • Only APPROVER_ROLE and SUPER_ADMIN_ROLE can
-                          approve/reject
-                        </li>
-                      </ul>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        if (checkRoleManually && account) {
-                          toast.loading("Checking permissions...");
-                          try {
-                            const role = await checkRoleManually(account);
-                            toast.dismiss();
-                            if (role) {
-                              toast.success(`Role found: ${role}`);
-                              checkPermissions(); // Re-check permissions
-                            } else {
-                              toast.error("No admin role found");
-                            }
-                          } catch (error) {
-                            toast.dismiss();
-                            toast.error("Failed to check role");
-                          }
-                        }
-                      }}
-                      className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                    >
-                      Check Role
-                    </button>
-                  </div>
+                  <h3 className="font-semibold text-blue-900 mb-2">
+                    How it works:
+                  </h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>
+                      • All sensitive transactions have a 90-minute cooldown
+                      period
+                    </li>
+                    <li>
+                      • Transactions can be approved or rejected during this
+                      period
+                    </li>
+                    <li>
+                      • If no action is taken, transactions auto-execute after
+                      90 minutes
+                    </li>
+                    <li>
+                      • Only APPROVER_ROLE and SUPER_ADMIN_ROLE can
+                      approve/reject
+                    </li>
+                  </ul>
                 </div>
 
                 <PendingTransactions onRefresh={handleRefresh} />
