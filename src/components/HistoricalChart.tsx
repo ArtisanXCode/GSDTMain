@@ -34,7 +34,7 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
   const seedRef = useRef<string>('');
 
   useEffect(() => {
-    // Create a stable seed based on currency and period to ensure consistent data
+    // Create a stable seed based on currency and period
     const seed = `${currency}-${period}`;
 
     // Only regenerate data if the seed changes (currency or period changes)
