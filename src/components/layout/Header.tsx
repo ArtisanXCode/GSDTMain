@@ -40,14 +40,15 @@ const Header = () => {
   const navigation = [
     { name: 'Home', href: '/', current: false, requireAuth: false },
     { name: 'About', href: '/about', current: false, requireAuth: false },
-    { name: 'Contact', href: '/contact', current: false, requireAuth: false },
+    
     // Protected navigation items
     { name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },
     { name: 'Live Exchange Rates', href: '/live-exchange-rates', current: false, requireAuth: true },
-    { name: 'Historical Analytics', href: '/historical-analytics', current: false, requireAuth: true },
+    /*{ name: 'Historical Analytics', href: '/historical-analytics', current: false, requireAuth: true },
     { name: 'Token Minting', href: '/token-minting', current: false, requireAuth: true },
-    { name: 'Transactions', href: '/transactions', current: false, requireAuth: true },
+    { name: 'Transactions', href: '/transactions', current: false, requireAuth: true },*/
     { name: 'Transparency', href: '/transparency', current: false, requireAuth: true },
+    { name: 'Contact', href: '/contact', current: false, requireAuth: false },
   ];
 
   const isActivePath = (path: string) => {
