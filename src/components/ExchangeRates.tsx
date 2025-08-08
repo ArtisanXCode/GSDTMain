@@ -55,7 +55,7 @@ export default function ExchangeRates() {
   const benchmarkCurrencies = data.filter(item => item.currency !== 'USD');
 
   return (
-    <div className="min-h-screen bg-white/5 backdrop-blur-lg text-white p-8">
+    <div className="min-h-screen bg-white/5 backdrop-blur-lg text-white">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <div>
