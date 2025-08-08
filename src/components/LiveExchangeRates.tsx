@@ -65,10 +65,9 @@ export default function LiveExchangeRates({
     : Object.keys(gsdcRates).filter(currency => gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
-    // Function to format GSDC rate with appropriate precision from global config
+    // Function to format GSDC rate with 2 decimal precision
     const formatGSDCRate = (rate: number, currency: string): string => {
-      const precision = CURRENCY_PRECISION[currency] || 4;
-      return rate.toFixed(precision);
+      return rate.toFixed(2);
     };
 
     return (
@@ -126,12 +125,10 @@ export default function LiveExchangeRates({
   }
 
   if (variant === 'hero') {
-    // Function to format GSDC rate with appropriate precision and styling for hero variant
+    // Function to format GSDC rate with 2 decimal precision and styling for hero variant
     const formatHeroGSDCRate = (rate: number, currency: string): string => {
-      const precision = CURRENCY_PRECISION[currency] || 4;
-      // Ensure the number is formatted with the correct precision and does not wrap
-      // For example, Rp6876.0801 should not break
-      return `${CURRENCY_SYMBOLS[currency]}${rate.toFixed(precision)}`;
+      // Format with 2 decimal places for consistency
+      return `${CURRENCY_SYMBOLS[currency]}${rate.toFixed(2)}`;
     };
 
     // Helper to format currency name without wrapping
@@ -233,7 +230,7 @@ export default function LiveExchangeRates({
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm font-bold text-white">
-                  {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(6)}
+                  {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(2)}
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-300">
                   {CURRENCY_NAMES[currency]}
