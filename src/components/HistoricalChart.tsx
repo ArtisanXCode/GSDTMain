@@ -12,6 +12,7 @@ import {
   Legend,
   ChartOptions,
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { unifiedExchangeRateService } from '../services/liveExchangeRates';
 
 ChartJS.register(
@@ -21,7 +22,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin
 );
 
 interface HistoricalChartProps {
@@ -130,6 +132,21 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
           label: (context) => {
             return `GSDC/${currency}: ${context.parsed.y}`;
           },
+        },
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x',
+        },
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: 'x',
         },
       },
     },

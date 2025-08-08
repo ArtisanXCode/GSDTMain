@@ -68,9 +68,10 @@ export default function ExchangeRates() {
           <div
             key={benchmarkData.currency}
             className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
-            {/* Full width layout - Benchmark Info */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
-              <div className="p-6 border-r border-white/20">
+            {/* Optimized layout - Left sidebar with minimal width, right side gets most space */}
+            <div className="flex h-full">
+              {/* Left sidebar - minimal width */}
+              <div className="w-80 flex-shrink-0 p-6 border-r border-white/20">
                 <div>
                   <h2 className="text-xl font-bold mb-4 flex items-center">
                     <ChartBarIcon className="h-6 w-6 mr-2" />
@@ -82,8 +83,8 @@ export default function ExchangeRates() {
                 {/* Exchange Rates List for this Benchmark */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                    <span className="text-white font-medium">GSDC/{benchmarkData.currency}</span>
-                    <span className="text-white font-bold">
+                    <span className="text-white font-medium text-sm">GSDC/{benchmarkData.currency}</span>
+                    <span className="text-white font-bold text-sm">
                       {benchmarkData.gsdcRate.toFixed(4)}
                     </span>
                   </div>
@@ -93,8 +94,8 @@ export default function ExchangeRates() {
                     .slice(0, 4) // Show only first 4 pairs
                     .map(([currency, rate]) => (
                     <div key={currency} className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                      <span className="text-gray-300">{currency}/{benchmarkData.currency}</span>
-                      <span className="text-gray-200">
+                      <span className="text-gray-300 text-sm">{currency}/{benchmarkData.currency}</span>
+                      <span className="text-gray-200 text-sm">
                         {typeof rate === 'number' ? rate.toFixed(6) : '0.000000'}
                       </span>
                     </div>
@@ -102,8 +103,8 @@ export default function ExchangeRates() {
                 </div>
               </div>
 
-              {/* Right side - Chart for this Benchmark */}
-              <div className="p-6">
+              {/* Right side - Chart takes all remaining space */}
+              <div className="flex-1 p-6">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-bold mb-2">Performance on Historical Data</h3>
@@ -130,13 +131,61 @@ export default function ExchangeRates() {
                     </div>
                   </div>
 
-                  {/* Chart Container */}
-                  <div className="bg-white/5 rounded-lg p-4 h-48">
-                    <HistoricalChart
-                      currency={benchmarkData.currency}
-                      period={boxPeriods[benchmarkData.currency] || '3 months'}
-                      color={CURRENCY_COLORS[benchmarkData.currency] || '#3B82F6'}
-                    />
+                  {/* Chart Container with Zoom Controls */}
+                  <div className="bg-white/5 rounded-lg p-4 h-80 relative">
+                    {/* Zoom Controls */}
+                    <div className="absolute top-2 right-2 z-10 flex space-x-1">
+                      <button
+                        onClick={() => {
+                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
+                          if (chartElement) {
+                            const currentScale = chartElement.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || '1';
+                            const newScale = Math.min(parseFloat(currentScale) * 1.2, 3);
+                            chartElement.style.transform = `scale(${newScale})`;
+                            chartElement.style.transformOrigin = 'center center';
+                          }
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
+                        title="Zoom In"
+                      >
+                        +
+                      </button>
+                      <button
+                        onClick={() => {
+                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
+                          if (chartElement) {
+                            const currentScale = chartElement.style.transform?.match(/scale\(([^)]+)\)/)?.[1] || '1';
+                            const newScale = Math.max(parseFloat(currentScale) / 1.2, 0.5);
+                            chartElement.style.transform = `scale(${newScale})`;
+                            chartElement.style.transformOrigin = 'center center';
+                          }
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
+                        title="Zoom Out"
+                      >
+                        −
+                      </button>
+                      <button
+                        onClick={() => {
+                          const chartElement = document.querySelector(`#chart-${benchmarkData.currency}`);
+                          if (chartElement) {
+                            chartElement.style.transform = 'scale(1)';
+                          }
+                        }}
+                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
+                        title="Reset Zoom"
+                      >
+                        ⌂
+                      </button>
+                    </div>
+                    
+                    <div id={`chart-${benchmarkData.currency}`} className="h-full transition-transform duration-200">
+                      <HistoricalChart
+                        currency={benchmarkData.currency}
+                        period={boxPeriods[benchmarkData.currency] || '3 months'}
+                        color={CURRENCY_COLORS[benchmarkData.currency] || '#3B82F6'}
+                      />
+                    </div>
                   </div>
 
                   {/* Current Stats Display */}
