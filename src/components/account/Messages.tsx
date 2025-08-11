@@ -8,14 +8,14 @@ import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react
 
 interface Message {
   id: string;
-  user_id: string;
+  name: string;
+  email: string;
   subject: string;
   message: string;
-  status: 'pending' | 'replied' | 'closed';
+  status: 'new' | 'read' | 'replied' | 'archived';
   admin_reply?: string;
   admin_id?: string;
-  created_at: string;
-  updated_at: string;
+  submitted_at: string;
 }
 
 export default function Messages() {
@@ -33,10 +33,10 @@ export default function Messages() {
 
     try {
       const { data, error } = await supabase
-        .from('contact_messages')
+        .from('contact_submissions')
         .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .eq('email', user.email)
+        .order('submitted_at', { ascending: false });
 
       if (error) throw error;
       setMessages(data || []);
@@ -50,11 +50,13 @@ export default function Messages() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'new':
         return 'bg-yellow-100 text-yellow-800';
-      case 'replied':
+      case 'read':
         return 'bg-blue-100 text-blue-800';
-      case 'closed':
+      case 'replied':
+        return 'bg-green-100 text-green-800';
+      case 'archived':
         return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -63,12 +65,14 @@ export default function Messages() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'Pending Response';
+      case 'new':
+        return 'New';
+      case 'read':
+        return 'Read';
       case 'replied':
         return 'Replied';
-      case 'closed':
-        return 'Closed';
+      case 'archived':
+        return 'Archived';
       default:
         return 'Unknown';
     }
@@ -127,7 +131,7 @@ export default function Messages() {
                         {message.subject}
                       </h4>
                       <p className="text-xs text-gray-500 mt-1">
-                        {format(new Date(message.created_at), 'MMM d, yyyy')}
+                        {format(new Date(message.submitted_at), 'MMM d, yyyy')}
                       </p>
                     </div>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(message.status)}`}>
@@ -153,7 +157,7 @@ export default function Messages() {
                         {selectedMessage.subject}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        Sent on {format(new Date(selectedMessage.created_at), 'MMMM d, yyyy at h:mm a')}
+                        Sent on {format(new Date(selectedMessage.submitted_at), 'MMMM d, yyyy at h:mm a')}
                       </p>
                     </div>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(selectedMessage.status)}`}>
@@ -174,7 +178,7 @@ export default function Messages() {
                       <div className="ml-3">
                         <p className="text-sm font-medium text-gray-900">You</p>
                         <p className="text-xs text-gray-500">
-                          {format(new Date(selectedMessage.created_at), 'MMM d, yyyy at h:mm a')}
+                          {format(new Date(selectedMessage.submitted_at), 'MMM d, yyyy at h:mm a')}
                         </p>
                       </div>
                     </div>
@@ -193,7 +197,7 @@ export default function Messages() {
                         <div className="ml-3">
                           <p className="text-sm font-medium text-gray-900">Support Team</p>
                           <p className="text-xs text-gray-500">
-                            {format(new Date(selectedMessage.updated_at), 'MMM d, yyyy at h:mm a')}
+                            {selectedMessage.admin_reply ? 'Replied' : 'No reply yet'}
                           </p>
                         </div>
                       </div>
@@ -205,7 +209,7 @@ export default function Messages() {
                 </div>
 
                 {/* Actions */}
-                {selectedMessage.status === 'pending' && (
+                {(selectedMessage.status === 'new' || selectedMessage.status === 'read') && (
                   <div className="mt-6 pt-4 border-t border-gray-200">
                     <p className="text-sm text-gray-600">
                       Your message is pending a response from our support team. We typically respond within 24 hours.
