@@ -205,8 +205,10 @@ export default function Messages() {
       // Clear reply text
       setReplyText('');
 
-      // Show success message
-      toast.success('Reply sent successfully!');
+      // Show success message with auto-hide
+      toast.success('Reply sent successfully!', {
+        duration: 3000, // Hide after 3 seconds
+      });
 
       // Optionally update message status to indicate user has replied
       const { error: updateError } = await supabase
