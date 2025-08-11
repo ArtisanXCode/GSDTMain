@@ -55,8 +55,10 @@ export default function ExchangeRates() {
 
   const periods = ['3 months', '6 months', '1 year', '2 year'];
 
-  // Filter out USD from the data as per wireframe
-  const benchmarkCurrencies = data.filter(item => item.currency !== 'USD');
+  // Include USD as the first benchmark currency, then the others
+  const usdBenchmark = data.find(item => item.currency === 'USD');
+  const otherBenchmarks = data.filter(item => item.currency !== 'USD');
+  const benchmarkCurrencies = usdBenchmark ? [usdBenchmark, ...otherBenchmarks] : otherBenchmarks;
 
   return (
     <div className="min-h-screen bg-white/5 backdrop-blur-lg text-white">
