@@ -88,10 +88,15 @@ export default function Messages() {
     fetchMessages();
   }, [user?.email]);
 
-  // Scroll to bottom when userReplies updates
+  // Scroll to bottom when userReplies updates - only scroll within the container
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current && selectedMessage) {
+      // Find the scrollable container
+      const scrollContainer = messagesEndRef.current.closest('.overflow-y-auto');
+      if (scrollContainer) {
+        // Scroll within the container only
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
     }
   }, [userReplies, selectedMessage]);
 
@@ -361,7 +366,7 @@ export default function Messages() {
 
                   {/* All Replies (User and Admin) - Scrollable container */}
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="max-h-[400px] overflow-y-auto overscroll-contain">
+                    <div className="max-h-[400px] overflow-y-auto overscroll-contain scroll-smooth">
                       <div className="space-y-4 p-4">
                         {userReplies.map((reply, index) => (
                           <div key={`${reply.type}-${reply.id}`} className={`rounded-lg p-4 ${
