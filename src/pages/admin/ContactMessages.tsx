@@ -195,7 +195,7 @@ export default function ContactMessages() {
       setError(null); // Clear any previous errors
 
       // Send reply
-      const result = await sendContactReply(selectedMessage, replyText.trim());
+      const result = await sendContactReply(selectedMessage.id, replyText.trim(), "admin@gsdc.com");
 
       if (result) {
         // Update status to replied
