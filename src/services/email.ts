@@ -50,7 +50,7 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       
       // Alternative: Use a webhook or external service
       try {
-        const response = await fetch('/api/send-email', {
+        const response = await fetch(`${window.location.origin}/api/send-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

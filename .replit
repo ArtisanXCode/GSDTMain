@@ -32,7 +32,7 @@ localPort = 3005
 externalPort = 4200
 
 [workflows]
-runButton = "Development Server"
+runButton = "Development with Email API"
 
 [[workflows.workflow]]
 name = "Development Server"
@@ -42,3 +42,16 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Development with Email API"
+author = 40157750
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server/email-api.js"
