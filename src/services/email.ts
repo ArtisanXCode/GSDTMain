@@ -19,20 +19,26 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       from: emailData.from || "noreply@gsdc.com"
     });
 
-    // Save the email attempt to database first
-    const { error: dbError } = await supabase.from("emails").insert([
-      {
-        to_email: emailData.to,
-        from_email: emailData.from || "noreply@gsdc.com",
-        subject: emailData.subject,
-        html: emailData.html,
-        sent_at: new Date().toISOString(),
-        status: 'pending'
-      },
-    ]);
+    // Save the email attempt to database first (with service role to bypass RLS)
+    try {
+      const { error: dbError } = await supabase.from("emails").insert([
+        {
+          to_email: emailData.to,
+          from_email: emailData.from || "noreply@gsdc.com",
+          subject: emailData.subject,
+          html: emailData.html,
+          sent_at: new Date().toISOString(),
+          status: 'pending'
+        },
+      ]);
 
-    if (dbError) {
-      console.error("Error saving email to database:", dbError);
+      if (dbError) {
+        console.error("Error saving email to database:", dbError);
+        // Don't fail the email send if database logging fails
+      }
+    } catch (logError) {
+      console.error("Failed to log email to database:", logError);
+      // Continue with email sending even if logging fails
     }
 
     // Try to send via Supabase Edge Function (you'll need to create this)

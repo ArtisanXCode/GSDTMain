@@ -175,24 +175,43 @@ export const deleteContactSubmission = async (id: string): Promise<boolean> => {
  * Send a reply to a contact submission
  */
 export const sendContactReply = async (
-  submission: ContactSubmission,
+  submissionId: string,
   replyText: string,
+  adminEmail: string,
 ): Promise<boolean> => {
   try {
-    // First, save the reply attempt to the database
-    const { error: replyError } = await supabase
-      .from("contact_replies")
-      .insert([
-        {
-          submission_id: submission.id,
-          reply_text: replyText,
-          sent_at: new Date().toISOString(),
-          admin_email: "admin@gsdc.com", // You can get this from auth context
-        },
-      ]);
+    // Get the original submission to get user's email
+    const { data: submission, error: fetchError } = await supabase
+      .from("contact_submissions")
+      .select("email, name, subject")
+      .eq("id", submissionId)
+      .single();
 
-    if (replyError) {
-      console.error("Error saving reply to database:", replyError);
+    if (fetchError || !submission) {
+      console.error("Error fetching submission:", fetchError);
+      return false;
+    }
+
+    // Save the reply to database (RLS should allow this for authenticated admins)
+    try {
+      const { error: replyError } = await supabase
+        .from("contact_replies")
+        .insert([
+          {
+            submission_id: submissionId,
+            reply_text: replyText,
+            admin_email: adminEmail,
+            sent_at: new Date().toISOString(),
+          },
+        ]);
+
+      if (replyError) {
+        console.error("Error saving reply:", replyError);
+        throw replyError;
+      }
+    } catch (dbError) {
+      console.error("Database insert failed:", dbError);
+      return false;
     }
 
     // Try to send email to the user
