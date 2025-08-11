@@ -7,17 +7,45 @@ const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 // Default provider for read-only operations
 const defaultProvider = new ethers.providers.JsonRpcProvider(BSC_TESTNET_RPC);
 
-export const getContract = () => {
-  if (!window.ethereum) {
-    throw new Error('MetaMask is not installed');
+export const getContract = (): ethers.Contract | null => {
+  try {
+    if (!window.ethereum) {
+      console.warn('MetaMask not detected');
+      return null;
+    }
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    // Check if wallet is connected
+    if (!window.ethereum.selectedAddress) {
+      console.warn('Wallet not connected');
+      return null;
+    }
+
+    const signer = provider.getSigner();
+
+    const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
+    if (!contractAddress) {
+      console.error('Contract address not configured');
+      return null;
+    }
+
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    // Verify contract has a signer
+    if (!contract.signer) {
+      console.error('Contract does not have a signer attached');
+      return null;
+    }
+
+    return contract;
+  } catch (error) {
+    console.error('Error creating contract instance:', error);
+    return null;
   }
-  const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(contractAddress, abi, signer);
-  return contract;
 };
 
-export const getReadOnlyContract = () => {
+export const getReadOnlyContract = (): ethers.Contract | null => {
   if (window.ethereum) {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(contractAddress, abi, provider);
@@ -26,7 +54,7 @@ export const getReadOnlyContract = () => {
   return new ethers.Contract(contractAddress, abi, defaultProvider);
 };
 
-export const getNFTContract = () => {
+export const getNFTContract = (): ethers.Contract | null => {
   if (!window.ethereum) {
     throw new Error('MetaMask is not installed');
   }
@@ -36,7 +64,7 @@ export const getNFTContract = () => {
   return NFTContract;
 };
 
-export const getReadOnlyNFTContract = () => {
+export const getReadOnlyNFTContract = (): ethers.Contract | null => {
   if (window.ethereum) {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(NFT_contractAddress, NFT_abi, provider);
@@ -51,16 +79,16 @@ export const connectWallet = async (): Promise<string | null> => {
     if (!window.ethereum) {
       throw new Error('MetaMask is not installed');
     }
-    
+
     // Request account access
     const accounts = await window.ethereum.request({ 
       method: 'eth_requestAccounts' 
     });
-    
+
     if (accounts && accounts.length > 0) {
       return accounts[0];
     }
-    
+
     return null;
   } catch (error) {
     console.error('Failed to connect wallet:', error);
@@ -74,11 +102,11 @@ export const getAddress = async (): Promise<string | null> => {
     if (!window.ethereum) {
       return null;
     }
-    
+
     const accounts = await window.ethereum.request({ 
       method: 'eth_accounts' 
     });
-    
+
     return accounts && accounts.length > 0 ? accounts[0] : null;
   } catch (error) {
     console.error('Failed to get address:', error);
@@ -92,11 +120,11 @@ export const isConnected = async (): Promise<boolean> => {
     if (!window.ethereum) {
       return false;
     }
-    
+
     const accounts = await window.ethereum.request({ 
       method: 'eth_accounts' 
     });
-    
+
     return accounts && accounts.length > 0;
   } catch (error) {
     console.error('Failed to check connection:', error);
@@ -122,11 +150,11 @@ export const initializeWeb3 = async () => {
 // Handle blockchain errors
 export const handleBlockchainError = (error: any): string => {
   console.error('Blockchain Error:', error);
-  
+
   if (error?.reason) {
     return error.reason;
   }
-  
+
   if (error?.message) {
     // MetaMask specific errors
     if (error.message.includes('User denied transaction signature')) {
@@ -147,10 +175,10 @@ export const handleBlockchainError = (error: any): string => {
     if (error.message.includes('Contract not initialized')) {
       return 'Contract not initialized. Please connect your wallet and try again';
     }
-    
+
     return error.message;
   }
-  
+
   if (error?.code) {
     switch (error.code) {
       case -32002:
@@ -171,7 +199,7 @@ export const handleBlockchainError = (error: any): string => {
         return `Blockchain error (code: ${error.code})`;
     }
   }
-  
+
   return 'An unknown blockchain error occurred';
 };
 
@@ -222,7 +250,7 @@ export const getCurrentNetwork = async (): Promise<string | null> => {
     if (!window.ethereum) {
       return null;
     }
-    
+
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
     return chainId;
   } catch (error) {

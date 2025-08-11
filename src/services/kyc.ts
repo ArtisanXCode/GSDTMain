@@ -264,29 +264,42 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
     }
 
     // Try to estimate gas first to catch permission errors early
-    console.log(userAddress);
-    try {      
+    console.log("Approving KYC for user:", userAddress);
+    try {
+      // Check if the contract has the signer properly
+      const signerAddress = await contract.signer.getAddress();
+      console.log("Signer address:", signerAddress);
+      
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
       console.error("Gas estimation failed:", gasError);
 
       // Handle specific error cases
       if (
-        gasError.message?.includes("sending a transaction requires a signer")
+        gasError.message?.includes("sending a transaction requires a signer") ||
+        gasError.code === "UNSUPPORTED_OPERATION"
       ) {
         throw new Error(
           "Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.",
         );
       } else if (
         gasError.message?.includes("AccessControl") ||
-        gasError.message?.includes("missing role")
+        gasError.message?.includes("missing role") ||
+        gasError.reason?.includes("AccessControl")
       ) {
         throw new Error(
           "You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC.",
         );
-      } else if (gasError.message?.includes("user rejected")) {
+      } else if (
+        gasError.message?.includes("user rejected") ||
+        gasError.code === 4001 ||
+        gasError.code === "ACTION_REJECTED"
+      ) {
         throw new Error("Transaction was rejected by user.");
-      } else if (gasError.code === "UNPREDICTABLE_GAS_LIMIT") {
+      } else if (
+        gasError.code === "UNPREDICTABLE_GAS_LIMIT" ||
+        gasError.code === "CALL_EXCEPTION"
+      ) {
         throw new Error(
           "Cannot estimate gas for this transaction. Please check your permissions and wallet connection.",
         );
@@ -310,10 +323,30 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
     }
 
     // Execute the KYC status update
-    const kycTx = await contract.updateKYCStatus(userAddress, true, {
-      gasLimit: 150000, // Set manual gas limit
-    });
-    await kycTx.wait();
+    try {
+      const kycTx = await contract.updateKYCStatus(userAddress, true, {
+        gasLimit: 200000, // Increased gas limit
+        gasPrice: undefined, // Let the network determine gas price
+      });
+      console.log("KYC transaction submitted:", kycTx.hash);
+      const receipt = await kycTx.wait();
+      console.log("KYC transaction confirmed:", receipt.transactionHash);
+    } catch (txError: any) {
+      console.error("Transaction execution failed:", txError);
+      
+      if (txError.code === "CALL_EXCEPTION") {
+        throw new Error(
+          "Smart contract call failed. This might be due to insufficient permissions or contract state issues. Please check your admin role permissions."
+        );
+      } else if (txError.code === 4001 || txError.code === "ACTION_REJECTED") {
+        throw new Error("Transaction was rejected by user.");
+      } else if (txError.code === "INSUFFICIENT_FUNDS") {
+        throw new Error("Insufficient funds for gas fees. Please add more ETH to your wallet.");
+      } else {
+        const errorMessage = txError.reason || txError.message || "Transaction failed";
+        throw new Error(`Transaction execution failed: ${errorMessage}`);
+      }
+    }
 
     // For manual KYC requests, mint 1 token to the user's wallet
     if (verificationMethod === "manual") {
@@ -578,10 +611,30 @@ export const rejectKYCRequest = async (
       }
     }
 
-    const tx = await contract.updateKYCStatus(userAddress, false, {
-      gasLimit: 150000,
-    });
-    await tx.wait();
+    try {
+      const tx = await contract.updateKYCStatus(userAddress, false, {
+        gasLimit: 200000, // Increased gas limit
+        gasPrice: undefined, // Let the network determine gas price
+      });
+      console.log("KYC rejection transaction submitted:", tx.hash);
+      const receipt = await tx.wait();
+      console.log("KYC rejection transaction confirmed:", receipt.transactionHash);
+    } catch (txError: any) {
+      console.error("KYC rejection transaction execution failed:", txError);
+      
+      if (txError.code === "CALL_EXCEPTION") {
+        throw new Error(
+          "Smart contract call failed. This might be due to insufficient permissions or contract state issues. Please check your admin role permissions."
+        );
+      } else if (txError.code === 4001 || txError.code === "ACTION_REJECTED") {
+        throw new Error("Transaction was rejected by user.");
+      } else if (txError.code === "INSUFFICIENT_FUNDS") {
+        throw new Error("Insufficient funds for gas fees. Please add more ETH to your wallet.");
+      } else {
+        const errorMessage = txError.reason || txError.message || "Transaction failed";
+        throw new Error(`KYC rejection transaction failed: ${errorMessage}`);
+      }
+    }
 
     // For manual KYC rejections, call our webhook API to sync with external systems
     try {

@@ -42,8 +42,10 @@ export default function KYCApproval() {
       // Handle specific error messages
       if (error.message?.includes('missing role') || error.message?.includes('permission')) {
         setError('You do not have permission to approve KYC. Only users with ADMIN role can approve.');
+      } else if (error.message?.includes('CALL_EXCEPTION')) {
+        setError('Smart contract call failed. Please check your wallet connection and admin permissions, then try again.');
       } else if (error.message?.includes('cannot estimate gas') || error.message?.includes('Transaction would fail')) {
-        setError('Transaction failed due to insufficient permissions or gas estimation error. Please check your role permissions.');
+        setError('Transaction failed due to insufficient permissions or gas estimation error. Please check your role permissions and wallet connection.');
       } else if (error.message?.includes('execution reverted')) {
         const revertReason = error.data?.message || error.message;
         if (revertReason.includes('KYC')) {
@@ -57,6 +59,8 @@ export default function KYCApproval() {
         setError('Transaction was rejected by user.');
       } else if (error.message?.includes('Contract not initialized')) {
         setError('Please connect your wallet and try again.');
+      } else if (error.message?.includes('Wallet not connected')) {
+        setError('Wallet not connected properly. Please disconnect and reconnect your wallet, then try again.');
       } else {
         setError(error.message || 'Error approving KYC request. Please try again.');
       }
