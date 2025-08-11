@@ -193,7 +193,8 @@ export default function ContactMessages() {
         }, 1500);
 
         // Refresh the submissions list
-        await loadSubmissions();
+        const data = await getContactSubmissions();
+        setContactSubmissions(data);
       } else {
         setError("Failed to send reply. Please try again.");
       }
@@ -466,8 +467,7 @@ export default function ContactMessages() {
               </div>
             ) : (
               <div className="p-6">
-                {/* Commented out reply functionality */}
-                {/* {selectedMessage.status !== "archived" && (
+                {selectedMessage.status !== "archived" && (
                   <>
                     <h4 className="text-sm font-medium text-gray-500 mb-2">
                       Reply
@@ -480,7 +480,7 @@ export default function ContactMessages() {
                       placeholder="Type your reply here..."
                     />
                   </>
-                )} */}
+                )}
 
                 {error && (
                   <div className="mt-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
@@ -527,8 +527,7 @@ export default function ContactMessages() {
                     Close
                   </button>
 
-                  {/* Commented out send reply button */}
-                  {/* {selectedMessage.status !== "archived" && (
+                  {selectedMessage.status !== "archived" && (
                     <button
                       onClick={handleSendReply}
                       disabled={actionLoading || !replyText.trim()}
@@ -565,7 +564,7 @@ export default function ContactMessages() {
                         </>
                       )}
                     </button>
-                  )} */}
+                  )}
                 </div>
               </div>
             )}

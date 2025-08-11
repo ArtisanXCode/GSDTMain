@@ -1,4 +1,3 @@
-
 -- Create user_profiles table
 CREATE TABLE IF NOT EXISTS user_profiles (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -159,3 +158,29 @@ CREATE TRIGGER update_user_settings_updated_at
   BEFORE UPDATE ON user_settings
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- Create emails table for email logging
+CREATE TABLE IF NOT EXISTS emails (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  to_email VARCHAR(255) NOT NULL,
+  from_email VARCHAR(255) NOT NULL,
+  subject TEXT NOT NULL,
+  html TEXT NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'sent',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create contact_replies table for admin replies
+CREATE TABLE IF NOT EXISTS contact_replies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  submission_id UUID NOT NULL REFERENCES contact_submissions(id) ON DELETE CASCADE,
+  reply_text TEXT NOT NULL,
+  admin_email VARCHAR(255) NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_emails_sent_at ON emails(sent_at);
+CREATE INDEX IF NOT EXISTS idx_contact_replies_submission_id ON contact_replies(submission_id);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -16,37 +15,58 @@ interface Message {
   admin_reply?: string;
   admin_id?: string;
   submitted_at: string;
+  admin_reply_date?: string | null;
 }
 
 export default function Messages() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // Added error state
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
   useEffect(() => {
-    loadMessages();
-  }, [user]);
+    const fetchMessages = async () => {
+      if (!user?.email) return;
 
-  const loadMessages = async () => {
-    if (!user?.id) return;
+      try {
+        setLoading(true);
 
-    try {
-      const { data, error } = await supabase
-        .from('contact_submissions')
-        .select('*')
-        .eq('email', user.email)
-        .order('submitted_at', { ascending: false });
+        // Fetch messages with replies
+        const { data: messagesData, error: messagesError } = await supabase
+          .from('contact_submissions')
+          .select(`
+            *,
+            contact_replies (
+              reply_text,
+              admin_email,
+              sent_at
+            )
+          `)
+          .eq('email', user.email)
+          .order('submitted_at', { ascending: false });
 
-      if (error) throw error;
-      setMessages(data || []);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-      toast.error('Failed to load messages');
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (messagesError) throw messagesError;
+
+        // Transform data to include admin_reply field for compatibility
+        const transformedMessages = (messagesData || []).map(message => ({
+          ...message,
+          admin_reply: message.contact_replies?.[0]?.reply_text || null,
+          admin_reply_date: message.contact_replies?.[0]?.sent_at || null
+        }));
+
+        setMessages(transformedMessages);
+      } catch (err: any) {
+        setError(err.message);
+        toast.error('Failed to load messages');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [user?.email]);
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -82,6 +102,14 @@ export default function Messages() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-500">
+        Error loading messages: {error}
       </div>
     );
   }
@@ -197,7 +225,7 @@ export default function Messages() {
                         <div className="ml-3">
                           <p className="text-sm font-medium text-gray-900">Support Team</p>
                           <p className="text-xs text-gray-500">
-                            {selectedMessage.admin_reply ? 'Replied' : 'No reply yet'}
+                            Replied on {selectedMessage.admin_reply_date ? format(new Date(selectedMessage.admin_reply_date), 'MMM d, yyyy at h:mm a') : 'an unknown date'}
                           </p>
                         </div>
                       </div>
