@@ -1,0 +1,76 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+_GoTrueClient @ @supabase_supabase-js.js:5085
+ Module "buffer" has been externalized for browser compatibility. Cannot access "buffer.Buffer" in client code. See http://vitejs.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+get @ chunk-IBR5CTKZ.js:721
+ Contract address not configured
+getContract @ /src/lib/web3.ts?t=1754919332027:19
+ Error assigning user role: Error: Contract not initialized
+    at assignUserRole (/src/services/admin/roles.ts?t=1754919332027:61:13)
+    at async handleAddUser (/src/pages/admin/RoleManagement.tsx?t=1754919332027:134:7)
+assignUserRole @ /src/services/admin/…?t=1754919332027:85
+ Error adding user: Error: Contract not initialized
+    at assignUserRole (/src/services/admin/roles.ts?t=1754919332027:61:13)
+    at async handleAddUser (/src/pages/admin/RoleManagement.tsx?t=1754919332027:134:7)
+handleAddUser @ /src/pages/admin/Rol…t=1754919332027:139
+ Contract address not configured
+getContract @ /src/lib/web3.ts?t=1754919332027:19
+assignUserRole @ /src/services/admin/…?t=1754919332027:59
+await in assignUserRole
+handleAddUser @ /src/pages/admin/Rol…t=1754919332027:134
+callCallback2 @ /node_modules/.vite/….js?v=ffba00ed:3674
+invokeGuardedCallbackDev @ /node_modules/.vite/….js?v=ffba00ed:3699
+invokeGuardedCallback @ /node_modules/.vite/….js?v=ffba00ed:3733
+invokeGuardedCallbackAndCatchFirstError @ /node_modules/.vite/….js?v=ffba00ed:3736
+executeDispatch @ /node_modules/.vite/….js?v=ffba00ed:7016
+processDispatchQueueItemsInOrder @ /node_modules/.vite/….js?v=ffba00ed:7036
+processDispatchQueue @ /node_modules/.vite/….js?v=ffba00ed:7045
+dispatchEventsForPlugins @ /node_modules/.vite/….js?v=ffba00ed:7053
+(anonymous) @ /node_modules/.vite/….js?v=ffba00ed:7177
+batchedUpdates$1 @ /node_modules/.vite/…js?v=ffba00ed:18909
+batchedUpdates @ /node_modules/.vite/….js?v=ffba00ed:3579
+dispatchEventForPluginEventSystem @ /node_modules/.vite/….js?v=ffba00ed:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ /node_modules/.vite/….js?v=ffba00ed:5478
+dispatchEvent @ /node_modules/.vite/….js?v=ffba00ed:5472
+dispatchDiscreteEvent @ /node_modules/.vite/….js?v=ffba00ed:5449
+ Error assigning user role: Error: Contract not initialized
+    at assignUserRole (/src/services/admin/…1754919332027:61:13)
+    at async handleAddUser (/src/pages/admin/RoleManagement.tsx?t=1754919332027:134:7)
+assignUserRole @ /src/services/admin/…?t=1754919332027:85
+await in assignUserRole
+handleAddUser @ /src/pages/admin/Rol…t=1754919332027:134
+callCallback2 @ /node_modules/.vite/….js?v=ffba00ed:3674
+invokeGuardedCallbackDev @ /node_modules/.vite/….js?v=ffba00ed:3699
+invokeGuardedCallback @ /node_modules/.vite/….js?v=ffba00ed:3733
+invokeGuardedCallbackAndCatchFirstError @ /node_modules/.vite/….js?v=ffba00ed:3736
+executeDispatch @ /node_modules/.vite/….js?v=ffba00ed:7016
+processDispatchQueueItemsInOrder @ /node_modules/.vite/….js?v=ffba00ed:7036
+processDispatchQueue @ /node_modules/.vite/….js?v=ffba00ed:7045
+dispatchEventsForPlugins @ /node_modules/.vite/….js?v=ffba00ed:7053
+(anonymous) @ /node_modules/.vite/….js?v=ffba00ed:7177
+batchedUpdates$1 @ /node_modules/.vite/…js?v=ffba00ed:18909
+batchedUpdates @ /node_modules/.vite/….js?v=ffba00ed:3579
+dispatchEventForPluginEventSystem @ /node_modules/.vite/….js?v=ffba00ed:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ /node_modules/.vite/….js?v=ffba00ed:5478
+dispatchEvent @ /node_modules/.vite/….js?v=ffba00ed:5472
+dispatchDiscreteEvent @ /node_modules/.vite/….js?v=ffba00ed:5449
+ Error adding user: Error: Contract not initialized
+    at assignUserRole (/src/services/admin/…1754919332027:61:13)
+    at async handleAddUser (/src/pages/admin/RoleManagement.tsx?t=1754919332027:134:7)
+handleAddUser @ /src/pages/admin/Rol…t=1754919332027:139
+await in handleAddUser
+callCallback2 @ /node_modules/.vite/….js?v=ffba00ed:3674
+invokeGuardedCallbackDev @ /node_modules/.vite/….js?v=ffba00ed:3699
+invokeGuardedCallback @ /node_modules/.vite/….js?v=ffba00ed:3733
+invokeGuardedCallbackAndCatchFirstError @ /node_modules/.vite/….js?v=ffba00ed:3736
+executeDispatch @ /node_modules/.vite/….js?v=ffba00ed:7016
+processDispatchQueueItemsInOrder @ /node_modules/.vite/….js?v=ffba00ed:7036
+processDispatchQueue @ /node_modules/.vite/….js?v=ffba00ed:7045
+dispatchEventsForPlugins @ /node_modules/.vite/….js?v=ffba00ed:7053
+(anonymous) @ /node_modules/.vite/….js?v=ffba00ed:7177
+batchedUpdates$1 @ /node_modules/.vite/…js?v=ffba00ed:18909
+batchedUpdates @ /node_modules/.vite/….js?v=ffba00ed:3579
+dispatchEventForPluginEventSystem @ /node_modules/.vite/….js?v=ffba00ed:7176
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ /node_modules/.vite/….js?v=ffba00ed:5478
+dispatchEvent @ /node_modules/.vite/….js?v=ffba00ed:5472
+dispatchDiscreteEvent @ /node_modules/.vite/….js?v=ffba00ed:5449
