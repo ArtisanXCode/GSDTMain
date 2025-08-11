@@ -141,22 +141,44 @@ export default function ContactMessages() {
     setShowMessageModal(true);
     setReplyText("");
 
-    // Load user replies for this message
+    // Load both user replies and admin replies for this message
     try {
-      const { data: replies, error: repliesError } = await supabase
-        .from('user_replies')
-        .select('*')
-        .eq('submission_id', message.id)
-        .order('sent_at', { ascending: true });
+      const [userRepliesResponse, adminRepliesResponse] = await Promise.all([
+        supabase
+          .from('user_replies')
+          .select('*')
+          .eq('submission_id', message.id)
+          .order('sent_at', { ascending: true }),
+        supabase
+          .from('contact_replies')
+          .select('*')
+          .eq('submission_id', message.id)
+          .order('sent_at', { ascending: true })
+      ]);
 
-      if (repliesError) {
-        console.error('Error loading user replies:', repliesError);
-        setUserReplies([]);
-      } else {
-        setUserReplies(replies || []);
+      if (userRepliesResponse.error) {
+        console.error('Error loading user replies:', userRepliesResponse.error);
       }
+
+      if (adminRepliesResponse.error) {
+        console.error('Error loading admin replies:', adminRepliesResponse.error);
+      }
+
+      // Combine and sort all replies by sent_at, adding type to distinguish them
+      const allReplies = [
+        ...(userRepliesResponse.data || []).map(reply => ({
+          ...reply,
+          type: 'user_reply' as const
+        })),
+        ...(adminRepliesResponse.data || []).map(reply => ({
+          ...reply,
+          type: 'admin_reply' as const
+        }))
+      ].sort((a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime());
+
+      setUserReplies(allReplies);
     } catch (err) {
-      console.error('Error loading user replies:', err);
+      console.error('Error loading replies:', err);
       setUserReplies([]);
     }
 
@@ -208,6 +230,38 @@ export default function ContactMessages() {
 
         setMessageSuccess("Reply sent successfully!");
         setReplyText("");
+
+        // Refresh the replies for this message to show the new admin reply
+        try {
+          const [userRepliesResponse, adminRepliesResponse] = await Promise.all([
+            supabase
+              .from('user_replies')
+              .select('*')
+              .eq('submission_id', selectedMessage.id)
+              .order('sent_at', { ascending: true }),
+            supabase
+              .from('contact_replies')
+              .select('*')
+              .eq('submission_id', selectedMessage.id)
+              .order('sent_at', { ascending: true })
+          ]);
+
+          // Combine and sort all replies by sent_at
+          const allReplies = [
+            ...(userRepliesResponse.data || []).map(reply => ({
+              ...reply,
+              type: 'user_reply' as const
+            })),
+            ...(adminRepliesResponse.data || []).map(reply => ({
+              ...reply,
+              type: 'admin_reply' as const
+            }))
+          ].sort((a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime());
+
+          setUserReplies(allReplies);
+        } catch (err) {
+          console.error('Error refreshing replies:', err);
+        }
 
         // Close modal after short delay
         setTimeout(() => {
@@ -495,8 +549,46 @@ export default function ContactMessages() {
                 </p>
               </div>
 
-              {/* Show existing admin reply if any */}
-              {selectedMessage.admin_reply && (
+              {/* All Replies (User and Admin) */}
+              {userReplies.map((reply, index) => (
+                <div key={`${reply.type}-${reply.id}`} className={`p-4 rounded-lg border mb-4 ${
+                  reply.type === 'admin_reply' 
+                    ? 'bg-blue-50 border-blue-200' 
+                    : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <div className="flex items-center mb-2">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      reply.type === 'admin_reply'
+                        ? 'bg-blue-600'
+                        : 'bg-green-100'
+                    }`}>
+                      {reply.type === 'admin_reply' ? (
+                        <span className="text-xs font-medium text-white">A</span>
+                      ) : (
+                        <span className="text-xs font-medium text-green-600">
+                          {selectedMessage?.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">
+                        {reply.type === 'admin_reply' ? 'Admin' : selectedMessage?.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {reply.type === 'admin_reply' ? 'Replied' : 'User replied'} on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
+                      </p>
+                    </div>
+                  </div>
+                  <p className={`whitespace-pre-wrap ${
+                    reply.type === 'admin_reply' ? 'text-blue-900' : 'text-gray-900'
+                  }`}>
+                    {reply.reply_text}
+                  </p>
+                </div>
+              ))}
+
+              {/* Show existing admin reply if any (for compatibility with old data) */}
+              {selectedMessage.admin_reply && !userReplies.some(r => r.type === 'admin_reply') && (
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
                   <div className="flex items-center mb-2">
                     <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -509,33 +601,11 @@ export default function ContactMessages() {
                       </p>
                     </div>
                   </div>
-                  <p className="text-gray-900 whitespace-pre-wrap">
+                  <p className="text-blue-900 whitespace-pre-wrap">
                     {selectedMessage.admin_reply}
                   </p>
                 </div>
               )}
-
-              {/* User Replies */}
-              {userReplies.map((reply, index) => (
-                <div key={reply.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-                  <div className="flex items-center mb-2">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-green-600">
-                        {selectedMessage?.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">{selectedMessage?.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Replied on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-gray-900 whitespace-pre-wrap">
-                    {reply.reply_text}
-                  </p>
-                </div>
-              ))}
             </div>
 
             {messageSuccess ? (
