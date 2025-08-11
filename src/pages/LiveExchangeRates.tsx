@@ -8,7 +8,8 @@ import HistoricalChart from '../components/HistoricalChart';
 
 export default function LiveExchangeRates() {
   const { gsdcRates, isLoading, isError, timestamp } = useGSDCPrice();
-  const [selectedPeriod, setSelectedPeriod] = useState<{[key: string]: string}>({});
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('3 months');
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
@@ -234,144 +235,151 @@ export default function LiveExchangeRates() {
             </div>
           )}
 
-          {/* Individual Charts for Each Currency */}
-          <div className="space-y-8">
-            {currencyOrder.map((currency) => {
-              const rate = gsdcRates?.[currency] || 0;
-              const currentPeriod = selectedPeriod[currency] || '3 months';
-              
-              return (
-                <motion.div
-                  key={currency}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
-                >
-                  <div className="flex h-full">
-                    {/* Left sidebar - Currency info and current rate */}
-                    <div className="w-80 flex-shrink-0 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 border-r border-gray-200">
-                      <div className="h-full flex flex-col">
-                        <div className="mb-6">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-                            <ChartBarIcon className="h-7 w-7 mr-3 text-blue-600" />
-                            GSDC/{currency}
-                          </h3>
-                          <p className="text-gray-600 text-sm mb-4">{CURRENCY_NAMES[currency]}</p>
-                          
-                          {/* Current Rate Display */}
-                          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                            <div className="text-center">
-                              <div className="text-sm text-gray-500 mb-1">Current Rate</div>
-                              <div className="text-3xl font-bold text-gray-900 mb-1">
-                                {formatGSDCRate(rate, currency)}
+          {/* Main Content - Left sidebar with all pairs and single chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+          >
+            <div className="flex h-full">
+              {/* Left sidebar - All currency pairs */}
+              <div className="w-80 flex-shrink-0 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 border-r border-gray-200">
+                <div className="h-full flex flex-col">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
+                      <ChartBarIcon className="h-7 w-7 mr-3 text-blue-600" />
+                      GSDC Pairs
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4">Select currency to view chart</p>
+                  </div>
+
+                  {/* Currency Pairs List */}
+                  <div className="space-y-2 flex-1">
+                    {currencyOrder.map((currency) => {
+                      const rate = gsdcRates?.[currency] || 0;
+                      const isSelected = selectedCurrency === currency;
+                      
+                      return (
+                        <button
+                          key={currency}
+                          onClick={() => setSelectedCurrency(currency)}
+                          className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                            isSelected
+                              ? 'bg-blue-600 text-white shadow-md'
+                              : 'bg-white/70 hover:bg-white text-gray-900 hover:shadow-sm'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <div className="font-medium text-sm">
+                                GSDC/{currency}
                               </div>
-                              <div className="text-xs text-gray-500">Real-time</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Currency Stats */}
-                        <div className="space-y-3">
-                          <div className="bg-white/70 rounded-lg p-3">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Currency Code:</span>
-                              <span className="font-medium text-gray-900">{currency}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-white/70 rounded-lg p-3">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Chart Period:</span>
-                              <span className="font-medium text-gray-900">{currentPeriod}</span>
-                            </div>
-                          </div>
-
-                          {currency === 'USD' && (
-                            <div className="bg-blue-100 border border-blue-200 rounded-lg p-3">
-                              <div className="text-xs text-blue-800 font-medium">
-                                Primary USD pair - Base currency
+                              <div className={`text-xs ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>
+                                {CURRENCY_NAMES[currency]}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right side - Chart */}
-                    <div className="flex-1 p-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="text-lg font-bold text-gray-900 mb-1">
-                              Historical Performance
-                            </h4>
-                            <p className="text-gray-600 text-sm">
-                              Weekly data points - GSDC/{currency} exchange rate
-                            </p>
-                          </div>
-
-                          {/* Period Selection */}
-                          <div className="flex gap-2">
-                            {periods.map((period) => (
-                              <button
-                                key={period}
-                                onClick={() => setSelectedPeriod(prev => ({
-                                  ...prev,
-                                  [currency]: period
-                                }))}
-                                className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                                  currentPeriod === period
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                }`}
-                              >
-                                {period}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Chart Container */}
-                        <div className="bg-gray-50 rounded-lg p-4 h-80 border border-gray-200">
-                          <HistoricalChart
-                            currency={currency}
-                            period={currentPeriod}
-                            color={CURRENCY_COLORS[currency] || '#3B82F6'}
-                          />
-                        </div>
-
-                        {/* Chart Stats */}
-                        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">Current</div>
-                            <div className="font-mono text-sm font-medium text-gray-900">
+                            <div className={`text-sm font-mono ${isSelected ? 'text-white' : 'text-gray-900'}`}>
                               {formatGSDCRate(rate, currency)}
                             </div>
                           </div>
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">Period</div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {currentPeriod}
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">Status</div>
-                            <div className="text-sm font-medium text-green-600">
-                              Live
-                            </div>
-                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Selected Currency Info */}
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 mb-1">Selected Pair</div>
+                        <div className="text-xl font-bold text-gray-900 mb-1">
+                          GSDC/{selectedCurrency}
                         </div>
+                        <div className="text-2xl font-bold text-blue-600 mb-1">
+                          {formatGSDCRate(gsdcRates?.[selectedCurrency] || 0, selectedCurrency)}
+                        </div>
+                        <div className="text-xs text-gray-500">Real-time rate</div>
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                </div>
+              </div>
+
+              {/* Right side - Single chart */}
+              <div className="flex-1 p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-900 mb-1">
+                        GSDC/{selectedCurrency} Historical Performance
+                      </h4>
+                      <p className="text-gray-600 text-sm">
+                        Weekly data points - {CURRENCY_NAMES[selectedCurrency]}
+                      </p>
+                    </div>
+
+                    {/* Period Selection */}
+                    <div className="flex gap-2">
+                      {periods.map((period) => (
+                        <button
+                          key={period}
+                          onClick={() => setSelectedPeriod(period)}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                            selectedPeriod === period
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {period}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Chart Container */}
+                  <div className="bg-gray-50 rounded-lg p-4 h-96 border border-gray-200">
+                    <HistoricalChart
+                      currency={selectedCurrency}
+                      period={selectedPeriod}
+                      color={CURRENCY_COLORS[selectedCurrency] || '#3B82F6'}
+                    />
+                  </div>
+
+                  {/* Chart Stats */}
+                  <div className="grid grid-cols-4 gap-4 pt-4 border-t border-gray-200">
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">Current Rate</div>
+                      <div className="font-mono text-sm font-medium text-gray-900">
+                        {formatGSDCRate(gsdcRates?.[selectedCurrency] || 0, selectedCurrency)}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">Currency</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {selectedCurrency}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">Period</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {selectedPeriod}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500">Status</div>
+                      <div className="text-sm font-medium text-green-600">
+                        Live
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Summary Section */}
-          <div className="mt-12 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+          <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Exchange Rate Summary</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               {currencyOrder.map((currency) => {
