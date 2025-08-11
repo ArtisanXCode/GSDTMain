@@ -323,51 +323,52 @@ export default function Messages() {
                   </div>
                 </div>
 
-                {/* Original Message */}
+                {/* All Messages - Single Scrollable Container */}
                 <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-blue-600">
-                          {user?.email?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">You</p>
-                        <p className="text-xs text-gray-500">
-                          {format(new Date(selectedMessage.submitted_at), 'MMM d, yyyy at h:mm a')}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                      {selectedMessage.message}
-                    </p>
-                  </div>
-
-                  {/* Admin Reply */}
-                  {selectedMessage.admin_reply && (
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="flex items-center mb-2">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                          <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900">Support Team</p>
-                          <p className="text-xs text-gray-500">
-                            Replied on {selectedMessage.admin_reply_date ? format(new Date(selectedMessage.admin_reply_date), 'MMM d, yyyy at h:mm a') : 'an unknown date'}
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="max-h-[600px] overflow-y-auto overscroll-contain scroll-smooth">
+                      <div className="space-y-4 p-4">
+                        {/* Original Message */}
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="flex items-center mb-2">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <span className="text-xs font-medium text-blue-600">
+                                {user?.email?.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-900">You</p>
+                              <p className="text-xs text-gray-500">
+                                {format(new Date(selectedMessage.submitted_at), 'MMM d, yyyy at h:mm a')}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                            {selectedMessage.message}
                           </p>
                         </div>
-                      </div>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                        {selectedMessage.admin_reply}
-                      </p>
-                    </div>
-                  )}
 
-                  {/* All Replies (User and Admin) - Scrollable container */}
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="max-h-[400px] overflow-y-auto overscroll-contain scroll-smooth">
-                      <div className="space-y-4 p-4">
+                        {/* Admin Reply (if exists and not in userReplies) */}
+                        {selectedMessage.admin_reply && !userReplies.some(r => r.type === 'admin_reply') && (
+                          <div className="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+                            <div className="flex items-center mb-2">
+                              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-white" />
+                              </div>
+                              <div className="ml-3">
+                                <p className="text-sm font-medium text-gray-900">Support Team</p>
+                                <p className="text-xs text-gray-500">
+                                  Replied on {selectedMessage.admin_reply_date ? format(new Date(selectedMessage.admin_reply_date), 'MMM d, yyyy at h:mm a') : 'an unknown date'}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-sm text-blue-900 whitespace-pre-wrap">
+                              {selectedMessage.admin_reply}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* All Replies (User and Admin) */}
                         {userReplies.map((reply, index) => (
                           <div key={`${reply.type}-${reply.id}`} className={`rounded-lg p-4 ${
                             reply.type === 'admin_reply' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50'
