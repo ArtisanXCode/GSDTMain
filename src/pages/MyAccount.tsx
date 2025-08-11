@@ -217,3 +217,138 @@ export default function MyAccount() {
     </div>
   );
 }
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { useWallet } from '../hooks/useWallet';
+import PersonalInfo from '../components/account/PersonalInfo';
+import BankingInfo from '../components/account/BankingInfo';
+import KYCStatus from '../components/account/KYCStatus';
+import Security from '../components/account/Security';
+import Settings from '../components/account/Settings';
+import { 
+  UserIcon, 
+  CreditCardIcon, 
+  ShieldCheckIcon, 
+  Cog6ToothIcon,
+  DocumentCheckIcon 
+} from '@heroicons/react/24/outline';
+
+export default function MyAccount() {
+  const { user } = useAuth();
+  const { address, isConnected } = useWallet();
+  const [activeTab, setActiveTab] = useState('personal');
+
+  const tabs = [
+    { id: 'personal', label: 'Personal Info', icon: UserIcon, component: PersonalInfo },
+    { id: 'banking', label: 'Banking', icon: CreditCardIcon, component: BankingInfo },
+    { id: 'kyc', label: 'KYC Status', icon: DocumentCheckIcon, component: KYCStatus },
+    { id: 'security', label: 'Security', icon: ShieldCheckIcon, component: Security },
+    { id: 'settings', label: 'Settings', icon: Cog6ToothIcon, component: Settings },
+  ];
+
+  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || PersonalInfo;
+
+  if (!user) {
+    return (
+      <div className="bg-white min-h-screen">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in</h2>
+            <p className="text-gray-600">You need to be logged in to access your account.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <div
+        className="relative isolate text-white min-h-[40vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `url('/headers/dashboard_header.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-20 z-10"
+        >
+          <div className="text-left">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl mb-4 leading-tight">
+              My Account
+            </h1>
+            <p className="text-lg leading-8 text-white/90 font-regular">
+              Manage your profile, security settings, and preferences
+            </p>
+            {isConnected && (
+              <div className="mt-4">
+                <p className="text-sm text-white/80">Connected Wallet:</p>
+                <p className="font-mono text-sm text-white">{address}</p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Phoenix Icon */}
+      <div className="relative z-20 flex justify-end">
+        <div className="phoenix-icon-parent">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="phoenix-icon-large"
+          />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="bg-gray-50 py-16 sm:py-24 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6" aria-label="Tabs">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === tab.id
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <Icon className="h-5 w-5 mr-2" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-6">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ActiveComponent />
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
