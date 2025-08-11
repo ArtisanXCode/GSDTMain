@@ -6,8 +6,8 @@ export * from './admin/types';
 export * from './admin/roles';
 export * from './admin/transactions';
 
-// Explicitly export AdminRole for backward compatibility
-export { AdminRole } from './admin/types';
+// Import AdminRole directly for use in this file
+import { AdminRole } from './admin/types';
 
 // Transaction types for monitoring
 export enum TransactionType {
@@ -51,10 +51,13 @@ export interface FiatDeposit {
   verificationDocument?: string;
 }
 
+// Import SMART_CONTRACT_ROLES for mock data
+import { SMART_CONTRACT_ROLES } from '../constants/roles';
+
 // Mock admin users for testing purposes (replace with actual data fetching if needed)
 const mockAdminUsers = [
-  { user_address: '0x1234567890abcdef1234567890abcdef12345678', role: AdminRole.ADMIN },
-  { user_address: '0xabcdef1234567890abcdef1234567890abcdef12', role: AdminRole.USER },
+  { user_address: '0x1234567890abcdef1234567890abcdef12345678', role: SMART_CONTRACT_ROLES.SUPER_ADMIN },
+  { user_address: '0xabcdef1234567890abcdef1234567890abcdef12', role: SMART_CONTRACT_ROLES.ADMIN },
 ];
 
 // Generate mock transactions
