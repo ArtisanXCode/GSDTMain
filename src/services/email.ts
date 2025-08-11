@@ -54,9 +54,13 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
     } catch (edgeFunctionError) {
       console.warn("Edge Function email failed, trying alternative method:", edgeFunctionError);
       
-      // Alternative: Use a webhook or external service
+      // Alternative: Use the email API server on port 5001
       try {
-        const response = await fetch(`${window.location.origin}/api/send-email`, {
+        const emailApiUrl = window.location.hostname === 'localhost' 
+          ? 'http://localhost:5001/api/send-email'
+          : `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
+          
+        const response = await fetch(emailApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
