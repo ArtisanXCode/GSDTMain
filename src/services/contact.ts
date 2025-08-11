@@ -260,3 +260,66 @@ export const sendContactReply = async (
     return false;
   }
 };
+
+/**
+ * Send a user reply to a contact submission
+ */
+export const sendUserReply = async (
+  submissionId: string,
+  replyText: string,
+  userEmail: string,
+): Promise<boolean> => {
+  try {
+    console.log("Starting sendUserReply for submission:", submissionId);
+
+    // Verify the user owns this submission
+    const { data: submission, error: fetchError } = await supabase
+      .from("contact_submissions")
+      .select("id, email")
+      .eq("id", submissionId)
+      .eq("email", userEmail)
+      .single();
+
+    if (fetchError || !submission) {
+      console.error("Error verifying submission ownership:", fetchError);
+      return false;
+    }
+
+    console.log("Verified submission ownership:", submission);
+
+    // Save the user reply to database using admin client
+    try {
+      console.log("Attempting to save user reply to database...");
+      
+      const replyData = {
+        submission_id: submissionId,
+        reply_text: replyText,
+        user_email: userEmail,
+        sent_at: new Date().toISOString(),
+      };
+
+      console.log("User reply data:", replyData);
+
+      const { data: insertedReply, error: replyError } = await supabaseAdmin
+        .from("user_replies")
+        .insert([replyData])
+        .select()
+        .single();
+
+      if (replyError) {
+        console.error("Error saving user reply:", replyError);
+        console.error("Error details:", JSON.stringify(replyError, null, 2));
+        return false;
+      }
+
+      console.log("User reply saved successfully:", insertedReply);
+      return true;
+    } catch (dbError) {
+      console.error("Database insert failed for user reply:", dbError);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error sending user reply:", error);
+    return false;
+  }
+};
