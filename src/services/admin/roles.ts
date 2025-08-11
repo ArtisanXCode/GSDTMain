@@ -99,7 +99,7 @@ export const assignUserRole = async (
       }
     }
 
-    // Update smart contract
+    // Update smart contract first
     const contract = getContract();
     if (!contract) {
       console.warn('Contract not available, skipping smart contract role assignment');
@@ -115,11 +115,39 @@ export const assignUserRole = async (
       }
 
       try {
+        console.log(`Granting role ${role} to address ${address}`);
+        
+        // This will trigger MetaMask popup
         const tx = await contract.grantRole(roleHash, address);
-        await tx.wait();
-      } catch (contractError) {
-        console.warn('Smart contract role assignment failed, but continuing with database update:', contractError);
-        // Continue with database update even if smart contract fails
+        console.log('Transaction sent:', tx.hash);
+        
+        // Wait for transaction confirmation
+        const receipt = await tx.wait();
+        console.log('Transaction confirmed:', receipt.transactionHash);
+        
+        if (receipt.status !== 1) {
+          throw new Error('Smart contract transaction failed');
+        }
+      } catch (contractError: any) {
+        console.error('Smart contract role assignment failed:', contractError);
+        
+        // Check if user rejected the transaction
+        if (contractError.code === 4001 || contractError.message?.includes('User denied')) {
+          throw new Error('Transaction was rejected by user');
+        }
+        
+        // Check for insufficient funds
+        if (contractError.message?.includes('insufficient funds')) {
+          throw new Error('Insufficient funds for transaction');
+        }
+        
+        // Check for network issues
+        if (contractError.message?.includes('network changed')) {
+          throw new Error('Network changed. Please try again');
+        }
+        
+        // Generic contract error
+        throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
       }
     }
 
@@ -170,11 +198,34 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
       const roleHash = ROLE_HASHES[currentRole];
       if (roleHash) {
         try {
+          console.log(`Revoking role ${currentRole} from address ${address}`);
+          
+          // This will trigger MetaMask popup
           const tx = await contract.revokeRole(roleHash, address);
-          await tx.wait();
-        } catch (contractError) {
-          console.warn('Smart contract role revocation failed, but continuing with database update:', contractError);
-          // Continue with database update even if smart contract fails
+          console.log('Transaction sent:', tx.hash);
+          
+          // Wait for transaction confirmation
+          const receipt = await tx.wait();
+          console.log('Transaction confirmed:', receipt.transactionHash);
+          
+          if (receipt.status !== 1) {
+            throw new Error('Smart contract transaction failed');
+          }
+        } catch (contractError: any) {
+          console.error('Smart contract role revocation failed:', contractError);
+          
+          // Check if user rejected the transaction
+          if (contractError.code === 4001 || contractError.message?.includes('User denied')) {
+            throw new Error('Transaction was rejected by user');
+          }
+          
+          // Check for insufficient funds
+          if (contractError.message?.includes('insufficient funds')) {
+            throw new Error('Insufficient funds for transaction');
+          }
+          
+          // Generic contract error
+          throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
         }
       }
     } else {

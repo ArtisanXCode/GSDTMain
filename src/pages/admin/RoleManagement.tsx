@@ -1,212 +1,207 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useWallet } from "../../hooks/useWallet";
-import { useAdmin } from "../../hooks/useAdmin";
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useWallet } from '../../hooks/useWallet';
+import { useAdmin } from '../../hooks/useAdmin';
+import { useRoleManagement } from '../../hooks/useRoleManagement';
+import { assignUserRole, removeUserRole, getAdminUsers } from '../../services/admin/roles';
+import { SMART_CONTRACT_ROLES, ROLE_DESCRIPTIONS } from '../../constants/roles';
+import AdminNavigation from '../../components/admin/AdminNavigation';
+import { toast } from 'react-hot-toast';
 import {
-  AdminRole,
-  AdminUser,
-  getAdminUsers,
-  assignUserRole,
-  removeUserRole,
-} from "../../services/admin";
-import { SMART_CONTRACT_ROLES } from "../../constants/roles";
-import { UserPlusIcon } from "@heroicons/react/24/outline";
-import RoleCard from "../../components/admin/role-management/RoleCard";
-import RoleTable from "../../components/admin/role-management/RoleTable";
-import RoleModals from "../../components/admin/role-management/RoleModals";
-import AdminNavigation from "../../components/admin/AdminNavigation";
+  UserPlusIcon,
+  PencilIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
-export default function RoleManagement() {
-  const { address } = useWallet();
-  const { isSuperAdmin } = useAdmin();
-  const navigate = useNavigate();
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [formData, setFormData] = useState({
-    userAddress: "",
-    role: "",
-  });
-  const [formErrors, setFormErrors] = useState({
-    userAddress: "",
-    role: "",
-  });
-  const [actionLoading, setActionLoading] = useState(false);
+export default function RoleManagementPage() {
+  const { address, isConnected } = useWallet();
+  const { isSuperAdmin, loading: adminLoading } = useAdmin();
+  const {
+    adminUsers,
+    loading,
+    error,
+    success,
+    showAddModal,
+    showEditModal,
+    showRemoveModal,
+    selectedUser,
+    formData,
+    formErrors,
+    actionLoading,
+    setShowAddModal,
+    setShowEditModal,
+    setShowRemoveModal,
+    setSelectedUser,
+    setFormData,
+    setFormErrors,
+    setActionLoading,
+    setError,
+    setSuccess,
+    validateForm,
+    handleFormChange,
+    handleCloseModal
+  } = useRoleManagement();
 
-  const loadAdminUsers = async () => {
+  // Refresh users function
+  const refreshUsers = async () => {
     try {
-      setLoading(true);
-      setError(null);
       const users = await getAdminUsers();
-      setAdminUsers(users);
-    } catch (err: any) {
-      console.error("Error loading admin users:", err);
-      setError(err.message || "Error loading admin users");
-    } finally {
-      setLoading(false);
+      // Update the users in the hook if needed
+      window.location.reload(); // Simple refresh for now
+    } catch (error) {
+      console.error('Error refreshing users:', error);
     }
   };
 
-  useEffect(() => {
-    loadAdminUsers();
-  }, []);
-
-  const validateForm = () => {
-    const errors = {
-      userAddress: "",
-      role: "",
-    };
-    let isValid = true;
-
-    if (!formData.userAddress) {
-      errors.userAddress = "Ethereum address is required";
-      isValid = false;
-    } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.userAddress)) {
-      errors.userAddress = "Invalid Ethereum address format";
-      isValid = false;
-    }
-
-    if (!formData.role) {
-      errors.role = "Role selection is required";
-      isValid = false;
-    }
-
-    setFormErrors(errors);
-    return isValid;
-  };
-
-  const handleFormChange = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
-    if (formErrors[field as keyof typeof formErrors]) {
-      setFormErrors({ ...formErrors, [field]: "" });
-    }
-  };
-
-  const handleCloseModal = (modal: "add" | "edit" | "remove") => {
-    switch (modal) {
-      case "add":
-        setShowAddModal(false);
-        break;
-      case "edit":
-        setShowEditModal(false);
-        setSelectedUser(null);
-        break;
-      case "remove":
-        setShowRemoveModal(false);
-        setSelectedUser(null);
-        break;
-    }
-    setFormData({ userAddress: "", role: "" });
-    setFormErrors({ userAddress: "", role: "" });
-  };
-
+  // Handle Add User with Smart Contract Integration
   const handleAddUser = async () => {
     if (!address || !isSuperAdmin || !validateForm()) return;
-
+    
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-
-      await assignUserRole(
+      
+      // Show loading toast
+      const loadingToast = toast.loading('Processing role assignment...');
+      
+      // Call the assignUserRole function which handles both contract and database
+      const success = await assignUserRole(
         formData.userAddress,
-        formData.role as AdminRole,
-        address,
+        formData.role as any,
+        address
       );
-
-      setSuccess(
-        `Successfully assigned ${formData.role} role to ${formData.userAddress}`,
-      );
-      await loadAdminUsers();
-      handleCloseModal("add");
-    } catch (error: any) {
-      console.error("Error adding user:", error);
-
-      if (error.code === "ACTION_REJECTED") {
-        setError("Transaction was rejected by user.");
+      
+      if (success) {
+        toast.dismiss(loadingToast);
+        toast.success(`Role ${formData.role} successfully assigned!`);
+        setSuccess(`Role ${formData.role} successfully assigned to ${formData.userAddress}`);
+        
+        // Refresh the users list
+        await refreshUsers();
+        handleCloseModal('add');
       } else {
-        setError("Error adding user. Please try again.");
+        toast.dismiss(loadingToast);
+        toast.error('Failed to assign role');
+        setError('Failed to assign role');
       }
+    } catch (error: any) {
+      console.error('Error adding user:', error);
+      toast.error(error.message || 'Error adding user');
+      setError(error.message || 'Error adding user');
     } finally {
       setActionLoading(false);
     }
   };
 
+  // Handle Edit User
   const handleEditUser = async () => {
     if (!address || !selectedUser || !isSuperAdmin || !validateForm()) return;
-
+    
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-
-      await assignUserRole(
-        selectedUser.user_address,
-        formData.role as AdminRole,
-        address,
-      );
-
-      setSuccess(`Successfully updated role for ${selectedUser.user_address}`);
-      await loadAdminUsers();
-      handleCloseModal("edit");
-    } catch (error: any) {
-      console.error("Error editing user:", error);
-      if (error.code === "ACTION_REJECTED") {
-        setError("Transaction was rejected by user.");
+      
+      const loadingToast = toast.loading('Updating user role...');
+      
+      // First remove the old role, then assign the new one
+      const removeSuccess = await removeUserRole(selectedUser.user_address, address);
+      if (removeSuccess) {
+        const assignSuccess = await assignUserRole(
+          formData.userAddress,
+          formData.role as any,
+          address
+        );
+        
+        if (assignSuccess) {
+          toast.dismiss(loadingToast);
+          toast.success(`Role updated to ${formData.role}!`);
+          setSuccess(`User role successfully updated to ${formData.role}`);
+          await refreshUsers();
+          handleCloseModal('edit');
+        } else {
+          toast.dismiss(loadingToast);
+          toast.error('Failed to update role');
+          setError('Failed to update role');
+        }
       } else {
-        setError("Error editing user. Please try again.");
+        toast.dismiss(loadingToast);
+        toast.error('Failed to remove old role');
+        setError('Failed to remove old role');
       }
+    } catch (error: any) {
+      console.error('Error editing user:', error);
+      toast.error(error.message || 'Error editing user');
+      setError(error.message || 'Error editing user');
     } finally {
       setActionLoading(false);
     }
   };
 
+  // Handle Remove User
   const handleRemoveUser = async () => {
     if (!address || !selectedUser || !isSuperAdmin) return;
-
+    
     try {
       setActionLoading(true);
       setError(null);
       setSuccess(null);
-
-      await removeUserRole(selectedUser.user_address, address);
-
-      setSuccess(`Successfully removed role from ${selectedUser.user_address}`);
-      await loadAdminUsers();
-      handleCloseModal("remove");
-    } catch (error: any) {
-      console.error("Error removing user:", error);
-
-      if (error.code === "ACTION_REJECTED") {
-        setError("Transaction was rejected by user.");
+      
+      const loadingToast = toast.loading('Removing user role...');
+      
+      const success = await removeUserRole(selectedUser.user_address, address);
+      
+      if (success) {
+        toast.dismiss(loadingToast);
+        toast.success('User role successfully removed!');
+        setSuccess('User role successfully removed');
+        await refreshUsers();
+        handleCloseModal('remove');
       } else {
-        setError("Error removing user. Please try again.");
+        toast.dismiss(loadingToast);
+        toast.error('Failed to remove user role');
+        setError('Failed to remove user role');
       }
+    } catch (error: any) {
+      console.error('Error removing user:', error);
+      toast.error(error.message || 'Error removing user');
+      setError(error.message || 'Error removing user');
     } finally {
       setActionLoading(false);
     }
   };
 
-  if (!isSuperAdmin) {
+  // Handle opening edit modal
+  const handleEditClick = (user: any) => {
+    setSelectedUser(user);
+    setFormData({
+      userAddress: user.user_address,
+      role: user.role
+    });
+    setShowEditModal(true);
+  };
+
+  // Handle opening remove modal
+  const handleRemoveClick = (user: any) => {
+    setSelectedUser(user);
+    setShowRemoveModal(true);
+  };
+
+  if (loading || adminLoading) {
     return (
       <div className="bg-white min-h-screen">
-        {/* Hero section with same style as other pages */}
-          <div
-            className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-            style={{
-              backgroundImage: `url('/headers/admin_dashboard_header.png')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-
+        <div
+          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+          style={{
+            backgroundImage: `url('/headers/admin_dashboard_header.png')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -224,11 +219,8 @@ export default function RoleManagement() {
           </motion.div>
         </div>
 
-        {/* Phoenix Icon overlapping sections */}
         <div className="relative z-20 flex justify-end">
-          <div
-            className="phoenix-icon-parent"
-          >
+          <div className="phoenix-icon-parent">
             <img
               src="/logo_gsdc_icon.png"
               alt="Phoenix Icon"
@@ -237,43 +229,12 @@ export default function RoleManagement() {
           </div>
         </div>
 
-        {/* Main content section */}
         <div className="bg-gray-200 py-24 sm:py-32 relative">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {/* Navigation Tabs */}
-            <AdminNavigation className="mb-6" />
-
-            {/* Access Denied Section */}
-            <div
-              className="rounded-lg p-6"
-              style={{ backgroundColor: "#5a7a96" }}
-            >
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="text-center py-8">
-                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <svg
-                      className="h-6 w-6 text-red-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="mt-2 text-lg font-medium text-gray-900">
-                    Access Denied
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Only Super Admins can manage user roles.
-                  </p>
-                </div>
-              </div>
+            <AdminNavigation className="mb-8" />
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              <span className="ml-2 text-gray-600">Loading...</span>
             </div>
           </div>
         </div>
@@ -281,36 +242,9 @@ export default function RoleManagement() {
     );
   }
 
-  const getRouteForTab = (tab: string): string => {
-    switch (tab) {
-      case "KYC Requests":
-        return "/admin/kyc-requests";
-      case "Contact Messages":
-        return "/admin/contact-messages";
-      case "Role Management":
-        return "/admin/role-management";
-      case "Fiat Mint Requests":
-        return "/admin/fiat-requests";
-      case "Proof of Reserves":
-        return "/admin/reserves";
-      case "Exchange Rates":
-        return "/admin/exchange-rates";
-        case "Pending Role Approvals":
-        return "/admin/pending-roles";
-      case "Pending Transactions":
-        return "/admin/pending-transactions";
-      case "CMS Pages":
-        return "/admin/cms-pages";
-      case "Contact Details":
-        return "/admin/contact-details";
-      default:
-        return "/admin";
-    }
-  };
-
-  return (
-    <div className="bg-white min-h-screen">
-      {/* Hero section with same style as other pages */}
+  if (!isConnected) {
+    return (
+      <div className="bg-white min-h-screen">
         <div
           className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
           style={{
@@ -320,7 +254,117 @@ export default function RoleManagement() {
             backgroundRepeat: "no-repeat",
           }}
         >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          >
+            <div className="text-left">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+                Admin Dashboard
+              </h1>
+              <p className="text-lg leading-8 text-white/90 font-regular">
+                Super Admin Dashboard – Full Access
+              </p>
+            </div>
+          </motion.div>
+        </div>
 
+        <div className="relative z-20 flex justify-end">
+          <div className="phoenix-icon-parent">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="phoenix-icon-large"
+            />
+          </div>
+        </div>
+
+        <div className="bg-gray-200 py-24 sm:py-32 relative">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <AdminNavigation className="mb-8" />
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Wallet Not Connected
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Please connect your wallet to access this page.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="bg-white min-h-screen">
+        <div
+          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+          style={{
+            backgroundImage: `url('/headers/admin_dashboard_header.png')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
+          >
+            <div className="text-left">
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+                Admin Dashboard
+              </h1>
+              <p className="text-lg leading-8 text-white/90 font-regular">
+                Super Admin Dashboard – Full Access
+              </p>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="relative z-20 flex justify-end">
+          <div className="phoenix-icon-parent">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="phoenix-icon-large"
+            />
+          </div>
+        </div>
+
+        <div className="bg-gray-200 py-24 sm:py-32 relative">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <AdminNavigation className="mb-8" />
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Access Denied
+              </h2>
+              <p className="text-gray-600 mb-6">
+                You need SUPER_ADMIN permissions to access this page.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white min-h-screen">
+      <div
+        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `url('/headers/admin_dashboard_header.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -338,11 +382,8 @@ export default function RoleManagement() {
         </motion.div>
       </div>
 
-      {/* Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
+        <div className="phoenix-icon-parent">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
@@ -351,115 +392,317 @@ export default function RoleManagement() {
         </div>
       </div>
 
-      {/* Main content section */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {/* Navigation Tabs */}
-          <AdminNavigation className="mb-6" />
+          <AdminNavigation className="mb-8" />
 
-          {/* Role Management Section */}
           <div
             className="rounded-lg p-6"
             style={{ backgroundColor: "#2a4661" }}
           >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-3xl font-semibold text-white mb-1">
-                  Smart Contract Role Management
-                </h3>
-                <p className="text-sm text-white">
-                  Assign and manage smart contract roles for users
-                </p>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      Role Management
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                      Manage admin roles and permissions for the GSDC platform.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <UserPlusIcon className="h-4 w-4 mr-2" />
+                    Add User
+                  </button>
+                </div>
+
+                {/* Success/Error Messages */}
+                {success && (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                    <div className="text-sm text-green-800">{success}</div>
+                  </div>
+                )}
+                
+                {error && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                    <div className="text-sm text-red-800">{error}</div>
+                  </div>
+                )}
+
+                {/* Users Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          User Address
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Role
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Created At
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {adminUsers.map((user) => (
+                        <tr key={user.user_address}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                            {user.user_address}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${
+                              ROLE_DESCRIPTIONS[user.role]?.color || 'bg-gray-100 text-gray-800 border-gray-200'
+                            }`}>
+                              {ROLE_DESCRIPTIONS[user.role]?.name || user.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {user.name || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(user.created_at).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => handleEditClick(user)}
+                              className="text-indigo-600 hover:text-indigo-900 mr-3"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleRemoveClick(user)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  setFormData({ userAddress: "", role: "" });
-                  setFormErrors({ userAddress: "", role: "" });
-                  setShowAddModal(true);
-                }}
-                className="px-4 py-2 rounded-lg text-white font-medium inline-flex items-center"
-                style={{ backgroundColor: "#ed9030" }}
-              >
-                <UserPlusIcon className="h-5 w-5 mr-2" />
-                Add Role
-              </button>
             </div>
-
-            {error && (
-              <div className="mb-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg word-break mt-2">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-4 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg">
-                {success}
-              </div>
-            )}
-
-            {/* Role descriptions */}
-            <div className="mb-6 bg-gray-700 border border-gray-600 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-white/70 mb-2">
-                Available Smart Contract Roles:
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {Object.values(SMART_CONTRACT_ROLES).map((role) => (
-                  <RoleCard key={role} role={role} />
-                ))}
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-                <p className="mt-4 text-white/70">Loading admin users...</p>
-              </div>
-            ) : adminUsers.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-white/70">No admin users found</p>
-              </div>
-            ) : (
-              <div className="overflow-hidden">
-                <RoleTable
-                  adminUsers={adminUsers}
-                  currentUserAddress={address}
-                  onEdit={(user) => {
-                    setSelectedUser(user);
-                    setFormData({
-                      userAddress: user.user_address,
-                      role: user.role,
-                    });
-                    setFormErrors({
-                      userAddress: "",
-                      role: "",
-                    });
-                    setShowEditModal(true);
-                  }}
-                  onRemove={(user) => {
-                    setSelectedUser(user);
-                    setShowRemoveModal(true);
-                  }}
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      <RoleModals
-        showAddModal={showAddModal}
-        showEditModal={showEditModal}
-        showRemoveModal={showRemoveModal}
-        selectedUser={selectedUser}
-        formData={formData}
-        formErrors={formErrors}
-        actionLoading={actionLoading}
-        onFormChange={handleFormChange}
-        onAdd={handleAddUser}
-        onEdit={handleEditUser}
-        onRemove={handleRemoveUser}
-        onClose={handleCloseModal}
-      />
+      {/* Add User Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Add User Role</h3>
+              <button
+                onClick={() => handleCloseModal('add')}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  User Address
+                </label>
+                <input
+                  type="text"
+                  value={formData.userAddress}
+                  onChange={(e) => handleFormChange('userAddress', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="0x..."
+                />
+                {formErrors.userAddress && (
+                  <p className="text-sm text-red-600 mt-1">{formErrors.userAddress}</p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => handleFormChange('role', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select a role</option>
+                  {Object.entries(SMART_CONTRACT_ROLES).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {ROLE_DESCRIPTIONS[value]?.name || value}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.role && (
+                  <p className="text-sm text-red-600 mt-1">{formErrors.role}</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => handleCloseModal('add')}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddUser}
+                disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                {actionLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Processing...
+                  </>
+                ) : (
+                  'Assign Role'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showEditModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Edit User Role</h3>
+              <button
+                onClick={() => handleCloseModal('edit')}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  User Address
+                </label>
+                <input
+                  type="text"
+                  value={formData.userAddress}
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) => handleFormChange('role', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {Object.entries(SMART_CONTRACT_ROLES).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {ROLE_DESCRIPTIONS[value]?.name || value}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.role && (
+                  <p className="text-sm text-red-600 mt-1">{formErrors.role}</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => handleCloseModal('edit')}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditUser}
+                disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                {actionLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Updating...
+                  </>
+                ) : (
+                  'Update Role'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove User Modal */}
+      {showRemoveModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Remove User Role</h3>
+              <button
+                onClick={() => handleCloseModal('remove')}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                Are you sure you want to remove the role for:
+              </p>
+              <p className="font-mono text-sm text-gray-900 mt-2">
+                {selectedUser.user_address}
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                Current role: <span className="font-semibold">{selectedUser.role}</span>
+              </p>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => handleCloseModal('remove')}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRemoveUser}
+                disabled={actionLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                {actionLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Removing...
+                  </>
+                ) : (
+                  'Remove Role'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
