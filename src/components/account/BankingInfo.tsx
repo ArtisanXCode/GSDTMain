@@ -210,8 +210,8 @@ export default function BankingInfo() {
                   className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
                   required
                 >
-                  <option value="checking">Checking</option>
-                  <option value="savings">Savings</option>
+                  <option value="checking">Current</option>
+                  <option value="savings">Saving</option>
                 </select>
               </div>
               <div>
@@ -319,7 +319,7 @@ export default function BankingInfo() {
                   </div>
                   <div className="mt-2 text-sm text-gray-600">
                     <p><strong>Account Holder:</strong> {account.account_holder_name}</p>
-                    <p><strong>Account Type:</strong> {account.account_type}</p>
+                    <p><strong>Account Type:</strong> {account.account_type === 'checking' ? 'Current' : 'Saving'}</p>
                     <p><strong>Account Number:</strong> {maskAccountNumber(account.account_number)}</p>
                     <p><strong>Routing Number:</strong> {account.routing_number}</p>
                   </div>
