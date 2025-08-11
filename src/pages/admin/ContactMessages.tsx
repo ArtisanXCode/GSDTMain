@@ -22,6 +22,7 @@ import {
 import AdminNavigation from "../../components/admin/AdminNavigation";
 import AdminHeroSection from "../../components/admin/AdminHeroSection";
 import { supabase } from "../../lib/supabase";
+import toast from "react-hot-toast";
 
 export default function ContactMessages() {
   const { isConnected } = useWallet();
@@ -92,8 +93,17 @@ export default function ContactMessages() {
           });
         }
 
-        setMessageSuccess("Status updated successfully");
-        setTimeout(() => setMessageSuccess(null), 3000);
+        // setMessageSuccess("Status updated successfully");
+        // setTimeout(() => setMessageSuccess(null), 3000);
+        if (status === "archived") {
+          toast.success('Message archived successfully!', {
+            duration: 3000, // Hide after 3 seconds
+          });
+        } else {
+          toast.success('Status updated successfully', {
+            duration: 3000, // Hide after 3 seconds
+          });
+        }
       }
     } catch (err: any) {
       console.error("Error updating status:", err);
@@ -124,8 +134,11 @@ export default function ContactMessages() {
           setSelectedMessage(null);
         }
 
-        setMessageSuccess("Message deleted successfully");
-        setTimeout(() => setMessageSuccess(null), 3000);
+        // setMessageSuccess("Message deleted successfully");
+        // setTimeout(() => setMessageSuccess(null), 3000);
+        toast.success('Message deleted successfully!', {
+          duration: 3000, // Hide after 3 seconds
+        });
       } else {
         setError("Failed to delete message");
       }
@@ -236,8 +249,13 @@ export default function ContactMessages() {
           status: "replied",
         });
 
-        setMessageSuccess("Reply sent successfully!");
+        // setMessageSuccess("Reply sent successfully!");
+        // setReplyText("");
+        toast.success('Reply sent successfully!', {
+          duration: 3000, // Hide after 3 seconds
+        });
         setReplyText("");
+
 
         // Refresh the replies for this message to show the new admin reply
         try {
@@ -546,7 +564,7 @@ export default function ContactMessages() {
                 <h4 className="text-sm font-medium text-gray-500 mb-4">
                   Conversation
                 </h4>
-                
+
                 {/* Original Message */}
                 <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
                   <div className="flex items-center mb-2">
@@ -570,8 +588,8 @@ export default function ContactMessages() {
                 {/* All Replies (User and Admin) */}
                 {userReplies.map((reply, index) => (
                   <div key={`${reply.type}-${reply.id}`} className={`p-4 rounded-lg border mb-4 ${
-                    reply.type === 'admin_reply' 
-                      ? 'bg-blue-50 border-blue-200' 
+                    reply.type === 'admin_reply'
+                      ? 'bg-blue-50 border-blue-200'
                       : 'bg-gray-50 border-gray-200'
                   }`}>
                     <div className="flex items-center mb-2">
