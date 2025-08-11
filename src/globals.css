@@ -154,6 +154,36 @@ body {
     transition: all 0.2s ease-in-out;
   }
 
+  /* Global input styling for text visibility */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="number"],
+  input[type="password"],
+  textarea,
+  select {
+    color: #111827 !important;
+    background-color: #ffffff !important;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="tel"]::placeholder,
+  input[type="date"]::placeholder,
+  input[type="number"]::placeholder,
+  input[type="password"]::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important;
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    background-color: #f9fafb !important;
+    color: #6b7280 !important;
+  }
+
   /* Phoenix Icon Size Management */
   .phoenix-icon-parent {
     position: absolute;

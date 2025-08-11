@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWallet } from '../../hooks/useWallet';
@@ -158,7 +157,7 @@ export default function PersonalInfo() {
         {/* Basic Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -176,7 +175,7 @@ export default function PersonalInfo() {
               value={profile.first_name || ''}
               onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -187,7 +186,7 @@ export default function PersonalInfo() {
               value={profile.last_name || ''}
               onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -198,7 +197,7 @@ export default function PersonalInfo() {
               value={profile.phone || ''}
               onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -209,7 +208,7 @@ export default function PersonalInfo() {
               value={profile.date_of_birth || ''}
               onChange={(e) => setProfile({ ...profile, date_of_birth: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
         </div>
@@ -217,7 +216,7 @@ export default function PersonalInfo() {
         {/* Address Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Address Information</h3>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
             <input
@@ -225,7 +224,7 @@ export default function PersonalInfo() {
               value={profile.address_line_1 || ''}
               onChange={(e) => setProfile({ ...profile, address_line_1: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -236,7 +235,7 @@ export default function PersonalInfo() {
               value={profile.address_line_2 || ''}
               onChange={(e) => setProfile({ ...profile, address_line_2: e.target.value })}
               disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -248,7 +247,7 @@ export default function PersonalInfo() {
                 value={profile.city || ''}
                 onChange={(e) => setProfile({ ...profile, city: e.target.value })}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
               />
             </div>
             <div>
@@ -258,7 +257,7 @@ export default function PersonalInfo() {
                 value={profile.state || ''}
                 onChange={(e) => setProfile({ ...profile, state: e.target.value })}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
@@ -271,7 +270,7 @@ export default function PersonalInfo() {
                 value={profile.postal_code || ''}
                 onChange={(e) => setProfile({ ...profile, postal_code: e.target.value })}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
               />
             </div>
             <div>
@@ -281,7 +280,7 @@ export default function PersonalInfo() {
                 value={profile.country || ''}
                 onChange={(e) => setProfile({ ...profile, country: e.target.value })}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
