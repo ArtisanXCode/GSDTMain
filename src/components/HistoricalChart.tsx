@@ -95,7 +95,20 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         for (let i = totalPoints - 1; i >= 0; i--) {
           const date = new Date(now);
           date.setDate(date.getDate() - (i * 7));
-          labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+          
+          // Format as full date: "September 7th, 2024"
+          const day = date.getDate();
+          const suffix = day === 1 || day === 21 || day === 31 ? 'st' :
+                        day === 2 || day === 22 ? 'nd' :
+                        day === 3 || day === 23 ? 'rd' : 'th';
+          
+          const fullDate = date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }).replace(/(\d+)/, `$1${suffix}`);
+          
+          labels.push(fullDate);
 
           // Generate historical values with small variations around current rate
           // The most recent point should be exactly the current rate
@@ -208,10 +221,12 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         },
         ticks: {
           color: 'rgba(255, 255, 255, 0.7)',
-          maxTicksLimit: 8,
+          maxTicksLimit: 4, // Reduce to 4 to prevent overcrowding with full dates
           font: {
-            size: 10,
+            size: 9, // Slightly smaller font for better fit
           },
+          maxRotation: 45, // Rotate labels for better readability
+          minRotation: 45,
         },
       },
       y: {
