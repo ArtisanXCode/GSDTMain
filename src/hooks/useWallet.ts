@@ -70,6 +70,36 @@ export const useWallet = () => {
     }
   }, []);
 
+  const handleAccountsChanged = useCallback(async (accounts: string[]) => {
+    try {
+      if (accounts.length === 0) {
+        // User disconnected their wallet
+        setAddress(null);
+        setIsConnected(false);
+        setIsAdmin(false);
+        setAdminRole(null);
+      } else {
+        // User switched accounts
+        const newAddress = accounts[0];
+        setAddress(newAddress);
+        setIsConnected(true);
+
+        // Check if new account is admin and get role
+        try {
+          const role = await getUserRole(newAddress);
+          setIsAdmin(!!role);
+          setAdminRole(role);
+        } catch (error) {
+          console.error('Error fetching admin role:', error);
+          setIsAdmin(false);
+          setAdminRole(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling account change:', error);
+    }
+  }, []);
+
   useEffect(() => {
     checkConnection();
 
@@ -84,7 +114,7 @@ export const useWallet = () => {
         window.ethereum.removeListener('chainChanged', () => window.location.reload());
       }
     };
-  }, []);
+  }, [handleAccountsChanged]);
 
   // Additional effect to ensure address is always up to date
   useEffect(() => {
