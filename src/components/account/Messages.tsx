@@ -18,12 +18,23 @@ interface Message {
   admin_reply_date?: string | null;
 }
 
+interface UserReply {
+  id: string;
+  submission_id: string;
+  reply_text: string;
+  sent_at: string;
+  user_email: string;
+}
+
 export default function Messages() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // Added error state
+  const [error, setError] = useState<string | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [userReplies, setUserReplies] = useState<UserReply[]>([]);
+  const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -56,6 +67,22 @@ export default function Messages() {
         }));
 
         setMessages(transformedMessages);
+
+        // Fetch user replies
+        const submissionIds = transformedMessages.map(m => m.id);
+        if (submissionIds.length > 0) {
+          const { data: repliesData, error: repliesError } = await supabase
+            .from('user_replies')
+            .select('*')
+            .in('submission_id', submissionIds)
+            .order('sent_at', { ascending: true });
+
+          if (repliesError) {
+            console.error('Error fetching user replies:', repliesError);
+          } else {
+            setUserReplies(repliesData || []);
+          }
+        }
       } catch (err: any) {
         setError(err.message);
         toast.error('Failed to load messages');
@@ -95,6 +122,55 @@ export default function Messages() {
         return 'Archived';
       default:
         return 'Unknown';
+    }
+  };
+
+  const handleSendReply = async () => {
+    if (!selectedMessage || !replyText.trim() || !user?.email) return;
+
+    try {
+      setSendingReply(true);
+      setError(null);
+
+      // Save user reply to database
+      const { data: replyData, error: replyError } = await supabase
+        .from('user_replies')
+        .insert([{
+          submission_id: selectedMessage.id,
+          reply_text: replyText.trim(),
+          sent_at: new Date().toISOString(),
+          user_email: user.email
+        }])
+        .select()
+        .single();
+
+      if (replyError) throw replyError;
+
+      // Add the new reply to local state
+      setUserReplies(prev => [...prev, replyData]);
+
+      // Clear reply text
+      setReplyText('');
+
+      // Show success message
+      toast.success('Reply sent successfully!');
+
+      // Optionally update message status to indicate user has replied
+      const { error: updateError } = await supabase
+        .from('contact_submissions')
+        .update({ status: 'replied' })
+        .eq('id', selectedMessage.id);
+
+      if (updateError) {
+        console.error('Error updating message status:', updateError);
+      }
+
+    } catch (err: any) {
+      console.error('Error sending reply:', err);
+      setError('Failed to send reply. Please try again.');
+      toast.error('Failed to send reply');
+    } finally {
+      setSendingReply(false);
     }
   };
 
@@ -232,6 +308,88 @@ export default function Messages() {
                       <p className="text-sm text-gray-700 whitespace-pre-wrap">
                         {selectedMessage.admin_reply}
                       </p>
+                    </div>
+                  )}
+
+                  {/* User Replies */}
+                  {userReplies
+                    .filter(reply => reply.submission_id === selectedMessage.id)
+                    .map((reply, index) => (
+                      <div key={reply.id} className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium text-green-600">
+                              {user?.email?.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-gray-900">You</p>
+                            <p className="text-xs text-gray-500">
+                              Replied on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {reply.reply_text}
+                        </p>
+                      </div>
+                    ))}
+
+                  {/* Reply Form */}
+                  {selectedMessage.admin_reply && selectedMessage.status !== 'archived' && (
+                    <div className="bg-white rounded-lg border border-gray-200 p-4">
+                      <h4 className="text-sm font-medium text-gray-900 mb-3">Send a Reply</h4>
+                      
+                      {error && (
+                        <div className="mb-3 bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
+                          {error}
+                        </div>
+                      )}
+                      
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+                        rows={4}
+                        placeholder="Type your reply here..."
+                        disabled={sendingReply}
+                      />
+                      
+                      <div className="flex justify-end mt-3">
+                        <button
+                          onClick={handleSendReply}
+                          disabled={sendingReply || !replyText.trim()}
+                          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          {sendingReply ? (
+                            <>
+                              <svg
+                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                              </svg>
+                              Sending...
+                            </>
+                          ) : (
+                            'Send Reply'
+                          )}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

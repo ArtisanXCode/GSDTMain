@@ -171,16 +171,77 @@ CREATE TABLE IF NOT EXISTS emails (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create contact_replies table for admin replies
+-- Contact replies table for admin responses
 CREATE TABLE IF NOT EXISTS contact_replies (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  submission_id UUID NOT NULL REFERENCES contact_submissions(id) ON DELETE CASCADE,
-  reply_text TEXT NOT NULL,
-  admin_email VARCHAR(255) NOT NULL,
-  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    submission_id UUID NOT NULL REFERENCES contact_submissions(id) ON DELETE CASCADE,
+    reply_text TEXT NOT NULL,
+    admin_email VARCHAR(255) NOT NULL,
+    sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User replies table for user responses to admin messages
+CREATE TABLE IF NOT EXISTS user_replies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    submission_id UUID NOT NULL REFERENCES contact_submissions(id) ON DELETE CASCADE,
+    reply_text TEXT NOT NULL,
+    user_email VARCHAR(255) NOT NULL,
+    sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_emails_sent_at ON emails(sent_at);
 CREATE INDEX IF NOT EXISTS idx_contact_replies_submission_id ON contact_replies(submission_id);
+
+-- Enable RLS on contact_replies
+ALTER TABLE contact_replies ENABLE ROW LEVEL SECURITY;
+
+-- Policy for contact_replies: Only admins can insert, users can view their own message replies
+CREATE POLICY "contact_replies_admin_insert" ON contact_replies
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM admin_roles 
+            WHERE user_address = current_user 
+            AND role IN ('SUPER_ADMIN', 'ADMIN')
+        )
+    );
+
+CREATE POLICY "contact_replies_user_select" ON contact_replies
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM contact_submissions cs
+            WHERE cs.id = contact_replies.submission_id
+            AND cs.email = current_user
+        ) OR
+        EXISTS (
+            SELECT 1 FROM admin_roles 
+            WHERE user_address = current_user 
+            AND role IN ('SUPER_ADMIN', 'ADMIN')
+        )
+    );
+
+-- Enable RLS on user_replies
+ALTER TABLE user_replies ENABLE ROW LEVEL SECURITY;
+
+-- Policy for user_replies: Users can insert replies to their own messages and view their own replies
+CREATE POLICY "user_replies_user_insert" ON user_replies
+    FOR INSERT WITH CHECK (
+        user_email = current_user AND
+        EXISTS (
+            SELECT 1 FROM contact_submissions cs
+            WHERE cs.id = user_replies.submission_id
+            AND cs.email = current_user
+        )
+    );
+
+CREATE POLICY "user_replies_select" ON user_replies
+    FOR SELECT USING (
+        user_email = current_user OR
+        EXISTS (
+            SELECT 1 FROM admin_roles 
+            WHERE user_address = current_user 
+            AND role IN ('SUPER_ADMIN', 'ADMIN')
+        )
+    );

@@ -17,9 +17,11 @@ import {
   ArchiveBoxXMarkIcon,
   TrashIcon,
   PaperAirplaneIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from "@heroicons/react/24/outline";
 import AdminNavigation from "../../components/admin/AdminNavigation";
 import AdminHeroSection from "../../components/admin/AdminHeroSection";
+import { supabase } from "../../lib/supabase";
 
 export default function ContactMessages() {
   const { isConnected } = useWallet();
@@ -41,6 +43,7 @@ export default function ContactMessages() {
     useState<ContactSubmission | null>(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [userReplies, setUserReplies] = useState<any[]>([]);
 
   useEffect(() => {
     const loadSubmissions = async () => {
@@ -137,6 +140,25 @@ export default function ContactMessages() {
     setSelectedMessage(message);
     setShowMessageModal(true);
     setReplyText("");
+
+    // Load user replies for this message
+    try {
+      const { data: replies, error: repliesError } = await supabase
+        .from('user_replies')
+        .select('*')
+        .eq('submission_id', message.id)
+        .order('sent_at', { ascending: true });
+
+      if (repliesError) {
+        console.error('Error loading user replies:', repliesError);
+        setUserReplies([]);
+      } else {
+        setUserReplies(replies || []);
+      }
+    } catch (err) {
+      console.error('Error loading user replies:', err);
+      setUserReplies([]);
+    }
 
     // If message is new, mark it as read silently without showing success message
     if (message.status === "new") {
@@ -450,13 +472,70 @@ export default function ContactMessages() {
 
             <div className="p-6 bg-gray-50 border-b border-gray-200 overflow-y-auto flex-grow">
               <h4 className="text-sm font-medium text-gray-500 mb-2">
-                Message
+                Conversation
               </h4>
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
+              
+              {/* Original Message */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                <div className="flex items-center mb-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-blue-600">
+                      {selectedMessage.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-900">{selectedMessage.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {format(new Date(selectedMessage.submitted_at), 'MMM d, yyyy at h:mm a')}
+                    </p>
+                  </div>
+                </div>
                 <p className="text-gray-900 whitespace-pre-wrap">
                   {selectedMessage.message}
                 </p>
               </div>
+
+              {/* Show existing admin reply if any */}
+              {selectedMessage.admin_reply && (
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+                  <div className="flex items-center mb-2">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-medium text-white">A</span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">Admin</p>
+                      <p className="text-xs text-gray-500">
+                        Previous reply
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-900 whitespace-pre-wrap">
+                    {selectedMessage.admin_reply}
+                  </p>
+                </div>
+              )}
+
+              {/* User Replies */}
+              {userReplies.map((reply, index) => (
+                <div key={reply.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                  <div className="flex items-center mb-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-medium text-green-600">
+                        {selectedMessage?.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">{selectedMessage?.name}</p>
+                      <p className="text-xs text-gray-500">
+                        Replied on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-900 whitespace-pre-wrap">
+                    {reply.reply_text}
+                  </p>
+                </div>
+              ))}
             </div>
 
             {messageSuccess ? (
