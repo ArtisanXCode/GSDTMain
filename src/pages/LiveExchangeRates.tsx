@@ -1,178 +1,15 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-import { useGSDCPrice } from '../services/liveExchangeRates';
-import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
-import HistoricalChart from '../components/HistoricalChart';
+import ExchangeRates from '../components/ExchangeRates';
 
-export default function LiveExchangeRates() {
-  const { gsdcRates, isLoading, isError, timestamp } = useGSDCPrice();
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('3 months');
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
-  useEffect(() => {
-    if (timestamp) {
-      setLastUpdated(new Date(timestamp));
-    }
-  }, [timestamp]);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      // Clear the cache to force fresh API call
-      const { unifiedExchangeRateService } = await import('../services/liveExchangeRates');
-      unifiedExchangeRateService.clearCache();
-
-      // Force a small delay to show the refresh is working
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 500);
-    } catch (error) {
-      console.error('Error refreshing data:', error);
-      setRefreshing(false);
-    }
-  };
-
-  const periods = ['3 months', '6 months', '1 year', '2 year'];
-
-  // Currency order with USD first, then the original 6
-  const currencyOrder = ["USD", "CNY", "THB", "INR", "BRL", "ZAR", "IDR"];
-
-  const formatGSDCRate = (rate: number, currency: string) => {
-    if (!rate || rate === 0) return '0.0000';
-
-    if (currency === 'USD') {
-      return rate.toFixed(4);
-    }
-
-    if (rate < 0.0001) {
-      return rate.toExponential(2);
-    } else if (rate < 1) {
-      return rate.toFixed(6);
-    } else if (rate < 10) {
-      return rate.toFixed(4);
-    } else {
-      return rate.toFixed(2);
-    }
-  };
-
-  if (isLoading && !gsdcRates) {
-    return (
-      <div className="bg-white min-h-screen">
-        {/* Header Section */}
-        <div
-          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `url('/headers/home_header.png')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-          >
-            <div className="text-left">
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-                Live Exchange Rates
-              </h1>
-              <p className="text-lg leading-8 text-white/90 font-regular">
-                Real-time GSDC exchange rates across global currencies
-              </p>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="relative z-20 flex justify-end">
-          <div className="phoenix-icon-parent">
-            <img
-              src="/logo_gsdc_icon.png"
-              alt="Phoenix Icon"
-              className="phoenix-icon-large"
-            />
-          </div>
-        </div>
-
-        <div className="bg-gray-200 py-24 sm:py-32 relative">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading exchange rates...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="bg-white min-h-screen">
-        {/* Header Section */}
-        <div
-          className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `url('/headers/home_header.png')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-          >
-            <div className="text-left">
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-                Live Exchange Rates
-              </h1>
-              <p className="text-lg leading-8 text-white/90 font-regular">
-                Real-time GSDC exchange rates across global currencies
-              </p>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="relative z-20 flex justify-end">
-          <div className="phoenix-icon-parent">
-            <img
-              src="/logo_gsdc_icon.png"
-              alt="Phoenix Icon"
-              className="phoenix-icon-large"
-            />
-          </div>
-        </div>
-
-        <div className="bg-gray-200 py-24 sm:py-32 relative">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="text-center py-12">
-              <p className="text-red-600 mb-4">Error loading exchange rates</p>
-              <button
-                onClick={handleRefresh}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+export default function LiveExchangeRatesPage() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Header Section */}
+      {/* Hero Section with theme colors */}
       <div
         className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
         style={{
-          backgroundImage: `url('/headers/home_header.png')`,
+          backgroundImage: `url('/headers/about_us_header.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -186,15 +23,17 @@ export default function LiveExchangeRates() {
         >
           <div className="text-left">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Live Exchange Rates
+              GSDC Stability Analysis
             </h1>
-            <p className="text-lg leading-8 text-white/90 font-regular">
-              Real-time GSDC exchange rates across global currencies
+            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
+              Real-time benchmark analysis showing the stability of GSDC versus each 
+              single currency in the basket composition.
             </p>
           </div>
         </motion.div>
       </div>
 
+      {/* Centered Phoenix Icon overlapping sections */}
       <div className="relative z-20 flex justify-end">
         <div className="phoenix-icon-parent">
           <img
@@ -205,156 +44,223 @@ export default function LiveExchangeRates() {
         </div>
       </div>
 
+      {/* Main content section with updated design */}
       <div className="bg-gray-200 py-24 sm:py-32 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          {/* Page Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">GSDC Exchange Rates</h2>
-              <p className="text-gray-600 text-lg">
-                Live rates and historical charts for GSDC across major currencies
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              {/* Period Selection */}
-              <div className="flex gap-2">
-                {periods.map((period) => (
-                  <button
-                    key={period}
-                    onClick={() => setSelectedPeriod(period)}
-                    className={`px-4 py-2 text-sm rounded-lg transition-colors ${
-                      selectedPeriod === period
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-300'
-                    }`}
-                  >
-                    {period}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                <ArrowPathIcon className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
-                <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
-              </button>
-            </div>
+          <div className="text-center mb-16">
+            <p
+              className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4"
+              style={{ color: "#ed9030" }}
+            >
+              LIVE GSDC <br/> STABILITY DASHBOARD
+            </p>
+            <p className="text-lg leading-6 text-black max-w-4xl mx-auto font-regular">
+              Interactive benchmark analysis comparing GSDC stability against individual basket currencies.
+              <br />
+              Monitor real-time performance and historical data to understand GSDC's 
+              <br />
+              diversification benefits and reduced volatility versus single currency exposure.
+            </p>
           </div>
 
-          {lastUpdated && (
-            <div className="text-center mb-8">
-              <p className="text-gray-500 text-sm">
-                Last updated: {lastUpdated.toLocaleString()}
-              </p>
+          {/* Exchange Rates Analysis with updated design */}
+          <div
+            className="rounded-lg overflow-hidden"
+            style={{ backgroundColor: "#2a4661" }}
+          >
+            <div className="p-6">              
+              {/* Exchange Rates Component */}
+              <ExchangeRates />
             </div>
-          )}
+          </div>
+        </div>
+      </div>
 
-          {/* Individual Charts Grid */}
-          <div className="space-y-8">
-            {currencyOrder.map((currency, index) => {
-              const rate = gsdcRates?.[currency] || 0;
-              return (
-                <motion.div
-                  key={currency}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      {/* Methodology Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Stability Analysis Methodology
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Our stability analysis provides comprehensive insights into GSDC's performance 
+              relative to individual basket currencies, demonstrating the benefits of diversification.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Benchmark Analysis */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gray-50 rounded-xl p-8"
+            >
+              <div className="flex items-center mb-6">
+                <div 
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
+                  style={{ backgroundColor: "#2a4661" }}
                 >
-                  <div className="p-6">
-                    {/* Chart Header */}
-                    <div className="flex justify-between items-center mb-6">
-                      <div className="flex items-center space-x-3">
-                        <ChartBarIcon className="h-6 w-6 text-blue-600" />
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900">
-                            GSDC/{currency}
-                          </h3>
-                          <p className="text-gray-600 text-sm">
-                            {CURRENCY_NAMES[currency]} - Historical Performance
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500">Current Rate</div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {formatGSDCRate(rate, currency)}
-                        </div>
-                        <div className="text-xs text-gray-500">Real-time</div>
-                      </div>
-                    </div>
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900">Real-time Benchmarks</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Compare GSDC performance against each basket currency in real-time, 
+                showing how diversification reduces single-currency risk.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• CNH (Chinese Yuan)</li>
+                <li>• BRL (Brazilian Real)</li>
+                <li>• INR (Indian Rupee)</li>
+                <li>• ZAR (South African Rand)</li>
+                <li>• IDR (Indonesian Rupiah)</li>
+                <li>• THB (Thai Baht)</li>
+              </ul>
+            </motion.div>
 
-                    {/* Chart Container */}
-                    <div className="bg-gray-50 rounded-lg p-4 h-80 border border-gray-200">
-                      <HistoricalChart
-                        currency={currency}
-                        period={selectedPeriod}
-                        color={CURRENCY_COLORS[currency] || '#3B82F6'}
-                      />
-                    </div>
+            {/* Historical Performance */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-gray-50 rounded-xl p-8"
+            >
+              <div className="flex items-center mb-6">
+                <div 
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
+                  style={{ backgroundColor: "#ed9030" }}
+                >
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900">Historical Analysis</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Track GSDC stability over multiple time periods to demonstrate 
+                consistent performance and reduced volatility.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• 3-month trending analysis</li>
+                <li>• 6-month stability metrics</li>
+                <li>• 1-year performance review</li>
+                <li>• 2-year long-term stability</li>
+              </ul>
+            </motion.div>
 
-                    {/* Chart Stats */}
-                    <div className="grid grid-cols-4 gap-4 pt-4 mt-4 border-t border-gray-200">
-                      <div className="text-center">
-                        <div className="text-sm text-gray-500">Rate</div>
-                        <div className="font-mono text-sm font-medium text-gray-900">
-                          {formatGSDCRate(rate, currency)}
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm text-gray-500">Currency</div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {currency}
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm text-gray-500">Period</div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {selectedPeriod}
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm text-gray-500">Status</div>
-                        <div className="text-sm font-medium text-green-600">
-                          Live
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {/* Stability Metrics */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-gray-50 rounded-xl p-8"
+            >
+              <div className="flex items-center mb-6">
+                <div 
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
+                  style={{ backgroundColor: "#2a4661" }}
+                >
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900">Stability Metrics</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Quantitative measures of GSDC's stability compared to individual 
+                currencies, proving the effectiveness of basket diversification.
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Volatility reduction metrics</li>
+                <li>• Price stability scoring</li>
+                <li>• Diversification benefits</li>
+                <li>• Risk-adjusted returns</li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Benefits Summary */}
+      <div className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">GSDC Stability Benefits</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Discover how GSDC's basket approach provides superior stability compared to single currency exposure
+            </p>
           </div>
 
-          {/* Summary Section */}
-          <div className="mt-12 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Exchange Rate Summary</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-              {currencyOrder.map((currency) => {
-                const rate = gsdcRates?.[currency] || 0;
-                return (
-                  <div key={currency} className="text-center p-3 bg-gray-50 rounded-lg">
-                    <div className="font-medium text-gray-900 text-sm mb-1">
-                      GSDC/{currency}
-                    </div>
-                    <div className="text-xs text-gray-600 mb-2">
-                      {formatGSDCRate(rate, currency)}
-                    </div>
-                    <div className="w-full h-1 bg-gray-200 rounded">
-                      <div
-                        className="h-1 rounded transition-all duration-300"
-                        style={{
-                          width: `${Math.min((rate / Math.max(...currencyOrder.map(c => gsdcRates?.[c] || 0))) * 100, 100)}%`,
-                          backgroundColor: CURRENCY_COLORS[currency] || '#3B82F6'
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: "#ed9030" }}
+              >
+                <span className="text-2xl font-bold text-white">-23%</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Lower Volatility</h3>
+              <p className="text-gray-400">
+                Reduced price volatility compared to individual basket currencies through diversification.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: "#ed9030" }}
+              >
+                <span className="text-2xl">📊</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Consistent Performance</h3>
+              <p className="text-gray-400">
+                Stable performance across different market conditions and economic cycles.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: "#ed9030" }}
+              >
+                <span className="text-2xl">🛡️</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Risk Mitigation</h3>
+              <p className="text-gray-400">
+                Diversified exposure reduces single-currency risk and economic dependency.
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>

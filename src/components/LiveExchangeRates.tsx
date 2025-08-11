@@ -62,8 +62,6 @@ export default function LiveExchangeRates({
   // Filter currencies based on variant
   const displayCurrencies = variant === 'compact' 
     ? ["USD", "CNH", "BRL", "INR"] // Top 4 for compact view
-    : variant === 'hero'
-    ? ["USD", "CNY", "THB", "INR", "BRL", "ZAR", "IDR"] // Hero variant with USD first, then original 6
     : Object.keys(gsdcRates).filter(currency => gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
@@ -149,8 +147,8 @@ export default function LiveExchangeRates({
             <p className="text-white/80 text-sm">Real-time GSDC values across global currencies</p>
           </div>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {displayCurrencies.slice(0, 7).map((currency) => {
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {displayCurrencies.slice(0, 6).map((currency) => {
             const rate = gsdcRates?.[currency] || 0;
             return (
               <motion.div
