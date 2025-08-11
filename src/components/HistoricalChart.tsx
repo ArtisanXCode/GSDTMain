@@ -155,7 +155,29 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         borderWidth: 1,
         callbacks: {
           title: (context) => {
-            return `${context[0].label}`;
+            // Get the data index to access the full date
+            const dataIndex = context[0].dataIndex;
+            const now = new Date();
+            const days = period === '3 months' ? 90 : 
+                         period === '6 months' ? 180 : 
+                         period === '1 year' ? 365 : 730;
+            const totalPoints = Math.min(Math.floor(days / 7), 52);
+            
+            // Calculate the actual date for this data point
+            const date = new Date(now);
+            date.setDate(date.getDate() - ((totalPoints - 1 - dataIndex) * 7));
+            
+            // Format as full date: "September 7th, 2024"
+            const day = date.getDate();
+            const suffix = day === 1 || day === 21 || day === 31 ? 'st' :
+                          day === 2 || day === 22 ? 'nd' :
+                          day === 3 || day === 23 ? 'rd' : 'th';
+            
+            return date.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }).replace(/(\d+)/, `$1${suffix}`);
           },
           label: (context) => {
             return `GSDC/${currency}: ${context.parsed.y}`;
