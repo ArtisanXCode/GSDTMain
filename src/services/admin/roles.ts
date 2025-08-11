@@ -94,16 +94,26 @@ export const assignUserRole = async (
     // Update smart contract
     const contract = getContract();
     if (!contract) {
-      throw new Error('Contract not initialized');
+      console.warn('Contract not available, skipping smart contract role assignment');
+      // For bootstrap or when contract is not available, only update database
+      // The smart contract role can be assigned later when the contract is available
     }
 
-    const roleHash = ROLE_HASHES[role];
-    if (!roleHash) {
-      throw new Error('Invalid contract role');
-    }
+    // Only perform smart contract operations if contract is available
+    if (contract) {
+      const roleHash = ROLE_HASHES[role];
+      if (!roleHash) {
+        throw new Error('Invalid contract role');
+      }
 
-    const tx = await contract.grantRole(roleHash, address);
-    await tx.wait();
+      try {
+        const tx = await contract.grantRole(roleHash, address);
+        await tx.wait();
+      } catch (contractError) {
+        console.warn('Smart contract role assignment failed, but continuing with database update:', contractError);
+        // Continue with database update even if smart contract fails
+      }
+    }
 
     // Update database
     const { data: existingRole } = await supabase
@@ -159,19 +169,22 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
 
     const currentRole = userData.role as AdminRole;
 
-    // Revoke from smart contract
+    // Revoke from smart contract (if available)
     const contract = getContract();
-    if (!contract) {
-      throw new Error('Contract not initialized');
+    if (contract) {
+      const roleHash = ROLE_HASHES[currentRole];
+      if (roleHash) {
+        try {
+          const tx = await contract.revokeRole(roleHash, address);
+          await tx.wait();
+        } catch (contractError) {
+          console.warn('Smart contract role revocation failed, but continuing with database update:', contractError);
+          // Continue with database update even if smart contract fails
+        }
+      }
+    } else {
+      console.warn('Contract not available, skipping smart contract role revocation');
     }
-
-    const roleHash = ROLE_HASHES[currentRole];
-    if (!roleHash) {
-      throw new Error('Invalid contract role');
-    }
-
-    const tx = await contract.revokeRole(roleHash, address);
-    await tx.wait();
 
     // Delete from database
     const { error } = await supabase
