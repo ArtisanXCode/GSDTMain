@@ -183,7 +183,7 @@ export const sendContactReply = async (
     // Get the original submission to get user's email
     const { data: submission, error: fetchError } = await supabase
       .from("contact_submissions")
-      .select("email, name, subject")
+      .select("email, name, subject, id")
       .eq("id", submissionId)
       .single();
 
@@ -192,7 +192,7 @@ export const sendContactReply = async (
       return false;
     }
 
-    // Save the reply to database (RLS should allow this for authenticated admins)
+    // Save the reply to database using service role permissions
     try {
       const { error: replyError } = await supabase
         .from("contact_replies")
@@ -209,6 +209,8 @@ export const sendContactReply = async (
         console.error("Error saving reply:", replyError);
         throw replyError;
       }
+
+      console.log("Reply saved successfully to database");
     } catch (dbError) {
       console.error("Database insert failed:", dbError);
       return false;
@@ -233,7 +235,7 @@ export const sendContactReply = async (
     }
 
     // Update submission status to replied (this is the most important part)
-    const updated = await updateContactStatus(submission.id, "replied");
+    const updated = await updateContactStatus(submissionId, "replied");
     return updated;
   } catch (error) {
     console.error("Error sending reply:", error);
