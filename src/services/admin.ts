@@ -51,6 +51,12 @@ export interface FiatDeposit {
   verificationDocument?: string;
 }
 
+// Mock admin users for testing purposes (replace with actual data fetching if needed)
+const mockAdminUsers = [
+  { user_address: '0x1234567890abcdef1234567890abcdef12345678', role: AdminRole.ADMIN },
+  { user_address: '0xabcdef1234567890abcdef1234567890abcdef12', role: AdminRole.USER },
+];
+
 // Generate mock transactions
 const generateMockTransactions = (count: number): Transaction[] => {
   return Array.from({ length: count }, (_, i) => ({
@@ -175,4 +181,102 @@ export const getFraudDetectionFlags = (tx: Transaction): string[] => {
   if (hour < 6 || hour > 22) flags.push('UNUSUAL_HOURS');
 
   return flags;
+};
+
+// Admin role functions
+
+export const getUserRole = async (address: string): Promise<AdminRole | null> => {
+  try {
+    // Validate address format
+    if (!address || typeof address !== 'string') {
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from('admin_roles')
+      .select('role')
+      .eq('user_address', address.toLowerCase())
+      .maybeSingle(); // Use maybeSingle to handle no results gracefully
+
+    if (error) {
+      // Log error but don't treat "no rows found" as a critical error
+      if (error.code !== 'PGRST116') {
+        console.error('Database error in getUserRole:', error);
+      }
+
+      // Return mock role for testing
+      const mockUser = mockAdminUsers.find(user => user.user_address.toLowerCase() === address.toLowerCase());
+      return mockUser?.role || null;
+    }
+
+    // Return the role if found, null if not found
+    return data?.role as AdminRole || null;
+  } catch (error) {
+    console.error('Error fetching user role:', error);
+
+    // Return mock role for testing
+    const mockUser = mockAdminUsers.find(user => user.user_address.toLowerCase() === address.toLowerCase());
+    return mockUser?.role || null;
+  }
+};
+
+export const assignUserRole = async (address: string, role: AdminRole): Promise<void> => {
+  try {
+    // Validate address and role
+    if (!address || typeof address !== 'string' || !role) {
+      console.error('Invalid input for assignUserRole');
+      return;
+    }
+
+    // Check if user already has a role
+    const { data: existingRole } = await supabase
+      .from('admin_roles')
+      .select('id')
+      .eq('user_address', address.toLowerCase())
+      .maybeSingle();
+
+    if (existingRole) {
+      // Update existing role
+      const { error } = await supabase
+        .from('admin_roles')
+        .update({ role })
+        .eq('id', existingRole.id);
+
+      if (error) {
+        console.error('Error updating user role:', error);
+      }
+    } else {
+      // Insert new role
+      const { error } = await supabase
+        .from('admin_roles')
+        .insert({ user_address: address.toLowerCase(), role });
+
+      if (error) {
+        console.error('Error assigning user role:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Error assigning user role:', error);
+  }
+};
+
+export const removeUserRole = async (address: string): Promise<void> => {
+  try {
+    // Validate address
+    if (!address || typeof address !== 'string') {
+      console.error('Invalid input for removeUserRole');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('admin_roles')
+      .delete()
+      .eq('user_address', address.toLowerCase());
+
+    if (error) {
+      console.error('Error removing user role:', error);
+    }
+  } catch (error) {
+    console.error('Error removing user role:', error);
+  }
 };

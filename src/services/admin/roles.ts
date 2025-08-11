@@ -123,31 +123,18 @@ export const assignUserRole = async (
       }
     }
 
-    // Update database
-    const { data: existingRole } = await supabase
+    // Update database - use upsert to handle existing roles gracefully
+    const { error: upsertError } = await supabase
       .from('admin_roles')
-      .select('role')
-      .eq('user_address', address.toLowerCase())
-      .single();
+      .upsert({
+        user_address: address.toLowerCase(),
+        role,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_address'
+      });
 
-    if (existingRole) {
-      const { error: updateError } = await supabase
-        .from('admin_roles')
-        .update({ role })
-        .eq('user_address', address.toLowerCase());
-
-      if (updateError) throw updateError;
-    } else {
-      const { error: insertError } = await supabase
-        .from('admin_roles')
-        .insert([{
-          user_address: address.toLowerCase(),
-          role,
-          created_at: new Date().toISOString()
-        }]);
-
-      if (insertError) throw insertError;
-    }
+    if (upsertError) throw upsertError;
 
     return true;
   } catch (error) {
@@ -169,7 +156,7 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
       .from('admin_roles')
       .select('role')
       .eq('user_address', address.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (!userData) {
       throw new Error('User role not found');
