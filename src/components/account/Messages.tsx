@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
@@ -36,6 +36,7 @@ export default function Messages() {
   const [userReplies, setUserReplies] = useState<UserReply[]>([]);
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -86,6 +87,13 @@ export default function Messages() {
 
     fetchMessages();
   }, [user?.email]);
+
+  // Scroll to bottom when userReplies updates
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [userReplies, selectedMessage]);
 
 
   const getStatusBadge = (status: string) => {
@@ -352,44 +360,50 @@ export default function Messages() {
                   )}
 
                   {/* All Replies (User and Admin) */}
-                  {userReplies.map((reply, index) => (
-                    <div key={`${reply.type}-${reply.id}`} className={`rounded-lg p-4 ${
-                      reply.type === 'admin_reply' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50'
-                    }`}>
-                      <div className="flex items-center mb-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          reply.type === 'admin_reply'
-                            ? 'bg-blue-600'
-                            : 'bg-green-100'
-                        }`}>
-                          {reply.type === 'admin_reply' ? (
-                            <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-white" />
-                          ) : (
-                            <span className="text-xs font-medium text-green-600">
-                              {selectedMessage?.name?.charAt(0)?.toUpperCase() || 'U'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900">
-                            {reply.type === 'admin_reply' ? 'Support Team' : selectedMessage?.name || 'You'}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {reply.type === 'admin_reply' ? 'Replied' : 'You replied'} on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
-                          </p>
-                        </div>
-                      </div>
-                      <p className={`text-sm whitespace-pre-wrap ${
-                        reply.type === 'admin_reply' ? 'text-blue-900' : 'text-gray-700'
+                  {/* This div will be the scrollable area */}
+                  <div className="max-h-[400px] overflow-y-auto space-y-4 p-4 border border-gray-200 rounded-lg">
+                    {userReplies.map((reply, index) => (
+                      <div key={`${reply.type}-${reply.id}`} className={`rounded-lg p-4 ${
+                        reply.type === 'admin_reply' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50'
                       }`}>
-                        {reply.type === 'admin_reply' ? reply.reply_text : reply.reply_text}
-                      </p>
-                    </div>
-                  ))}
+                        <div className="flex items-center mb-2">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            reply.type === 'admin_reply'
+                              ? 'bg-blue-600'
+                              : 'bg-green-100'
+                          }`}>
+                            {reply.type === 'admin_reply' ? (
+                              <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-white" />
+                            ) : (
+                              <span className="text-xs font-medium text-green-600">
+                                {selectedMessage?.name?.charAt(0)?.toUpperCase() || 'U'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-gray-900">
+                              {reply.type === 'admin_reply' ? 'Support Team' : selectedMessage?.name || 'You'}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {reply.type === 'admin_reply' ? 'Replied' : 'You replied'} on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
+                            </p>
+                          </div>
+                        </div>
+                        <p className={`text-sm whitespace-pre-wrap ${
+                          reply.type === 'admin_reply' ? 'text-blue-900' : 'text-gray-700'
+                        }`}>
+                          {reply.type === 'admin_reply' ? reply.reply_text : reply.reply_text}
+                        </p>
+                      </div>
+                    ))}
 
-                  {/* Reply Form */}
+                    {/* Scroll anchor */}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Reply Form - Outside scrollable area */}
                   {selectedMessage.admin_reply && selectedMessage.status !== 'archived' && (
-                    <div className="bg-white rounded-lg border border-gray-200 p-4">
+                    <div className="bg-white rounded-lg border border-gray-200 p-4 mt-4">
                       <h4 className="text-sm font-medium text-gray-900 mb-3">Send a Reply</h4>
 
                       {error && (
