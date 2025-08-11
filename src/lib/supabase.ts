@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 // Get environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
 // Fallback values for development if environment variables are not available
 const fallbackUrl = '';
@@ -28,6 +29,18 @@ export const supabase = createClient(url, key, {
     schema: 'public'
   }
 });
+
+// Service role client for admin operations (bypasses RLS)
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  supabaseServiceKey || supabaseAnonKey,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {

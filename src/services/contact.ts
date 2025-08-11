@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase, supabaseAdmin } from "../lib/supabase";
 import {
   sendEmail,
   getContactFormEmailTemplate,
@@ -209,7 +209,7 @@ export const sendContactReply = async (
 
       console.log("Reply data:", replyData);
 
-      const { data: insertedReply, error: replyError } = await supabase
+      const { data: insertedReply, error: replyError } = await supabaseAdmin
         .from("contact_replies")
         .insert([replyData])
         .select()
