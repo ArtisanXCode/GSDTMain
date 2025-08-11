@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon, WalletIcon, ArrowRightOnRectangleIcon, DocumentTextIcon, PlusCircleIcon, ShieldCheckIcon, UserIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, WalletIcon, ArrowRightOnRectangleIcon, DocumentTextIcon, PlusCircleIcon, ShieldCheckIcon, UserIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { Link, useLocation } from 'react-router-dom';
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
@@ -40,7 +40,7 @@ const Header = () => {
   const navigation = [
     { name: 'Home', href: '/', current: false, requireAuth: false },
     { name: 'About', href: '/about', current: false, requireAuth: false },
-    
+
     // Protected navigation items
     { name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },
     { name: 'Live Exchange Rates', href: '/live-exchange-rates', current: false, requireAuth: true },
@@ -190,6 +190,32 @@ const Header = () => {
                           <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
                           <p className="text-xs text-gray-500 truncate">{address}</p>
                         </div>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/dashboard"
+                              className={`${
+                                active ? 'bg-gray-100' : ''
+                              } flex w-full px-4 py-2 text-sm text-gray-700`}
+                            >
+                              <HomeIcon className="h-5 w-5 mr-2" />
+                              Dashboard
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              to="/my-account"
+                              className={`${
+                                active ? 'bg-gray-100' : ''
+                              } flex w-full px-4 py-2 text-sm text-gray-700`}
+                            >
+                              <UserIcon className="h-5 w-5 mr-2" />
+                              My Account
+                            </Link>
+                          )}
+                        </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <Link
