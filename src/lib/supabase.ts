@@ -32,23 +32,23 @@ export const supabase = createClient(url, key, {
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {
   console.error('Supabase error:', error);
-  
+
   if (error.code === 'PGRST116') {
     return 'No data found';
   }
-  
+
   if (error.code === '23505') {
     return 'This record already exists';
   }
-  
+
   if (error.code === '42703') {
     return 'Database schema error: Column does not exist';
   }
-  
+
   if (error.message?.includes('Failed to fetch')) {
     return 'Connection error: Unable to reach database';
   }
-  
+
   return error.message || 'An unexpected error occurred';
 };
 
@@ -66,7 +66,7 @@ let connectionCache: {
 // Helper function to check if Supabase is available with caching
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   const now = Date.now();
-  
+
   // Return cached result if within timeout period
   if (now - connectionCache.lastChecked < connectionCache.cacheTimeout) {
     return connectionCache.isConnected;
@@ -81,18 +81,18 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       lastChecked: now,
       cacheTimeout: isConnected ? 30000 : 10000, // 30s if connected, 10s if failed
     };
-    
+
     return isConnected;
   } catch (error) {
     console.error('Supabase connection check failed:', error);
-    
+
     // Update cache with failure
     connectionCache = {
       isConnected: false,
       lastChecked: now,
       cacheTimeout: 10000, // 10 seconds on failure
     };
-    
+
     return false;
   }
 };

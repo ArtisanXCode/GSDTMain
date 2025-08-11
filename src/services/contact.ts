@@ -180,6 +180,8 @@ export const sendContactReply = async (
   adminEmail: string,
 ): Promise<boolean> => {
   try {
+    console.log("Starting sendContactReply for submission:", submissionId);
+
     // Get the original submission to get user's email
     const { data: submission, error: fetchError } = await supabase
       .from("contact_submissions")
@@ -192,25 +194,34 @@ export const sendContactReply = async (
       return false;
     }
 
-    // Save the reply to database using service role permissions
+    console.log("Found submission:", submission);
+
+    // Save the reply to database
     try {
-      const { error: replyError } = await supabase
+      console.log("Attempting to save reply to database...");
+      
+      const replyData = {
+        submission_id: submissionId,
+        reply_text: replyText,
+        admin_email: adminEmail,
+        sent_at: new Date().toISOString(),
+      };
+
+      console.log("Reply data:", replyData);
+
+      const { data: insertedReply, error: replyError } = await supabase
         .from("contact_replies")
-        .insert([
-          {
-            submission_id: submissionId,
-            reply_text: replyText,
-            admin_email: adminEmail,
-            sent_at: new Date().toISOString(),
-          },
-        ]);
+        .insert([replyData])
+        .select()
+        .single();
 
       if (replyError) {
         console.error("Error saving reply:", replyError);
-        throw replyError;
+        console.error("Error details:", JSON.stringify(replyError, null, 2));
+        return false;
       }
 
-      console.log("Reply saved successfully to database");
+      console.log("Reply saved successfully:", insertedReply);
     } catch (dbError) {
       console.error("Database insert failed:", dbError);
       return false;
@@ -218,24 +229,31 @@ export const sendContactReply = async (
 
     // Try to send email to the user
     try {
+      console.log("Attempting to send email to user...");
+      
       const emailHtml = getContactReplyTemplate(
         submission.name,
         submission.subject,
         replyText,
       );
 
-      await sendEmail({
+      const emailResult = await sendEmail({
         to: submission.email,
         subject: `Re: ${submission.subject}`,
         html: emailHtml,
         from: "support@gsdc.com",
       });
+
+      console.log("Email sent result:", emailResult);
     } catch (emailError) {
       console.warn("Email sending failed, but reply was saved:", emailError);
     }
 
-    // Update submission status to replied (this is the most important part)
+    // Update submission status to replied
+    console.log("Updating submission status to replied...");
     const updated = await updateContactStatus(submissionId, "replied");
+    console.log("Status update result:", updated);
+    
     return updated;
   } catch (error) {
     console.error("Error sending reply:", error);
