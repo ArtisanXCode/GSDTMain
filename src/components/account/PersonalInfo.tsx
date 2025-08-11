@@ -72,25 +72,38 @@ export default function PersonalInfo() {
     try {
       setSaving(true);
 
-      const profileData = {
-        user_id: user.id,
-        email: user.email,
-        first_name: profile.first_name,
-        last_name: profile.last_name,
+      // Prepare data to be saved, mapping from component state to database fields
+      const formData = {
+        firstName: profile.first_name,
+        lastName: profile.last_name,
         phone: profile.phone,
-        date_of_birth: profile.date_of_birth,
-        address_line_1: profile.address_line_1,
-        address_line_2: profile.address_line_2,
+        dateOfBirth: profile.date_of_birth,
+        addressLine1: profile.address_line_1,
+        addressLine2: profile.address_line_2,
         city: profile.city,
         state: profile.state,
-        postal_code: profile.postal_code,
+        postalCode: profile.postal_code,
         country: profile.country,
-        updated_at: new Date().toISOString(),
       };
 
       const { error } = await supabase
         .from('user_profiles')
-        .upsert(profileData);
+        .upsert([{
+          user_id: user.id,
+          email: user.email,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          phone: formData.phone,
+          date_of_birth: formData.dateOfBirth || null,
+          address_line_1: formData.addressLine1,
+          address_line_2: formData.addressLine2,
+          city: formData.city,
+          state: formData.state,
+          postal_code: formData.postalCode,
+          country: formData.country,
+        }], {
+          onConflict: 'user_id'
+        });
 
       if (error) throw error;
 
