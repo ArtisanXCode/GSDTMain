@@ -51,14 +51,22 @@ export const getUserRole = async (address: string): Promise<AdminRole | null> =>
     clearTimeout(timeoutId);
 
     if (error) {
-      console.error('Database error in getUserRole:', error);
+      // Log error but don't treat "no rows found" as a critical error
+      if (error.code !== 'PGRST116') {
+        console.error('Database error in getUserRole:', error);
+      }
       return null;
     }
 
     // Return the role if found, null if not found
     return data?.role as AdminRole || null;
   } catch (error: any) {
-    console.error('Error getting user role:', error);
+    // Handle AbortError from timeout
+    if (error.name === 'AbortError') {
+      console.warn('getUserRole request timed out for address:', address);
+    } else {
+      console.error('Error getting user role:', error);
+    }
     return null;
   }
 };
