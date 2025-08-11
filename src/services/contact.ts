@@ -46,7 +46,7 @@ export const submitContactForm = async (
       return false;
     }
 
-    // Try to send email notification to admin (but don't fail if email fails)
+    // Store admin notification email in database (email sending is temporarily bypassed)
     try {
       const adminEmail = "laljij@etherauthority.io";
       const emailHtml = getContactFormEmailTemplate(
@@ -56,15 +56,19 @@ export const submitContactForm = async (
         formData.message,
       );
 
-      await sendEmail({
+      const emailResult = await sendEmail({
         to: adminEmail,
         subject: `New Contact Form: ${formData.subject}`,
         html: emailHtml,
         from: "noreply@gsdc.com",
       });
+
+      if (emailResult) {
+        console.log("Admin notification email stored in database (email sending bypassed)");
+      }
     } catch (emailError) {
       console.warn(
-        "Email notification failed, but form was saved:",
+        "Email storage failed, but form was saved:",
         emailError,
       );
     }
@@ -227,9 +231,9 @@ export const sendContactReply = async (
       return false;
     }
 
-    // Try to send email to the user
+    // Store email in database (email sending is temporarily bypassed)
     try {
-      console.log("Attempting to send email to user...");
+      console.log("Storing reply email to database (not sending actual email)...");
       
       const emailHtml = getContactReplyTemplate(
         submission.name,
@@ -244,9 +248,13 @@ export const sendContactReply = async (
         from: "support@gsdc.com",
       });
 
-      console.log("Email sent result:", emailResult);
+      if (emailResult) {
+        console.log("Email stored successfully in database (email sending bypassed)");
+      } else {
+        console.warn("Failed to store email in database");
+      }
     } catch (emailError) {
-      console.warn("Email sending failed, but reply was saved:", emailError);
+      console.warn("Email storage failed, but reply was saved:", emailError);
     }
 
     // Update submission status to replied

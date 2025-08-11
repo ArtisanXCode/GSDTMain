@@ -10,16 +10,17 @@ export interface EmailData {
 
 /**
  * Global function to send emails using a Supabase Edge Function or external service
+ * TEMPORARY: Email sending is bypassed, only storing in database for future integration
  */
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
-    console.log("Attempting to send email:", {
+    console.log("Email functionality bypassed - storing in database only:", {
       to: emailData.to,
       subject: emailData.subject,
       from: emailData.from || "noreply@gsdc.com"
     });
 
-    // Save the email attempt to database first (with service role to bypass RLS)
+    // Save the email to database (this is what we keep for now)
     try {
       const { error: dbError } = await supabase.from("emails").insert([
         {
@@ -28,20 +29,35 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
           subject: emailData.subject,
           html: emailData.html,
           sent_at: new Date().toISOString(),
-          status: 'pending'
+          status: 'stored' // Changed from 'pending' to indicate it's stored but not sent
         },
       ]);
 
       if (dbError) {
         console.error("Error saving email to database:", dbError);
-        // Don't fail the email send if database logging fails
+        return false;
       }
+
+      console.log("Email stored successfully in database (not sent)");
+      console.log("EMAIL CONTENT STORED:", {
+        to: emailData.to,
+        subject: emailData.subject,
+        from: emailData.from || "noreply@gsdc.com",
+        preview: emailData.html.substring(0, 100) + "..."
+      });
+
+      return true; // Return true since we successfully stored it
+
     } catch (logError) {
-      console.error("Failed to log email to database:", logError);
-      // Continue with email sending even if logging fails
+      console.error("Failed to store email to database:", logError);
+      return false;
     }
 
-    // Try to send via Supabase Edge Function (you'll need to create this)
+    // TODO: Future email integration will go here
+    // Uncomment and modify the sections below when ready to implement actual email sending:
+    
+    /*
+    // Try to send via Supabase Edge Function
     try {
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: emailData
@@ -50,6 +66,14 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       if (error) throw error;
       
       console.log("Email sent successfully via Edge Function");
+      
+      // Update database status to 'sent'
+      await supabase
+        .from("emails")
+        .update({ status: 'sent' })
+        .eq('to_email', emailData.to)
+        .eq('subject', emailData.subject);
+      
       return true;
     } catch (edgeFunctionError) {
       console.warn("Edge Function email failed, trying alternative method:", edgeFunctionError);
@@ -70,30 +94,25 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
         if (response.ok) {
           console.log("Email sent successfully via API");
+          
+          // Update database status to 'sent'
+          await supabase
+            .from("emails")
+            .update({ status: 'sent' })
+            .eq('to_email', emailData.to)
+            .eq('subject', emailData.subject);
+          
           return true;
         } else {
           throw new Error(`API responded with status: ${response.status}`);
         }
       } catch (apiError) {
         console.warn("API email failed:", apiError);
-        
-        // Final fallback: Just log the email (for development)
-        console.log("EMAIL WOULD BE SENT:", {
-          to: emailData.to,
-          subject: emailData.subject,
-          content: emailData.html
-        });
-        
-        // Update database status to indicate it was "sent" (even if just logged)
-        await supabase
-          .from("emails")
-          .update({ status: 'sent' })
-          .eq('to_email', emailData.to)
-          .eq('subject', emailData.subject);
-        
-        return true; // Return true so the application flow continues
+        return false;
       }
     }
+    */
+
   } catch (error) {
     console.error("Error in email service:", error);
     return false;
