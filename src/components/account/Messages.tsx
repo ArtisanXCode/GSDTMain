@@ -24,6 +24,7 @@ interface UserReply {
   reply_text: string;
   sent_at: string;
   user_email: string;
+  type?: 'user_reply' | 'admin_reply'; // Added to distinguish reply types
 }
 
 export default function Messages() {
@@ -71,17 +72,9 @@ export default function Messages() {
         // Fetch user replies
         const submissionIds = transformedMessages.map(m => m.id);
         if (submissionIds.length > 0) {
-          const { data: repliesData, error: repliesError } = await supabase
-            .from('user_replies')
-            .select('*')
-            .in('submission_id', submissionIds)
-            .order('sent_at', { ascending: true });
-
-          if (repliesError) {
-            console.error('Error fetching user replies:', repliesError);
-          } else {
-            setUserReplies(repliesData || []);
-          }
+          // The logic for fetching user replies has been updated to fetch both user and admin replies
+          // and combine them into a single `userReplies` state.
+          // This block is effectively replaced by the `handleMessageSelect` logic.
         }
       } catch (err: any) {
         setError(err.message);
@@ -125,6 +118,53 @@ export default function Messages() {
     }
   };
 
+  const handleMessageSelect = async (message: Message) => {
+    setSelectedMessage(message);
+    setReplyText(''); // Clear reply text when selecting a new message
+
+    // Load both user replies and admin replies for this message
+    try {
+      const [userRepliesResponse, adminRepliesResponse] = await Promise.all([
+        supabase
+          .from('user_replies')
+          .select('*')
+          .eq('submission_id', message.id)
+          .order('sent_at', { ascending: true }),
+        supabase
+          .from('contact_replies')
+          .select('*')
+          .eq('submission_id', message.id)
+          .order('sent_at', { ascending: true })
+      ]);
+
+      if (userRepliesResponse.error) {
+        console.error('Error loading user replies:', userRepliesResponse.error);
+      }
+
+      if (adminRepliesResponse.error) {
+        console.error('Error loading admin replies:', adminRepliesResponse.error);
+      }
+
+      // Combine and sort all replies by sent_at
+      const allReplies = [
+        ...(userRepliesResponse.data || []).map(reply => ({
+          ...reply,
+          type: 'user_reply' as const
+        })),
+        ...(adminRepliesResponse.data || []).map(reply => ({
+          ...reply,
+          type: 'admin_reply' as const
+        }))
+      ].sort((a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime());
+
+      setUserReplies(allReplies);
+    } catch (err) {
+      console.error('Error loading replies:', err);
+      setUserReplies([]);
+    }
+  };
+
+
   const handleSendReply = async () => {
     if (!selectedMessage || !replyText.trim() || !user?.email) return;
 
@@ -146,8 +186,8 @@ export default function Messages() {
 
       if (replyError) throw replyError;
 
-      // Add the new reply to local state
-      setUserReplies(prev => [...prev, replyData]);
+      // Add the new reply to local state with the correct type
+      setUserReplies(prev => [...prev, { ...replyData, type: 'user_reply' }]);
 
       // Clear reply text
       setReplyText('');
@@ -222,7 +262,7 @@ export default function Messages() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  onClick={() => setSelectedMessage(message)}
+                  onClick={() => handleMessageSelect(message)}
                   className={`border rounded-lg p-4 cursor-pointer transition-colors ${
                     selectedMessage?.id === message.id
                       ? 'border-blue-500 bg-blue-50'
@@ -311,41 +351,53 @@ export default function Messages() {
                     </div>
                   )}
 
-                  {/* User Replies */}
-                  {userReplies
-                    .filter(reply => reply.submission_id === selectedMessage.id)
-                    .map((reply, index) => (
-                      <div key={reply.id} className="bg-gray-50 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  {/* All Replies (User and Admin) */}
+                  {userReplies.map((reply, index) => (
+                    <div key={`${reply.type}-${reply.id}`} className={`rounded-lg p-4 ${
+                      reply.type === 'admin_reply' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-gray-50'
+                    }`}>
+                      <div className="flex items-center mb-2">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          reply.type === 'admin_reply'
+                            ? 'bg-blue-600'
+                            : 'bg-green-100'
+                        }`}>
+                          {reply.type === 'admin_reply' ? (
+                            <ChatBubbleLeftEllipsisIcon className="w-4 h-4 text-white" />
+                          ) : (
                             <span className="text-xs font-medium text-green-600">
-                              {user?.email?.charAt(0).toUpperCase()}
+                              {selectedMessage?.name?.charAt(0)?.toUpperCase() || 'U'}
                             </span>
-                          </div>
-                          <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-900">You</p>
-                            <p className="text-xs text-gray-500">
-                              Replied on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
-                            </p>
-                          </div>
+                          )}
                         </div>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                          {reply.reply_text}
-                        </p>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-gray-900">
+                            {reply.type === 'admin_reply' ? 'Support Team' : selectedMessage?.name || 'You'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {reply.type === 'admin_reply' ? 'Replied' : 'You replied'} on {format(new Date(reply.sent_at), 'MMM d, yyyy at h:mm a')}
+                          </p>
+                        </div>
                       </div>
-                    ))}
+                      <p className={`text-sm whitespace-pre-wrap ${
+                        reply.type === 'admin_reply' ? 'text-blue-900' : 'text-gray-700'
+                      }`}>
+                        {reply.type === 'admin_reply' ? reply.reply_text : reply.reply_text}
+                      </p>
+                    </div>
+                  ))}
 
                   {/* Reply Form */}
                   {selectedMessage.admin_reply && selectedMessage.status !== 'archived' && (
                     <div className="bg-white rounded-lg border border-gray-200 p-4">
                       <h4 className="text-sm font-medium text-gray-900 mb-3">Send a Reply</h4>
-                      
+
                       {error && (
                         <div className="mb-3 bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
                           {error}
                         </div>
                       )}
-                      
+
                       <textarea
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
@@ -354,7 +406,7 @@ export default function Messages() {
                         placeholder="Type your reply here..."
                         disabled={sendingReply}
                       />
-                      
+
                       <div className="flex justify-end mt-3">
                         <button
                           onClick={handleSendReply}
