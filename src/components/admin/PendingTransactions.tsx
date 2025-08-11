@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { useContract } from '../../hooks/useContract';
 import { toast } from 'react-hot-toast';
 import { handleBlockchainError } from '../../lib/web3';
@@ -228,10 +228,11 @@ export default function PendingTransactions({ onRefresh }: Props) {
     }
   };
 
-  const formatAmount = (amount: string, txType: TransactionType): string => {
-    if (txType === TransactionType.MINT || txType === TransactionType.BURN || txType === TransactionType.TRANSFER) {
-      const divisor = Math.pow(10, 18);
-      return (parseFloat(amount) / divisor).toFixed(2) + ' GSDC';
+  const formatAmount = (amount: string, txType: any): string => {
+    // Check if it's a token-related transaction that has an amount
+    const tokenTxTypes = ['Mint', 'Burn', 'Transfer'];
+    if (tokenTxTypes.includes(txType) && amount && parseFloat(amount) > 0) {
+      return parseFloat(amount).toFixed(2) + ' GSDC';
     }
     return 'N/A';
   };
@@ -250,6 +251,14 @@ export default function PendingTransactions({ onRefresh }: Props) {
       return `${hours}h ${remainingMinutes}m remaining`;
     }
     return `${remainingMinutes}m remaining`;
+  };
+
+  const formatFullDate = (date: Date): string => {
+    return format(date, 'MMMM do, yyyy \'at\' h:mm a');
+  };
+
+  const formatCompactDate = (date: Date): string => {
+    return format(date, 'MM/dd/yy HH:mm');
   };
 
   if (loading) {
@@ -309,6 +318,9 @@ export default function PendingTransactions({ onRefresh }: Props) {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Time Remaining
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -349,7 +361,20 @@ export default function PendingTransactions({ onRefresh }: Props) {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {getTimeRemaining(tx.executeAfter)}
+                        <div className="text-sm text-gray-900" title={formatFullDate(tx.timestamp)}>
+                          {formatCompactDate(tx.timestamp)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatDistanceToNow(tx.timestamp, { addSuffix: true })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="text-sm text-gray-900">
+                          {getTimeRemaining(tx.executeAfter)}
+                        </div>
+                        <div className="text-xs text-gray-500" title={formatFullDate(tx.executeAfter)}>
+                          Execute by: {formatCompactDate(tx.executeAfter)}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <button

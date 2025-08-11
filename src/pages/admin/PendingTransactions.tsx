@@ -305,10 +305,13 @@ export default function PendingTransactionsPage() {
                   <div className="text-right">
                     <div className="text-sm text-gray-500">Connected as</div>
                     <div className="font-mono text-sm text-gray-900">
-                      {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Not connected'}
+                      {address ? `${address.slice(0, 8)}...${address.slice(-6)}` : 'Not connected'}
                     </div>
                     {isSuperAdmin && (
                       <div className="text-xs text-blue-600 font-medium">Super Admin</div>
+                    )}
+                    {isAdmin && !isSuperAdmin && (
+                      <div className="text-xs text-green-600 font-medium">Admin</div>
                     )}
                   </div>
                 </div>

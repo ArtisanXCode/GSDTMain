@@ -71,52 +71,27 @@ export const useWallet = () => {
   }, []);
 
   useEffect(() => {
-    // Check connection on component mount
     checkConnection();
 
-    // Set up event listeners for wallet changes
-    if (typeof window !== 'undefined' && window.ethereum) {
-      const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setAddress(accounts[0]);
-          setIsConnected(true);
-
-          // Check if user is admin when account changes
-          getUserRole(accounts[0]).then(role => {
-            setIsAdmin(!!role);
-            setAdminRole(role);
-          }).catch(error => {
-            console.error('Error fetching admin role:', error);
-            setIsAdmin(false);
-            setAdminRole(null);
-          });
-        } else {
-          setAddress(null);
-          setIsConnected(false);
-          setIsAdmin(false);
-          setAdminRole(null);
-        }
-      };
-
-      const handleChainChanged = () => window.location.reload();
-
+    if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      // Periodic check for MetaMask lock/unlock (every 3 seconds)
-      const connectionInterval = setInterval(() => {
-        checkConnection();
-      }, 3000);
-
-      return () => {
-        if (window.ethereum && window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-          window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
-        clearInterval(connectionInterval);
-      };
+      window.ethereum.on('chainChanged', () => window.location.reload());
     }
-  }, [checkConnection]);
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', () => window.location.reload());
+      }
+    };
+  }, []);
+
+  // Additional effect to ensure address is always up to date
+  useEffect(() => {
+    if (isConnected && !address) {
+      checkConnection();
+    }
+  }, [isConnected, address]);
 
   const connect = async () => {
     // Prevent multiple simultaneous connection attempts
@@ -157,7 +132,7 @@ export const useWallet = () => {
         console.log('MetaMask is already processing a request. Please check your MetaMask extension.');
         setError('MetaMask is processing another request. Please check your MetaMask extension and try again.');
       } else if (err.code === 4001 || err.message && (
-        err.message.includes('User rejected') || 
+        err.message.includes('User rejected') ||
         err.message.includes('user rejected') ||
         err.message.includes('User denied')
       )) {
