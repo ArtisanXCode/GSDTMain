@@ -96,12 +96,19 @@ export const getUserKYCStatus = async (
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
   try {
     // Check NFT contract for KYC approval
-    const contract_NFT = getNFTContract();
+    const contract_NFT = getReadOnlyNFTContract();
     if (contract_NFT) {
       try {
+        // Verify contract has the balanceOf function
+        if (typeof contract_NFT.balanceOf !== 'function') {
+          console.error("NFT contract does not have balanceOf function");
+          return { status: KYCStatus.NOT_SUBMITTED };
+        }
+
         const userBalance = await contract_NFT.balanceOf(userAddress);
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-        console.log("NFT:", readableBalance);
+        console.log("NFT Balance:", readableBalance);
+        
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
         } else {
@@ -112,6 +119,7 @@ export const getUserKYCStatus = async (
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
+      console.warn("NFT contract not available");
       return { status: KYCStatus.NOT_SUBMITTED };
     }
   } catch (error) {
