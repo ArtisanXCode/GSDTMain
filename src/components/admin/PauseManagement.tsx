@@ -126,7 +126,7 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
       }`}>
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold mb-2">Current Status</h3>
+            <h3 className="text-gray-900 text-lg font-semibold mb-2">Current Status</h3>
             <p className={`text-sm ${isPaused ? 'text-red-700' : 'text-green-700'}`}>
               {isPaused 
                 ? 'All token transfers and operations are currently paused' 
@@ -181,7 +181,7 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
 
       {/* Pause History */}
       <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Pause History</h3>
+        <h3 className="text-gray-900 text-lg font-semibold mb-4">Pause History</h3>
         <div className="space-y-3">
           {pauseHistory.length === 0 ? (
             <p className="text-gray-500 text-sm">No pause actions recorded</p>
