@@ -346,9 +346,23 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
 
     // Execute the KYC status update
     try {
+      // Get current gas price from network
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const gasPrice = await provider.getGasPrice();
+      
+      // Estimate gas limit for the transaction
+      let gasLimit = 100000; // Default fallback
+      try {
+        const estimatedGas = await contract.estimateGas.updateKYCStatus(userAddress, true);
+        gasLimit = Math.ceil(estimatedGas.toNumber() * 1.2); // Add 20% buffer
+        console.log("Estimated gas limit:", gasLimit);
+      } catch (gasEstError) {
+        console.warn("Gas estimation failed, using default:", gasLimit);
+      }
+
       const kycTx = await contract.updateKYCStatus(userAddress, true, {
-        gasLimit: 200000, // Increased gas limit
-        gasPrice: undefined, // Let the network determine gas price
+        gasLimit: gasLimit,
+        gasPrice: gasPrice.mul(110).div(100), // Use network gas price + 10%
       });
       console.log("KYC transaction submitted:", kycTx.hash);
       const receipt = await kycTx.wait();
@@ -380,9 +394,24 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
             const mintAmount = ethers.utils.parseEther("1");
             await contract.estimateGas.mint(userAddress, mintAmount);
 
+            // Get current gas price from network
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const gasPrice = await provider.getGasPrice();
+            
+            // Estimate gas for minting
+            let mintGasLimit = 150000; // Default fallback
+            try {
+              const estimatedMintGas = await contract.estimateGas.mint(userAddress, mintAmount);
+              mintGasLimit = Math.ceil(estimatedMintGas.toNumber() * 1.2); // Add 20% buffer
+              console.log("Estimated gas limit for minting:", mintGasLimit);
+            } catch (mintGasEstError) {
+              console.warn("Mint gas estimation failed, using default:", mintGasLimit);
+            }
+
             // Mint 1 token (1 * 10^18 wei)
             const mintTx = await contract.mint(userAddress, mintAmount, {
-              gasLimit: 200000, // Set manual gas limit for minting
+              gasLimit: mintGasLimit,
+              gasPrice: gasPrice.mul(110).div(100), // Use network gas price + 10%
             });
             await mintTx.wait();
             console.log("Successfully minted 1 token to user:", userAddress);
@@ -634,9 +663,23 @@ export const rejectKYCRequest = async (
     }
 
     try {
+      // Get current gas price from network
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const gasPrice = await provider.getGasPrice();
+      
+      // Estimate gas limit for the transaction
+      let gasLimit = 100000; // Default fallback
+      try {
+        const estimatedGas = await contract.estimateGas.updateKYCStatus(userAddress, false);
+        gasLimit = Math.ceil(estimatedGas.toNumber() * 1.2); // Add 20% buffer
+        console.log("Estimated gas limit for rejection:", gasLimit);
+      } catch (gasEstError) {
+        console.warn("Gas estimation failed for rejection, using default:", gasLimit);
+      }
+
       const tx = await contract.updateKYCStatus(userAddress, false, {
-        gasLimit: 200000, // Increased gas limit
-        gasPrice: undefined, // Let the network determine gas price
+        gasLimit: gasLimit,
+        gasPrice: gasPrice.mul(110).div(100), // Use network gas price + 10%
       });
       console.log("KYC rejection transaction submitted:", tx.hash);
       const receipt = await tx.wait();
