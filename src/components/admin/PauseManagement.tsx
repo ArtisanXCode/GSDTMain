@@ -198,20 +198,20 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
                     <PlayIcon className="h-5 w-5 text-green-500" />
                   )}
                   <div>
-                    <p className="font-medium text-sm">
+                    <p className="font-medium text-sm text-gray-900">
                       Contract {action.action_type.toLowerCase()}d
                     </p>
-                    <p className="text-xs text-gray-500">{action.reason}</p>
+                    <p className="text-xs text-gray-600">{action.reason}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="flex items-center text-xs text-gray-500">
+                  <div className="flex items-center text-xs text-gray-600">
                     <ClockIcon className="h-4 w-4 mr-1" />
                     {new Date(action.created_at).toLocaleString()}
                   </div>
                   {action.transaction_hash && (
                     <a
-                      href={`https://etherscan.io/tx/${action.transaction_hash}`}
+                      href={`https://testnet.bscscan.com/tx/${action.transaction_hash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-blue-600 hover:text-blue-800"
