@@ -42,15 +42,15 @@ export default function Settings() {
       const { data, error } = await supabase
         .from('user_settings')
         .select('*')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', user.id);
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
 
-      if (data) {
-        setSettings(data);
+      // If data exists, use it; otherwise keep default settings
+      if (data && data.length > 0) {
+        setSettings(data[0]);
       }
     } catch (error) {
       console.error('Error loading settings:', error);
