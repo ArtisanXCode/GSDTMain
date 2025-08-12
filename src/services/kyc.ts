@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { getContract, getNFTContract } from "../lib/web3";
+import { getContract, getNFTContract, getReadOnlyNFTContract } from "../lib/web3";
 import { ethers } from "ethers";
 
 import { getSumsubApplicantStatus } from "../services/sumsub";
@@ -96,12 +96,19 @@ export const getUserKYCStatus = async (
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
   try {
     // Check NFT contract for KYC approval
-    const contract_NFT = getNFTContract();
+    const contract_NFT = getReadOnlyNFTContract();
     if (contract_NFT) {
       try {
+        // Verify contract has the balanceOf function
+        if (typeof contract_NFT.balanceOf !== 'function') {
+          console.error("NFT contract does not have balanceOf function");
+          return { status: KYCStatus.NOT_SUBMITTED };
+        }
+
         const userBalance = await contract_NFT.balanceOf(userAddress);
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-        console.log("NFT:", readableBalance);
+        console.log("NFT Balance:", readableBalance);
+        
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
         } else {
@@ -112,6 +119,7 @@ export const getUserKYCStatus = async (
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
+      console.warn("NFT contract not available");
       return { status: KYCStatus.NOT_SUBMITTED };
     }
   } catch (error) {
@@ -269,6 +277,16 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       // Check if the contract has the signer properly
       const signerAddress = await contract.signer.getAddress();
       console.log("Signer address:", signerAddress);
+
+      // Check if contract has the updateKYCStatus function
+      if (!contract.updateKYCStatus) {
+        throw new Error("Contract does not have updateKYCStatus function. Please check the contract ABI.");
+      }
+
+      // Verify the user's address is valid
+      if (!ethers.utils.isAddress(userAddress)) {
+        throw new Error("Invalid user address format.");
+      }
       
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
@@ -285,10 +303,12 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       } else if (
         gasError.message?.includes("AccessControl") ||
         gasError.message?.includes("missing role") ||
-        gasError.reason?.includes("AccessControl")
+        gasError.reason?.includes("AccessControl") ||
+        gasError.message?.includes("Ownable: caller is not the owner") ||
+        gasError.reason?.includes("caller is not the owner")
       ) {
         throw new Error(
-          "You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC.",
+          "You do not have permission to approve KYC requests. Only users with ADMIN role can approve KYC. Please ensure your wallet address has the required permissions on the smart contract.",
         );
       } else if (
         gasError.message?.includes("user rejected") ||
@@ -301,7 +321,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
         gasError.code === "CALL_EXCEPTION"
       ) {
         throw new Error(
-          "Cannot estimate gas for this transaction. Please check your permissions and wallet connection.",
+          "Smart contract call failed. This might be due to insufficient permissions or contract state issues. Please check your admin role permissions.",
         );
       } else if (gasError.code === "NETWORK_ERROR") {
         throw new Error(
@@ -311,6 +331,8 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
         throw new Error(
           "Insufficient funds for gas fees. Please add more ETH to your wallet.",
         );
+      } else if (gasError.message?.includes("Contract does not have updateKYCStatus function")) {
+        throw new Error("Contract configuration error. The smart contract does not have the required updateKYCStatus function.");
       } else {
         // Extract meaningful error message from the error object
         const errorMessage =
