@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { getContract, getNFTContract } from "../lib/web3";
+import { getContract, getNFTContract, getReadOnlyNFTContract } from "../lib/web3";
 import { ethers } from "ethers";
 
 import { getSumsubApplicantStatus } from "../services/sumsub";
