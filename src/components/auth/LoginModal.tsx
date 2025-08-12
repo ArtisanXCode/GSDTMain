@@ -20,6 +20,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [success, setSuccess] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
