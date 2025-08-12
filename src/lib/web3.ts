@@ -49,48 +49,22 @@ export const getReadOnlyContract = (): ethers.Contract | null => {
 };
 
 export const getNFTContract = (): ethers.Contract | null => {
-  try {
-    if (!window.ethereum) {
-      console.warn('MetaMask not detected for NFT contract');
-      return null;
-    }
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-
-    // Check if wallet is connected
-    if (!window.ethereum.selectedAddress) {
-      console.warn('Wallet not connected for NFT contract');
-      return null;
-    }
-
-    const signer = provider.getSigner();
-    const NFTContract = new ethers.Contract(NFT_contractAddress, NFT_abi, signer);
-
-    // Verify contract has a signer
-    if (!NFTContract.signer) {
-      console.error('NFT Contract does not have a signer attached');
-      return null;
-    }
-
-    return NFTContract;
-  } catch (error) {
-    console.error('Error creating NFT contract instance:', error);
-    return null;
+  if (!window.ethereum) {
+    throw new Error('MetaMask is not installed');
   }
+  const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+  const signer = provider.getSigner();
+  const NFTContract = new ethers.Contract(NFT_contractAddress, NFT_abi, signer);
+  return NFTContract;
 };
 
 export const getReadOnlyNFTContract = (): ethers.Contract | null => {
-  try {
-    if (window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-      return new ethers.Contract(NFT_contractAddress, NFT_abi, provider);
-    }
-    // Fallback to default provider if no wallet
-    return new ethers.Contract(NFT_contractAddress, NFT_abi, defaultProvider);
-  } catch (error) {
-    console.error('Error creating read-only NFT contract instance:', error);
-    return null;
+  if (window.ethereum) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    return new ethers.Contract(NFT_contractAddress, NFT_abi, provider);
   }
+  // Fallback to default provider if no wallet
+  return new ethers.Contract(NFT_contractAddress, NFT_abi, defaultProvider);
 };
 
 // Connect wallet function

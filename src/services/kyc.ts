@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { getContract, getNFTContract, getReadOnlyNFTContract } from "../lib/web3";
+import { getContract, getNFTContract } from "../lib/web3";
 import { ethers } from "ethers";
 
 import { getSumsubApplicantStatus } from "../services/sumsub";
@@ -96,19 +96,12 @@ export const getUserKYCStatus = async (
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
   try {
     // Check NFT contract for KYC approval
-    const contract_NFT = getReadOnlyNFTContract();
+    const contract_NFT = getNFTContract();
     if (contract_NFT) {
       try {
-        // Verify contract has the balanceOf function
-        if (typeof contract_NFT.balanceOf !== 'function') {
-          console.error("NFT contract does not have balanceOf function");
-          return { status: KYCStatus.NOT_SUBMITTED };
-        }
-
         const userBalance = await contract_NFT.balanceOf(userAddress);
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-        console.log("NFT Balance:", readableBalance);
-        
+        console.log("NFT:", readableBalance);
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
         } else {
@@ -119,7 +112,6 @@ export const getUserKYCStatus = async (
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
-      console.warn("NFT contract not available");
       return { status: KYCStatus.NOT_SUBMITTED };
     }
   } catch (error) {
