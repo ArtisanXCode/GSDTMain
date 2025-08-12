@@ -384,58 +384,40 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       }
     }
 
-    // For manual KYC requests, mint 1 token to the user's wallet
+    // For manual KYC requests, mint GSDC_NFT to the user's wallet via API
     if (verificationMethod === "manual") {
-      console.log("Minting 1 token for manual KYC approval:", userAddress);
+      console.log("Minting GSDC_NFT for manual KYC approval:", userAddress);
       try {
-        // Check minting permissions first
-        if (contract.mint) {
-          try {
-            const mintAmount = ethers.utils.parseEther("1");
-            await contract.estimateGas.mint(userAddress, mintAmount);
+        const MINT_TOKEN_API_URL = import.meta.env.VITE_MINT_TOKEN_API_URL;
+        const MINT_TOKEN_API_SECRET_CODE = import.meta.env.VITE_MINT_TOKEN_API_SECRET_CODE;
 
-            // Get current gas price from network
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const gasPrice = await provider.getGasPrice();
-            
-            // Estimate gas for minting
-            let mintGasLimit = 150000; // Default fallback
-            try {
-              const estimatedMintGas = await contract.estimateGas.mint(userAddress, mintAmount);
-              mintGasLimit = Math.ceil(estimatedMintGas.toNumber() * 1.2); // Add 20% buffer
-              console.log("Estimated gas limit for minting:", mintGasLimit);
-            } catch (mintGasEstError) {
-              console.warn("Mint gas estimation failed, using default:", mintGasLimit);
-            }
+        if (!MINT_TOKEN_API_URL || !MINT_TOKEN_API_SECRET_CODE) {
+          console.warn("Mint API configuration missing - skipping NFT minting");
+        } else {
+          const response = await fetch(`${MINT_TOKEN_API_URL}/validatewallet`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userwallet: userAddress,
+              secretcode: MINT_TOKEN_API_SECRET_CODE
+            })
+          });
 
-            // Mint 1 token (1 * 10^18 wei)
-            const mintTx = await contract.mint(userAddress, mintAmount, {
-              gasLimit: mintGasLimit,
-              gasPrice: gasPrice.mul(110).div(100), // Use network gas price + 10%
-            });
-            await mintTx.wait();
-            console.log("Successfully minted 1 token to user:", userAddress);
-          } catch (mintGasError: any) {
-            console.error("Mint gas estimation failed:", mintGasError);
-            if (
-              mintGasError.message?.includes("AccessControl") ||
-              mintGasError.message?.includes("missing role")
-            ) {
-              console.warn(
-                "No MINTER_ROLE permission - skipping token minting",
-              );
-            } else {
-              throw mintGasError;
-            }
+          if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
           }
+
+          console.log("Successfully called mint API for GSDC_NFT:", userAddress);
         }
       } catch (mintError) {
         console.error(
-          "Error minting tokens for manual KYC approval:",
+          "Error calling mint API for manual KYC approval:",
           mintError,
         );
         // Don't throw here - KYC approval succeeded, minting failed
-        // The admin can manually mint tokens if needed
+        // The admin can manually mint NFT if needed
       }
     }
 
