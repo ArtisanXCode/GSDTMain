@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { authService } from '../../services/auth';
 import { useAuth } from '../../contexts/AuthContext';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -11,13 +14,13 @@ interface LoginModalProps {
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const { signIn, signUp } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,6 +155,18 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               />
             </div>
 
+            {isLogin && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-blue-600 hover:text-blue-500"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
+
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600">{error}</p>
@@ -209,6 +224,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
           )}
         </motion.div>
       </div>
+
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </AnimatePresence>
   );
 }

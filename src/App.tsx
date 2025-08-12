@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
@@ -29,6 +28,7 @@ import LiveExchangeRatesPage from "./pages/LiveExchangeRates";
 import DynamicPage from './pages/DynamicPage';
 import HistoricalAnalyticsPage from './pages/HistoricalAnalytics';
 import MyAccount from './pages/MyAccount';
+import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
   return (
@@ -199,6 +199,9 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* Reset Password Route */}
+              <Route path="/reset-password" element={<ResetPassword />} />
+
 
               {/* Catch-all for any unmatched routes - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
