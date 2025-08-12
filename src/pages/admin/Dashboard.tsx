@@ -13,6 +13,7 @@ import {
   BanknotesIcon,
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
+import PauseManagement from '../../components/admin/PauseManagement';
 
 export default function AdminDashboard() {
   const { isConnected } = useWallet();
@@ -225,6 +226,11 @@ export default function AdminDashboard() {
               </motion.div>
             </div>
           )}
+
+          {/* Pause Management Section */}
+          <div className="mt-8">
+            <PauseManagement />
+          </div>
         </div>
       </div>
     </div>
