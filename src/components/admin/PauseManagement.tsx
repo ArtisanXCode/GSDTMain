@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { pauseService, PauseAction } from '../../services/pauseManagement';
@@ -7,7 +6,8 @@ import {
   PlayIcon, 
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 interface PauseManagementProps {
@@ -87,6 +87,14 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
     setError('');
     setSuccess('');
     setShowModal(true);
+  };
+
+  // Function to close the modal and reset state
+  const closeModal = () => {
+    setShowModal(false);
+    setReason('');
+    setError('');
+    setSuccess('');
   };
 
   return (
@@ -226,15 +234,16 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-lg p-6 max-w-md w-full m-4"
           >
-            <div className="flex items-center mb-4">
-              {actionType === 'PAUSE' ? (
-                <PauseIcon className="h-6 w-6 text-red-500 mr-2" />
-              ) : (
-                <PlayIcon className="h-6 w-6 text-green-500 mr-2" />
-              )}
-              <h3 className="text-lg font-medium">
-                {actionType === 'PAUSE' ? 'Pause Contract' : 'Unpause Contract'}
-              </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {actionType === 'PAUSE' ? 'Pause' : 'Unpause'} Contract
+              </h2>
+              <button
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
             </div>
 
             <div className={`mb-4 p-3 rounded-lg ${
@@ -250,14 +259,14 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Reason for {actionType.toLowerCase()}ing
+                Reason for {actionType === 'PAUSE' ? 'pausing' : 'unpausing'}
               </label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={`Enter reason for ${actionType === 'PAUSE' ? 'pausing' : 'unpausing'} the contract...`}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
                 rows={3}
-                placeholder={`Enter reason for ${actionType.toLowerCase()}ing the contract...`}
                 required
               />
             </div>
@@ -268,24 +277,26 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
               </div>
             )}
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 pt-4 border-t">
               <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-500"
+                type="button"
+                onClick={closeModal}
                 disabled={loading}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
               >
                 Cancel
               </button>
               <motion.button
+                type="submit"
+                disabled={loading || !reason.trim()}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handlePauseAction}
-                disabled={loading || !reason.trim()}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-lg disabled:opacity-50 ${
+                className={`px-4 py-2 text-white rounded-lg flex items-center disabled:opacity-50 ${
                   actionType === 'PAUSE' 
                     ? 'bg-red-600 hover:bg-red-700' 
                     : 'bg-green-600 hover:bg-green-700'
                 }`}
+                onClick={handlePauseAction}
               >
                 {loading ? (
                   <span className="flex items-center">
@@ -296,7 +307,14 @@ export default function PauseManagement({ onPauseStatusChange }: PauseManagement
                     {actionType === 'PAUSE' ? 'Pausing...' : 'Unpausing...'}
                   </span>
                 ) : (
-                  `${actionType === 'PAUSE' ? 'Pause' : 'Unpause'} Contract`
+                  <>
+                    {actionType === 'PAUSE' ? (
+                      <PauseIcon className="h-4 w-4 mr-2" />
+                    ) : (
+                      <PlayIcon className="h-4 w-4 mr-2" />
+                    )}
+                    {actionType === 'PAUSE' ? 'Pause' : 'Unpause'} Contract
+                  </>
                 )}
               </motion.button>
             </div>
