@@ -24,12 +24,6 @@ export const getContract = (): ethers.Contract | null => {
 
     const signer = provider.getSigner();
 
-    const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
-    if (!contractAddress) {
-      console.error('Contract address not configured');
-      return null;
-    }
-
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
     // Verify contract has a signer
