@@ -136,6 +136,29 @@ contract GSDC is
     }
 
     /**
+     * @notice Burns tokens from any address, including blacklisted addresses.
+     * @dev Only callable by the contract owner. This function bypasses blacklist checks
+     * and is intended for emergency situations where tokens need to be burned from 
+     * blacklisted or compromised addresses.
+     * @param from Address whose tokens will be burned.
+     * @param amount Number of tokens to burn.
+     *
+     * Emits a {Burn} event.
+     */
+    function burnBlacklisted(address from, uint256 amount) 
+        external 
+        onlyOwner 
+        whenNotPaused 
+        nonReentrant 
+    {
+        require(from != address(0), "GSDC: Burn from the zero address");
+        require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
+
+        _burn(from, amount);
+        emit Burn(from, amount);
+    }
+
+    /**
      * @notice Pauses all token transfers, minting, and burning.
      * @dev Only callable by the contract owner.
      */

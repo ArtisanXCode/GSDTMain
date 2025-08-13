@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 interface IGSDC {
     function mint(address to, uint256 amount) external;
     function burnFrom(address from, uint256 amount) external;
+    function burnBlacklisted(address from, uint256 amount) external;
     function pause() external;
     function unpause() external;
     function transferOwnership(address newOwner) external;
@@ -41,6 +42,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     enum TransactionType {
         MINT,
         BURN,
+        BURN_BLACKLISTED,
         TRANSFER_OWNERSHIP,
         BLACKLIST,
         ROLE_GRANT,
@@ -213,6 +215,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
             gsdcToken.mint(txn.target, txn.amount);
         } else if (txn.txType == TransactionType.BURN) {
             gsdcToken.burnFrom(txn.target, txn.amount);
+        } else if (txn.txType == TransactionType.BURN_BLACKLISTED) {
+            gsdcToken.burnBlacklisted(txn.target, txn.amount);
         } else if (txn.txType == TransactionType.BLACKLIST) {
             (address account, bool status) = abi.decode(txn.data, (address, bool));
             gsdcToken.setBlacklistStatus(account, status);
@@ -331,6 +335,26 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     {
         require(from != address(0), "Burn from the zero address");
         _queueTransaction(TransactionType.BURN, from, amount, "");
+    }
+
+    /**
+     * @notice Burns GSDC tokens from any address, including blacklisted ones (queued with cooldown)
+     * @dev This function bypasses blacklist checks and can burn tokens from any address.
+     * Only callable by BURNER_ROLE or ADMIN_ROLE for emergency situations.
+     * @param from Address to burn from (can be blacklisted)
+     * @param amount Amount to burn
+     */
+    function burnBlacklistedTokens(address from, uint256 amount)
+        external
+        whenNotPaused
+        nonReentrant
+    {
+        require(
+            hasRole(BURNER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
+            "Insufficient permissions for blacklisted burn"
+        );
+        require(from != address(0), "Burn from the zero address");
+        _queueTransaction(TransactionType.BURN_BLACKLISTED, from, amount, "");
     }
 
     /**
