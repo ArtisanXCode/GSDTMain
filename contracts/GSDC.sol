@@ -41,6 +41,16 @@ contract GSDC is
     /// @param status The new frozen status.
     event AddressFrozen(address indexed account, bool status);
 
+    /// @notice Emitted when contract is deprecated
+    /// @param newAddress Address of the new contract
+    event Deprecate(address indexed newAddress);
+
+    /// @notice Ensures contract is not deprecated
+    modifier whenNotDeprecated() {
+        require(!deprecated, "GSDC: Contract is deprecated");
+        _;
+    }
+
     /// @notice Minimum amount of tokens allowed for minting in one operation.
     uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
 
@@ -52,6 +62,12 @@ contract GSDC is
 
     /// @notice Mapping to track frozen addresses
     mapping(address => bool) public frozen;
+
+    /// @notice Contract deprecation status
+    bool public deprecated;
+    
+    /// @notice Address of the upgraded contract (if deprecated)
+    address public upgradedAddress;
 
     /// @notice Ensures the given address is not blacklisted
     /// @param account Address to check
@@ -128,6 +144,43 @@ contract GSDC is
 
         _burn(msg.sender, amount);
         emit Burn(msg.sender, amount);
+    }
+
+    /**
+     * @notice Issue tokens (similar to USDT pattern)
+     * @dev Only callable by owner, alias for mint function
+     * @param amount Number of tokens to issue
+     */
+    function issue(uint256 amount) 
+        external 
+        onlyOwner 
+        whenNotPaused 
+        whenNotDeprecated
+        nonReentrant 
+    {
+        require(amount >= MIN_MINT_AMOUNT, "GSDC: Amount below minimum");
+        require(amount <= MAX_MINT_AMOUNT, "GSDC: Amount above maximum");
+
+        _mint(owner(), amount);
+        emit Mint(owner(), amount);
+    }
+
+    /**
+     * @notice Redeem tokens (similar to USDT pattern)
+     * @dev Only callable by owner, burns tokens from owner's balance
+     * @param amount Number of tokens to redeem
+     */
+    function redeem(uint256 amount) 
+        external 
+        onlyOwner 
+        whenNotPaused 
+        whenNotDeprecated
+        nonReentrant 
+    {
+        require(balanceOf(owner()) >= amount, "GSDC: Insufficient balance");
+
+        _burn(owner(), amount);
+        emit Burn(owner(), amount);
     }
 
     /**
@@ -245,11 +298,69 @@ contract GSDC is
     }
 
     /**
+     * @notice Destroy blacklisted funds (emergency function)
+     * @dev Similar to USDT's destroyBlackFunds
+     * @param account Blacklisted account to destroy funds from
+     */
+    function destroyBlacklistedFunds(address account) 
+        external 
+        onlyOwner 
+        whenNotPaused 
+        nonReentrant 
+    {
+        require(blacklisted[account], "GSDC: Account not blacklisted");
+        uint256 balance = balanceOf(account);
+        require(balance > 0, "GSDC: No balance to destroy");
+
+        _burn(account, balance);
+        emit Burn(account, balance);
+    }
+
+    /**
+     * @notice Add multiple addresses to blacklist
+     * @dev Batch operation for efficiency
+     * @param accounts Array of addresses to blacklist
+     */
+    function addBlacklistBatch(address[] calldata accounts) external onlyOwner {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            address account = accounts[i];
+            require(account != address(0), "GSDC: Cannot blacklist zero address");
+            require(account != owner(), "GSDC: Cannot blacklist owner");
+            
+            if (!blacklisted[account]) {
+                blacklisted[account] = true;
+                emit AddressBlacklisted(account, true);
+            }
+        }
+    }
+
+    /**
+     * @notice Get contract parameters
+     * @dev Similar to USDT's getters
+     */
+    function getParameters() external view returns (
+        uint256 minMintAmount,
+        uint256 maxMintAmount,
+        bool contractPaused,
+        bool contractDeprecated,
+        address upgradeAddress
+    ) {
+        return (
+            MIN_MINT_AMOUNT,
+            MAX_MINT_AMOUNT,
+            paused(),
+            deprecated,
+            upgradedAddress
+        );
+    }
+
+    /**
      * @dev Override transfer to check blacklist and frozen status
      */
     function transfer(address to, uint256 amount) 
         public 
         override 
+        whenNotDeprecated
         notBlacklisted(msg.sender) 
         notBlacklisted(to)
         notFrozen(msg.sender)
@@ -265,6 +376,7 @@ contract GSDC is
     function transferFrom(address from, address to, uint256 amount) 
         public 
         override 
+        whenNotDeprecated
         notBlacklisted(from) 
         notBlacklisted(to)
         notFrozen(from)
@@ -272,5 +384,39 @@ contract GSDC is
         returns (bool) 
     {
         return super.transferFrom(from, to, amount);
+    }
+
+    /**
+     * @notice Deprecate current contract in favor of new one
+     * @dev Only callable by owner
+     * @param _upgradedAddress Address of the new contract
+     */
+    function deprecate(address _upgradedAddress) external onlyOwner {
+        require(_upgradedAddress != address(0), "GSDC: Invalid address");
+        require(!deprecated, "GSDC: Already deprecated");
+        
+        deprecated = true;
+        upgradedAddress = _upgradedAddress;
+        emit Deprecate(_upgradedAddress);
+    }
+
+    /**
+     * @notice Get total supply (works even when deprecated)
+     */
+    function totalSupply() public view override returns (uint256) {
+        if (deprecated && upgradedAddress != address(0)) {
+            return IERC20(upgradedAddress).totalSupply();
+        }
+        return super.totalSupply();
+    }
+
+    /**
+     * @notice Get balance (works even when deprecated)
+     */
+    function balanceOf(address account) public view override returns (uint256) {
+        if (deprecated && upgradedAddress != address(0)) {
+            return IERC20(upgradedAddress).balanceOf(account);
+        }
+        return super.balanceOf(account);
     }
 }
