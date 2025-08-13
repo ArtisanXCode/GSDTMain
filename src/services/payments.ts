@@ -111,6 +111,22 @@ export const createPayment = async (
         payment_url: 'https://example.com/mock-payment'
       };
 
+      // Map payment status to match database constraints
+      const mapPaymentStatus = (status: string): string => {
+        const statusMap: { [key: string]: string } = {
+          'waiting': 'pending',
+          'confirming': 'confirming',
+          'confirmed': 'confirmed',
+          'sending': 'sending',
+          'partially_paid': 'partially_paid',
+          'finished': 'finished',
+          'failed': 'failed',
+          'refunded': 'refunded',
+          'expired': 'expired'
+        };
+        return statusMap[status] || 'pending';
+      };
+
       try {
         // Store mock payment in Supabase
         await supabase.from('crypto_payments').insert([{
@@ -118,7 +134,7 @@ export const createPayment = async (
           user_address: userAddress.toLowerCase(),
           amount: amount,
           currency: currency,
-          status: mockResponse.payment_status,
+          status: mapPaymentStatus(mockResponse.payment_status),
           order_id: mockResponse.order_id,
           created_at: new Date().toISOString()
         }]);
@@ -141,6 +157,22 @@ export const createPayment = async (
       }
     );
 
+    // Map payment status to match database constraints
+    const mapPaymentStatus = (status: string): string => {
+      const statusMap: { [key: string]: string } = {
+        'waiting': 'pending',
+        'confirming': 'confirming',
+        'confirmed': 'confirmed',
+        'sending': 'sending',
+        'partially_paid': 'partially_paid',
+        'finished': 'finished',
+        'failed': 'failed',
+        'refunded': 'refunded',
+        'expired': 'expired'
+      };
+      return statusMap[status] || 'pending';
+    };
+
     try {
       // Store payment request in Supabase
       await supabase.from('crypto_payments').insert([{
@@ -148,7 +180,7 @@ export const createPayment = async (
         user_address: userAddress.toLowerCase(),
         amount: amount,
         currency: currency,
-        status: response.data.payment_status,
+        status: mapPaymentStatus(response.data.payment_status),
         order_id: paymentRequest.order_id,
         created_at: new Date().toISOString()
       }]);
