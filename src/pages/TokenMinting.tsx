@@ -1,363 +1,204 @@
-import { motion } from "framer-motion";
-import TokenActions from "../components/TokenActions";
-import FiatMinting from "../components/FiatMinting";
-import CryptoMinting from "../components/CryptoMinting";
-import { useWallet } from "../hooks/useWallet";
-import { useState, useEffect } from "react";
-import {
-  KYCStatus,
-  getUserKYCStatus,
-  submitKYCRequest,
-  getDatabaseUserKYCStatus,
-} from "../services/kyc";
-import { getSumsubApplicantStatus } from "../services/sumsub";
-import { Link } from "react-router-dom";
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import TokenActions from '../components/TokenActions';
+import CryptoMinting from '../components/CryptoMinting';
+import FiatMinting from '../components/FiatMinting';
 
 export default function TokenMinting() {
-  const { isConnected, connect, address } = useWallet();
-  const [activeTab, setActiveTab] = useState<"fiat" | "crypto">("fiat");
-  const [kycStatus, setKycStatus] = useState<KYCStatus>(
-    KYCStatus.NOT_SUBMITTED,
-  );
-  const [checkingKYC, setCheckingKYC] = useState(false);
-
-  useEffect(() => {
-    const checkKYCStatus = async () => {
-      if (!address) return;
-
-      try {
-        const userKYCStatus = await getUserKYCStatus(address);
-
-        if (userKYCStatus.status == KYCStatus.APPROVED) {
-          setCheckingKYC(true);
-          setKycStatus(userKYCStatus.status);
-        } else {
-          setCheckingKYC(false);
-        }
-      } catch (error) {
-        console.error("Error checking KYC status:", error);
-      }
-
-    };
-
-    if (isConnected && address) {
-      checkKYCStatus();
-    }
-  }, [address, isConnected]);
+  const [activeTab, setActiveTab] = useState<'direct' | 'crypto' | 'fiat'>('direct');
 
   return (
-    <div className="bg-white">
-      {/* Hero section with tech background */}
-      <div
-        className="relative isolate text-white min-h-[70vh] flex items-center overflow-hidden"
-        style={{
-          backgroundImage: `url('/headers/token_minting_header.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-        >
-          <div className="text-left">
-            <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
-              Token Minting
-            </h1>
-            <p className="text-lg leading-8 text-white/90 mb-10 font-regular">
-              Mint GSDC tokens using fiat or cryptocurrency
-            </p>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Centered Phoenix Icon overlapping sections */}
-      <div className="relative z-20 flex justify-end">
-        <div
-          className="phoenix-icon-parent"
-        >
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      {/* Hero Section */}
+      <div className="relative">
+        <div className="absolute inset-0">
           <img
-            src="/logo_gsdc_icon.png"
-            alt="Phoenix Icon"
-            className="phoenix-icon-large"
+            className="w-full h-64 object-cover"
+            src="/headers/token_minting_header.png"
+            alt="Token Minting"
           />
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+          >
+            Token Minting
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mt-6 max-w-3xl text-xl text-gray-300"
+          >
+            Mint, burn, and manage your GSDC tokens through various methods. 
+            All transactions are recorded and tracked for complete transparency.
+          </motion.p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-gray-200 py-24 sm:py-32 relative">
-        <div className="min-h-screen py-12">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            { /* <div className="sm:flex sm:items-center">
-              <div className="sm:flex-auto">
-                {!isConnected && (
-                  <div className="flex justify-center mb-8">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={connect}
-                      className="rounded-full px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
-                      }}
-                    >
-                      Connect Wallet
-                    </motion.button>
-                  </div>
-                )}
-              </div>
-            </div> */ }
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-lg shadow-md mb-8">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8 px-6">
+              <button
+                onClick={() => setActiveTab('direct')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'direct'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Direct Token Actions
+              </button>
+              <button
+                onClick={() => setActiveTab('crypto')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'crypto'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Crypto Payment
+              </button>
+              <button
+                onClick={() => setActiveTab('fiat')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'fiat'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Fiat Payment
+              </button>
+            </nav>
+          </div>
 
-            {/* Main Content */}
-            <div className="space-y-8">
-              {/* Show KYC Required Message and Tabs if not connected or KYC not approved */}
-              {(!isConnected || (isConnected && !checkingKYC)) && (
-                <>
-                  {/* KYC Required Message */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="rounded-xl shadow-lg overflow-hidden"
-                    style={{
-                      backgroundColor: "#2a4661",
-                    }}
-                  >
-                    <div className="p-8 text-center">
-                      <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                        <svg
-                          className="h-6 w-6 text-red-600"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                          />
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-2">
-                        Verification Required
-                      </h3>
-                      <p className="text-white/90 text-sm mb-6">
-                        Please complete your identity verification to access token minting.
-                        <br />
-                        This helps us ensure compliance and security.
-                      </p>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white shadow-lg transition-all duration-200"
-                        style={{
-                          backgroundColor: "#ed9030",
-                          color: "#fff",
-                        }}
-                      >
-                        <Link to="/dashboard">Complete KYC</Link>
-                      </motion.button>
-                    </div>
-                  </motion.div>
+          <div className="p-6">
+            {activeTab === 'direct' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Direct Token Operations</h2>
+                  <p className="mt-2 text-gray-600">
+                    Mint new tokens or burn existing tokens directly through the smart contract. 
+                    All operations require KYC verification and appropriate permissions.
+                  </p>
+                </div>
+                <TokenActions />
+              </motion.div>
+            )}
 
-                  {/* Tabs with KYC Required Messages */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <div
-                      className="rounded-xl shadow-lg overflow-hidden"
-                      style={{ backgroundColor: "#2a4661" }}
-                    >
-                      <div className="border-b border-gray-600">
-                        <nav className="-mb-px flex" aria-label="Tabs">
-                          <button
-                            onClick={() => setActiveTab("fiat")}
-                            className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
-                              activeTab === "fiat"
-                                ? "border-b-2"
-                                : "border-transparent hover:text-gray-300"
-                            }`}
-                            style={{
-                              color:
-                                activeTab === "fiat" ? "#ed9030" : "#ffffff",
-                              borderBottomColor:
-                                activeTab === "fiat"
-                                  ? "#ed9030"
-                                  : "#ffffff",
-                            }}
-                          >
-                            Mint with Fiat
-                          </button>
-                          <button
-                            onClick={() => setActiveTab("crypto")}
-                            className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
-                              activeTab === "crypto"
-                                ? "border-b-2"
-                                : "border-transparent hover:text-gray-300"
-                            }`}
-                            style={{
-                              color:
-                                activeTab === "crypto" ? "#ed9030" : "#ffffff",
-                              borderBottomColor:
-                                activeTab === "crypto"
-                                  ? "#ed9030"
-                                  : "#ffffff",                              
-                            }}
-                          >
-                            Mint with Crypto
-                          </button>
-                        </nav>
-                      </div>
+            {activeTab === 'crypto' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Crypto Payment Minting</h2>
+                  <p className="mt-2 text-gray-600">
+                    Pay with supported cryptocurrencies to mint GSDC tokens. 
+                    Automatic conversion and minting after payment confirmation.
+                  </p>
+                </div>
+                <CryptoMinting />
+              </motion.div>
+            )}
 
-                      <div
-                        className="p-6"
-                        style={{ backgroundColor: "#2a4661" }}
-                      >
-                        <div
-                          className="rounded-xl shadow-lg overflow-hidden"
-                          style={{
-                            backgroundColor: "#446c93",
-                          }}
-                        >
-                          <div className="p-8 text-center">
-                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                              <svg
-                                className="h-6 w-6 text-red-600"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                              </svg>
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-2">
-                              Verification Required
-                            </h3>
-                            <p className="text-white/90 text-sm mb-6">
-                              Complete your identity verification to unlock token minting.
-                              <br />
-                              Visit your dashboard to start the verification process.
-                            </p>
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white shadow-lg transition-all duration-200"
-                              style={{
-                                backgroundColor: "#ed9030",
-                                color: "#fff",
-                              }}
-                            >
-                              <Link to="/dashboard">Complete KYC</Link>
-                            </motion.button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </>
-              )}
-
-              {/* Show minting options only if KYC is approved */}
-              {isConnected &&
-                checkingKYC &&
-                kycStatus === KYCStatus.APPROVED && (
-                  <>
-                    {/* Token Actions */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      <TokenActions />
-                    </motion.div>
-
-                    {/* Minting Options */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <div
-                        className="rounded-xl shadow-lg overflow-hidden"
-                        style={{ backgroundColor: "#2a4661" }}
-                      >
-                        <div className="border-b border-gray-600">
-                          <nav className="-mb-px flex" aria-label="Tabs">
-                            <button
-                              onClick={() => setActiveTab("fiat")}
-                              className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
-                                activeTab === "fiat"
-                                  ? "text-white border-b-2"
-                                  : "text-white border-transparent hover:text-gray-300"
-                              }`}
-                              style={{
-                                color:
-                                  activeTab === "fiat" ? "#ed9030" : "#ffffff",
-                                borderBottomColor:
-                                  activeTab === "fiat"
-                                    ? "#ed9030"
-                                    : "#ffffff",
-                                
-                              }}
-                            >
-                              Fiat Payment
-                            </button>
-                            <button
-                              onClick={() => setActiveTab("crypto")}
-                              className={`w-1/2 py-6 px-1 text-center border-b-2 text-lg font-large ${
-                                activeTab === "crypto"
-                                  ? "text-white border-b-2"
-                                  : "text-white border-transparent hover:text-gray-300"
-                              }`}
-                              style={{
-                                color:
-                                  activeTab === "crypto"
-                                    ? "#ed9030"
-                                    : "#ffffff",
-                                borderBottomColor:
-                                  activeTab === "crypto"
-                                    ? "#ed9030"
-                                    : "#ffffff",                                
-                              }}
-                            >
-                              Crypto Payment
-                            </button>
-                          </nav>
-                        </div>
-
-                        <div
-                          className="p-6"
-                          style={{ backgroundColor: "#2a4661" }}
-                        >
-                          {activeTab === "fiat" ? (
-                            <FiatMinting />
-                          ) : (
-                            <CryptoMinting />
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-            </div>
+            {activeTab === 'fiat' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Fiat Payment Minting</h2>
+                  <p className="mt-2 text-gray-600">
+                    Pay with traditional fiat currencies through bank transfer. 
+                    Tokens will be minted after payment verification.
+                  </p>
+                </div>
+                <FiatMinting />
+              </motion.div>
+            )}
           </div>
         </div>
+
+        {/* Information Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-lg shadow-md p-6"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Secure Minting</h3>
+                <p className="text-sm text-gray-500">All token operations are secured with multi-layer verification</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-lg shadow-md p-6"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">KYC Required</h3>
+                <p className="text-sm text-gray-500">Complete KYC verification before token operations</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-lg shadow-md p-6"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">Transaction History</h3>
+                <p className="text-sm text-gray-500">Complete audit trail of all your token transactions</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
