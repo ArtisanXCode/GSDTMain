@@ -14,6 +14,9 @@ interface IGSDC {
     function transferOwnership(address newOwner) external;
     function setBlacklistStatus(address account, bool status) external;
     function isBlacklisted(address account) external view returns (bool);
+    function freeze(address account) external;
+    function unfreeze(address account) external;
+    function isFrozen(address account) external view returns (bool);
 }
 
 /**
@@ -30,6 +33,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant BLACKLIST_MANAGER_ROLE = keccak256("BLACKLIST_MANAGER_ROLE");
+    bytes32 public constant FREEZE_MANAGER_ROLE = keccak256("FREEZE_MANAGER_ROLE");
     bytes32 public constant APPROVER_ROLE = keccak256("APPROVER_ROLE");
 
     /// @notice Cooldown period for queued transactions (90 minutes)
@@ -45,6 +49,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         BURN_BLACKLISTED,
         TRANSFER_OWNERSHIP,
         BLACKLIST,
+        FREEZE,
+        UNFREEZE,
         ROLE_GRANT,
         ROLE_REVOKE,
         PAUSE_TOKEN,
@@ -119,6 +125,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(BURNER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(BLACKLIST_MANAGER_ROLE, msg.sender);
+        _grantRole(FREEZE_MANAGER_ROLE, msg.sender);
         _grantRole(APPROVER_ROLE, msg.sender);
 
         nextTransactionId = 1;
@@ -130,11 +137,12 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     // ---------------------
 
     /**
-     * @notice Ensures the given address is not blacklisted
+     * @notice Ensures the given address is not blacklisted or frozen
      * @param account Address to check
      */
     modifier notBlacklisted(address account) {
         require(!gsdcToken.isBlacklisted(account), "Address is blacklisted");
+        require(!gsdcToken.isFrozen(account), "Address is frozen");
         _;
     }
 
@@ -221,6 +229,10 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
             (address account, bool status) = abi.decode(txn.data, (address, bool));
             gsdcToken.setBlacklistStatus(account, status);
             emit AddressBlacklisted(account, status);
+        } else if (txn.txType == TransactionType.FREEZE) {
+            gsdcToken.freeze(txn.target);
+        } else if (txn.txType == TransactionType.UNFREEZE) {
+            gsdcToken.unfreeze(txn.target);
         } else if (txn.txType == TransactionType.ROLE_GRANT) {
             (bytes32 role, address account) = abi.decode(txn.data, (bytes32, address));
             _grantRole(role, account);
@@ -418,6 +430,29 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     }
 
     /**
+     * @notice Queues a freeze operation
+     * @param account Address to freeze
+     */
+    function freezeAddress(address account) external onlyRole(FREEZE_MANAGER_ROLE) {
+        require(account != address(0), "Cannot freeze zero address");
+        require(!hasRole(ADMIN_ROLE, account), "Cannot freeze admin");
+        require(!gsdcToken.isFrozen(account), "Address already frozen");
+
+        _queueTransaction(TransactionType.FREEZE, account, 0, "");
+    }
+
+    /**
+     * @notice Queues an unfreeze operation
+     * @param account Address to unfreeze
+     */
+    function unfreezeAddress(address account) external onlyRole(FREEZE_MANAGER_ROLE) {
+        require(account != address(0), "Cannot unfreeze zero address");
+        require(gsdcToken.isFrozen(account), "Address not frozen");
+
+        _queueTransaction(TransactionType.UNFREEZE, account, 0, "");
+    }
+
+    /**
      * @notice Grants a role (queued with cooldown)
      * @param role Role identifier
      * @param account Address to grant role to
@@ -493,6 +528,14 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      */
     function isBlacklisted(address account) external view returns (bool) {
         return gsdcToken.isBlacklisted(account);
+    }
+
+    /**
+     * @notice Checks if an address is frozen
+     * @param account Address to check
+     */
+    function isFrozen(address account) external view returns (bool) {
+        return gsdcToken.isFrozen(account);
     }
 
     // ---------------------

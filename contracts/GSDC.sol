@@ -36,6 +36,11 @@ contract GSDC is
     /// @param status The new blacklist status.
     event AddressBlacklisted(address indexed account, bool status);
 
+    /// @notice Emitted when an address is frozen or unfrozen.
+    /// @param account The address that was frozen/unfrozen.
+    /// @param status The new frozen status.
+    event AddressFrozen(address indexed account, bool status);
+
     /// @notice Minimum amount of tokens allowed for minting in one operation.
     uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
 
@@ -45,10 +50,20 @@ contract GSDC is
     /// @notice Mapping to track blacklisted addresses
     mapping(address => bool) public blacklisted;
 
+    /// @notice Mapping to track frozen addresses
+    mapping(address => bool) public frozen;
+
     /// @notice Ensures the given address is not blacklisted
     /// @param account Address to check
     modifier notBlacklisted(address account) {
         require(!blacklisted[account], "GSDC: Address is blacklisted");
+        _;
+    }
+
+    /// @notice Ensures the given address is not frozen
+    /// @param account Address to check
+    modifier notFrozen(address account) {
+        require(!frozen[account], "GSDC: Address is frozen");
         _;
     }
 
@@ -91,6 +106,7 @@ contract GSDC is
         whenNotPaused 
         nonReentrant 
         notBlacklisted(to)
+        notFrozen(to)
     {
         require(to != address(0), "GSDC: Mint to the zero address");
         require(amount >= MIN_MINT_AMOUNT, "GSDC: Amount below minimum");
@@ -107,7 +123,7 @@ contract GSDC is
      *
      * Emits a {Burn} event.
      */
-    function burn(uint256 amount) external whenNotPaused nonReentrant notBlacklisted(msg.sender) {
+    function burn(uint256 amount) external whenNotPaused nonReentrant notBlacklisted(msg.sender) notFrozen(msg.sender) {
         require(balanceOf(msg.sender) >= amount, "GSDC: Insufficient balance");
 
         _burn(msg.sender, amount);
@@ -128,6 +144,7 @@ contract GSDC is
         whenNotPaused 
         nonReentrant 
         notBlacklisted(from)
+        notFrozen(from)
     {
         require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
 
@@ -217,26 +234,66 @@ contract GSDC is
     }
 
     /**
-     * @dev Override transfer to check blacklist status
+     * @notice Freezes an address, preventing all token operations.
+     * @dev Only callable by the contract owner.
+     * @param account Address to freeze.
+     */
+    function freeze(address account) external onlyOwner {
+        require(account != address(0), "GSDC: Cannot freeze zero address");
+        require(account != owner(), "GSDC: Cannot freeze owner");
+        require(!frozen[account], "GSDC: Address already frozen");
+        
+        frozen[account] = true;
+        emit AddressFrozen(account, true);
+    }
+
+    /**
+     * @notice Unfreezes an address, allowing token operations again.
+     * @dev Only callable by the contract owner.
+     * @param account Address to unfreeze.
+     */
+    function unfreeze(address account) external onlyOwner {
+        require(account != address(0), "GSDC: Cannot unfreeze zero address");
+        require(frozen[account], "GSDC: Address not frozen");
+        
+        frozen[account] = false;
+        emit AddressFrozen(account, false);
+    }
+
+    /**
+     * @notice Checks if an address is frozen.
+     * @param account Address to check.
+     * @return True if the address is frozen, false otherwise.
+     */
+    function isFrozen(address account) external view returns (bool) {
+        return frozen[account];
+    }
+
+    /**
+     * @dev Override transfer to check blacklist and frozen status
      */
     function transfer(address to, uint256 amount) 
         public 
         override 
         notBlacklisted(msg.sender) 
-        notBlacklisted(to) 
+        notBlacklisted(to)
+        notFrozen(msg.sender)
+        notFrozen(to)
         returns (bool) 
     {
         return super.transfer(to, amount);
     }
 
     /**
-     * @dev Override transferFrom to check blacklist status
+     * @dev Override transferFrom to check blacklist and frozen status
      */
     function transferFrom(address from, address to, uint256 amount) 
         public 
         override 
         notBlacklisted(from) 
-        notBlacklisted(to) 
+        notBlacklisted(to)
+        notFrozen(from)
+        notFrozen(to)
         returns (bool) 
     {
         return super.transferFrom(from, to, amount);
