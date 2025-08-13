@@ -146,7 +146,7 @@ contract GSDC is
         notFrozen(from)
     {
         require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
-        
+
         uint256 currentAllowance = allowance(from, msg.sender);
         require(currentAllowance >= amount, "GSDC: Insufficient allowance");
 
@@ -195,25 +195,6 @@ contract GSDC is
     }
 
     /**
-     * @notice Returns the total supply of GSDC tokens.
-     * @return The total number of tokens in existence.
-     */
-    function getTotalSupply() external view returns (uint256) {
-        return totalSupply();
-    }
-
-    /**
-     * @notice Returns metadata and supply info for the token.
-     * @return name_ Token name.
-     * @return symbol_ Token symbol.
-     * @return decimals_ Token decimals.
-     * @return totalSupply_ Current total supply.
-     */
-    function getTokenInfo() external view returns (string memory name_, string memory symbol_, uint8 decimals_, uint256 totalSupply_) {
-        return (name(), symbol(), decimals(), totalSupply());
-    }
-
-    /**
      * @notice Sets the blacklist status for an address.
      * @dev Only callable by the contract owner.
      * @param account Address to blacklist/unblacklist.
@@ -222,7 +203,7 @@ contract GSDC is
     function setBlacklistStatus(address account, bool status) external onlyOwner {
         require(account != address(0), "GSDC: Cannot blacklist zero address");
         require(account != owner(), "GSDC: Cannot blacklist owner");
-        
+
         blacklisted[account] = status;
         emit AddressBlacklisted(account, status);
     }
@@ -245,7 +226,7 @@ contract GSDC is
         require(account != address(0), "GSDC: Cannot freeze zero address");
         require(account != owner(), "GSDC: Cannot freeze owner");
         require(!frozen[account], "GSDC: Address already frozen");
-        
+
         frozen[account] = true;
         emit AddressFrozen(account, true);
     }
@@ -258,18 +239,9 @@ contract GSDC is
     function unfreeze(address account) external onlyOwner {
         require(account != address(0), "GSDC: Cannot unfreeze zero address");
         require(frozen[account], "GSDC: Address not frozen");
-        
+
         frozen[account] = false;
         emit AddressFrozen(account, false);
-    }
-
-    /**
-     * @notice Checks if an address is frozen.
-     * @param account Address to check.
-     * @return True if the address is frozen, false otherwise.
-     */
-    function isFrozen(address account) external view returns (bool) {
-        return frozen[account];
     }
 
     /**
