@@ -23,7 +23,7 @@ export default function CryptoPayments() {
               transition={{ delay: 0.1 }}
               className="mt-2 text-sm text-gray-600"
             >
-              Mint GSDT tokens using cryptocurrency payments
+              Mint GSDC tokens using cryptocurrency payments
             </motion.p>
           </div>
           {!isConnected && (

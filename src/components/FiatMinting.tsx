@@ -25,7 +25,7 @@ export default function FiatMinting() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>("");
   const [success, setSuccess] = useState("");
-  const [gsdtAmount, setGsdtAmount] = useState("0");
+  const [gsdcAmount, setGsdcAmount] = useState("0");
   const [minMintAmount, setMinMintAmount] = useState<string>("100"); // Default min amount
   const [paymentReference, setPaymentReference] = useState<string>("");
   const [userRequests, setUserRequests] = useState<FiatMintRequest[]>([]);
@@ -91,7 +91,7 @@ export default function FiatMinting() {
 
     if (!amount) {
       console.log("No amount, setting GSDC to 0");
-      setGsdtAmount("0");
+      setGsdcAmount("0");
       return;
     }
 
@@ -99,7 +99,7 @@ export default function FiatMinting() {
       const fiatAmount = parseFloat(amount);
       if (isNaN(fiatAmount) || fiatAmount <= 0) {
         console.log("Invalid fiat amount, setting GSDC to 0");
-        setGsdtAmount("0");
+        setGsdcAmount("0");
         return;
       }
 
@@ -118,10 +118,10 @@ export default function FiatMinting() {
       const result = gsdcAmount.toFixed(6);
 
       console.log(`Final GSDC amount: ${result}`);
-      setGsdtAmount(result);
+      setGsdcAmount(result);
     } catch (err) {
       console.error("Error calculating GSDC amount:", err);
-      setGsdtAmount("0");
+      setGsdcAmount("0");
     }
     console.log("==============================");
   }, [amount, currency, rates, gsdtPrice]);
@@ -135,12 +135,12 @@ export default function FiatMinting() {
   // Add debugging for button state
   const isButtonDisabled = loading || 
     !amount || 
-    !gsdtAmount || 
-    parseFloat(gsdtAmount || '0') <= 0 || 
+    !gsdcAmount || 
+    parseFloat(gsdcAmount || '0') <= 0 || 
     parseFloat(amount || '0') < parseFloat(minMintAmount);
 
   const handleFiatMint = async () => {
-    if (!isConnected || !address || !amount || !gsdtAmount) {
+    if (!isConnected || !address || !amount || !gsdcAmount) {
       setError("Please fill in all required fields");
       return;
     }
@@ -150,7 +150,7 @@ export default function FiatMinting() {
     const minAmount = parseFloat(minMintAmount);
 
     console.log("Debug - Fiat amount:", fiatAmount, "Min amount:", minAmount);
-    console.log("Debug - GSDC amount:", gsdtAmount);
+    console.log("Debug - GSDC amount:", gsdcAmount);
 
     if (fiatAmount < minAmount) {
       setError(`Minimum amount is ${minMintAmount} ${currency}`);
@@ -199,7 +199,7 @@ export default function FiatMinting() {
 
       // Reset form
       setAmount("");
-      setGsdtAmount("0");
+      setGsdcAmount("0");
     } catch (err: any) {
       console.error("Error creating fiat mint request:", err);
       setError(err.message || "Error submitting request");
@@ -394,7 +394,7 @@ export default function FiatMinting() {
               <div className="flex items-center">
                 <span className="text-sm">You will receive:</span>
                 <span className="text-lg font-semibold text-orange-400 p-1">
-                  {gsdtAmount} GSDC
+                  {gsdcAmount} GSDC
                 </span>
               </div>
               <div className="text-xs mt-1">

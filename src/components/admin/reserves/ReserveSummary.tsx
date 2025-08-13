@@ -70,7 +70,7 @@ export default function ReserveSummary({ summary, loading, error, onRetry }: Res
             <div className="ml-5 w-0 flex-1">
               <dl>
                 <dt className="text-sm font-medium text-white/70 truncate">Total Supply (GSDC)</dt>
-                <dd className="text-lg font-medium text-white">{parseFloat(summary.total_supply_gsdt).toLocaleString()}</dd>
+                <dd className="text-lg font-medium text-white">{parseFloat(summary.total_supply_gsdc).toLocaleString()}</dd>
               </dl>
             </div>
           </div>

@@ -16,7 +16,7 @@ export interface ReserveAsset {
 export interface ReserveSummary {
   id: string;
   total_value_usd: string;
-  total_supply_gsdt: string;
+  total_supply_gsdc: string;
   backing_ratio: string;
   last_updated: string;
 }
@@ -46,7 +46,7 @@ export const createReserveAsset = async (asset: Omit<ReserveAsset, 'id' | 'creat
 
     if (error) throw error;
     if (!data) throw new Error('No data returned from insert');
-    
+
     return data;
   } catch (error) {
     console.error('Error creating reserve asset:', error);
@@ -86,7 +86,7 @@ export const updateReserveAsset = async (id: string, updates: Partial<ReserveAss
 
     if (error) throw error;
     if (!data) throw new Error('No data returned from update');
-    
+
     return data;
   } catch (error) {
     console.error('Error updating reserve asset:', error);

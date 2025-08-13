@@ -108,7 +108,7 @@ export default function FiatMintRequests() {
         if (revertReason.includes("KYC")) {
           setError("KYC verification required before minting tokens.");
         } else if (revertReason.includes("amount below minimum")) {
-          setError(`Amount must be at least ${minMintAmount} GSDT.`);
+          setError(`Amount must be at least ${minMintAmount} GSDC.`);
         } else if (revertReason.includes("amount above maximum")) {
           setError("Amount exceeds maximum minting limit.");
         } else if (revertReason.includes("daily mint limit")) {

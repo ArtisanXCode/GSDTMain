@@ -46,9 +46,9 @@ export default function ProofOfReserves() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-gray-50 rounded-xl p-6 border border-gray-200"
           >
-            <h4 className="text-sm font-medium text-gray-500">Total GSDT Supply</h4>
+            <h4 className="text-sm font-medium text-gray-500">Total GSDC Supply</h4>
             <p className="mt-2 text-3xl font-bold text-primary-600">
-              {parseFloat(data.summary.total_supply_gsdt).toLocaleString()} GSDT
+              {parseFloat(data.summary.total_supply_gsdt).toLocaleString()} GSDC
             </p>
           </motion.div>
 
