@@ -83,14 +83,14 @@ export default function FiatMinting() {
 
   // Calculate GSDC amount based on fiat amount and current rates
   useEffect(() => {
-    console.log("=== GSDT CALCULATION DEBUG ===");
+    console.log("=== GSDC CALCULATION DEBUG ===");
     console.log("Amount input:", amount);
     console.log("Currency:", currency);
     console.log("Rates available:", rates);
-    console.log("GSDT Price:", gsdtPrice);
+    console.log("GSDC Price:", gsdtPrice);
 
     if (!amount) {
-      console.log("No amount, setting GSDT to 0");
+      console.log("No amount, setting GSDC to 0");
       setGsdtAmount("0");
       return;
     }
@@ -98,7 +98,7 @@ export default function FiatMinting() {
     try {
       const fiatAmount = parseFloat(amount);
       if (isNaN(fiatAmount) || fiatAmount <= 0) {
-        console.log("Invalid fiat amount, setting GSDT to 0");
+        console.log("Invalid fiat amount, setting GSDC to 0");
         setGsdtAmount("0");
         return;
       }
@@ -150,7 +150,7 @@ export default function FiatMinting() {
     const minAmount = parseFloat(minMintAmount);
 
     console.log("Debug - Fiat amount:", fiatAmount, "Min amount:", minAmount);
-    console.log("Debug - GSDT amount:", gsdtAmount);
+    console.log("Debug - GSDC amount:", gsdtAmount);
 
     if (fiatAmount < minAmount) {
       setError(`Minimum amount is ${minMintAmount} ${currency}`);

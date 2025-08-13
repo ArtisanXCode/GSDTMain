@@ -24,16 +24,16 @@ export default function TokenInfo() {
       try {
         const readOnlyContract = getReadOnlyContract();
         const contract = getContract();
-        
+
         try {
 
           const kycResponse = await getUserKYCStatus(address);
           const dbUserKYC = await getDatabaseUserKYCStatus(address);
 
           setKYCStatus(kycResponse.status);
-          
+
           let appId = dbUserKYC.sumsub_applicant_id; // kycResponse?.request?.sumsub_applicant_id;
-          
+
           if (!appId) {
             appId = await createSumsubApplicant(address);
             if (appId) {
@@ -58,7 +58,7 @@ export default function TokenInfo() {
           } else {
             setIsKYCApproved(false);
           }*/
-  
+
         } catch (err) {
           console.error('Error fetching token data:', err);
           // Use default values
@@ -139,7 +139,7 @@ export default function TokenInfo() {
             transition={{ delay: 0.2 }}
             className="text-gray-600 mb-6"
           >
-            Connect your wallet to view your GSDT balance, manage tokens, and access all features
+            Connect your wallet to view your GSDC balance, manage tokens, and access all features
           </motion.p>
 
           {(error) && (
@@ -191,7 +191,7 @@ export default function TokenInfo() {
         className="px-6 py-8 bg-white rounded-xl shadow-lg"
       >
         <dt className="text-sm font-medium text-gray-600 truncate">Balance</dt>
-        <dd className="mt-2 text-3xl font-bold text-primary-600">{balance} GSDT</dd>
+        <dd className="mt-2 text-3xl font-bold text-primary-600">{balance} GSDC</dd>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -241,7 +241,7 @@ export default function TokenInfo() {
 async function saveKYCDetailsTokenInfo(address: string, appIdStatus: any, applicantId: string, kycStatus: string) {
   const date = new Date(appIdStatus.createDate);
   const dateOfBirth = date.toISOString().split('T')[0];
-  
+
   await submitKYCRequest({
     first_name: "KYC",
     last_name: "Verification",

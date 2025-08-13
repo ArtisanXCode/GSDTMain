@@ -82,7 +82,7 @@ export default function TokenActions() {
       // Wait for transaction to be mined
       await tx.wait();
 
-      setSuccess(`Successfully minted ${amount} GSDT`);
+      setSuccess(`Successfully minted ${amount} GSDC`);
       setAmount("");
     } catch (error: any) {
       console.error("Error minting tokens:", error);
@@ -97,7 +97,7 @@ export default function TokenActions() {
         if (revertReason.includes("KYC")) {
           setError("KYC verification required before minting tokens.");
         } else if (revertReason.includes("amount below minimum")) {
-          setError(`Amount must be at least ${minMintAmount} GSDT.`);
+          setError(`Amount must be at least ${minMintAmount} GSDC.`);
         } else if (revertReason.includes("amount above maximum")) {
           setError("Amount exceeds maximum minting limit.");
         } else if (revertReason.includes("daily mint limit")) {
@@ -140,7 +140,7 @@ export default function TokenActions() {
       // Wait for transaction to be mined
       await tx.wait();
 
-      setSuccess(`Successfully requested redemption of ${amount} GSDT`);
+      setSuccess(`Successfully requested redemption of ${amount} GSDC`);
       setAmount("");
     } catch (error: any) {
       console.error("Error requesting redemption:", error);
@@ -232,7 +232,7 @@ export default function TokenActions() {
       <div className="space-y-4">
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-            Amount (GSDT)
+            Amount (GSDC)
           </label>
           <div className="mt-1">
             <input
@@ -246,7 +246,7 @@ export default function TokenActions() {
             />
           </div>
           <p className="mt-1 text-xs text-gray-500">
-            Minimum amount: {minMintAmount} GSDT
+            Minimum amount: {minMintAmount} GSDC
           </p>
         </div>
 

@@ -137,12 +137,12 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-white flex-1 max-w-2xl"
             >
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                The Future of Digital Currency
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">
-                Experience secure, transparent, and instant global transactions with GSDC
-              </p>
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Global South Digital Coin
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-200 mb-8">
+              A stable, transparent, and accessible digital currency for the Global South
+            </p>
 
               {!isAuthenticated && (
                 <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-400 rounded-lg">
