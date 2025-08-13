@@ -394,22 +394,40 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
         if (!MINT_TOKEN_API_URL || !MINT_TOKEN_API_SECRET_CODE) {
           console.warn("Mint API configuration missing - skipping NFT minting");
         } else {
-          const response = await fetch(`${MINT_TOKEN_API_URL}/validatewallet`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userwallet: userAddress,
-              secretcode: MINT_TOKEN_API_SECRET_CODE
-            })
-          });
+          // Create abort controller for timeout
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-          if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
+          try {
+            const response = await fetch(`${MINT_TOKEN_API_URL}/validatewallet`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userwallet: userAddress,
+                secretcode: MINT_TOKEN_API_SECRET_CODE
+              }),
+              signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              throw new Error(`API call failed with status: ${response.status}`);
+            }
+
+            const responseData = await response.text();
+            console.log("Successfully called mint API for GSDC_NFT:", userAddress, responseData);
+          } catch (fetchError: any) {
+            clearTimeout(timeoutId);
+            
+            if (fetchError.name === 'AbortError') {
+              console.warn("Mint API call timed out after 10 seconds - continuing with KYC approval");
+            } else {
+              throw fetchError;
+            }
           }
-
-          console.log("Successfully called mint API for GSDC_NFT:", userAddress);
         }
       } catch (mintError) {
         console.error(
