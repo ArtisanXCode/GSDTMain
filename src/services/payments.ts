@@ -46,6 +46,22 @@ export interface PaymentStatus {
   updated_at: string;
 }
 
+// Map payment status to match database constraints
+const mapPaymentStatus = (status: string): string => {
+  const statusMap: { [key: string]: string } = {
+    'waiting': 'pending',
+    'confirming': 'confirming',
+    'confirmed': 'confirmed',
+    'sending': 'sending',
+    'partially_paid': 'partially_paid',
+    'finished': 'finished',
+    'failed': 'failed',
+    'refunded': 'refunded',
+    'expired': 'expired'
+  };
+  return statusMap[status] || 'pending';
+};
+
 // Available currencies with their display names
 export interface CurrencyInfo {
   code: string;
@@ -111,22 +127,6 @@ export const createPayment = async (
         payment_url: 'https://example.com/mock-payment'
       };
 
-      // Map payment status to match database constraints
-      const mapPaymentStatus = (status: string): string => {
-        const statusMap: { [key: string]: string } = {
-          'waiting': 'pending',
-          'confirming': 'confirming',
-          'confirmed': 'confirmed',
-          'sending': 'sending',
-          'partially_paid': 'partially_paid',
-          'finished': 'finished',
-          'failed': 'failed',
-          'refunded': 'refunded',
-          'expired': 'expired'
-        };
-        return statusMap[status] || 'pending';
-      };
-
       try {
         // Store mock payment in Supabase
         await supabase.from('crypto_payments').insert([{
@@ -156,22 +156,6 @@ export const createPayment = async (
         }
       }
     );
-
-    // Map payment status to match database constraints
-    const mapPaymentStatus = (status: string): string => {
-      const statusMap: { [key: string]: string } = {
-        'waiting': 'pending',
-        'confirming': 'confirming',
-        'confirmed': 'confirmed',
-        'sending': 'sending',
-        'partially_paid': 'partially_paid',
-        'finished': 'finished',
-        'failed': 'failed',
-        'refunded': 'refunded',
-        'expired': 'expired'
-      };
-      return statusMap[status] || 'pending';
-    };
 
     try {
       // Store payment request in Supabase
@@ -233,7 +217,7 @@ export const getPaymentStatus = async (paymentId: string): Promise<PaymentStatus
     try {
       // Update payment status in Supabase
       await supabase.from('crypto_payments').update({
-        status: response.data.payment_status,
+        status: mapPaymentStatus(response.data.payment_status),
         updated_at: new Date().toISOString()
       }).eq('payment_id', paymentId);
     } catch (dbError) {
