@@ -120,14 +120,14 @@ export default function FiatMinting() {
       console.log(`Final GSDC amount: ${result}`);
       setGsdtAmount(result);
     } catch (err) {
-      console.error("Error calculating GSDT amount:", err);
+      console.error("Error calculating GSDC amount:", err);
       setGsdtAmount("0");
     }
     console.log("==============================");
   }, [amount, currency, rates, gsdtPrice]);
 
   const generatePaymentReference = () => {
-    const ref = `GSDT-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const ref = `GSDC-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     setPaymentReference(ref);
     return ref;
   };
