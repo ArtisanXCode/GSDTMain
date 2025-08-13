@@ -131,23 +131,26 @@ contract GSDC is
     }
 
     /**
-     * @notice Burns tokens from another account.
-     * @dev Only callable by the contract owner.
+     * @notice Burns tokens from another account using allowance.
+     * @dev Caller must have sufficient allowance from the token holder.
      * @param from Address whose tokens will be burned.
      * @param amount Number of tokens to burn.
      *
      * Emits a {Burn} event.
      */
     function burnFrom(address from, uint256 amount) 
-        external 
-        onlyOwner 
+        external         
         whenNotPaused 
         nonReentrant 
         notBlacklisted(from)
         notFrozen(from)
     {
         require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
+        
+        uint256 currentAllowance = allowance(from, msg.sender);
+        require(currentAllowance >= amount, "GSDC: Insufficient allowance");
 
+        _approve(from, msg.sender, currentAllowance - amount);
         _burn(from, amount);
         emit Burn(from, amount);
     }
