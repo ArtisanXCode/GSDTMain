@@ -11,6 +11,8 @@ interface IGSDC {
     function pause() external;
     function unpause() external;
     function transferOwnership(address newOwner) external;
+    function setBlacklistStatus(address account, bool status) external;
+    function isBlacklisted(address account) external view returns (bool);
 }
 
 /**
@@ -84,7 +86,6 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     // ---------------------
     // State variables
     // ---------------------
-    mapping(address => bool) public blacklisted;
     mapping(uint256 => PendingTransaction) public pendingTransactions;
     uint256 public nextTransactionId;
     uint256[] public pendingTransactionIds;
@@ -131,7 +132,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param account Address to check
      */
     modifier notBlacklisted(address account) {
-        require(!blacklisted[account], "Address is blacklisted");
+        require(!gsdcToken.isBlacklisted(account), "Address is blacklisted");
         _;
     }
 
@@ -214,7 +215,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
             gsdcToken.burnFrom(txn.target, txn.amount);
         } else if (txn.txType == TransactionType.BLACKLIST) {
             (address account, bool status) = abi.decode(txn.data, (address, bool));
-            blacklisted[account] = status;
+            gsdcToken.setBlacklistStatus(account, status);
             emit AddressBlacklisted(account, status);
         } else if (txn.txType == TransactionType.ROLE_GRANT) {
             (bytes32 role, address account) = abi.decode(txn.data, (bytes32, address));
@@ -365,7 +366,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         RedemptionRequest storage request = redemptionRequests[requestId];
         require(!request.processed, "Request already processed");
         require(request.user != address(0), "Invalid request");
-        require(!blacklisted[request.user], "User is blacklisted");
+        require(!gsdcToken.isBlacklisted(request.user), "User is blacklisted");
 
         request.processed = true;
         request.approved = approved;
@@ -467,7 +468,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param account Address to check
      */
     function isBlacklisted(address account) external view returns (bool) {
-        return blacklisted[account];
+        return gsdcToken.isBlacklisted(account);
     }
 
     // ---------------------

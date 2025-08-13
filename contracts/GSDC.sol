@@ -31,11 +31,26 @@ contract GSDC is
     /// @param amount The amount of tokens burned.
     event Burn(address indexed from, uint256 amount);
 
+    /// @notice Emitted when an address is blacklisted or unblacklisted.
+    /// @param account The address that was blacklisted/unblacklisted.
+    /// @param status The new blacklist status.
+    event AddressBlacklisted(address indexed account, bool status);
+
     /// @notice Minimum amount of tokens allowed for minting in one operation.
     uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
 
     /// @notice Maximum amount of tokens allowed for minting in one operation.
     uint256 public constant MAX_MINT_AMOUNT = 1000000 * 10**18; // 1M GSDC
+
+    /// @notice Mapping to track blacklisted addresses
+    mapping(address => bool) public blacklisted;
+
+    /// @notice Ensures the given address is not blacklisted
+    /// @param account Address to check
+    modifier notBlacklisted(address account) {
+        require(!blacklisted[account], "GSDC: Address is blacklisted");
+        _;
+    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -75,10 +90,11 @@ contract GSDC is
         onlyOwner 
         whenNotPaused 
         nonReentrant 
+        notBlacklisted(to)
     {
-        require(to != address(0), "Mint to the zero address");
-        require(amount >= MIN_MINT_AMOUNT, "Amount below minimum");
-        require(amount <= MAX_MINT_AMOUNT, "Amount above maximum");
+        require(to != address(0), "GSDC: Mint to the zero address");
+        require(amount >= MIN_MINT_AMOUNT, "GSDC: Amount below minimum");
+        require(amount <= MAX_MINT_AMOUNT, "GSDC: Amount above maximum");
 
         _mint(to, amount);
         emit Mint(to, amount);
@@ -91,15 +107,15 @@ contract GSDC is
      *
      * Emits a {Burn} event.
      */
-    function burn(uint256 amount) external whenNotPaused nonReentrant {
-        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+    function burn(uint256 amount) external whenNotPaused nonReentrant notBlacklisted(msg.sender) {
+        require(balanceOf(msg.sender) >= amount, "GSDC: Insufficient balance");
 
         _burn(msg.sender, amount);
         emit Burn(msg.sender, amount);
     }
 
     /**
-     * @notice Burns tokens from another account (with allowance).
+     * @notice Burns tokens from another account.
      * @dev Only callable by the contract owner.
      * @param from Address whose tokens will be burned.
      * @param amount Number of tokens to burn.
@@ -111,8 +127,9 @@ contract GSDC is
         onlyOwner 
         whenNotPaused 
         nonReentrant 
+        notBlacklisted(from)
     {
-        require(balanceOf(from) >= amount, "Insufficient balance");
+        require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
 
         _burn(from, amount);
         emit Burn(from, amount);
@@ -151,5 +168,54 @@ contract GSDC is
      */
     function getTokenInfo() external view returns (string memory name_, string memory symbol_, uint8 decimals_, uint256 totalSupply_) {
         return (name(), symbol(), decimals(), totalSupply());
+    }
+
+    /**
+     * @notice Sets the blacklist status for an address.
+     * @dev Only callable by the contract owner.
+     * @param account Address to blacklist/unblacklist.
+     * @param status True to blacklist, false to unblacklist.
+     */
+    function setBlacklistStatus(address account, bool status) external onlyOwner {
+        require(account != address(0), "GSDC: Cannot blacklist zero address");
+        require(account != owner(), "GSDC: Cannot blacklist owner");
+        
+        blacklisted[account] = status;
+        emit AddressBlacklisted(account, status);
+    }
+
+    /**
+     * @notice Checks if an address is blacklisted.
+     * @param account Address to check.
+     * @return True if the address is blacklisted, false otherwise.
+     */
+    function isBlacklisted(address account) external view returns (bool) {
+        return blacklisted[account];
+    }
+
+    /**
+     * @dev Override transfer to check blacklist status
+     */
+    function transfer(address to, uint256 amount) 
+        public 
+        override 
+        notBlacklisted(msg.sender) 
+        notBlacklisted(to) 
+        returns (bool) 
+    {
+        return super.transfer(to, amount);
+    }
+
+    /**
+     * @dev Override transferFrom to check blacklist status
+     */
+    function transferFrom(address from, address to, uint256 amount) 
+        public 
+        override 
+        notBlacklisted(from) 
+        notBlacklisted(to) 
+        returns (bool) 
+    {
+        return super.transferFrom(from, to, amount);
     }
 }
