@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -19,6 +18,139 @@ const HistoricalAnalytics: React.FC = () => {
   const timeframes = ['3 months', '6 months', '1 year', '2 year'];
 
   const currentRate = liveRates.find(rate => rate.currency === selectedCurrency);
+
+  // Custom SVG Icon Components
+  const LowerVolatilityIcon = () => (
+    <svg viewBox="0 0 64 64" className="w-full h-full">
+      <defs>
+        <linearGradient id="volatilityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f6b62e" />
+          <stop offset="100%" stopColor="#ed9030" />
+        </linearGradient>
+      </defs>
+      {/* Stable line with minimal volatility */}
+      <path
+        d="M8 32 L16 30 L24 31 L32 29 L40 30 L48 28 L56 29"
+        stroke="url(#volatilityGrad)"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Data points */}
+      <circle cx="8" cy="32" r="2" fill="#f6b62e" />
+      <circle cx="16" cy="30" r="2" fill="#f6b62e" />
+      <circle cx="24" cy="31" r="2" fill="#f6b62e" />
+      <circle cx="32" cy="29" r="2" fill="#f6b62e" />
+      <circle cx="40" cy="30" r="2" fill="#f6b62e" />
+      <circle cx="48" cy="28" r="2" fill="#f6b62e" />
+      <circle cx="56" cy="29" r="2" fill="#f6b62e" />
+      {/* Percentage indicator */}
+      <rect x="48" y="12" width="12" height="8" rx="4" fill="url(#volatilityGrad)" />
+      <text x="54" y="17.5" textAnchor="middle" fontSize="6" fill="white" fontWeight="bold">23%</text>
+    </svg>
+  );
+
+  const ConsistentPerformanceIcon = () => (
+    <svg viewBox="0 0 64 64" className="w-full h-full">
+      <defs>
+        <linearGradient id="performanceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f6b62e" />
+          <stop offset="100%" stopColor="#ed9030" />
+        </linearGradient>
+      </defs>
+      {/* Steady upward trend line */}
+      <path
+        d="M8 48 L16 42 L24 36 L32 30 L40 24 L48 18 L56 12"
+        stroke="url(#performanceGrad)"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Area under curve for stability */}
+      <path
+        d="M8 48 L16 42 L24 36 L32 30 L40 24 L48 18 L56 12 L56 52 L8 52 Z"
+        fill="url(#performanceGrad)"
+        fillOpacity="0.2"
+      />
+      {/* Arrow indicator */}
+      <path
+        d="M50 18 L56 12 L50 6"
+        stroke="url(#performanceGrad)"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M56 12 L46 12"
+        stroke="url(#performanceGrad)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+
+  const RiskMitigationIcon = () => (
+    <svg viewBox="0 0 64 64" className="w-full h-full">
+      <defs>
+        <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f6b62e" />
+          <stop offset="100%" stopColor="#ed9030" />
+        </linearGradient>
+      </defs>
+      {/* Modern shield shape */}
+      <path
+        d="M32 8 C38 8 44 10 44 10 C44 10 44 24 44 32 C44 44 32 56 32 56 C32 56 20 44 20 32 C20 24 20 10 20 10 C20 10 26 8 32 8 Z"
+        fill="url(#shieldGrad)"
+        stroke="none"
+      />
+      {/* Network nodes pattern for diversification */}
+      <circle cx="32" cy="26" r="2" fill="white" />
+      <circle cx="26" cy="32" r="1.5" fill="white" fillOpacity="0.8" />
+      <circle cx="38" cy="32" r="1.5" fill="white" fillOpacity="0.8" />
+      <circle cx="29" cy="38" r="1.5" fill="white" fillOpacity="0.8" />
+      <circle cx="35" cy="38" r="1.5" fill="white" fillOpacity="0.8" />
+      {/* Connecting lines */}
+      <line x1="32" y1="26" x2="26" y2="32" stroke="white" strokeWidth="1" strokeOpacity="0.6" />
+      <line x1="32" y1="26" x2="38" y2="32" stroke="white" strokeWidth="1" strokeOpacity="0.6" />
+      <line x1="26" y1="32" x2="29" y2="38" stroke="white" strokeWidth="1" strokeOpacity="0.6" />
+      <line x1="38" y1="32" x2="35" y2="38" stroke="white" strokeWidth="1" strokeOpacity="0.6" />
+      <line x1="29" y1="38" x2="35" y2="38" stroke="white" strokeWidth="1" strokeOpacity="0.6" />
+      {/* Subtle checkmark */}
+      <path
+        d="M28 26 L30 28 L36 22"
+        stroke="white"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeOpacity="0.9"
+      />
+    </svg>
+  );
+
+  const benefits = [
+    {
+      icon: LowerVolatilityIcon,
+      title: 'Lower Volatility',
+      description: 'Reduced price volatility compared to individual basket currencies through diversification.',
+      percentage: '23%'
+    },
+    {
+      icon: ConsistentPerformanceIcon,
+      title: 'Consistent Performance',
+      description: 'Stable performance across different market conditions and economic cycles.',
+      percentage: null
+    },
+    {
+      icon: RiskMitigationIcon,
+      title: 'Risk Mitigation',
+      description: 'Diversified exposure reduces single-currency risk and economic dependency.',
+      percentage: null
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white">
@@ -150,38 +282,22 @@ const HistoricalAnalytics: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <ShieldCheckIcon className="h-8 w-8 text-green-400 mr-3" />
-              <h3 className="text-xl font-bold">Stability Score</h3>
+          {benefits.map((benefit) => (
+            <div key={benefit.title} className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-400/10 to-red-500/10 flex items-center justify-center border border-orange-300/20">
+                    <div className="w-10 h-10">
+                      <benefit.icon />
+                    </div>
+                  </div>
+                <h3 className="text-xl font-bold">{benefit.title}</h3>
+              </div>
+              <div className="text-3xl font-bold text-blue-400 mb-2">{benefit.percentage || ''}</div>
+              <p className="text-gray-300 text-sm">
+                {benefit.description}
+              </p>
             </div>
-            <div className="text-3xl font-bold text-green-400 mb-2">95.8%</div>
-            <p className="text-gray-300 text-sm">
-              GSDC maintains excellent stability against basket currencies
-            </p>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <ArrowTrendingUpIcon className="h-8 w-8 text-blue-400 mr-3" />
-              <h3 className="text-xl font-bold">Performance</h3>
-            </div>
-            <div className="text-3xl font-bold text-blue-400 mb-2">+2.1%</div>
-            <p className="text-gray-300 text-sm">
-              Positive performance over selected timeframe
-            </p>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <InformationCircleIcon className="h-8 w-8 text-purple-400 mr-3" />
-              <h3 className="text-xl font-bold">Volatility</h3>
-            </div>
-            <div className="text-3xl font-bold text-purple-400 mb-2">0.8%</div>
-            <p className="text-gray-300 text-sm">
-              Low volatility demonstrates GSDC's stable nature
-            </p>
-          </div>
+          ))}
         </motion.div>
       </div>
     </div>
