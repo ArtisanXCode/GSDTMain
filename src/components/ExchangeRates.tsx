@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
 import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
 import HistoricalChart from './HistoricalChart';
