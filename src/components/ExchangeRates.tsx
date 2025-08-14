@@ -212,30 +212,6 @@ export default function ExchangeRates() {
                       />
                     </div>
                   </div>
-
-                  {/* Current Stats Display */}
-                  <div className="p-4 bg-white/5 rounded-lg">
-                    {/* Current Rate Display */}
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-300">Current:</span>
-                    <span className="text-white font-mono">{benchmarkData.gsdcRate.toFixed(6)}</span>
-                  </div>
-
-                  {/* Y-axis Range Display */}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-300">Chart Range:</span>
-                    <span className="text-white font-mono">
-                      0.0000 - {(() => {
-                        if (benchmarkData.gsdcRate <= 1) return '2.0000';
-                        if (benchmarkData.gsdcRate <= 5) return Math.ceil(benchmarkData.gsdcRate * 2.5).toFixed(4);
-                        if (benchmarkData.gsdcRate <= 15) return Math.ceil(benchmarkData.gsdcRate * 1.5).toFixed(4);
-                        if (benchmarkData.gsdcRate <= 30) return Math.ceil(benchmarkData.gsdcRate * 1.4).toFixed(4);
-                        if (benchmarkData.gsdcRate <= 50) return Math.ceil(benchmarkData.gsdcRate * 1.3).toFixed(4);
-                        return Math.ceil(benchmarkData.gsdcRate * 1.2).toFixed(4);
-                      })()}
-                    </span>
-                  </div>
-                  </div>
                 </div>
               </div>
             </div>
