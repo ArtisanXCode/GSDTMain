@@ -67,8 +67,8 @@ export default function ExchangeRates() {
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">GSDC Stability Analysis</h1>
-          <p className="text-gray-300 text-lg">
+          <h1 className="text-3xl font-bold mb-2 drop-shadow-lg">GSDC Stability Analysis</h1>
+          <p className="text-gray-300 text-lg drop-shadow-md font-medium">
             Purpose: Show the stability of GSDC versus each single currency in the basket
           </p>
         </div>
@@ -99,6 +99,7 @@ export default function ExchangeRates() {
                 >
                   <span className="flex items-center space-x-2">
                     <span>{CURRENCY_SYMBOLS[currency] || ''}</span>
+                    <span>-</span>
                     <span>{currency}</span>
                   </span>
                 </button>
@@ -127,10 +128,10 @@ export default function ExchangeRates() {
                       <ChartBarIcon className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold text-white drop-shadow-lg">
                         {selectedCurrency} Benchmark
                       </h3>
-                      <p className="text-sm text-gray-300">
+                      <p className="text-sm text-gray-300 drop-shadow-md font-medium">
                         {CURRENCY_NAMES[selectedCurrency] || selectedCurrency}
                       </p>
                     </div>
@@ -167,14 +168,14 @@ export default function ExchangeRates() {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h4 className="text-xl font-semibold text-white mb-1">
+                      <h4 className="text-xl font-semibold text-white mb-1 drop-shadow-lg">
                         Historical Performance
                       </h4>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-300 drop-shadow-md font-medium">
                         Weekly Data Points - GSDC/{selectedCurrency} ({CURRENCY_NAMES[selectedCurrency] || selectedCurrency})
                       </p>
                     </div>
-                    
+
                     {/* Period Selection */}
                     <div className="flex gap-2">
                       {periods.map((period) => (
