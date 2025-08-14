@@ -331,25 +331,9 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
                       
-                      <div className="relative p-6 h-full min-h-[280px] flex flex-col justify-between">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110 border border-white/30">
-                              <span className="text-white font-bold text-xl">
-                                {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
-                              </span>
-                            </div>
-                            <div>
-                              <h3 className="text-2xl font-bold text-white mb-1">
-                                {currency.code}
-                              </h3>
-                              <p className="text-white/90 text-sm font-medium">
-                                {currency.name}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {/* Flip indicator */}
+                      <div className="relative p-6 h-full min-h-[280px] flex flex-col">
+                        {/* Flip indicator */}
+                        <div className="flex justify-end mb-2">
                           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -357,7 +341,28 @@ export default function Home() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center justify-between">
+                        {/* Centered content */}
+                        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
+                          {/* Large currency icon */}
+                          <div className="w-24 h-24 rounded-3xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-2xl transform transition-transform duration-300 group-hover:scale-110 border border-white/40">
+                            <span className="text-white font-bold text-4xl">
+                              {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
+                            </span>
+                          </div>
+                          
+                          {/* Currency code */}
+                          <h3 className="text-3xl font-bold text-white">
+                            {currency.code}
+                          </h3>
+                          
+                          {/* Currency name */}
+                          <p className="text-white/90 text-lg font-medium">
+                            {currency.name}
+                          </p>
+                        </div>
+                        
+                        {/* Bottom info */}
+                        <div className="flex items-center justify-between mt-4">
                           <div className="text-white/80 text-xs uppercase tracking-wider font-semibold">
                             {info?.region}
                           </div>
