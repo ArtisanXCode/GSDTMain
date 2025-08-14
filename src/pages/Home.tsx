@@ -242,8 +242,7 @@ export default function Home() {
               <br />
               providing stability and diversification
             </p>
-
-            </div>
+          </div>
 
           {/* Sanctions Disclaimer */}
           <div className="mt-12 max-w-4xl mx-auto bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
