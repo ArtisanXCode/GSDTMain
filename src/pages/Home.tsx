@@ -18,7 +18,7 @@ import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES, CURRENCY_SYMBOLS } from "../confi
 
 // Generate currencies array from environment configuration
 const currencies = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
-  .filter(code => code !== 'USD') // Exclude USD from basket display
+  //.filter(code => code !== 'USD') // Exclude USD from basket display
   .map(code => ({
     code,
     name: CURRENCY_NAMES[code] || code,
@@ -305,7 +305,7 @@ export default function Home() {
                   region: "Southeast Asia"
                 }
               };
-
+              
               const info = currencyInfo[currency.code];
 
               return (
