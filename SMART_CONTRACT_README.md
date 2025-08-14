@@ -74,6 +74,13 @@ function unpause() external onlyOwner
 - Transactions auto-execute after cooldown period if not manually approved
 - Rejection system with reason tracking
 
+### Future MPC Wallet Integration
+- **Planned Integration**: [Fireblocks](https://fireblocks.com) MPC (Multi-Party Computation) wallet functionality
+- **Current Status**: Role-based multisig implementation in smart contracts
+- **Future Enhancement**: Hardware-level security with Fireblocks MPC technology
+- **Benefits**: Enhanced key management, institutional-grade security, and regulatory compliance
+- **Timeline**: Integration planned for future releases to replace current role-based approval system
+
 ### Access Control
 - Hierarchical role system with granular permissions
 - Admin roles cannot be blacklisted
@@ -96,6 +103,13 @@ function unpause() external onlyOwner
         ▼                        ▼                          ▼
    State Storage            Core ERC20 Logic         Administrative Logic
    Upgrade Logic           Mint/Burn/Pause          Cooldowns/Approvals
+                                                             │
+                                                             ▼
+                                                    ┌─────────────────┐
+                                                    │ Future: Fireblocks │
+                                                    │   MPC Wallet     │
+                                                    │   Integration    │
+                                                    └─────────────────┘
 ```
 
 ## Contract Interactions
@@ -214,3 +228,32 @@ export const MULTISIG_ADMIN_ADDRESS = "DEPLOYED_MULTISIG_ADDRESS";
 - Direct GSDC contract calls only for standard ERC20 operations
 - Monitor pending transactions through MultiSig events
 - Implement proper error handling for cooldown periods
+
+## Roadmap
+
+### Phase 1: Current Implementation (Completed)
+- ✅ Role-based multisig administrative contract
+- ✅ 90-minute cooldown mechanism
+- ✅ Transaction queuing and approval system
+- ✅ Basic administrative controls
+
+### Phase 2: Fireblocks MPC Integration (Planned)
+- 🔄 **Fireblocks MPC Wallet Integration**: Replace current role-based approvals with Fireblocks MPC technology
+- 🔄 **Enhanced Security**: Hardware-level key protection and institutional-grade security
+- 🔄 **API Integration**: Fireblocks API integration for transaction signing and approval
+- 🔄 **Compliance**: Enhanced regulatory compliance with institutional wallet infrastructure
+- 🔄 **Key Management**: Distributed key generation and management through MPC protocols
+
+### Integration Benefits
+- **Security**: MPC eliminates single points of failure in key management
+- **Compliance**: Meets institutional and regulatory requirements
+- **Scalability**: Enterprise-grade transaction processing
+- **Auditability**: Enhanced transaction tracking and reporting
+- **Recovery**: Robust key recovery mechanisms
+
+### Technical Requirements for Fireblocks Integration
+- Fireblocks API credentials and workspace setup
+- Smart contract modifications to support Fireblocks transaction flow
+- Frontend integration with Fireblocks SDK
+- Testing on Fireblocks sandbox environment
+- Security audit of integrated system
