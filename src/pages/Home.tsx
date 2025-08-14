@@ -118,7 +118,7 @@ export default function Home() {
     return 4;
   };
 
-  // Dynamically create displayCurrencies including USD and the rest
+  // Dynamically create displayCurrencies with USD first, then basket currencies
   const displayCurrencies = [
     { code: 'USD', name: CURRENCY_NAMES['USD'] || 'USD', symbol: CURRENCY_SYMBOLS['USD'] || '$' },
     ...currencies,
@@ -248,6 +248,13 @@ export default function Home() {
             {currencies.map((currency, index) => {
               // Currency information for detailed view
               const currencyInfo = {
+                USD: {
+                  fact: "The US Dollar remains the world's primary reserve currency, backed by the largest economy and used in ~60% of global foreign exchange reserves.",
+                  inclusion: "USD serves as the stable reference point and primary trading pair for GSDC, providing liquidity and universal acceptance in global markets.",
+                  stability: "High",
+                  volatility: "0.0%",
+                  region: "North America"
+                },
                 CNY: {
                   fact: "Managed by PBOC, the yuan has shown notable stability amid global volatility, backed by robust FX reserves and disciplined policy.",
                   inclusion: "China's economy is the world's second largest, making CNY essential for Global South trade stability and BRICS cooperation.",
@@ -329,7 +336,7 @@ export default function Home() {
                           <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110 border border-white/30">
                               <span className="text-white font-bold text-xl">
-                                {currency.code.charAt(0)}
+                                {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
                               </span>
                             </div>
                             <div>
@@ -370,7 +377,7 @@ export default function Home() {
                         <div className="flex items-center space-x-3 mb-4 flex-shrink-0">
                           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
                             <span className="text-white font-bold text-sm">
-                              {currency.code.charAt(0)}
+                              {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
                             </span>
                           </div>
                           <div>
