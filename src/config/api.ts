@@ -28,7 +28,7 @@ const parseEnvObject = (envVar: string | undefined, fallback: Record<string, str
 // Exchange rate related constants from environment variables
 export const EXCHANGE_RATE_CONFIG = {
   // GSDC basket currencies from environment
-  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']),
+  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['USD', 'CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR', 'IDR']),
   REFERENCE_CURRENCIES: parseEnvArray(import.meta.env.VITE_REFERENCE_CURRENCIES, ['USD']),
   UPDATE_INTERVAL: 30000, // 30 seconds
   CACHE_DURATION: 60000, // 1 minute
@@ -46,6 +46,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = parseEnvObject(
     ZAR: "R",
     IDR: "Rp",
     THB: "฿",
+    RUB: "₽",
     JPY: "¥",
     EUR: "€",
     CAD: "C$"
@@ -64,6 +65,7 @@ export const CURRENCY_NAMES: Record<string, string> = parseEnvObject(
     ZAR: "South African Rand",
     IDR: "Indonesian Rupiah",
     THB: "Thai Baht",
+    RUB: "Russian Ruble",
     JPY: "Japanese Yen",
     EUR: "Euro",
     CAD: "Canadian Dollar"
@@ -78,6 +80,7 @@ export const CURRENCY_COLORS: Record<string, string> = parseEnvObject(
     BRL: '#ed9030',
     ZAR: '#ed9030',
     THB: '#ed9030',
+    RUB: '#ed9030',
     INR: '#ed9030',
     IDR: '#ed9030',
     USD: '#ed9030'
@@ -92,12 +95,13 @@ export const CURRENCY_PRECISION: Record<string, number> = parseEnvObject(
     IDR: 4,
     INR: 4,
     THB: 4,
+    RUB: 4,
     ZAR: 4,
     CNY: 4,
     BRL: 4
   }
 );
 
-// Compact currencies order from environment variables
-export const COMPACT_CURRENCIES = parseEnvArray(import.meta.env.VITE_COMPACT_CURRENCIES, ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']);
+// Compact currencies order from environment variables - USD first, then all 7 basket currencies
+export const COMPACT_CURRENCIES = parseEnvArray(import.meta.env.VITE_COMPACT_CURRENCIES, ['USD', 'CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR', 'IDR']);
 

@@ -61,8 +61,8 @@ export default function LiveExchangeRates({
 
   // Filter currencies based on variant
   const displayCurrencies = variant === 'compact' 
-    ? ["USD", "CNH", "BRL", "INR"] // Top 4 for compact view
-    : Object.keys(gsdcRates).filter(currency => gsdcRates[currency] > 0);
+    ? COMPACT_CURRENCIES.slice(0, 4) // Top 4 for compact view
+    : COMPACT_CURRENCIES.filter(currency => gsdcRates?.[currency] && gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
     // Function to format GSDC rate with 2 decimal precision
@@ -85,7 +85,7 @@ export default function LiveExchangeRates({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          {COMPACT_CURRENCIES.map((currency) => {
+          {displayCurrencies.map((currency) => {
             const rate = gsdcRates?.[currency] || 0;
             return (
               <motion.div

@@ -118,6 +118,13 @@ export default function Home() {
     return 4;
   };
 
+  // Dynamically create displayCurrencies including USD and the rest
+  const displayCurrencies = [
+    { code: 'USD', name: CURRENCY_NAMES['USD'] || 'USD', symbol: CURRENCY_SYMBOLS['USD'] || '$' },
+    ...currencies,
+  ];
+
+
   return (
     <div className="bg-white">
       {/* Hero section with background image and color combination */}
@@ -196,7 +203,8 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="hidden lg:block flex-1 max-w-lg ml-8"
             >
-              <LiveExchangeRates variant="hero" showTitle={true} />
+              {/* Dynamically pass the first 8 currencies to LiveExchangeRates */}
+              <LiveExchangeRates variant="hero" showTitle={true} currencies={displayCurrencies.slice(0, 8)} />
             </motion.div>
           </div>
         </div>
