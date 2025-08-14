@@ -122,7 +122,6 @@ export default function LiveExchangeRatesPage() {
               </p>
               <ul className="space-y-2 text-gray-600">
                 {EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
-                  .filter(currency => currency !== 'USD') // Exclude USD as it's the reference
                   .map(currency => (
                     <li key={currency}>• {currency} ({CURRENCY_NAMES[currency] || currency})</li>
                   ))}
