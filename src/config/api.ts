@@ -1,5 +1,3 @@
-
-
 export const API_CONFIG = {
   EXCHANGE_RATE_API_URL: import.meta.env.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest',
   SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
@@ -60,7 +58,7 @@ export const CURRENCY_NAMES: Record<string, string> = parseEnvObject(
     USD: "US Dollar",
     CNY: "Chinese Yuan",
     CNH: "Chinese Yuan",
-    BRL: "Brazilian Real", 
+    BRL: "Brazilian Real",
     INR: "Indian Rupee",
     ZAR: "South African Rand",
     IDR: "Indonesian Rupiah",
@@ -104,4 +102,3 @@ export const CURRENCY_PRECISION: Record<string, number> = parseEnvObject(
 
 // Compact currencies order from environment variables - USD first, then all 7 basket currencies
 export const COMPACT_CURRENCIES = parseEnvArray(import.meta.env.VITE_COMPACT_CURRENCIES, ['USD', 'CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR', 'IDR']);
-
