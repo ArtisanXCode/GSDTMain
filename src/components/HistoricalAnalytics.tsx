@@ -15,7 +15,7 @@ const HistoricalAnalytics: React.FC = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('CNY');
   const [selectedTimeframe, setSelectedTimeframe] = useState('3 months');
 
-  const currencies = ['CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR'];
+  const currencies = ['CNY', 'THB', 'INR', 'BRL', 'ZAR'];
   const timeframes = ['3 months', '6 months', '1 year', '2 year'];
 
   const currentRate = liveRates.find(rate => rate.currency === selectedCurrency);

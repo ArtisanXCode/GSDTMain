@@ -22,7 +22,7 @@ export interface GSDCRatesData {
 }
 
 // Re-export constants for backward compatibility
-export const BASKET_CURRENCIES = ['USD', 'CNY', 'RUB', 'EUR', 'GBP', 'JPY', 'INR', 'BRL', 'ZAR', 'THB', 'IDR'];
+export const BASKET_CURRENCIES = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES;
 export const REFERENCE_CURRENCIES = EXCHANGE_RATE_CONFIG.REFERENCE_CURRENCIES;
 
 // Unified exchange rate API service
@@ -37,8 +37,8 @@ class UnifiedExchangeRateService {
 
     try {
       // Fetch USD as base currency to get all rates
-      const response = await fetch(`${API_CONFIG.EXCHANGE_RATE_API_URL}/USD`);
-      const data = await response.json();
+      const response = await fetch(`${API_CONFIG.EXCHANGE_RATE_API_URL}/USD`);      
+      const data = await response.json();      
       if (!data.rates) {
         throw new Error('Invalid API response');
       }

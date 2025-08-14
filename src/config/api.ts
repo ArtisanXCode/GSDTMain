@@ -1,3 +1,5 @@
+
+
 export const API_CONFIG = {
   EXCHANGE_RATE_API_URL: import.meta.env.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest',
   SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
@@ -26,7 +28,7 @@ const parseEnvObject = (envVar: string | undefined, fallback: Record<string, str
 // Exchange rate related constants from environment variables
 export const EXCHANGE_RATE_CONFIG = {
   // GSDC basket currencies from environment
-  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['CNY', 'RUB', 'EUR', 'GBP', 'JPY', 'INR', 'BRL', 'ZAR', 'THB', 'IDR', 'MYR', 'KRW', 'SGD']),
+  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']),
   REFERENCE_CURRENCIES: parseEnvArray(import.meta.env.VITE_REFERENCE_CURRENCIES, ['USD']),
   UPDATE_INTERVAL: 30000, // 30 seconds
   CACHE_DURATION: 60000, // 1 minute
@@ -46,8 +48,7 @@ export const CURRENCY_SYMBOLS: Record<string, string> = parseEnvObject(
     THB: "฿",
     JPY: "¥",
     EUR: "€",
-    CAD: "C$",
-    RUB: "₽"
+    CAD: "C$"
   }
 );
 
@@ -58,15 +59,14 @@ export const CURRENCY_NAMES: Record<string, string> = parseEnvObject(
     USD: "US Dollar",
     CNY: "Chinese Yuan",
     CNH: "Chinese Yuan",
-    BRL: "Brazilian Real",
+    BRL: "Brazilian Real", 
     INR: "Indian Rupee",
     ZAR: "South African Rand",
     IDR: "Indonesian Rupiah",
     THB: "Thai Baht",
     JPY: "Japanese Yen",
     EUR: "Euro",
-    CAD: "Canadian Dollar",
-    RUB: "Russian Ruble"
+    CAD: "Canadian Dollar"
   }
 );
 
@@ -80,8 +80,7 @@ export const CURRENCY_COLORS: Record<string, string> = parseEnvObject(
     THB: '#ed9030',
     INR: '#ed9030',
     IDR: '#ed9030',
-    USD: '#ed9030',
-    RUB: '#DC2626'
+    USD: '#ed9030'
   }
 );
 
@@ -101,3 +100,4 @@ export const CURRENCY_PRECISION: Record<string, number> = parseEnvObject(
 
 // Compact currencies order from environment variables
 export const COMPACT_CURRENCIES = parseEnvArray(import.meta.env.VITE_COMPACT_CURRENCIES, ['CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']);
+

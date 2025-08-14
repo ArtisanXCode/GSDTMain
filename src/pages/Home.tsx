@@ -16,18 +16,9 @@ import { useAuth } from '../contexts/AuthContext';
 // Import currency configuration from environment
 import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES, CURRENCY_SYMBOLS } from "../config/api";
 
-// Generate currencies array from environment configuration, prioritizing BRICS currencies
-const bricsOrder = ['CNY', 'RUB', 'INR', 'BRL', 'ZAR']; // BRICS countries priority
+// Generate currencies array from environment configuration
 const currencies = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
   .filter(code => code !== 'USD') // Exclude USD from basket display
-  .sort((a, b) => {
-    const aIndex = bricsOrder.indexOf(a);
-    const bIndex = bricsOrder.indexOf(b);
-    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    return a.localeCompare(b);
-  })
   .map(code => ({
     code,
     name: CURRENCY_NAMES[code] || code,
