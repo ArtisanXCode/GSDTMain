@@ -308,14 +308,14 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative min-h-[200px] perspective-1000 group"
+                  className="relative min-h-[280px] perspective-1000 group"
                 >
                   {/* Card Container with flip animation */}
                   <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180">
                     
                     {/* Front Side */}
                     <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700"></div>
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#f6b62e] to-[#e74134]"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
                       
                       {/* Animated background pattern */}
@@ -324,10 +324,10 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
                       
-                      <div className="relative p-6 h-full min-h-[200px] flex flex-col justify-between">
+                      <div className="relative p-6 h-full min-h-[280px] flex flex-col justify-between">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110">
+                            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110 border border-white/30">
                               <span className="text-white font-bold text-xl">
                                 {currency.code.charAt(0)}
                               </span>
@@ -336,7 +336,7 @@ export default function Home() {
                               <h3 className="text-2xl font-bold text-white mb-1">
                                 {currency.code}
                               </h3>
-                              <p className="text-white/80 text-sm font-medium">
+                              <p className="text-white/90 text-sm font-medium">
                                 {currency.name}
                               </p>
                             </div>
@@ -351,10 +351,10 @@ export default function Home() {
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <div className="text-white/60 text-xs uppercase tracking-wider font-semibold">
+                          <div className="text-white/80 text-xs uppercase tracking-wider font-semibold">
                             {info?.region}
                           </div>
-                          <div className="text-white/60 text-xs">
+                          <div className="text-white/80 text-xs">
                             Hover for details →
                           </div>
                         </div>
@@ -366,8 +366,8 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
                       
-                      <div className="relative p-6 min-h-[200px]">
-                        <div className="flex items-center space-x-3 mb-4">
+                      <div className="relative p-6 h-full min-h-[280px] flex flex-col">
+                        <div className="flex items-center space-x-3 mb-4 flex-shrink-0">
                           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
                             <span className="text-white font-bold text-sm">
                               {currency.code.charAt(0)}
@@ -383,9 +383,10 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <div className="space-y-3">
+                        {/* Scrollable content area */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3">
                           {/* Stats */}
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-2 gap-3 flex-shrink-0">
                             <div className="bg-white/10 rounded-lg p-2">
                               <p className="text-white/60 text-xs font-medium">Stability</p>
                               <p className={`text-sm font-bold ${
@@ -404,22 +405,22 @@ export default function Home() {
                           </div>
 
                           {/* Key fact */}
-                          <div className="bg-white/5 rounded-lg p-3">
-                            <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
+                          <div className="bg-white/5 rounded-lg p-3 flex-shrink-0">
+                            <h5 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wide">
                               📊 Key Insight
                             </h5>
                             <p className="text-white/70 text-xs leading-relaxed">
-                              {info?.fact.length > 140 ? `${info?.fact.slice(0, 140)}...` : info?.fact}
+                              {info?.fact}
                             </p>
                           </div>
 
                           {/* Why included */}
-                          <div className="bg-white/5 rounded-lg p-3">
-                            <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
+                          <div className="bg-white/5 rounded-lg p-3 flex-shrink-0">
+                            <h5 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wide">
                               🎯 GSDC Role
                             </h5>
                             <p className="text-white/70 text-xs leading-relaxed">
-                              {info?.inclusion.length > 120 ? `${info?.inclusion.slice(0, 120)}...` : info?.inclusion}
+                              {info?.inclusion}
                             </p>
                           </div>
                         </div>
