@@ -246,17 +246,24 @@ export default function ExchangeRates() {
                   </div>
                 </div>
 
-                {/* Sanctions Notice */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg">
-                  <p className="text-sm text-gray-300 leading-relaxed">
-                    <span className="font-semibold text-yellow-400">Important Notice:</span> Regrettably due to both primary and secondary sanctions imposed by the U.S. Office of Foreign Assets Control (OFAC) and the European External Action Service (EEAS), we were unable to include the Russian Ruble (RUB) and Russian Federation securities (Government Bonds) in the currency basket and reserves. We look forward to a resolution of this situation in the future. In the interim, for anyone wishing to access a Russian stablecoin we suggest A5A7, a Russian ruble pegged stablecoin, accessible at the following link: <a href="https://www.a7a5.io/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:text-orange-300 underline transition-colors">https://www.a7a5.io/</a>
-                  </p>
-                </div>
+                
               </div>
+              
             </div>
+            
           </div>
+
+          
         </motion.div>
       )}
+
+      {/* Sanctions Notice */}
+      <div className="mt-6 m-3 p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg">
+        <p className="text-md text-gray-300 leading-relaxed">
+          <span className="font-semibold text-yellow-400">Important Notice:</span> Regrettably due to both primary and secondary sanctions imposed by the U.S. Office of Foreign Assets Control (OFAC) and the European External Action Service (EEAS), we were unable to include the Russian Ruble (RUB) and Russian Federation securities (Government Bonds) in the currency basket and reserves. We look forward to a resolution of this situation in the future. In the interim, for anyone wishing to access a Russian stablecoin we suggest A5A7, a Russian ruble pegged stablecoin, accessible at the following link: <a href="https://www.a7a5.io/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:text-orange-300 underline transition-colors">https://www.a7a5.io/</a>
+        </p>
+      </div>
+      
     </div>
   );
 }
