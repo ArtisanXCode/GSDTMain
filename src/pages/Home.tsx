@@ -392,25 +392,6 @@ export default function Home() {
 
                         {/* Scrollable content area */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3">
-                          {/* Stats */}
-                          <div className="grid grid-cols-2 gap-3 flex-shrink-0">
-                            <div className="bg-white/10 rounded-lg p-2">
-                              <p className="text-white/60 text-xs font-medium">Stability</p>
-                              <p className={`text-sm font-bold ${
-                                info?.stability === 'High' ? 'text-green-400' : 
-                                info?.stability === 'Medium' ? 'text-yellow-400' : 'text-red-400'
-                              }`}>
-                                {info?.stability}
-                              </p>
-                            </div>
-                            <div className="bg-white/10 rounded-lg p-2">
-                              <p className="text-white/60 text-xs font-medium">Volatility</p>
-                              <p className="text-white text-sm font-bold">
-                                {info?.volatility}
-                              </p>
-                            </div>
-                          </div>
-
                           {/* Key fact */}
                           <div className="bg-white/5 rounded-lg p-3 flex-shrink-0">
                             <h5 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wide">
