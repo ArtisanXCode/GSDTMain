@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
-import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
+import { useLiveExchangeRates } from '../services/liveExchangeRates';
+import { CURRENCY_NAMES, CURRENCY_COLORS, EXCHANGE_RATE_CONFIG } from '../config/api';
+
+// Get basket currencies from environment configuration
+const BASKET_CURRENCIES = EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES;
 import HistoricalChart from './HistoricalChart';
 
 export default function ExchangeRates() {
@@ -53,7 +56,8 @@ export default function ExchangeRates() {
   }
 
   const periods = ['3 months', '6 months', '1 year', '2 year'];
-  const availableCurrencies = ['USD', 'CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR'];
+  // Get all currencies from environment configuration
+  const availableCurrencies = ['USD', ...BASKET_CURRENCIES];
 
   // Get current benchmark data for selected currency
   const currentBenchmarkData = data.find(item => item.currency === selectedCurrency);
@@ -142,8 +146,7 @@ export default function ExchangeRates() {
                 </div>
 
                 {Object.entries(currentBenchmarkData.benchmarkRates)
-                  .filter(([currency]) => currency !== selectedCurrency && currency !== 'USD')
-                  .slice(0, 4)
+                  .filter(([currency]) => currency !== selectedCurrency)
                   .map(([currency, rate]) => (
                     <div key={currency} className="flex justify-between items-center bg-white/10 rounded-lg p-3 hover:bg-white/15 transition-colors duration-200">
                       <span className="text-gray-300 text-sm">{currency}/{selectedCurrency}</span>

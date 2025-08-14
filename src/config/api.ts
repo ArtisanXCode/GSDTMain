@@ -26,7 +26,7 @@ const parseEnvObject = (envVar: string | undefined, fallback: Record<string, str
 // Exchange rate related constants from environment variables
 export const EXCHANGE_RATE_CONFIG = {
   // GSDC basket currencies from environment
-  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['USD', 'CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR', 'IDR']),
+  BASKET_CURRENCIES: parseEnvArray(import.meta.env.VITE_BASKET_CURRENCIES, ['CNY', 'RUB', 'THB', 'INR', 'BRL', 'ZAR', 'IDR', 'USD']),
   REFERENCE_CURRENCIES: parseEnvArray(import.meta.env.VITE_REFERENCE_CURRENCIES, ['USD']),
   UPDATE_INTERVAL: 30000, // 30 seconds
   CACHE_DURATION: 60000, // 1 minute
@@ -39,12 +39,12 @@ export const CURRENCY_SYMBOLS: Record<string, string> = parseEnvObject(
     USD: "$",
     CNY: "¥",
     CNH: "¥",
+    RUB: "₽",
     BRL: "R$",
     INR: "₹",
     ZAR: "R",
     IDR: "Rp",
     THB: "฿",
-    RUB: "₽",
     JPY: "¥",
     EUR: "€",
     CAD: "C$"
@@ -57,13 +57,13 @@ export const CURRENCY_NAMES: Record<string, string> = parseEnvObject(
   {
     USD: "US Dollar",
     CNY: "Chinese Yuan",
-    CNH: "Chinese Yuan",
+    CNH: "Chinese Yuan",  
+    RUB: "Russian Ruble",
     BRL: "Brazilian Real",
     INR: "Indian Rupee",
     ZAR: "South African Rand",
     IDR: "Indonesian Rupiah",
     THB: "Thai Baht",
-    RUB: "Russian Ruble",
     JPY: "Japanese Yen",
     EUR: "Euro",
     CAD: "Canadian Dollar"

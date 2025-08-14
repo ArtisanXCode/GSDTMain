@@ -105,7 +105,7 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         for (let i = totalPoints - 1; i >= 0; i--) {
           const date = new Date(now);
           date.setDate(date.getDate() - (i * 7));
-          labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+          labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
 
           // Generate historical values with small variations around current rate
           // The most recent point should be exactly the current rate
