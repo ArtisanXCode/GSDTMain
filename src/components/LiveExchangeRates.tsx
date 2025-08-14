@@ -162,10 +162,10 @@ export default function LiveExchangeRates({
                 transition={{ duration: 0.3 }}
                 className="bg-white/10 rounded-xl p-4 text-center hover:bg-white/15 transition-colors"
               >
-                <div className="text-lg font-bold text-white mb-1">
+                <div className="text-sm font-bold text-white mb-1">
                   GSDC/{currency}
                 </div>
-                <div className="text-lg font-extrabold text-white mb-1 break-words">
+                <div className="text-sm font-extrabold text-white mb-1 break-words">
                   {formatHeroGSDCRate(rate, currency)}
                 </div>
                 <div className="text-xs text-white/70 break-words">

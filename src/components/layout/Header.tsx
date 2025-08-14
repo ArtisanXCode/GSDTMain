@@ -61,7 +61,7 @@ const Header = () => {
 
   const navigation = [
     { name: 'Home', href: '/', current: false, requireAuth: false },
-    { name: 'About', href: '/about', current: false, requireAuth: false },
+    { name: 'Why GSDC', href: '/about', current: false, requireAuth: false },
 
     // Protected navigation items
     { name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },
