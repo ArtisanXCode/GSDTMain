@@ -8,8 +8,7 @@ import HistoricalChart from './HistoricalChart';
 export default function ExchangeRates() {
   const { data, loading, error, lastUpdated, refetch } = useLiveExchangeRates();
   const [selectedPeriod, setSelectedPeriod] = useState('3 months');
-  const [boxPeriods, setBoxPeriods] = useState<{[key: string]: string}>({});
-  const [selectedBenchmark, setSelectedBenchmark] = useState<string>('CNY');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -54,14 +53,13 @@ export default function ExchangeRates() {
   }
 
   const periods = ['3 months', '6 months', '1 year', '2 year'];
+  const availableCurrencies = ['USD', 'CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR'];
 
-  // Include USD as the first benchmark currency, then the others
-  const usdBenchmark = data.find(item => item.currency === 'USD');
-  const otherBenchmarks = data.filter(item => item.currency !== 'USD');
-  const benchmarkCurrencies = usdBenchmark ? [usdBenchmark, ...otherBenchmarks] : otherBenchmarks;
+  // Get current benchmark data for selected currency
+  const currentBenchmarkData = data.find(item => item.currency === selectedCurrency);
 
   return (
-    <div className="min-h-screen bg-white/5 backdrop-blur-lg text-white">
+    <div className="min-h-screen bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg text-white">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -73,86 +71,114 @@ export default function ExchangeRates() {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg transition-all duration-300 shadow-lg"
         >
           <ArrowPathIcon className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
           <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
         </button>
       </div>
 
-      {/* Main Content - All Benchmark Boxes with Individual Charts */}
-      <div className="space-y-6">
-        {benchmarkCurrencies.map((benchmarkData) => (
-          <div
-            key={benchmarkData.currency}
-            className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20">
-            {/* Optimized layout - Left sidebar with minimal width, right side gets most space */}
-            <div className="flex h-full">
-              {/* Left sidebar - minimal width */}
-              <div className="w-80 flex-shrink-0 p-6 border-r border-white/20">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <ChartBarIcon className="h-5 w-5 text-orange-400" />
-                      <h3 className="text-lg font-semibold text-white">
-                        {benchmarkData.currency} - {CURRENCY_NAMES[benchmarkData.currency] || benchmarkData.currency} Benchmark
-                      </h3>
+      {/* Currency Navigation Tabs */}
+      <div className="mb-8">
+        <div className="flex justify-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-1 border border-white/20 shadow-lg">
+            <div className="flex space-x-1">
+              {availableCurrencies.map((currency) => (
+                <button
+                  key={currency}
+                  onClick={() => setSelectedCurrency(currency)}
+                  className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                    selectedCurrency === currency
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transform scale-105'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {currency}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Single Dynamic Benchmark Display */}
+      {currentBenchmarkData && (
+        <motion.div
+          key={selectedCurrency}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-lg rounded-xl border border-white/30 shadow-2xl"
+        >
+          <div className="flex h-full">
+            {/* Left sidebar - Exchange rates info */}
+            <div className="w-80 flex-shrink-0 p-6 border-r border-white/20 bg-gradient-to-b from-white/5 to-transparent">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg">
+                      <ChartBarIcon className="h-5 w-5 text-white" />
                     </div>
-                    <span className="text-sm text-gray-400">Real-time</span>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {selectedCurrency} Benchmark
+                      </h3>
+                      <p className="text-sm text-gray-300">
+                        {CURRENCY_NAMES[selectedCurrency] || selectedCurrency}
+                      </p>
+                    </div>
                   </div>
+                  <span className="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-full">Real-time</span>
+                </div>
+              </div>
+
+              {/* Exchange Rates List */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-lg p-4 border border-orange-500/30">
+                  <span className="text-white font-semibold text-sm">GSDC/{selectedCurrency}</span>
+                  <span className="text-orange-300 font-bold text-lg">
+                    {currentBenchmarkData.gsdcRate.toFixed(4)}
+                  </span>
                 </div>
 
-                {/* Exchange Rates List for this Benchmark */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                    <span className="text-white font-medium text-sm">GSDC/{benchmarkData.currency}</span>
-                    <span className="text-white font-bold text-sm">
-                      {benchmarkData.gsdcRate.toFixed(4)}
-                    </span>
-                  </div>
-
-                  {Object.entries(benchmarkData.benchmarkRates)
-                    .filter(([currency]) => currency !== benchmarkData.currency && currency !== 'USD')
-                    .slice(0, 4) // Show only first 4 pairs
-                    .map(([currency, rate]) => (
-                    <div key={currency} className="flex justify-between items-center bg-white/5 rounded-lg p-3">
-                      <span className="text-gray-300 text-sm">{currency}/{benchmarkData.currency}</span>
-                      <span className="text-gray-200 text-sm">
+                {Object.entries(currentBenchmarkData.benchmarkRates)
+                  .filter(([currency]) => currency !== selectedCurrency && currency !== 'USD')
+                  .slice(0, 4)
+                  .map(([currency, rate]) => (
+                    <div key={currency} className="flex justify-between items-center bg-white/10 rounded-lg p-3 hover:bg-white/15 transition-colors duration-200">
+                      <span className="text-gray-300 text-sm">{currency}/{selectedCurrency}</span>
+                      <span className="text-gray-200 text-sm font-mono">
                         {typeof rate === 'number' ? rate.toFixed(6) : '0.000000'}
                       </span>
                     </div>
                   ))}
-                </div>
               </div>
+            </div>
 
-              {/* Right side - Chart takes all remaining space */}
-              <div className="flex-1 p-6">
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-md font-medium text-white">
-                        Performance on Historical Data
+            {/* Right side - Chart area */}
+            <div className="flex-1 p-6">
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-xl font-semibold text-white mb-1">
+                        Historical Performance
                       </h4>
+                      <p className="text-sm text-gray-400">
+                        Weekly Data Points - GSDC/{selectedCurrency} ({CURRENCY_NAMES[selectedCurrency] || selectedCurrency})
+                      </p>
                     </div>
-                    <div className="mb-4">
-                      <span className="text-sm text-gray-400">
-                        Weekly Points - GSDC/{benchmarkData.currency} ({CURRENCY_NAMES[benchmarkData.currency] || benchmarkData.currency})
-                      </span>
-                    </div>
-
+                    
                     {/* Period Selection */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex gap-2">
                       {periods.map((period) => (
                         <button
                           key={period}
-                          onClick={() => setBoxPeriods(prev => ({
-                            ...prev,
-                            [benchmarkData.currency]: period
-                          }))}
-                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                            (boxPeriods[benchmarkData.currency] || '3 months') === period
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                          onClick={() => setSelectedPeriod(period)}
+                          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                            selectedPeriod === period
+                              ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg'
+                              : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'
                           }`}
                         >
                           {period}
@@ -160,64 +186,63 @@ export default function ExchangeRates() {
                       ))}
                     </div>
                   </div>
+                </div>
 
-                  {/* Chart Container with Zoom Controls */}
-                  <div className="bg-white/5 rounded-lg p-4 h-80 relative">
-                    {/* Zoom Controls */}
-                    <div className="absolute top-2 right-2 z-10 flex space-x-1">
-                      <button
-                        onClick={() => {
-                          // Get the chart instance using the ref that will be passed from HistoricalChart
-                          const event = new CustomEvent('chartZoom', {
-                            detail: { action: 'zoomIn', currency: benchmarkData.currency }
-                          });
-                          window.dispatchEvent(event);
-                        }}
-                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
-                        title="Zoom In"
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() => {
-                          const event = new CustomEvent('chartZoom', {
-                            detail: { action: 'zoomOut', currency: benchmarkData.currency }
-                          });
-                          window.dispatchEvent(event);
-                        }}
-                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
-                        title="Zoom Out"
-                      >
-                        −
-                      </button>
-                      <button
-                        onClick={() => {
-                          const event = new CustomEvent('chartZoom', {
-                            detail: { action: 'resetZoom', currency: benchmarkData.currency }
-                          });
-                          window.dispatchEvent(event);
-                        }}
-                        className="bg-white/10 hover:bg-white/20 text-white p-1 rounded text-xs w-6 h-6 flex items-center justify-center"
-                        title="Reset Zoom"
-                      >
-                        ⌂
-                      </button>
-                    </div>
+                {/* Chart Container with enhanced styling */}
+                <div className="bg-gradient-to-br from-white/10 to-white/5 rounded-xl p-6 h-96 relative border border-white/20 shadow-inner">
+                  {/* Zoom Controls */}
+                  <div className="absolute top-4 right-4 z-10 flex space-x-2">
+                    <button
+                      onClick={() => {
+                        const event = new CustomEvent('chartZoom', {
+                          detail: { action: 'zoomIn', currency: selectedCurrency }
+                        });
+                        window.dispatchEvent(event);
+                      }}
+                      className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-sm w-8 h-8 flex items-center justify-center transition-all duration-200 shadow-lg"
+                      title="Zoom In"
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => {
+                        const event = new CustomEvent('chartZoom', {
+                          detail: { action: 'zoomOut', currency: selectedCurrency }
+                        });
+                        window.dispatchEvent(event);
+                      }}
+                      className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-sm w-8 h-8 flex items-center justify-center transition-all duration-200 shadow-lg"
+                      title="Zoom Out"
+                    >
+                      −
+                    </button>
+                    <button
+                      onClick={() => {
+                        const event = new CustomEvent('chartZoom', {
+                          detail: { action: 'resetZoom', currency: selectedCurrency }
+                        });
+                        window.dispatchEvent(event);
+                      }}
+                      className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-sm w-8 h-8 flex items-center justify-center transition-all duration-200 shadow-lg"
+                      title="Reset Zoom"
+                    >
+                      ⌂
+                    </button>
+                  </div>
 
-                    <div id={`chart-${benchmarkData.currency}`} className="h-full transition-transform duration-200">
-                      <HistoricalChart
-                        currency={benchmarkData.currency}
-                        period={boxPeriods[benchmarkData.currency] || '3 months'}
-                        color={CURRENCY_COLORS[benchmarkData.currency] || '#3B82F6'}
-                      />
-                    </div>
+                  <div className="h-full">
+                    <HistoricalChart
+                      currency={selectedCurrency}
+                      period={selectedPeriod}
+                      color="#ed9030"
+                    />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }

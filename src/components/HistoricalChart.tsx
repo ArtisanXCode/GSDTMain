@@ -127,14 +127,23 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
               data,
               borderColor: color,
               backgroundColor: `${color}20`,
-              borderWidth: 2,
-              fill: false,
+              borderWidth: 3,
+              fill: true,
               tension: 0.4,
               pointBackgroundColor: color,
               pointBorderColor: '#ffffff',
               pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6,
+              pointRadius: 0,
+              pointHoverRadius: 8,
+              pointHoverBackgroundColor: color,
+              pointHoverBorderColor: '#ffffff',
+              pointHoverBorderWidth: 3,
+              shadow: {
+                blur: 10,
+                color: color,
+                offsetX: 0,
+                offsetY: 2
+              }
             },
           ],
         });
@@ -151,6 +160,10 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1000,
+      easing: 'easeInOutQuart',
+    },
     plugins: {
       legend: {
         display: false,
@@ -158,17 +171,34 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
       tooltip: {
         mode: 'index',
         intersect: false,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
         titleColor: '#ffffff',
         bodyColor: '#ffffff',
         borderColor: color,
-        borderWidth: 1,
+        borderWidth: 2,
+        cornerRadius: 12,
+        padding: 12,
+        displayColors: false,
+        titleFont: {
+          size: 14,
+          weight: 'bold',
+        },
+        bodyFont: {
+          size: 13,
+        },
         callbacks: {
           title: (context) => {
-            return `${context[0].label}`;
+            return `Date: ${context[0].label}`;
           },
           label: (context) => {
-            return `GSDC/${currency}: ${context.parsed.y}`;
+            const value = context.parsed.y;
+            const formattedValue = currency === 'IDR' ? 
+              value.toFixed(0) : 
+              value.toFixed(4);
+            return `GSDC/${currency}: ${formattedValue}`;
+          },
+          afterLabel: (context) => {
+            return `Stability Range: ${GSDC_RATE_RANGES[currency]?.min} - ${GSDC_RATE_RANGES[currency]?.max}`;
           },
         },
       },
@@ -191,34 +221,36 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
     scales: {
       x: {
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(255, 255, 255, 0.05)',
           drawBorder: false,
+          lineWidth: 1,
         },
         ticks: {
-          color: 'rgba(255, 255, 255, 0.7)',
+          color: 'rgba(255, 255, 255, 0.8)',
           maxTicksLimit: 8,
           font: {
-            size: 10,
+            size: 11,
+            weight: '500',
           },
         },
       },
       y: {
-        // Get predefined range for this currency
         min: GSDC_RATE_RANGES[currency]?.min,
         max: GSDC_RATE_RANGES[currency]?.max,
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(255, 255, 255, 0.05)',
           drawBorder: false,
+          lineWidth: 1,
         },
         ticks: {
-          color: 'rgba(255, 255, 255, 0.7)',
+          color: 'rgba(255, 255, 255, 0.8)',
           font: {
-            size: 10,
+            size: 11,
+            weight: '500',
           },
           callback: function(value) {
-            // Format based on currency - IDR needs no decimals, others need appropriate decimals
             if (currency === 'IDR') {
-              return Number(value).toFixed(0);
+              return Number(value).toLocaleString();
             } else if (currency === 'USD' || currency === 'BRL') {
               return Number(value).toFixed(2);
             } else {
@@ -231,6 +263,11 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
     elements: {
       point: {
         hoverRadius: 8,
+        hoverBorderWidth: 3,
+      },
+      line: {
+        borderCapStyle: 'round',
+        borderJoinStyle: 'round',
       },
     },
     interaction: {
