@@ -10,12 +10,14 @@ interface Props {
   variant?: 'default' | 'compact' | 'hero';
   showTitle?: boolean;
   className?: string;
+  currencies?: Array<{ code: string; name: string; symbol: string }>;
 }
 
 export default function LiveExchangeRates({ 
   variant = 'default', 
   showTitle = true,
-  className = ""
+  className = "",
+  currencies
 }: Props) {
   const { gsdcRates, isLoading, isError, timestamp } = useGSDCPrice();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -59,10 +61,12 @@ export default function LiveExchangeRates({
     );
   }
 
-  // Filter currencies based on variant
-  const displayCurrencies = variant === 'compact' 
-    ? COMPACT_CURRENCIES.slice(0, 4) // Top 4 for compact view
-    : COMPACT_CURRENCIES.filter(currency => gsdcRates?.[currency] && gsdcRates[currency] > 0);
+  // Filter currencies based on variant and props
+  const displayCurrencies = currencies 
+    ? currencies.map(c => c.code) // Use provided currencies
+    : variant === 'compact' 
+      ? COMPACT_CURRENCIES.slice(0, 4) // Top 4 for compact view
+      : COMPACT_CURRENCIES.filter(currency => gsdcRates?.[currency] && gsdcRates[currency] > 0);
 
   if (variant === 'compact') {
     // Function to format GSDC rate with 2 decimal precision
@@ -147,8 +151,8 @@ export default function LiveExchangeRates({
             <p className="text-white/80 text-sm">Real-time GSDC values across global currencies</p>
           </div>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {displayCurrencies.slice(0, 6).map((currency) => {
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {displayCurrencies.slice(0, 8).map((currency) => {
             const rate = gsdcRates?.[currency] || 0;
             return (
               <motion.div
