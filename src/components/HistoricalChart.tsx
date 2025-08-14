@@ -199,9 +199,6 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
               value.toFixed(4);
             return `GSDC/${currency}: ${formattedValue}`;
           },
-          afterLabel: (context) => {
-            return `Stability Range: ${GSDC_RATE_RANGES[currency]?.min} - ${GSDC_RATE_RANGES[currency]?.max}`;
-          },
         },
       },
       zoom: {
