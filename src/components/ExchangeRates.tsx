@@ -56,8 +56,8 @@ export default function ExchangeRates() {
   }
 
   const periods = ['3 months', '6 months', '1 year', '2 year'];
-  // Get all currencies from environment configuration
-  const availableCurrencies = ['USD', ...BASKET_CURRENCIES];
+  // Get all currencies from environment configuration, ensuring no duplicates
+  const availableCurrencies = ['USD', ...BASKET_CURRENCIES.filter(curr => curr !== 'USD')];
 
   // Get current benchmark data for selected currency
   const currentBenchmarkData = data.find(item => item.currency === selectedCurrency);

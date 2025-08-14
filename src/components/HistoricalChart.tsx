@@ -93,14 +93,16 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         // Generate dates based on period
         const days = period === '3 months' ? 90 :
                      period === '6 months' ? 180 :
-                     period === '1 year' ? 365 : 730;
+                     period === '1 year' ? 365 : 
+                     period === '2 year' ? 730 : 730;
 
         const labels = [];
         const data = [];
         const now = new Date();
 
         // Generate weekly data points (approximately)
-        const totalPoints = Math.min(Math.floor(days / 7), 52);
+        const maxPoints = period === '2 year' ? 104 : 52; // 2 years = ~104 weeks, others max 52
+        const totalPoints = Math.min(Math.floor(days / 7), maxPoints);
 
         for (let i = totalPoints - 1; i >= 0; i--) {
           const date = new Date(now);
