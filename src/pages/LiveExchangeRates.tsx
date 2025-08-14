@@ -216,33 +216,27 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg viewBox="0 0 64 64" className="w-8 h-8">
-                  <defs>
-                    <linearGradient id="volatilityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
-                    </linearGradient>
-                  </defs>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   {/* Minimal volatility line chart - stable with low variance */}
                   <path
-                    d="M8 32 L16 31 L24 32.5 L32 31.5 L40 32 L48 31 L56 32"
-                    stroke="url(#volatilityGrad)"
-                    strokeWidth="3"
+                    d="M4 16 L8 15.5 L12 16.25 L16 15.75 L20 16 L24 15.5 L28 16"
+                    stroke="white"
+                    strokeWidth="2"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                   {/* Stable data points showing minimal volatility */}
-                  <circle cx="8" cy="32" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="16" cy="31" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="24" cy="32.5" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="32" cy="31.5" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="40" cy="32" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="48" cy="31" r="1.5" fill="white" fillOpacity="0.9" />
-                  <circle cx="56" cy="32" r="1.5" fill="white" fillOpacity="0.9" />
+                  <circle cx="4" cy="16" r="1" fill="white" />
+                  <circle cx="8" cy="15.5" r="1" fill="white" />
+                  <circle cx="12" cy="16.25" r="1" fill="white" />
+                  <circle cx="16" cy="15.75" r="1" fill="white" />
+                  <circle cx="20" cy="16" r="1" fill="white" />
+                  <circle cx="24" cy="15.5" r="1" fill="white" />
+                  <circle cx="28" cy="16" r="1" fill="white" />
                   {/* Chart axes for context */}
-                  <line x1="8" y1="44" x2="56" y2="44" stroke="white" strokeWidth="1" strokeOpacity="0.4" />
-                  <line x1="8" y1="20" x2="8" y2="44" stroke="white" strokeWidth="1" strokeOpacity="0.4" />
+                  <line x1="4" y1="22" x2="28" y2="22" stroke="white" strokeWidth="0.5" opacity="0.4" />
+                  <line x1="4" y1="10" x2="4" y2="22" stroke="white" strokeWidth="0.5" opacity="0.4" />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold mb-2">Lower Volatility</h3>
@@ -262,47 +256,39 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg viewBox="0 0 64 64" className="w-8 h-8">
-                  <defs>
-                    <linearGradient id="performanceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
-                    </linearGradient>
-                  </defs>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   {/* Steady upward trend line */}
                   <path
-                    d="M8 48 L16 42 L24 36 L32 30 L40 24 L48 18 L56 12"
-                    stroke="url(#performanceGrad)"
-                    strokeWidth="3.5"
+                    d="M4 24 L8 21 L12 18 L16 15 L20 12 L24 9 L28 6"
+                    stroke="white"
+                    strokeWidth="2.5"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                   {/* Performance data points */}
-                  <circle cx="8" cy="48" r="1.8" fill="white" fillOpacity="0.8" />
-                  <circle cx="24" cy="36" r="1.8" fill="white" fillOpacity="0.8" />
-                  <circle cx="40" cy="24" r="1.8" fill="white" fillOpacity="0.8" />
-                  <circle cx="56" cy="12" r="1.8" fill="white" fillOpacity="0.8" />
+                  <circle cx="4" cy="24" r="1.2" fill="white" />
+                  <circle cx="12" cy="18" r="1.2" fill="white" />
+                  <circle cx="20" cy="12" r="1.2" fill="white" />
+                  <circle cx="28" cy="6" r="1.2" fill="white" />
                   {/* Upward arrow indicator */}
                   <path
-                    d="M50 18 L56 12 L50 6"
+                    d="M25 9 L28 6 L25 3"
                     stroke="white"
-                    strokeWidth="2.5"
+                    strokeWidth="1.5"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeOpacity="0.9"
                   />
                   <path
-                    d="M56 12 L46 12"
+                    d="M28 6 L23 6"
                     stroke="white"
-                    strokeWidth="2.5"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
-                    strokeOpacity="0.9"
                   />
                   {/* Chart grid for context */}
-                  <line x1="8" y1="52" x2="56" y2="52" stroke="white" strokeWidth="1" strokeOpacity="0.3" />
-                  <line x1="8" y1="8" x2="8" y2="52" stroke="white" strokeWidth="1" strokeOpacity="0.3" />
+                  <line x1="4" y1="26" x2="28" y2="26" stroke="white" strokeWidth="0.5" opacity="0.3" />
+                  <line x1="4" y1="4" x2="4" y2="26" stroke="white" strokeWidth="0.5" opacity="0.3" />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold mb-2">Consistent Performance</h3>
@@ -322,42 +308,35 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg viewBox="0 0 64 64" className="w-8 h-8">
-                  <defs>
-                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
-                    </linearGradient>
-                  </defs>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   {/* Modern shield shape */}
                   <path
-                    d="M32 6 C40 6 46 8 46 8 C46 8 46 22 46 32 C46 46 32 58 32 58 C32 58 18 46 18 32 C18 22 18 8 18 8 C18 8 24 6 32 6 Z"
-                    fill="url(#shieldGrad)"
+                    d="M16 3 C20 3 23 4 23 4 C23 4 23 11 23 16 C23 23 16 29 16 29 C16 29 9 23 9 16 C9 11 9 4 9 4 C9 4 12 3 16 3 Z"
+                    fill="white"
                     stroke="none"
                   />
                   {/* Network nodes pattern for diversification */}
-                  <circle cx="32" cy="22" r="2" fill="white" fillOpacity="0.8" />
-                  <circle cx="24" cy="30" r="1.6" fill="white" fillOpacity="0.7" />
-                  <circle cx="40" cy="30" r="1.6" fill="white" fillOpacity="0.7" />
-                  <circle cx="28" cy="38" r="1.6" fill="white" fillOpacity="0.7" />
-                  <circle cx="36" cy="38" r="1.6" fill="white" fillOpacity="0.7" />
-                  <circle cx="32" cy="44" r="1.4" fill="white" fillOpacity="0.6" />
+                  <circle cx="16" cy="11" r="1" fill="#ed9030" />
+                  <circle cx="12" cy="15" r="0.8" fill="#ed9030" />
+                  <circle cx="20" cy="15" r="0.8" fill="#ed9030" />
+                  <circle cx="14" cy="19" r="0.8" fill="#ed9030" />
+                  <circle cx="18" cy="19" r="0.8" fill="#ed9030" />
+                  <circle cx="16" cy="22" r="0.7" fill="#ed9030" />
                   {/* Network connecting lines */}
-                  <line x1="32" y1="22" x2="24" y2="30" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
-                  <line x1="32" y1="22" x2="40" y2="30" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
-                  <line x1="24" y1="30" x2="28" y2="38" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
-                  <line x1="40" y1="30" x2="36" y2="38" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
-                  <line x1="28" y1="38" x2="32" y2="44" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
-                  <line x1="36" y1="38" x2="32" y2="44" stroke="white" strokeWidth="1.2" strokeOpacity="0.5" />
+                  <line x1="16" y1="11" x2="12" y2="15" stroke="#ed9030" strokeWidth="0.8" />
+                  <line x1="16" y1="11" x2="20" y2="15" stroke="#ed9030" strokeWidth="0.8" />
+                  <line x1="12" y1="15" x2="14" y2="19" stroke="#ed9030" strokeWidth="0.8" />
+                  <line x1="20" y1="15" x2="18" y2="19" stroke="#ed9030" strokeWidth="0.8" />
+                  <line x1="14" y1="19" x2="16" y2="22" stroke="#ed9030" strokeWidth="0.8" />
+                  <line x1="18" y1="19" x2="16" y2="22" stroke="#ed9030" strokeWidth="0.8" />
                   {/* Checkmark for security validation */}
                   <path
-                    d="M26 32 L30 36 L38 26"
-                    stroke="white"
-                    strokeWidth="3"
+                    d="M13 16 L15 18 L19 13"
+                    stroke="#ed9030"
+                    strokeWidth="2"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeOpacity="0.9"
                   />
                 </svg>
               </div>
