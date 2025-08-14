@@ -216,28 +216,7 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Minimal volatility line chart - stable with low variance */}
-                  <path
-                    d="M4 16 L8 15.5 L12 16.25 L16 15.75 L20 16 L24 15.5 L28 16"
-                    stroke="white"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  {/* Stable data points showing minimal volatility */}
-                  <circle cx="4" cy="16" r="1" fill="white" />
-                  <circle cx="8" cy="15.5" r="1" fill="white" />
-                  <circle cx="12" cy="16.25" r="1" fill="white" />
-                  <circle cx="16" cy="15.75" r="1" fill="white" />
-                  <circle cx="20" cy="16" r="1" fill="white" />
-                  <circle cx="24" cy="15.5" r="1" fill="white" />
-                  <circle cx="28" cy="16" r="1" fill="white" />
-                  {/* Chart axes for context */}
-                  <line x1="4" y1="22" x2="28" y2="22" stroke="white" strokeWidth="0.5" opacity="0.4" />
-                  <line x1="4" y1="10" x2="4" y2="22" stroke="white" strokeWidth="0.5" opacity="0.4" />
-                </svg>
+                <span className="text-2xl font-bold text-white">-23%</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Lower Volatility</h3>
               <p className="text-gray-400">
@@ -256,40 +235,7 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Steady upward trend line */}
-                  <path
-                    d="M4 24 L8 21 L12 18 L16 15 L20 12 L24 9 L28 6"
-                    stroke="white"
-                    strokeWidth="2.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  {/* Performance data points */}
-                  <circle cx="4" cy="24" r="1.2" fill="white" />
-                  <circle cx="12" cy="18" r="1.2" fill="white" />
-                  <circle cx="20" cy="12" r="1.2" fill="white" />
-                  <circle cx="28" cy="6" r="1.2" fill="white" />
-                  {/* Upward arrow indicator */}
-                  <path
-                    d="M25 9 L28 6 L25 3"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M28 6 L23 6"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  {/* Chart grid for context */}
-                  <line x1="4" y1="26" x2="28" y2="26" stroke="white" strokeWidth="0.5" opacity="0.3" />
-                  <line x1="4" y1="4" x2="4" y2="26" stroke="white" strokeWidth="0.5" opacity="0.3" />
-                </svg>
+                <span className="text-2xl">📊</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Consistent Performance</h3>
               <p className="text-gray-400">
@@ -308,37 +254,7 @@ export default function LiveExchangeRatesPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                 style={{ backgroundColor: "#ed9030" }}
               >
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Modern shield shape */}
-                  <path
-                    d="M16 3 C20 3 23 4 23 4 C23 4 23 11 23 16 C23 23 16 29 16 29 C16 29 9 23 9 16 C9 11 9 4 9 4 C9 4 12 3 16 3 Z"
-                    fill="white"
-                    stroke="none"
-                  />
-                  {/* Network nodes pattern for diversification */}
-                  <circle cx="16" cy="11" r="1" fill="#ed9030" />
-                  <circle cx="12" cy="15" r="0.8" fill="#ed9030" />
-                  <circle cx="20" cy="15" r="0.8" fill="#ed9030" />
-                  <circle cx="14" cy="19" r="0.8" fill="#ed9030" />
-                  <circle cx="18" cy="19" r="0.8" fill="#ed9030" />
-                  <circle cx="16" cy="22" r="0.7" fill="#ed9030" />
-                  {/* Network connecting lines */}
-                  <line x1="16" y1="11" x2="12" y2="15" stroke="#ed9030" strokeWidth="0.8" />
-                  <line x1="16" y1="11" x2="20" y2="15" stroke="#ed9030" strokeWidth="0.8" />
-                  <line x1="12" y1="15" x2="14" y2="19" stroke="#ed9030" strokeWidth="0.8" />
-                  <line x1="20" y1="15" x2="18" y2="19" stroke="#ed9030" strokeWidth="0.8" />
-                  <line x1="14" y1="19" x2="16" y2="22" stroke="#ed9030" strokeWidth="0.8" />
-                  <line x1="18" y1="19" x2="16" y2="22" stroke="#ed9030" strokeWidth="0.8" />
-                  {/* Checkmark for security validation */}
-                  <path
-                    d="M13 16 L15 18 L19 13"
-                    stroke="#ed9030"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <span className="text-2xl">🛡️</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">Risk Mitigation</h3>
               <p className="text-gray-400">

@@ -251,16 +251,22 @@ export default function Home() {
                 USD: {
                   fact: "The US Dollar remains the world's primary reserve currency, backed by the largest economy and used in ~60% of global foreign exchange reserves.",
                   inclusion: "USD serves as the stable reference point and primary trading pair for GSDC, providing liquidity and universal acceptance in global markets.",
+                  stability: "High",
+                  volatility: "0.0%",
                   region: "North America"
                 },
                 CNY: {
                   fact: "Managed by PBOC, the yuan has shown notable stability amid global volatility, backed by robust FX reserves and disciplined policy.",
                   inclusion: "China's economy is the world's second largest, making CNY essential for Global South trade stability and BRICS cooperation.",
+                  stability: "High",
+                  volatility: "1.2%",
                   region: "East Asia"
                 },
                 RUB: {
                   fact: "The Russian ruble has historically been volatile but remains a key BRICS currency with significant energy sector backing.",
                   inclusion: "Russia's vast natural resources and BRICS leadership make RUB important for Global South economic independence, though currently excluded due to sanctions.",
+                  stability: "Medium",
+                  volatility: "3.8%",
                   region: "Eastern Europe"
                 },
                 THB: {
@@ -273,21 +279,29 @@ export default function Home() {
                 INR: {
                   fact: "Historically low volatility (~1.8% annually), with RBI interventions smoothing movement—even amid recent tariff-driven pressure.",
                   inclusion: "India's massive population and growing economy make INR crucial for representing Global South demographic and economic weight.",
+                  stability: "High",
+                  volatility: "1.8%",
                   region: "South Asia"
                 },
                 BRL: {
                   fact: "Despite 2024-25 volatility driven by fiscal stress, the Brazilian real offers strong yield carry (Selic ~15%). Its rebound and liquidity make it a high-return, emerging-market anchor for GSDC.",
-                  inclusion: "Brazil's leadership in Latin America and strong agricultural exports provide diversification and commodity exposure to the basket.",                  
+                  inclusion: "Brazil's leadership in Latin America and strong agricultural exports provide diversification and commodity exposure to the basket.",
+                  stability: "Medium",
+                  volatility: "2.8%",
                   region: "South America"
                 },
                 ZAR: {
                   fact: "The South African rand is typically volatile—sensitive to oil prices and external shocks—but remains highly liquid in BRICS markets, offering diversification and upside during carry-trade flows.",
                   inclusion: "South Africa's role as Africa's most developed economy and BRICS founding member makes ZAR essential for continental representation.",
+                  stability: "Medium",
+                  volatility: "3.2%",
                   region: "Southern Africa"
                 },
                 IDR: {
                   fact: "The Indonesian rupiah has seen cycles of depreciation—like in 2024 reaching ~17K per USD—but interventions and stable policy have supported long-term stability in Southeast Asia.",
-                  inclusion: "Indonesia's position as the world's fourth most populous country and largest Southeast Asian economy provides crucial demographic diversity.",                  
+                  inclusion: "Indonesia's position as the world's fourth most populous country and largest Southeast Asian economy provides crucial demographic diversity.",
+                  stability: "Medium",
+                  volatility: "2.5%",
                   region: "Southeast Asia"
                 }
               };
@@ -301,7 +315,7 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative min-h-[300px] perspective-1000 group"
+                  className="relative min-h-[280px] perspective-1000 group"
                 >
                   {/* Card Container with flip animation */}
                   <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180">
@@ -317,7 +331,7 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
                       
-                      <div className="relative p-6 h-full min-h-[300px] flex flex-col">
+                      <div className="relative p-6 h-full min-h-[280px] flex flex-col">
                         {/* Flip indicator */}
                         <div className="flex justify-end mb-2">
                           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -331,7 +345,7 @@ export default function Home() {
                         <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                           {/* Large currency icon */}
                           <div className="w-24 h-24 rounded-3xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-2xl transform transition-transform duration-300 group-hover:scale-110 border border-white/40">
-                            <span className="text-white font-bold text-5xl">
+                            <span className="text-white font-bold text-4xl">
                               {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
                             </span>
                           </div>
@@ -366,16 +380,16 @@ export default function Home() {
                       
                       <div className="relative p-6 h-full min-h-[280px] flex flex-col">
                         <div className="flex items-center space-x-3 mb-4 flex-shrink-0">
-                          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                            <span className="text-white font-bold text-3xl">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">
                               {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
                             </span>
                           </div>
                           <div>
-                            <h4 className="text-2xl font-bold text-white">
+                            <h4 className="text-lg font-bold text-white">
                               {currency.code}
                             </h4>
-                            <p className="text-white/60 text-md">
+                            <p className="text-white/60 text-xs">
                               {currency.name}
                             </p>
                           </div>
@@ -385,16 +399,15 @@ export default function Home() {
                         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3">
                           {/* Key fact */}
                           <div className="bg-white/5 rounded-lg p-3 flex-shrink-0">
-                            <h5 className="text-white/80 text-lg font-semibold mb-2 uppercase tracking-wide">
-                              { /* 📊 Key Insight */ }
+                            <h5 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wide">
+                              📊 Key Insight
                             </h5>
-                            <p className="text-white/70 text-md leading-relaxed">
+                            <p className="text-white/70 text-xs leading-relaxed">
                               {info?.fact}
                             </p>
                           </div>
 
                           {/* Why included */}
-                          {/*
                           <div className="bg-white/5 rounded-lg p-3 flex-shrink-0">
                             <h5 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wide">
                               🎯 GSDC Role
@@ -403,7 +416,6 @@ export default function Home() {
                               {info?.inclusion}
                             </p>
                           </div>
-                          */}
                         </div>
                       </div>
                     </div>
@@ -415,7 +427,7 @@ export default function Home() {
         </div>
 
         {/* Sanctions Disclaimer */}
-        <div className="mt-12 max-w-6xl mx-auto bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
+        <div className="mt-12 max-w-5xl mx-auto bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
           <p className="text-sm text-gray-700 leading-relaxed">
             <strong className="text-gray-900">Important Notice:</strong> Regrettably due to both primary and secondary sanctions imposed by the U.S. Office of Foreign Assets Control (OFAC) and the European External Action Service (EEAS), we were unable to include the Russian Ruble (RUB) and Russian Federation securities (Government Bonds) in the currency basket and reserves. We look forward to a resolution of this situation in the future. In the interim, for anyone wishing to access a Russian stablecoin we suggest A5A7, a Russian ruble pegged stablecoin, accessible at the following link:{" "}
             <a 
