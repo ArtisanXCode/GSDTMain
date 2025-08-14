@@ -244,120 +244,189 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {currencies.map((currency, index) => {
-              // Currency information for tooltips
+              // Currency information for detailed view
               const currencyInfo = {
                 CNY: {
                   fact: "Managed by PBOC, the yuan has shown notable stability amid global volatility, backed by robust FX reserves and disciplined policy.",
-                  inclusion: "China's economy is the world's second largest, making CNY essential for Global South trade stability and BRICS cooperation."
+                  inclusion: "China's economy is the world's second largest, making CNY essential for Global South trade stability and BRICS cooperation.",
+                  stability: "High",
+                  volatility: "1.2%",
+                  region: "East Asia"
                 },
                 RUB: {
                   fact: "The Russian ruble has historically been volatile but remains a key BRICS currency with significant energy sector backing.",
-                  inclusion: "Russia's vast natural resources and BRICS leadership make RUB important for Global South economic independence, though currently excluded due to sanctions."
+                  inclusion: "Russia's vast natural resources and BRICS leadership make RUB important for Global South economic independence, though currently excluded due to sanctions.",
+                  stability: "Medium",
+                  volatility: "3.8%",
+                  region: "Eastern Europe"
                 },
                 THB: {
                   fact: "Seen as one of Southeast Asia's most stable currencies, the baht benefits from strong fundamentals and low volatility.",
-                  inclusion: "Thailand's strategic position in ASEAN and stable monetary policy make THB a reliable anchor for regional stability."
+                  inclusion: "Thailand's strategic position in ASEAN and stable monetary policy make THB a reliable anchor for regional stability.",
+                  stability: "High",
+                  volatility: "1.4%",
+                  region: "Southeast Asia"
                 },
                 INR: {
                   fact: "Historically low volatility (~1.8% annually), with RBI interventions smoothing movement—even amid recent tariff-driven pressure.",
-                  inclusion: "India's massive population and growing economy make INR crucial for representing Global South demographic and economic weight."
+                  inclusion: "India's massive population and growing economy make INR crucial for representing Global South demographic and economic weight.",
+                  stability: "High",
+                  volatility: "1.8%",
+                  region: "South Asia"
                 },
                 BRL: {
                   fact: "Despite 2024-25 volatility driven by fiscal stress, the Brazilian real offers strong yield carry (Selic ~15%). Its rebound and liquidity make it a high-return, emerging-market anchor for GSDC.",
-                  inclusion: "Brazil's leadership in Latin America and strong agricultural exports provide diversification and commodity exposure to the basket."
+                  inclusion: "Brazil's leadership in Latin America and strong agricultural exports provide diversification and commodity exposure to the basket.",
+                  stability: "Medium",
+                  volatility: "2.8%",
+                  region: "South America"
                 },
                 ZAR: {
                   fact: "The South African rand is typically volatile—sensitive to oil prices and external shocks—but remains highly liquid in BRICS markets, offering diversification and upside during carry-trade flows.",
-                  inclusion: "South Africa's role as Africa's most developed economy and BRICS founding member makes ZAR essential for continental representation."
+                  inclusion: "South Africa's role as Africa's most developed economy and BRICS founding member makes ZAR essential for continental representation.",
+                  stability: "Medium",
+                  volatility: "3.2%",
+                  region: "Southern Africa"
                 },
                 IDR: {
                   fact: "The Indonesian rupiah has seen cycles of depreciation—like in 2024 reaching ~17K per USD—but interventions and stable policy have supported long-term stability in Southeast Asia.",
-                  inclusion: "Indonesia's position as the world's fourth most populous country and largest Southeast Asian economy provides crucial demographic diversity."
+                  inclusion: "Indonesia's position as the world's fourth most populous country and largest Southeast Asian economy provides crucial demographic diversity.",
+                  stability: "Medium",
+                  volatility: "2.5%",
+                  region: "Southeast Asia"
                 }
               };
 
+              const info = currencyInfo[currency.code];
+
               return (
-                <div key={currency.code} className="relative group">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="rounded-2xl p-8 min-h-[140px] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center cursor-pointer"
-                    style={{
-                      background: "linear-gradient(to bottom, #6d97bf, #446c93)",
-                    }}
-                  >
-                    <div className="flex items-center space-x-4 w-full">
-                      <div
-                        className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-                        style={{
-                          background:
-                            "linear-gradient(to bottom, #f6b62e, #d46c00)",
-                        }}
-                      >
-                        <span className="text-white font-bold text-lg">
-                          {currency.code.charAt(0)}
-                        </span>
+                <motion.div
+                  key={currency.code}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative h-[200px] perspective-1000"
+                >
+                  {/* Card Container with flip animation */}
+                  <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180 group">
+                    
+                    {/* Front Side */}
+                    <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
+                      
+                      {/* Animated background pattern */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white/20 -translate-y-16 translate-x-16"></div>
+                        <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
-                      <div>
-                        <h3
-                          className="text-xl font-extrabold mb-1"
-                          style={{ color: "#ed9030" }}
-                        >
-                          {currency.code}
-                        </h3>
-                        <p className="text-white text-sm font-medium opacity-90">
-                          {currency.name}
-                        </p>
+                      
+                      <div className="relative p-6 h-full flex flex-col justify-between">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110">
+                              <span className="text-white font-bold text-xl">
+                                {currency.code.charAt(0)}
+                              </span>
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold text-white mb-1">
+                                {currency.code}
+                              </h3>
+                              <p className="text-white/80 text-sm font-medium">
+                                {currency.name}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Flip indicator */}
+                          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="text-white/60 text-xs uppercase tracking-wider font-semibold">
+                            {info?.region}
+                          </div>
+                          <div className="text-white/60 text-xs">
+                            Hover for details →
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
 
-                  {/* Tooltip */}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
-                    <div className="relative">
-                      {/* Arrow pointing down */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
+                    {/* Back Side */}
+                    <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl rotate-y-180 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
                       
-                      <div className="mb-4">
-                        <h4 className="text-lg font-bold text-gray-900 mb-2 flex items-center">
-                          <span
-                            className="w-8 h-8 rounded-full flex items-center justify-center mr-3 text-white text-sm font-bold"
-                            style={{
-                              background: "linear-gradient(to bottom, #f6b62e, #d46c00)",
-                            }}
-                          >
-                            {currency.code.charAt(0)}
-                          </span>
-                          {currency.code} - {currency.name}
-                        </h4>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div>
-                          <h5 className="font-semibold text-gray-800 mb-2 text-sm uppercase tracking-wide">
-                            📊 Economic Profile
-                          </h5>
-                          <p className="text-gray-600 text-sm leading-relaxed">
-                            {currencyInfo[currency.code]?.fact}
-                          </p>
+                      <div className="relative p-6 h-full">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                            <span className="text-white font-bold text-sm">
+                              {currency.code.charAt(0)}
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-bold text-white">
+                              {currency.code}
+                            </h4>
+                            <p className="text-white/60 text-xs">
+                              {currency.name}
+                            </p>
+                          </div>
                         </div>
 
-                        <div>
-                          <h5 className="font-semibold text-gray-800 mb-2 text-sm uppercase tracking-wide">
-                            🎯 Why Included
-                          </h5>
-                          <p className="text-gray-600 text-sm leading-relaxed">
-                            {currencyInfo[currency.code]?.inclusion}
-                          </p>
+                        <div className="space-y-3">
+                          {/* Stats */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-white/10 rounded-lg p-2">
+                              <p className="text-white/60 text-xs font-medium">Stability</p>
+                              <p className={`text-sm font-bold ${
+                                info?.stability === 'High' ? 'text-green-400' : 
+                                info?.stability === 'Medium' ? 'text-yellow-400' : 'text-red-400'
+                              }`}>
+                                {info?.stability}
+                              </p>
+                            </div>
+                            <div className="bg-white/10 rounded-lg p-2">
+                              <p className="text-white/60 text-xs font-medium">Volatility</p>
+                              <p className="text-white text-sm font-bold">
+                                {info?.volatility}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Key fact */}
+                          <div className="bg-white/5 rounded-lg p-3">
+                            <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
+                              📊 Key Insight
+                            </h5>
+                            <p className="text-white/70 text-xs leading-relaxed line-clamp-3">
+                              {info?.fact.slice(0, 120)}...
+                            </p>
+                          </div>
+
+                          {/* Why included */}
+                          <div className="bg-white/5 rounded-lg p-3">
+                            <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
+                              🎯 GSDC Role
+                            </h5>
+                            <p className="text-white/70 text-xs leading-relaxed line-clamp-2">
+                              {info?.inclusion.slice(0, 100)}...
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
