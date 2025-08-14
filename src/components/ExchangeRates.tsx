@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowPathIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { useLiveExchangeRates, BASKET_CURRENCIES } from '../services/liveExchangeRates';
 import { CURRENCY_NAMES, CURRENCY_COLORS } from '../config/api';
 import HistoricalChart from './HistoricalChart';
@@ -18,7 +17,7 @@ export default function ExchangeRates() {
       // Clear the cache to force fresh API call
       const { unifiedExchangeRateService } = await import('../services/liveExchangeRates');
       unifiedExchangeRateService.clearCache();
-      
+
       await refetch();
       // Force a small delay to show the refresh is working
       setTimeout(() => {
@@ -91,11 +90,15 @@ export default function ExchangeRates() {
               {/* Left sidebar - minimal width */}
               <div className="w-80 flex-shrink-0 p-6 border-r border-white/20">
                 <div>
-                  <h2 className="text-xl font-bold mb-4 flex items-center">
-                    <ChartBarIcon className="h-6 w-6 mr-2" />
-                    {benchmarkData.currency} Benchmark
-                  </h2>
-                  <p className="text-gray-300 text-sm mb-6">Real-time</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <ChartBarIcon className="h-5 w-5 text-orange-400" />
+                      <h3 className="text-lg font-semibold text-white">
+                        {benchmarkData.currency} - {CURRENCY_NAMES[benchmarkData.currency] || benchmarkData.currency} Benchmark
+                      </h3>
+                    </div>
+                    <span className="text-sm text-gray-400">Real-time</span>
+                  </div>
                 </div>
 
                 {/* Exchange Rates List for this Benchmark */}
@@ -125,8 +128,16 @@ export default function ExchangeRates() {
               <div className="flex-1 p-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-bold mb-2">Performance on Historical Data</h3>
-                    <p className="text-gray-300 text-sm mb-4">Weekly Points - GSDC/{benchmarkData.currency}</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-md font-medium text-white">
+                        Performance on Historical Data
+                      </h4>
+                    </div>
+                    <div className="mb-4">
+                      <span className="text-sm text-gray-400">
+                        Weekly Points - GSDC/{benchmarkData.currency} ({CURRENCY_NAMES[benchmarkData.currency] || benchmarkData.currency})
+                      </span>
+                    </div>
 
                     {/* Period Selection */}
                     <div className="flex flex-wrap gap-2 mb-4">
@@ -156,7 +167,7 @@ export default function ExchangeRates() {
                       <button
                         onClick={() => {
                           // Get the chart instance using the ref that will be passed from HistoricalChart
-                          const event = new CustomEvent('chartZoom', { 
+                          const event = new CustomEvent('chartZoom', {
                             detail: { action: 'zoomIn', currency: benchmarkData.currency }
                           });
                           window.dispatchEvent(event);
@@ -168,7 +179,7 @@ export default function ExchangeRates() {
                       </button>
                       <button
                         onClick={() => {
-                          const event = new CustomEvent('chartZoom', { 
+                          const event = new CustomEvent('chartZoom', {
                             detail: { action: 'zoomOut', currency: benchmarkData.currency }
                           });
                           window.dispatchEvent(event);
@@ -180,7 +191,7 @@ export default function ExchangeRates() {
                       </button>
                       <button
                         onClick={() => {
-                          const event = new CustomEvent('chartZoom', { 
+                          const event = new CustomEvent('chartZoom', {
                             detail: { action: 'resetZoom', currency: benchmarkData.currency }
                           });
                           window.dispatchEvent(event);
