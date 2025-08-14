@@ -308,10 +308,10 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative h-[200px] perspective-1000"
+                  className="relative min-h-[200px] perspective-1000 group"
                 >
                   {/* Card Container with flip animation */}
-                  <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180 group">
+                  <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180">
                     
                     {/* Front Side */}
                     <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
@@ -324,7 +324,7 @@ export default function Home() {
                         <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
                       
-                      <div className="relative p-6 h-full flex flex-col justify-between">
+                      <div className="relative p-6 h-full min-h-[200px] flex flex-col justify-between">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg transform transition-transform duration-300 group-hover:scale-110">
@@ -362,11 +362,11 @@ export default function Home() {
                     </div>
 
                     {/* Back Side */}
-                    <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl rotate-y-180 overflow-hidden">
+                    <div className="absolute inset-0 w-full backface-hidden rounded-3xl shadow-xl rotate-y-180 overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
                       
-                      <div className="relative p-6 h-full">
+                      <div className="relative p-6 min-h-[200px]">
                         <div className="flex items-center space-x-3 mb-4">
                           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
                             <span className="text-white font-bold text-sm">
@@ -408,8 +408,8 @@ export default function Home() {
                             <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
                               📊 Key Insight
                             </h5>
-                            <p className="text-white/70 text-xs leading-relaxed line-clamp-3">
-                              {info?.fact.slice(0, 120)}...
+                            <p className="text-white/70 text-xs leading-relaxed">
+                              {info?.fact.length > 140 ? `${info?.fact.slice(0, 140)}...` : info?.fact}
                             </p>
                           </div>
 
@@ -418,8 +418,8 @@ export default function Home() {
                             <h5 className="text-white/80 text-xs font-semibold mb-1 uppercase tracking-wide">
                               🎯 GSDC Role
                             </h5>
-                            <p className="text-white/70 text-xs leading-relaxed line-clamp-2">
-                              {info?.inclusion.slice(0, 100)}...
+                            <p className="text-white/70 text-xs leading-relaxed">
+                              {info?.inclusion.length > 120 ? `${info?.inclusion.slice(0, 120)}...` : info?.inclusion}
                             </p>
                           </div>
                         </div>
