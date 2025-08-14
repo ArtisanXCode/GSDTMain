@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -26,6 +25,17 @@ ChartJS.register(
   zoomPlugin
 );
 
+// Predefined Y-axis ranges for GSDC exchange rates
+const GSDC_RATE_RANGES: Record<string, { min: number; max: number }> = {
+  'USD': { min: 0.00, max: 1.00 },
+  'CNY': { min: 1.00, max: 6.00 },
+  'THB': { min: 10.00, max: 15.00 },
+  'INR': { min: 33.00, max: 38.00 },
+  'BRL': { min: 1.5, max: 3.00 },
+  'ZAR': { min: 6.0, max: 9.0 },
+  'IDR': { min: 6000, max: 8000 }
+};
+
 interface HistoricalChartProps {
   currency: string;
   period: string;
@@ -42,9 +52,9 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
     // Add event listeners for zoom controls
     const handleZoomEvent = (event: CustomEvent) => {
       if (event.detail.currency !== currency || !chartRef.current) return;
-      
+
       const chart = chartRef.current;
-      
+
       switch (event.detail.action) {
         case 'zoomIn':
           chart.zoom(1.1);
@@ -59,7 +69,7 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
     };
 
     window.addEventListener('chartZoom', handleZoomEvent as EventListener);
-    
+
     return () => {
       window.removeEventListener('chartZoom', handleZoomEvent as EventListener);
     };
@@ -81,8 +91,8 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         }
 
         // Generate dates based on period
-        const days = period === '3 months' ? 90 : 
-                     period === '6 months' ? 180 : 
+        const days = period === '3 months' ? 90 :
+                     period === '6 months' ? 180 :
                      period === '1 year' ? 365 : 730;
 
         const labels = [];
@@ -91,7 +101,7 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
 
         // Generate weekly data points (approximately)
         const totalPoints = Math.min(Math.floor(days / 7), 52);
-        
+
         for (let i = totalPoints - 1; i >= 0; i--) {
           const date = new Date(now);
           date.setDate(date.getDate() - (i * 7));
@@ -193,16 +203,9 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
         },
       },
       y: {
-        min: 0,
-        max: (() => {
-          // Dynamic max based on current GSDC rate
-          if (currentGSDCRate <= 1) return 2;
-          if (currentGSDCRate <= 5) return Math.ceil(currentGSDCRate * 2.5);
-          if (currentGSDCRate <= 15) return Math.ceil(currentGSDCRate * 1.5);
-          if (currentGSDCRate <= 30) return Math.ceil(currentGSDCRate * 1.4);
-          if (currentGSDCRate <= 50) return Math.ceil(currentGSDCRate * 1.3);
-          return Math.ceil(currentGSDCRate * 1.2);
-        })(),
+        // Get predefined range for this currency
+        min: GSDC_RATE_RANGES[currency]?.min,
+        max: GSDC_RATE_RANGES[currency]?.max,
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
           drawBorder: false,
@@ -212,17 +215,15 @@ export default function HistoricalChart({ currency, period, color = '#3B82F6' }:
           font: {
             size: 10,
           },
-          stepSize: (() => {
-            const maxValue = currentGSDCRate <= 1 ? 2 :
-                           currentGSDCRate <= 5 ? Math.ceil(currentGSDCRate * 2.5) :
-                           currentGSDCRate <= 15 ? Math.ceil(currentGSDCRate * 1.5) :
-                           currentGSDCRate <= 30 ? Math.ceil(currentGSDCRate * 1.4) :
-                           currentGSDCRate <= 50 ? Math.ceil(currentGSDCRate * 1.3) :
-                           Math.ceil(currentGSDCRate * 1.2);
-            return maxValue / 8; // Show about 8 ticks
-          })(),
           callback: function(value) {
-            return Number(value).toFixed(4);
+            // Format based on currency - IDR needs no decimals, others need appropriate decimals
+            if (currency === 'IDR') {
+              return Number(value).toFixed(0);
+            } else if (currency === 'USD' || currency === 'BRL') {
+              return Number(value).toFixed(2);
+            } else {
+              return Number(value).toFixed(2);
+            }
           },
         },
       },
