@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ExchangeRates from '../components/ExchangeRates';
+import { EXCHANGE_RATE_CONFIG, CURRENCY_NAMES } from '../config/api';
 
 export default function LiveExchangeRatesPage() {
   return (
@@ -120,12 +121,11 @@ export default function LiveExchangeRatesPage() {
                 showing how diversification reduces single-currency risk.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li>• CNH (Chinese Yuan)</li>
-                <li>• BRL (Brazilian Real)</li>
-                <li>• INR (Indian Rupee)</li>
-                <li>• ZAR (South African Rand)</li>
-                <li>• IDR (Indonesian Rupiah)</li>
-                <li>• THB (Thai Baht)</li>
+                {EXCHANGE_RATE_CONFIG.BASKET_CURRENCIES
+                  .filter(currency => currency !== 'USD') // Exclude USD as it's the reference
+                  .map(currency => (
+                    <li key={currency}>• {currency} ({CURRENCY_NAMES[currency] || currency})</li>
+                  ))}
               </ul>
             </motion.div>
 
