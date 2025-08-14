@@ -1,4 +1,6 @@
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import {
   GlobeAltIcon,
   BanknotesIcon,
@@ -7,7 +9,6 @@ import {
   CogIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import LiveExchangeRates from "../components/LiveExchangeRates";
 import { useWallet } from '../hooks/useWallet';
 import { useAuth } from '../contexts/AuthContext';
@@ -48,14 +49,118 @@ const features = [
   },
 ];
 
-const metrics = [
-  { id: 1, stat: "10M+", emphasis: "GSDC", rest: "in circulation" },
-  { id: 2, stat: "50+", emphasis: "Countries", rest: "supported" },
-  { id: 3, stat: "99.9%", emphasis: "Uptime", rest: "guaranteed" },
-  { id: 4, stat: "24/7", emphasis: "Support", rest: "available" },
-];
+// Animated counter hook
+function useAnimatedCounter(end: number, duration: number = 2000, shouldStart: boolean = false) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!shouldStart) return;
+
+    let startTime: number;
+    let animationFrame: number;
+
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+
+      // Easing function for smooth animation
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(end * easeOutCubic));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCount(end);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration, shouldStart]);
+
+  return count;
+}
+
+// Animated Counter Component
+function AnimatedMetric({ metric, inView }: { metric: any, inView: boolean }) {
+  const getNumericValue = (stat: string) => {
+    if (stat === '10M+') return 10;
+    if (stat === '50+') return 50;
+    if (stat === '99.9%') return 99.9;
+    if (stat === '24/7') return 24;
+    return 0;
+  };
+
+  const formatValue = (value: number, originalStat: string) => {
+    if (originalStat === '10M+') return `${value}M+`;
+    if (originalStat === '50+') return `${value}+`;
+    if (originalStat === '99.9%') return `${value}%`;
+    if (originalStat === '24/7') return `${Math.floor(value)}/7`;
+    return value.toString();
+  };
+
+  const numericValue = getNumericValue(metric.stat);
+  const animatedValue = useAnimatedCounter(numericValue, 2000, inView);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="text-center"
+    >
+      <div
+        className="text-5xl font-extrabold mb-3"
+        style={{
+          background: "linear-gradient(to bottom, #f6b62e, #e95533)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+        }}
+      >
+        {formatValue(animatedValue, metric.stat)}
+      </div>
+      <div className="text-xl font-bold text-gray-900 mb-1">
+        {metric.emphasis}
+      </div>
+      <div className="text-base text-gray-600 font-regular">
+        {metric.rest}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
+  const metricsRef = useRef(null);
+  const metricsInView = useInView(metricsRef, { once: true, margin: "-100px" });
+
+  const metrics = [
+    {
+      id: 'circulation',
+      stat: '10M+',
+      emphasis: 'GSDC',
+      rest: 'in circulation'
+    },
+    {
+      id: 'countries', 
+      stat: '50+',
+      emphasis: 'Countries',
+      rest: 'supported'
+    },
+    {
+      id: 'uptime',
+      stat: '99.9%',
+      emphasis: 'Uptime',
+      rest: 'guaranteed'
+    },
+    {
+      id: 'support',
+      stat: '24/7',
+      emphasis: 'Support',
+      rest: 'available'
+    }
+  ];
   const { isConnected } = useWallet();
   const { isAuthenticated } = useAuth();
   const [tokenInfo, setTokenInfo] = useState<{
@@ -291,7 +396,7 @@ export default function Home() {
                   region: "Southeast Asia"
                 }
               };
-              
+
               const info = currencyInfo[currency.code];
 
               return (
@@ -305,18 +410,18 @@ export default function Home() {
                 >
                   {/* Card Container with flip animation */}
                   <div className="relative w-full h-full transform-style-preserve-3d transition-transform duration-700 group-hover:rotate-y-180">
-                    
+
                     {/* Front Side */}
                     <div className="absolute inset-0 w-full h-full backface-hidden rounded-3xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
                       <div className="absolute inset-0 bg-gradient-to-b from-[#f6b62e] to-[#e74134]"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
-                      
+
                       {/* Animated background pattern */}
                       <div className="absolute inset-0 opacity-10">
                         <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white/20 -translate-y-16 translate-x-16"></div>
                         <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/10 translate-y-12 -translate-x-12"></div>
                       </div>
-                      
+
                       <div className="relative p-6 h-full min-h-[300px] flex flex-col">
                         {/* Flip indicator */}
                         <div className="flex justify-end mb-2">
@@ -326,7 +431,7 @@ export default function Home() {
                             </svg>
                           </div>
                         </div>
-                        
+
                         {/* Centered content */}
                         <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                           {/* Large currency icon */}
@@ -335,18 +440,18 @@ export default function Home() {
                               {CURRENCY_SYMBOLS[currency.code] || currency.code.charAt(0)}
                             </span>
                           </div>
-                          
+
                           {/* Currency code */}
                           <h3 className="text-3xl font-bold text-white">
                             {currency.code}
                           </h3>
-                          
+
                           {/* Currency name */}
                           <p className="text-white/90 text-lg font-medium">
                             {currency.name}
                           </p>
                         </div>
-                        
+
                         {/* Bottom info */}
                         <div className="flex items-center justify-between mt-4">
                           <div className="text-white/80 text-xs uppercase tracking-wider font-semibold">
@@ -363,7 +468,7 @@ export default function Home() {
                     <div className="absolute inset-0 w-full backface-hidden rounded-3xl shadow-xl rotate-y-180 overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10"></div>
-                      
+
                       <div className="relative p-6 h-full min-h-[280px] flex flex-col">
                         <div className="flex items-center space-x-3 mb-4 flex-shrink-0">
                           <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
@@ -583,34 +688,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto" ref={metricsRef}>
             {metrics.map((metric, index) => (
-              <motion.div
-                key={metric.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div
-                  className="text-5xl font-extrabold mb-3"
-                  style={{
-                    background: "linear-gradient(to bottom, #f6b62e, #e95533)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}
-                >
-                  {metric.stat}
-                </div>
-                <div className="text-xl font-bold text-gray-900 mb-1">
-                  {metric.emphasis}
-                </div>
-                <div className="text-base text-gray-600 font-regular">
-                  {metric.rest}
-                </div>
-              </motion.div>
+              <AnimatedMetric key={metric.id} metric={metric} inView={metricsInView} />
             ))}
           </div>
         </div>
