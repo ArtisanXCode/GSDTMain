@@ -20,7 +20,7 @@ export default function About() {
         style={{
           backgroundImage: "url('/hero_why_gsdc.png')",
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "left",
           backgroundRepeat: "no-repeat",
         }}
       >
@@ -109,7 +109,7 @@ export default function About() {
               {/* Large circular background with dotted border */}
               <div className="relative">
                 {/* Outer dotted circle */}
-                <div className="rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative" style={{ width: '35rem', height: '45rem' }}>
+                <div className="rounded-full flex items-center justify-center relative" style={{ width: '30rem', height: '35rem', right: '6rem' }}>
                   
                   {/* Phone mockup positioned in the center-right */}
                   <div className="absolute right-8 top-12">
@@ -130,7 +130,7 @@ export default function About() {
                       src="/logo_gsdc_icon.png"
                       alt="Phoenix Icon"
                       className="drop-shadow-lg"
-                      style={{ width: '15rem', height: '15rem' }}
+                      style={{ width: '15rem', height: '15rem', right: '0', position: 'relative', top: '10rem' }}
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.8, delay: 0.6 }}
