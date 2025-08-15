@@ -145,7 +145,7 @@ export default function About() {
       </div>
 
       {/* Video Section - Overlapping between hero and alternative sections */}
-      <div className="relative z-30 mb-24" style={{ marginTop: '-18rem' }}></div>
+      <div className="relative z-30 mb-24" style={{ marginTop: '-18rem' }}>
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -158,7 +158,7 @@ export default function About() {
               {/* Animated red border */}
               <div className="absolute inset-0 rounded-2xl animate-pulse-border"></div>
               
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl m-1" style={{ width: '70rem', height: '35rem' }}></div>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl m-1" style={{ width: '70rem', height: '35rem' }}>
                 {/* Video thumbnail background */}
                 <div
                   className="w-full h-full bg-cover bg-center"
