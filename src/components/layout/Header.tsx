@@ -64,7 +64,7 @@ const Header = () => {
     { name: 'Why GSDC', href: '/about', current: false, requireAuth: false },
 
     // Protected navigation items
-    { name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },
+    /*{ name: 'Dashboard', href: '/dashboard', current: false, requireAuth: true },*/
     { name: 'Live Exchange Rates', href: '/live-exchange-rates', current: false, requireAuth: true },
     /*{ name: 'Historical Analytics', href: '/historical-analytics', current: false, requireAuth: true },
     { name: 'Token Minting', href: '/token-minting', current: false, requireAuth: true },
