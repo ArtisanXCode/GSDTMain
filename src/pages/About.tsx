@@ -156,7 +156,7 @@ export default function About() {
             <div className="relative video-container cursor-pointer group"
                  onClick={handleVideoPlay}>
               {/* Animated red border */}
-              <div className="absolute inset-0 rounded-2xl border-4 border-red-600 animate-pulse-border"></div>
+              <div className="absolute inset-0 rounded-2xl animate-pulse-border"></div>
               
               <div className="relative w-96 h-56 rounded-2xl overflow-hidden shadow-2xl m-1">
                 {/* Video thumbnail background */}
