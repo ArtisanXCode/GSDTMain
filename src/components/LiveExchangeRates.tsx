@@ -7,7 +7,7 @@ import { ArrowPathIcon, InformationCircleIcon } from "@heroicons/react/24/outlin
 import { CURRENCY_SYMBOLS, CURRENCY_NAMES, COMPACT_CURRENCIES, CURRENCY_PRECISION } from "../config/api";
 
 interface Props {
-  variant?: 'default' | 'compact' | 'hero';
+  variant?: 'default' | 'compact' | 'hero' | 'mini';
   showTitle?: boolean;
   className?: string;
   currencies?: Array<{ code: string; name: string; symbol: string }>;
@@ -22,6 +22,13 @@ export default function LiveExchangeRates({
   const { gsdcRates, isLoading, isError, timestamp } = useGSDCPrice();
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+  // Helper function to format rates, ensuring it's defined before use
+  const formatRate = (rate: number, currency: string): string => {
+    // Use precision from config or default to 2 decimal places
+    const precision = CURRENCY_PRECISION[currency] || 2;
+    return rate.toFixed(precision);
+  };
+
   useEffect(() => {
     if (timestamp) {
       setLastUpdated(new Date(timestamp));
@@ -31,7 +38,8 @@ export default function LiveExchangeRates({
   const containerClasses = {
     default: "bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl",
     compact: "bg-white/20 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/30",
-    hero: "bg-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-2xl border border-white/20"
+    hero: "bg-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-2xl border border-white/20",
+    mini: "bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 shadow-lg"
   };
 
   if (isLoading) {
@@ -152,24 +160,31 @@ export default function LiveExchangeRates({
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {displayCurrencies.slice(0, 8).map((currency) => {
-            const rate = gsdcRates?.[currency] || 0;
+          {Object.entries(gsdcRates)
+            .filter(([currency, rate], index, array) => {
+              // Remove duplicates by checking if this is the first occurrence
+              return array.findIndex(([c]) => c === currency) === index;
+            })
+            .slice(0, 8)
+            .map(([currency, rate]) => {
+            const currencyName = CURRENCY_NAMES[currency] || currency;
+
             return (
               <motion.div
-                key={currency}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white/10 rounded-xl p-4 text-center hover:bg-white/15 transition-colors"
+                key={`hero-${currency}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white/5 rounded-lg p-4 text-center border border-white/10 hover:bg-white/10 transition-colors"
               >
-                <div className="text-sm font-bold text-white mb-1">
+                <div className="text-sm text-white/70 font-medium mb-2">
                   GSDC/{currency}
                 </div>
-                <div className="text-sm font-extrabold text-white mb-1 break-words">
+                <div className="text-xl font-bold text-white mb-2">
                   {formatHeroGSDCRate(rate, currency)}
                 </div>
-                <div className="text-xs text-white/70 break-words">
-                  {CURRENCY_NAMES[currency]}
+                <div className="text-xs text-white/60 break-words">
+                  {formatCurrencyName(currencyName)}
                 </div>
               </motion.div>
             );
@@ -183,6 +198,37 @@ export default function LiveExchangeRates({
             </p>
           </div>
         )}
+      </div>
+    );
+  }
+
+  // Mini variant - specific currencies
+  if (variant === 'mini') {
+    const essentialCurrencies = ['USD', 'CNY', 'THB', 'INR', 'BRL', 'ZAR', 'IDR'];
+
+    return (
+      <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-4 shadow-lg">
+        <h3 className="text-sm font-semibold text-white mb-3 text-center">
+          Live GSDC Exchange Rates
+        </h3>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          {essentialCurrencies.map((currency) => {
+            const rate = gsdcRates[currency];
+            if (!rate) return null;
+
+            return (
+              <div key={`gsdc-${currency}`} className="text-center py-1">
+                <div className="text-white/80 font-medium">
+                  GSDC/{currency}
+                </div>
+                <div className="text-white font-bold">
+                  {formatRate(rate, currency)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -220,27 +266,32 @@ export default function LiveExchangeRates({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200/20">
-            {displayCurrencies.map((currency) => (
-              <motion.tr
-                key={currency}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="hover:bg-white/5"
-              >
-                <td className="px-4 py-3 text-sm">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100/20 text-blue-300">
-                    GSDC/{currency}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm font-bold text-white">
-                  {CURRENCY_SYMBOLS[currency]}{gsdcRates[currency]?.toFixed(2)}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-300">
-                  {CURRENCY_NAMES[currency]}
-                </td>
-              </motion.tr>
-            ))}
+            {Object.entries(gsdcRates)
+              .filter(([currency, rate], index, array) => {
+                // Remove duplicates by checking if this is the first occurrence
+                return array.findIndex(([c]) => c === currency) === index;
+              })
+              .map(([currency, rate]) => (
+                <motion.tr
+                  key={`exchange-${currency}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="hover:bg-white/5"
+                >
+                  <td className="px-4 py-3 text-sm">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100/20 text-blue-300">
+                      GSDC/{currency}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm font-bold text-white">
+                    {CURRENCY_SYMBOLS[currency]}{formatRate(rate, currency)}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-300">
+                    {CURRENCY_NAMES[currency]}
+                  </td>
+                </motion.tr>
+              ))}
           </tbody>
         </table>
       </div>
