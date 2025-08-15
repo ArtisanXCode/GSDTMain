@@ -14,48 +14,65 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with Video */}
+      {/* Hero Section with Video - Exact Design Match */}
       <div 
-        className="relative py-24 sm:py-32 overflow-hidden min-h-screen flex items-center"
+        className="relative overflow-hidden min-h-screen"
         style={{
-          background: "linear-gradient(135deg, #1a2332 0%, #2d3748 50%, #4a90e2 100%)",
+          background: "linear-gradient(135deg, #1e3a5f 0%, #2d4b73 25%, #3a5c87 50%, #4a7ba7 75%, #5b94c7 100%)",
         }}
       >
-        {/* Background pattern overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                             radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}></div>
+        {/* Background pattern overlay with dots and waves */}
+        <div className="absolute inset-0">
+          {/* Radial dot pattern */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+              backgroundSize: '50px 50px'
+            }}></div>
+          </div>
+          
+          {/* Curved wave patterns */}
+          <div className="absolute top-0 right-0 w-full h-full overflow-hidden">
+            <div className="absolute top-20 right-10 w-96 h-96 rounded-full border border-white/10"></div>
+            <div className="absolute top-32 right-16 w-80 h-80 rounded-full border border-white/15"></div>
+            <div className="absolute top-44 right-22 w-64 h-64 rounded-full border border-white/20"></div>
+          </div>
+          
+          {/* Flowing wave lines */}
+          <svg className="absolute bottom-0 left-0 w-full h-64" viewBox="0 0 1200 400" fill="none">
+            <path d="M0,200 Q300,100 600,200 T1200,200 L1200,400 L0,400 Z" fill="rgba(255,255,255,0.03)"/>
+            <path d="M0,250 Q300,150 600,250 T1200,250 L1200,400 L0,400 Z" fill="rgba(255,255,255,0.02)"/>
+          </svg>
         </div>
 
-        {/* Top-right logo */}
-        <div className="absolute top-8 right-8 z-20">
+        {/* Top-left logo */}
+        <div className="absolute top-8 left-8 z-20">
           <img
             src="/logo_gsdc_white.png"
             alt="GSDC Logo"
-            className="h-12 opacity-80"
+            className="h-12 opacity-90"
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 h-screen flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
             {/* Left Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-white"
+              className="text-white space-y-8"
             >
-              <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-6 leading-tight">
-                <span className="text-yellow-400">GSDC</span>
-                <br />
-                <span className="text-white">Beyond the </span>
-                <span className="text-red-400">Dollar</span>
-              </h1>
+              <div>
+                <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-4 leading-tight">
+                  <span className="text-yellow-400">GSDC</span>
+                  <br />
+                  <span className="text-white">Beyond the </span>
+                  <span className="text-red-400">Dollar</span>
+                </h1>
+              </div>
               
-              <div className="space-y-4 mb-8 text-lg leading-relaxed">
+              <div className="space-y-4 text-lg leading-relaxed">
                 <p className="text-white/90">
                   A multi-currency stablecoin beyond the US Dollar, collateralized by a basket of BRICS+ Real-World Assets held in reserve.
                 </p>
@@ -67,7 +84,7 @@ export default function About() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 shadow-lg"
+                className="px-8 py-3 rounded-full font-semibold text-white transition-all duration-300 shadow-lg"
                 style={{
                   background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
                 }}
@@ -75,39 +92,50 @@ export default function About() {
                 WATCH VIDEO
               </motion.button>
 
-              <p className="text-xs text-white/60 mt-4">
+              <p className="text-xs text-white/60">
                 Our early access and opinions are not financial advice.
               </p>
             </motion.div>
 
-            {/* Right Content - Phone/Device with Video */}
+            {/* Right Content - Phone and Video Layout */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative flex flex-col items-center"
+              className="relative flex flex-col items-center space-y-8"
             >
-              {/* Circular background with dots */}
+              {/* Large Circular Background with Phone */}
               <div className="relative">
-                <div className="w-96 h-96 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center">
-                  <div className="w-80 h-80 rounded-full border border-white/20 flex items-center justify-center">
-                    {/* Phone mockup */}
-                    <div className="relative">
-                      <div className="w-48 h-80 bg-black rounded-3xl p-2 shadow-2xl">
-                        <div className="w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-yellow-600 rounded-2xl flex items-center justify-center overflow-hidden relative">
-                          {/* Phoenix/Fire effect inside phone */}
-                          <div className="absolute inset-0 bg-gradient-radial from-yellow-300 via-orange-500 to-red-600 opacity-80"></div>
-                          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-yellow-200 to-orange-400 shadow-lg z-10"></div>
+                {/* Outer dotted circle */}
+                <div className="w-80 h-80 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative">
+                  {/* Inner solid circle */}
+                  <div className="w-64 h-64 rounded-full border border-white/20 flex items-center justify-center relative">
+                    
+                    {/* Phone mockup positioned to the right */}
+                    <div className="absolute right-4 top-8">
+                      <div className="w-32 h-56 bg-black rounded-2xl p-1 shadow-2xl transform rotate-12">
+                        <div className="w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-red-600 rounded-xl flex items-center justify-center overflow-hidden relative">
+                          {/* Fire/Phoenix effect inside phone */}
+                          <div className="absolute inset-0 bg-gradient-radial from-yellow-300 via-orange-500 to-red-700 opacity-90"></div>
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-200 to-orange-400 shadow-lg z-10 animate-pulse"></div>
                         </div>
                       </div>
-                      
-                      {/* Phoenix icon overlay */}
-                      <div className="absolute -bottom-4 -right-4">
-                        <img
-                          src="/logo_gsdc_icon.png"
-                          alt="Phoenix Icon"
-                          className="w-16 h-16 opacity-90"
-                        />
+                    </div>
+                    
+                    {/* Phoenix icon positioned at bottom right */}
+                    <div className="absolute bottom-2 right-2">
+                      <div className="w-12 h-12 flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-10 h-10">
+                          <defs>
+                            <linearGradient id="phoenixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#f59e0b" />
+                              <stop offset="50%" stopColor="#dc2626" />
+                              <stop offset="100%" stopColor="#991b1b" />
+                            </linearGradient>
+                          </defs>
+                          <path d="M50 10 C30 20, 20 40, 30 60 C40 50, 50 55, 50 50 C50 55, 60 50, 70 60 C80 40, 70 20, 50 10 Z" fill="url(#phoenixGradient)"/>
+                          <path d="M50 50 C45 70, 35 80, 50 90 C65 80, 55 70, 50 50 Z" fill="url(#phoenixGradient)"/>
+                        </svg>
                       </div>
                     </div>
                   </div>
@@ -119,18 +147,18 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="mt-8 relative"
+                className="relative"
               >
-                <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
+                <div className="relative w-72 h-40 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
                      onClick={handleVideoPlay}>
-                  {/* Video thumbnail background */}
+                  {/* Video thumbnail background - Rio de Janeiro Christ the Redeemer */}
                   <div 
                     className="w-full h-full bg-cover bg-center"
                     style={{
                       backgroundImage: "url('/headers/about_us_header.png')"
                     }}
                   >
-                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   </div>
                   
                   {/* Play button */}
@@ -138,9 +166,9 @@ export default function About() {
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300"
+                      className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:bg-white transition-all duration-300"
                     >
-                      <PlayIcon className="w-8 h-8 text-gray-800 ml-1" />
+                      <PlayIcon className="w-7 h-7 text-gray-800 ml-1" />
                     </motion.div>
                   </div>
 
