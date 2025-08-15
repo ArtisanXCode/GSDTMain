@@ -2,26 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Video container animated red border */
-@keyframes pulse-border {
-  0% {
-    border-width: 2px;
-    opacity: 0.8;
-  }
-  50% {
-    border-width: 6px;
-    opacity: 1;
-  }
-  100% {
-    border-width: 2px;
-    opacity: 0.8;
-  }
-}
-
-.animate-pulse-border {
-  animation: pulse-border 2s ease-in-out infinite;
-}
-
 /* 3D Card Flip Animation */
 .perspective-1000 {
   perspective: 1000px;
