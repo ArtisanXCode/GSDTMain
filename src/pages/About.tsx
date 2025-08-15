@@ -14,36 +14,18 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with Video - Exact Design Match */}
+      {/* Hero Section - Exact Design Match */}
       <div 
         className="relative overflow-hidden min-h-screen"
         style={{
-          background: "linear-gradient(135deg, #1e3a5f 0%, #2d4b73 25%, #3a5c87 50%, #4a7ba7 75%, #5b94c7 100%)",
+          backgroundImage: "url('/hero-background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Background pattern overlay with dots and waves */}
-        <div className="absolute inset-0">
-          {/* Radial dot pattern */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-              backgroundSize: '50px 50px'
-            }}></div>
-          </div>
-          
-          {/* Curved wave patterns */}
-          <div className="absolute top-0 right-0 w-full h-full overflow-hidden">
-            <div className="absolute top-20 right-10 w-96 h-96 rounded-full border border-white/10"></div>
-            <div className="absolute top-32 right-16 w-80 h-80 rounded-full border border-white/15"></div>
-            <div className="absolute top-44 right-22 w-64 h-64 rounded-full border border-white/20"></div>
-          </div>
-          
-          {/* Flowing wave lines */}
-          <svg className="absolute bottom-0 left-0 w-full h-64" viewBox="0 0 1200 400" fill="none">
-            <path d="M0,200 Q300,100 600,200 T1200,200 L1200,400 L0,400 Z" fill="rgba(255,255,255,0.03)"/>
-            <path d="M0,250 Q300,150 600,250 T1200,250 L1200,400 L0,400 Z" fill="rgba(255,255,255,0.02)"/>
-          </svg>
-        </div>
+        {/* Dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/20"></div>
 
         {/* Top-left logo */}
         <div className="absolute top-8 left-8 z-20">
@@ -65,10 +47,30 @@ export default function About() {
             >
               <div>
                 <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-4 leading-tight">
-                  <span className="text-yellow-400">GSDC</span>
+                  <span 
+                    className="font-bold"
+                    style={{
+                      background: "linear-gradient(135deg, #f6b62e 0%, #fbbf24 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text"
+                    }}
+                  >
+                    GSDC
+                  </span>
                   <br />
                   <span className="text-white">Beyond the </span>
-                  <span className="text-red-400">Dollar</span>
+                  <span 
+                    className="font-bold"
+                    style={{
+                      background: "linear-gradient(135deg, #e74134 0%, #dc2626 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text"
+                    }}
+                  >
+                    Dollar
+                  </span>
                 </h1>
               </div>
               
@@ -97,88 +99,81 @@ export default function About() {
               </p>
             </motion.div>
 
-            {/* Right Content - Phone and Video Layout */}
+            {/* Right Content - Phone and Phoenix Icon Layout */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative flex flex-col items-center space-y-8"
+              className="relative flex items-center justify-center"
             >
-              {/* Large Circular Background with Phone */}
+              {/* Large circular background with dotted border */}
               <div className="relative">
                 {/* Outer dotted circle */}
-                <div className="w-80 h-80 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative">
-                  {/* Inner solid circle */}
-                  <div className="w-64 h-64 rounded-full border border-white/20 flex items-center justify-center relative">
-                    
-                    {/* Phone mockup positioned to the right */}
-                    <div className="absolute right-4 top-8">
-                      <div className="w-32 h-56 bg-black rounded-2xl p-1 shadow-2xl transform rotate-12">
-                        <div className="w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-red-600 rounded-xl flex items-center justify-center overflow-hidden relative">
-                          {/* Fire/Phoenix effect inside phone */}
-                          <div className="absolute inset-0 bg-gradient-radial from-yellow-300 via-orange-500 to-red-700 opacity-90"></div>
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-200 to-orange-400 shadow-lg z-10 animate-pulse"></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Phoenix icon positioned at bottom right */}
-                    <div className="absolute bottom-2 right-2">
-                      <div className="w-12 h-12 flex items-center justify-center">
-                        <svg viewBox="0 0 100 100" className="w-10 h-10">
-                          <defs>
-                            <linearGradient id="phoenixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%" stopColor="#f59e0b" />
-                              <stop offset="50%" stopColor="#dc2626" />
-                              <stop offset="100%" stopColor="#991b1b" />
-                            </linearGradient>
-                          </defs>
-                          <path d="M50 10 C30 20, 20 40, 30 60 C40 50, 50 55, 50 50 C50 55, 60 50, 70 60 C80 40, 70 20, 50 10 Z" fill="url(#phoenixGradient)"/>
-                          <path d="M50 50 C45 70, 35 80, 50 90 C65 80, 55 70, 50 50 Z" fill="url(#phoenixGradient)"/>
-                        </svg>
-                      </div>
-                    </div>
+                <div className="w-96 h-96 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative">
+                  
+                  {/* Phone mockup positioned in the center-right */}
+                  <div className="absolute right-8 top-12">
+                    <motion.img
+                      src="/phone-mockup.png"
+                      alt="GSDC Mobile App"
+                      className="w-40 h-auto transform rotate-12 drop-shadow-2xl"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                    />
+                  </div>
+                  
+                  {/* Phoenix icon positioned at bottom right of circle */}
+                  <div className="absolute bottom-8 right-8">
+                    <motion.img
+                      src="/phoenix-icon.png"
+                      alt="Phoenix Icon"
+                      className="w-16 h-16 drop-shadow-lg"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.6 }}
+                    />
                   </div>
                 </div>
               </div>
-
-              {/* Video Thumbnail Section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="relative"
-              >
-                <div className="relative w-72 h-40 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
-                     onClick={handleVideoPlay}>
-                  {/* Video thumbnail background - Rio de Janeiro Christ the Redeemer */}
-                  <div 
-                    className="w-full h-full bg-cover bg-center"
-                    style={{
-                      backgroundImage: "url('/headers/about_us_header.png')"
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
-                  
-                  {/* Play button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:bg-white transition-all duration-300"
-                    >
-                      <PlayIcon className="w-7 h-7 text-gray-800 ml-1" />
-                    </motion.div>
-                  </div>
-
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              </motion.div>
             </motion.div>
           </div>
         </div>
+
+        {/* Video Thumbnail Section - Positioned at bottom */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+        >
+          <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
+               onClick={handleVideoPlay}>
+            {/* Video thumbnail background */}
+            <div 
+              className="w-full h-full bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/headers/about_us_header.png')"
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            </div>
+            
+            {/* Play button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:bg-white transition-all duration-300"
+              >
+                <PlayIcon className="w-8 h-8 text-gray-800 ml-1" />
+              </motion.div>
+            </div>
+
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        </motion.div>
       </div>
 
       {/* The Alternative Section */}
