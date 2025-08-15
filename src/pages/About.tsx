@@ -109,14 +109,15 @@ export default function About() {
               {/* Large circular background with dotted border */}
               <div className="relative">
                 {/* Outer dotted circle */}
-                <div className="w-96 h-96 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative">
+                <div className="rounded-full border-2 border-dotted border-white/30 flex items-center justify-center relative" style={{ width: '35rem', height: '45rem' }}>
                   
                   {/* Phone mockup positioned in the center-right */}
                   <div className="absolute right-8 top-12">
                     <motion.img
                       src="/mobile_why_gsdc.png"
                       alt="GSDC Mobile App"
-                      className="w-40 h-auto transform rotate-12 drop-shadow-2xl"
+                      className="transform rotate-12 drop-shadow-2xl"
+                      style={{ width: '35rem', height: '35rem' }}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.8, delay: 0.4 }}
@@ -128,7 +129,8 @@ export default function About() {
                     <motion.img
                       src="/logo_gsdc_icon.png"
                       alt="Phoenix Icon"
-                      className="w-16 h-16 drop-shadow-lg"
+                      className="drop-shadow-lg"
+                      style={{ width: '15rem', height: '15rem' }}
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.8, delay: 0.6 }}
