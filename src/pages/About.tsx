@@ -1,48 +1,153 @@
 
 import { motion } from 'framer-motion';
-import { CheckIcon, ChartBarIcon, ShieldCheckIcon, GlobeAltIcon, CurrencyDollarIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ChartBarIcon, ShieldCheckIcon, GlobeAltIcon, CurrencyDollarIcon, UserGroupIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
 
 export default function About() {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const handleVideoPlay = () => {
+    setIsVideoPlaying(true);
+    // Here you would implement actual video playback logic
+    console.log('Playing video...');
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
+      {/* Hero Section with Video */}
       <div 
-        className="relative py-24 sm:py-32 overflow-hidden"
+        className="relative py-24 sm:py-32 overflow-hidden min-h-screen flex items-center"
         style={{
-          background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%)",
+          background: "linear-gradient(135deg, #1a2332 0%, #2d3748 50%, #4a90e2 100%)",
         }}
       >
-        {/* Background overlay */}
-        <div className="absolute inset-0 bg-black/20"></div>
-        
-        {/* Phoenix Icon overlapping sections */}
-        <div className="absolute top-16 right-8 z-20">
-          <div className="phoenix-icon-parent">
-            <img
-              src="/logo_gsdc_icon.png"
-              alt="Phoenix Icon"
-              className="phoenix-icon-large opacity-20"
-            />
-          </div>
+        {/* Background pattern overlay */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                             radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center">
+        {/* Top-right logo */}
+        <div className="absolute top-8 right-8 z-20">
+          <img
+            src="/logo_gsdc_white.png"
+            alt="GSDC Logo"
+            className="h-12 opacity-80"
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
+              className="text-white"
             >
-              <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl mb-6">
-                GSDC
+              <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-6 leading-tight">
+                <span className="text-yellow-400">GSDC</span>
+                <br />
+                <span className="text-white">Beyond the </span>
+                <span className="text-red-400">Dollar</span>
               </h1>
-              <p className="text-xl text-orange-300 font-semibold mb-4">
-                Beyond the Dollar
+              
+              <div className="space-y-4 mb-8 text-lg leading-relaxed">
+                <p className="text-white/90">
+                  A multi-currency stablecoin beyond the US Dollar, collateralized by a basket of BRICS+ Real-World Assets held in reserve.
+                </p>
+                <p className="text-white/90">
+                  GSDC is created for financial sovereignty, stability and inclusion.
+                </p>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                }}
+              >
+                WATCH VIDEO
+              </motion.button>
+
+              <p className="text-xs text-white/60 mt-4">
+                Our early access and opinions are not financial advice.
               </p>
-              <p className="text-lg leading-8 text-white/90 max-w-2xl mx-auto">
-                Revolutionizing global finance with a currency designed for the Global South. 
-                Transparent, stable, and backed by real assets.
-              </p>
+            </motion.div>
+
+            {/* Right Content - Phone/Device with Video */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative flex flex-col items-center"
+            >
+              {/* Circular background with dots */}
+              <div className="relative">
+                <div className="w-96 h-96 rounded-full border-2 border-dotted border-white/30 flex items-center justify-center">
+                  <div className="w-80 h-80 rounded-full border border-white/20 flex items-center justify-center">
+                    {/* Phone mockup */}
+                    <div className="relative">
+                      <div className="w-48 h-80 bg-black rounded-3xl p-2 shadow-2xl">
+                        <div className="w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-yellow-600 rounded-2xl flex items-center justify-center overflow-hidden relative">
+                          {/* Phoenix/Fire effect inside phone */}
+                          <div className="absolute inset-0 bg-gradient-radial from-yellow-300 via-orange-500 to-red-600 opacity-80"></div>
+                          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-yellow-200 to-orange-400 shadow-lg z-10"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Phoenix icon overlay */}
+                      <div className="absolute -bottom-4 -right-4">
+                        <img
+                          src="/logo_gsdc_icon.png"
+                          alt="Phoenix Icon"
+                          className="w-16 h-16 opacity-90"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Video Thumbnail Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="mt-8 relative"
+              >
+                <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
+                     onClick={handleVideoPlay}>
+                  {/* Video thumbnail background */}
+                  <div 
+                    className="w-full h-full bg-cover bg-center"
+                    style={{
+                      backgroundImage: "url('/headers/about_us_header.png')"
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-black/20"></div>
+                  </div>
+                  
+                  {/* Play button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:bg-white transition-all duration-300"
+                    >
+                      <PlayIcon className="w-8 h-8 text-gray-800 ml-1" />
+                    </motion.div>
+                  </div>
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
