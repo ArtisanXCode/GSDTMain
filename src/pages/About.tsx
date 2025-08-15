@@ -1,375 +1,368 @@
 
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { CheckIcon, ChartBarIcon, ShieldCheckIcon, GlobeAltIcon, CurrencyDollarIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export default function About() {
   return (
-    <div className="bg-white">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div
-        className="relative isolate text-white min-h-[90vh] flex items-center overflow-hidden"
+      <div 
+        className="relative py-24 sm:py-32 overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, #1a2332 0%, #2d4a6b 50%, #1a2332 100%)`,
+          background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%)",
         }}
       >
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-96 h-96 rounded-full border border-orange-300"></div>
-          <div className="absolute bottom-20 right-20 w-64 h-64 rounded-full border border-orange-400"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-orange-200"></div>
+        {/* Background overlay */}
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        {/* Phoenix Icon overlapping sections */}
+        <div className="absolute top-16 right-8 z-20">
+          <div className="phoenix-icon-parent">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="phoenix-icon-large opacity-20"
+            />
+          </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative mx-auto max-w-7xl w-full px-6 lg:px-8 py-32 z-10"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl mb-6 leading-tight">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl mb-6">
                 GSDC
-                <br />
-                <span className="text-orange-400">Beyond the Dollar</span>
               </h1>
-              <p className="text-xl text-white/90 max-w-2xl mb-8">
-                Empowering Global South economies through innovative blockchain technology. 
-                A revolutionary stablecoin backed by a diversified basket of BRICS currencies.
+              <p className="text-xl text-orange-300 font-semibold mb-4">
+                Beyond the Dollar
               </p>
-              <div className="flex gap-4">
-                <Link
-                  to="/token-minting"
-                  className="px-8 py-4 bg-gradient-to-r from-orange-400 to-red-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200"
-                >
-                  Get Started
-                </Link>
-                <Link
-                  to="/transparency"
-                  className="px-8 py-4 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-200"
-                >
-                  Learn More
-                </Link>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="relative z-10">
-                <img
-                  src="/logo_gsdc_icon.png"
-                  alt="GSDC Icon"
-                  className="w-96 h-96 mx-auto"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-red-500/20 rounded-full blur-3xl"></div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Key Principles Section */}
-      <div className="py-24 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Key Principles</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              GSDC is built on fundamental principles that ensure stability, transparency, and economic empowerment
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-blue-600 text-white p-8 rounded-lg"
-            >
-              <h3 className="text-xl font-bold mb-4">Stability Through Diversification</h3>
-              <p className="text-blue-100">
-                Backed by a balanced basket of BRICS currencies, reducing single-currency volatility
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-green-600 text-white p-8 rounded-lg"
-            >
-              <h3 className="text-xl font-bold mb-4">Transparency & Trust</h3>
-              <p className="text-green-100">
-                Real-time visibility into reserves, circulation, and smart contract operations
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-purple-600 text-white p-8 rounded-lg"
-            >
-              <h3 className="text-xl font-bold mb-4">Financial Inclusion</h3>
-              <p className="text-purple-100">
-                Providing access to stable digital currency for underbanked populations
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-orange-600 text-white p-8 rounded-lg"
-            >
-              <h3 className="text-xl font-bold mb-4">Economic Sovereignty</h3>
-              <p className="text-orange-100">
-                Reducing dependence on traditional Western financial systems
+              <p className="text-lg leading-8 text-white/90 max-w-2xl mx-auto">
+                Revolutionizing global finance with a currency designed for the Global South. 
+                Transparent, stable, and backed by real assets.
               </p>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Usage Section */}
-      <div className="py-24 bg-white">
+      {/* The Alternative Section */}
+      <div className="bg-gray-50 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                The Alternative
+              </h2>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                GSDC represents a paradigm shift in digital currency design. Unlike traditional 
+                stablecoins pegged to a single currency, GSDC is backed by a carefully curated 
+                basket of Global South currencies, providing unprecedented stability and 
+                diversification for emerging markets.
+              </p>
+              
+              <div className="space-y-4">
+                {[
+                  "Multi-currency backing reduces volatility",
+                  "Transparent reserve management",
+                  "Built for Global South economies",
+                  "Regulatory compliant framework"
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <CheckIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+                <img
+                  src="/headers/about_us_header.png"
+                  alt="Global South representation"
+                  className="w-full h-64 object-cover rounded-lg mb-6"
+                />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Empowering Global South
+                </h3>
+                <p className="text-gray-600">
+                  Our mission is to create financial infrastructure that serves the unique 
+                  needs of emerging economies worldwide.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Key Features Grid */}
+      <div className="bg-white py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Usage</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              GSDC enables seamless financial operations across Global South economies
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Design
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Built on cutting-edge technology with transparency and security at its core
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-blue-600 rounded-full"></div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Cross-Border Payments</h3>
-              <p className="text-gray-600">
-                Enable instant, low-cost international transfers between BRICS nations without traditional banking delays
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-green-600 rounded-full"></div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Trade Settlement</h3>
-              <p className="text-gray-600">
-                Facilitate international trade settlements with reduced currency risk and faster processing times
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <div className="w-8 h-8 bg-purple-600 rounded-full"></div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Store of Value</h3>
-              <p className="text-gray-600">
-                Protect wealth against individual currency volatility through diversified basket backing
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="mt-16 text-center">
-            <p className="text-gray-600 max-w-4xl mx-auto">
-              By leveraging blockchain technology and smart contracts, GSDC provides a transparent, 
-              auditable, and efficient alternative to traditional cross-border payment systems. 
-              Our platform ensures that all transactions are recorded immutably while maintaining 
-              compliance with international financial regulations.
-            </p>
+            {[
+              {
+                icon: ChartBarIcon,
+                title: "Stability Through Diversity",
+                description: "Multi-currency basket reduces single-point-of-failure risks and provides superior stability compared to single-currency pegs."
+              },
+              {
+                icon: ShieldCheckIcon,
+                title: "Transparent Operations",
+                description: "Real-time proof of reserves and open-source smart contracts ensure complete transparency in all operations."
+              },
+              {
+                icon: GlobeAltIcon,
+                title: "Global Accessibility",
+                description: "Designed specifically for Global South markets with localized support and regulatory compliance."
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-shadow"
+              >
+                <feature.icon className="h-12 w-12 text-blue-600 mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Market Opportunities */}
-      <div className="py-24 bg-gray-50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Market Opportunities</h2>
-            <p className="text-lg text-gray-600">
-              Tap into the growing Global South economy
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">🌍</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">$50T+ Economy</h3>
-              <p className="text-gray-600">
-                Combined GDP of BRICS nations represents over 40% of global population and growing economic power
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">📈</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Rapid Growth</h3>
-              <p className="text-gray-600">
-                Emerging markets showing consistent GDP growth rates exceeding developed economies
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">💰</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Trade Volume</h3>
-              <p className="text-gray-600">
-                Increasing intra-BRICS trade creating demand for efficient payment solutions
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">🏦</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Financial Infrastructure</h3>
-              <p className="text-gray-600">
-                Growing digital payment adoption and blockchain infrastructure development
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">🤝</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Policy Support</h3>
-              <p className="text-gray-600">
-                Government initiatives promoting de-dollarization and alternative payment systems
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Innovation Hub</h3>
-              <p className="text-gray-600">
-                Leading technological advancement in fintech and blockchain solutions
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Global South Empowerment */}
-      <div
-        className="py-24 text-white relative overflow-hidden"
+      {/* Market Opportunities Section */}
+      <div 
+        className="py-24 sm:py-32 relative"
         style={{
-          background: `linear-gradient(135deg, #1a2332 0%, #2d4a6b 100%)`,
+          background: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)",
         }}
       >
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 right-10 w-64 h-64 rounded-full border border-orange-300"></div>
-          <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-orange-400"></div>
-        </div>
-
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Empowering the Global South</h2>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto">
-              Building financial infrastructure for sustainable economic growth
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Market Opportunities
+            </h2>
+            <p className="text-lg text-white/90 max-w-2xl mx-auto">
+              Addressing the $4 trillion Global South economy with innovative financial solutions
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-400 mb-2">3.2B+</div>
-              <div className="text-white/80">People Served</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-400 mb-2">5</div>
-              <div className="text-white/80">BRICS Nations</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-400 mb-2">24/7</div>
-              <div className="text-white/80">Global Operations</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-400 mb-2">100%</div>
-              <div className="text-white/80">Transparent</div>
-            </div>
-          </div>
-
-          <div className="mt-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h3 className="text-2xl font-bold mb-6">Built for Security and Trust</h3>
-                <ul className="space-y-4">
-                  <li className="flex items-start">
-                    <span className="text-orange-400 mr-3">•</span>
-                    <span>Smart contract audited by leading security firms</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-orange-400 mr-3">•</span>
-                    <span>Multi-signature governance for critical operations</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-orange-400 mr-3">•</span>
-                    <span>Real-time proof of reserves and transparency reporting</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-orange-400 mr-3">•</span>
-                    <span>Regulatory compliance across multiple jurisdictions</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="relative">
-                <img
-                  src="/logo_gsdc_icon.png"
-                  alt="GSDC Security"
-                  className="w-64 h-64 mx-auto opacity-80"
-                />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: CurrencyDollarIcon,
+                stat: "$4T+",
+                label: "Global South GDP",
+                description: "Representing over 40% of global economic output"
+              },
+              {
+                icon: UserGroupIcon,
+                stat: "5B+",
+                label: "Population Served",
+                description: "Billions of people seeking financial inclusion"
+              },
+              {
+                icon: GlobeAltIcon,
+                stat: "100+",
+                label: "Countries",
+                description: "Emerging markets ready for digital transformation"
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-8 border border-white/20"
+              >
+                <item.icon className="h-12 w-12 text-white mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">{item.stat}</div>
+                <div className="text-lg font-semibold text-white/90 mb-2">{item.label}</div>
+                <p className="text-sm text-white/80">{item.description}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Call to Action */}
-      <div
-        className="py-24 text-white relative overflow-hidden"
+      {/* Empowering the Global South Section */}
+      <div 
+        className="py-24 sm:py-32 relative"
         style={{
-          background: `linear-gradient(135deg, #f6b62e 0%, #e74134 100%)`,
+          background: "linear-gradient(to bottom, #1e40af, #1e3a8a)",
         }}
       >
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Join the Future?</h2>
-          <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Experience the power of GSDC and be part of the Global South's financial revolution. 
-            Start your journey towards financial sovereignty today.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/token-minting"
-              className="px-8 py-4 bg-white text-orange-600 font-semibold rounded-lg hover:bg-gray-100 transition-all duration-200"
-            >
-              Start Minting GSDC
-            </Link>
-            <Link
-              to="/live-exchange-rates"
-              className="px-8 py-4 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-200"
-            >
-              View Live Rates
-            </Link>
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        {/* Phoenix Icon */}
+        <div className="absolute bottom-16 right-8 z-20">
+          <div className="phoenix-icon-parent">
+            <img
+              src="/logo_gsdc_icon.png"
+              alt="Phoenix Icon"
+              className="phoenix-icon-large opacity-30"
+            />
           </div>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl font-bold text-white mb-6">
+                Empowering the Global South
+              </h2>
+              <p className="text-lg text-white/90 mb-8 leading-relaxed">
+                GSDC is more than a digital currency—it's a movement towards financial 
+                sovereignty for emerging economies. By leveraging blockchain technology 
+                and innovative economic design, we're building the infrastructure for 
+                the next generation of global finance.
+              </p>
+              
+              <div className="space-y-6">
+                {[
+                  {
+                    title: "Financial Inclusion",
+                    description: "Bringing banking services to the unbanked populations across emerging markets"
+                  },
+                  {
+                    title: "Economic Stability",
+                    description: "Reducing dependency on volatile foreign currencies through diversified backing"
+                  },
+                  {
+                    title: "Innovation Hub",
+                    description: "Creating opportunities for fintech innovation in developing economies"
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-white/20">
+                    <h4 className="text-lg font-semibold text-white mb-2">{item.title}</h4>
+                    <p className="text-white/80 text-sm">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <h3 className="text-2xl font-bold text-white mb-6">
+                  Built for Security and Compliance
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <ShieldCheckIcon className="h-6 w-6 text-orange-300 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold">Smart Contract Audits</h4>
+                      <p className="text-white/80 text-sm">Independently audited smart contracts ensure maximum security</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckIcon className="h-6 w-6 text-orange-300 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold">Regulatory Compliance</h4>
+                      <p className="text-white/80 text-sm">Built to meet international compliance standards</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <GlobeAltIcon className="h-6 w-6 text-orange-300 flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="text-white font-semibold">Global Standards</h4>
+                      <p className="text-white/80 text-sm">Adhering to international financial regulations and best practices</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Section */}
+      <div 
+        className="py-16 relative"
+        style={{
+          background: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">
+              CONTACT GSDC
+            </h2>
+            <p className="text-white/90 mb-8 max-w-2xl mx-auto">
+              Ready to be part of the financial revolution? Get in touch with our team 
+              to learn more about GSDC and how you can participate in the future of Global South finance.
+            </p>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <a
+                href="/contact"
+                className="inline-flex items-center px-8 py-4 bg-white text-orange-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg"
+              >
+                Get in Touch
+              </a>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Logo Section */}
+      <div 
+        className="py-12"
+        style={{
+          background: "linear-gradient(to bottom, #1e3a8a, #1e40af)",
+        }}
+      >
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+          <img
+            src="/logo_gsdc_white.png"
+            alt="GSDC Logo"
+            className="h-16 mx-auto opacity-80"
+          />
         </div>
       </div>
     </div>
