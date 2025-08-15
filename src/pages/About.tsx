@@ -148,31 +148,36 @@ export default function About() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         >
-          <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
+          <div className="relative video-container cursor-pointer group"
                onClick={handleVideoPlay}>
-            {/* Video thumbnail background */}
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{
-                backgroundImage: "url('/headers/about_us_header.png')"
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-            </div>
-
-            {/* Play button */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:bg-white transition-all duration-300"
+            {/* Animated red border */}
+            <div className="absolute inset-0 rounded-2xl border-4 border-red-600 animate-pulse-border"></div>
+            
+            <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl m-1">
+              {/* Video thumbnail background */}
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage: "url('/headers/about_us_header.png')"
+                }}
               >
-                <PlayIcon className="w-8 h-8 text-gray-800 ml-1" />
-              </motion.div>
-            </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+              </div>
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* Play button */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:bg-white transition-all duration-300"
+                >
+                  <PlayIcon className="w-8 h-8 text-gray-800 ml-1" />
+                </motion.div>
+              </div>
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
           </div>
         </motion.div>
       </div>
