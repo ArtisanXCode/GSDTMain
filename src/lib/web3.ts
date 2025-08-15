@@ -15,21 +15,32 @@ export const getContract = (): ethers.Contract | null => {
     }
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
 
-    // Check if wallet is connected
-    if (!window.ethereum.selectedAddress) {
-      console.warn('Wallet not connected');
+    if (!contractAddress) {
+      console.error('Contract address not configured');
       return null;
     }
 
-    const signer = provider.getSigner();
-
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
-    // Verify contract has a signer
-    if (!contract.signer) {
-      console.error('Contract does not have a signer attached');
+    // Validate that the contract has essential functions
+    console.log('Contract functions available:', Object.keys(contract.functions || {}));
+
+    if (!contract.functions) {
+      console.error('Contract functions not loaded properly');
       return null;
+    }
+
+    // Check for essential role management functions
+    const hasGrantRole = 'grantRole' in contract.functions;
+    const hasRevokeRole = 'revokeRole' in contract.functions;
+    const hasHasRole = 'hasRole' in contract.functions;
+
+    console.log('Role management functions:', { hasGrantRole, hasRevokeRole, hasHasRole });
+
+    if (!hasGrantRole || !hasRevokeRole || !hasHasRole) {
+      console.warn('Contract missing role management functions. This may be expected for some contract versions.');
     }
 
     return contract;
@@ -75,8 +86,8 @@ export const connectWallet = async (): Promise<string | null> => {
     }
 
     // Request account access
-    const accounts = await window.ethereum.request({ 
-      method: 'eth_requestAccounts' 
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts'
     });
 
     if (accounts && accounts.length > 0) {
@@ -97,8 +108,8 @@ export const getAddress = async (): Promise<string | null> => {
       return null;
     }
 
-    const accounts = await window.ethereum.request({ 
-      method: 'eth_accounts' 
+    const accounts = await window.ethereum.request({
+      method: 'eth_accounts'
     });
 
     return accounts && accounts.length > 0 ? accounts[0] : null;
@@ -115,8 +126,8 @@ export const isConnected = async (): Promise<boolean> => {
       return false;
     }
 
-    const accounts = await window.ethereum.request({ 
-      method: 'eth_accounts' 
+    const accounts = await window.ethereum.request({
+      method: 'eth_accounts'
     });
 
     return accounts && accounts.length > 0;

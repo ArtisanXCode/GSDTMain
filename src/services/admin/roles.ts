@@ -109,6 +109,12 @@ export const assignUserRole = async (
 
     // Only perform smart contract operations if contract is available
     if (contract) {
+      // Validate that the contract has the grantRole function
+      if (typeof contract.grantRole !== 'function') {
+        console.error('Contract does not have grantRole function. Available functions:', Object.getOwnPropertyNames(contract.functions || {}));
+        throw new Error('Contract does not support role management functions');
+      }
+
       const roleHash = ROLE_HASHES[role];
       if (!roleHash) {
         throw new Error('Invalid contract role');
@@ -116,6 +122,7 @@ export const assignUserRole = async (
 
       try {
         console.log(`Granting role ${role} to address ${address}`);
+        console.log(`Role hash: ${roleHash}`);
         
         // This will trigger MetaMask popup
         const tx = await contract.grantRole(roleHash, address);
@@ -144,6 +151,11 @@ export const assignUserRole = async (
         // Check for network issues
         if (contractError.message?.includes('network changed')) {
           throw new Error('Network changed. Please try again');
+        }
+
+        // Check if grantRole function doesn't exist
+        if (contractError.message?.includes('grantRole is not a function')) {
+          throw new Error('Contract does not support role management functions');
         }
         
         // Generic contract error
@@ -195,6 +207,12 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
     // Revoke from smart contract (if available)
     const contract = getContract();
     if (contract) {
+      // Validate that the contract has the revokeRole function
+      if (typeof contract.revokeRole !== 'function') {
+        console.error('Contract does not have revokeRole function. Available functions:', Object.getOwnPropertyNames(contract.functions || {}));
+        throw new Error('Contract does not support role management functions');
+      }
+
       const roleHash = ROLE_HASHES[currentRole];
       if (roleHash) {
         try {
@@ -222,6 +240,11 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
           // Check for insufficient funds
           if (contractError.message?.includes('insufficient funds')) {
             throw new Error('Insufficient funds for transaction');
+          }
+
+          // Check if revokeRole function doesn't exist
+          if (contractError.message?.includes('revokeRole is not a function')) {
+            throw new Error('Contract does not support role management functions');
           }
           
           // Generic contract error
