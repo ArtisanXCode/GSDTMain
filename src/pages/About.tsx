@@ -18,7 +18,7 @@ export default function About() {
       <div 
         className="relative overflow-hidden min-h-screen"
         style={{
-          backgroundImage: "url('/public/hero-why-gsdc.png')",
+          backgroundImage: "url('/hero_why_gsdc.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -114,7 +114,7 @@ export default function About() {
                   {/* Phone mockup positioned in the center-right */}
                   <div className="absolute right-8 top-12">
                     <motion.img
-                      src="/mobile_why_gsdc.png"
+                      src="/logo_gsdc_icon.png"
                       alt="GSDC Mobile App"
                       className="w-40 h-auto transform rotate-12 drop-shadow-2xl"
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -126,7 +126,7 @@ export default function About() {
                   {/* Phoenix icon positioned at bottom right of circle */}
                   <div className="absolute bottom-8 right-8">
                     <motion.img
-                      src="/phoenix-icon.png"
+                      src="/logo_gsdc_icon.png"
                       alt="Phoenix Icon"
                       className="w-16 h-16 drop-shadow-lg"
                       initial={{ opacity: 0, scale: 0.5 }}
