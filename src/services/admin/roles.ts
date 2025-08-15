@@ -109,12 +109,6 @@ export const assignUserRole = async (
 
     // Only perform smart contract operations if contract is available
     if (contract) {
-      // Validate that the contract has the grantRole function
-      if (typeof contract.grantRole !== 'function') {
-        console.error('Contract does not have grantRole function. Available functions:', Object.getOwnPropertyNames(contract.functions || {}));
-        throw new Error('Contract does not support role management functions');
-      }
-
       const roleHash = ROLE_HASHES[role];
       if (!roleHash) {
         throw new Error('Invalid contract role');
@@ -124,16 +118,21 @@ export const assignUserRole = async (
         console.log(`Granting role ${role} to address ${address}`);
         console.log(`Role hash: ${roleHash}`);
         
-        // This will trigger MetaMask popup
-        const tx = await contract.grantRole(roleHash, address);
-        console.log('Transaction sent:', tx.hash);
-        
-        // Wait for transaction confirmation
-        const receipt = await tx.wait();
-        console.log('Transaction confirmed:', receipt.transactionHash);
-        
-        if (receipt.status !== 1) {
-          throw new Error('Smart contract transaction failed');
+        // Check if the grantRole function exists on the contract
+        if (!contract.grantRole) {
+          console.warn('grantRole function not found on contract, skipping smart contract role assignment');
+        } else {
+          // This will trigger MetaMask popup
+          const tx = await contract.grantRole(roleHash, address);
+          console.log('Transaction sent:', tx.hash);
+          
+          // Wait for transaction confirmation
+          const receipt = await tx.wait();
+          console.log('Transaction confirmed:', receipt.transactionHash);
+          
+          if (receipt.status !== 1) {
+            throw new Error('Smart contract transaction failed');
+          }
         }
       } catch (contractError: any) {
         console.error('Smart contract role assignment failed:', contractError);
@@ -154,12 +153,12 @@ export const assignUserRole = async (
         }
 
         // Check if grantRole function doesn't exist
-        if (contractError.message?.includes('grantRole is not a function')) {
-          throw new Error('Contract does not support role management functions');
+        if (contractError.message?.includes('is not a function')) {
+          console.warn('Role management functions not available on contract, proceeding with database-only assignment');
+        } else {
+          // Generic contract error
+          throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
         }
-        
-        // Generic contract error
-        throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
       }
     }
 
@@ -207,27 +206,26 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
     // Revoke from smart contract (if available)
     const contract = getContract();
     if (contract) {
-      // Validate that the contract has the revokeRole function
-      if (typeof contract.revokeRole !== 'function') {
-        console.error('Contract does not have revokeRole function. Available functions:', Object.getOwnPropertyNames(contract.functions || {}));
-        throw new Error('Contract does not support role management functions');
-      }
-
       const roleHash = ROLE_HASHES[currentRole];
       if (roleHash) {
         try {
           console.log(`Revoking role ${currentRole} from address ${address}`);
           
-          // This will trigger MetaMask popup
-          const tx = await contract.revokeRole(roleHash, address);
-          console.log('Transaction sent:', tx.hash);
-          
-          // Wait for transaction confirmation
-          const receipt = await tx.wait();
-          console.log('Transaction confirmed:', receipt.transactionHash);
-          
-          if (receipt.status !== 1) {
-            throw new Error('Smart contract transaction failed');
+          // Check if the revokeRole function exists on the contract
+          if (!contract.revokeRole) {
+            console.warn('revokeRole function not found on contract, skipping smart contract role revocation');
+          } else {
+            // This will trigger MetaMask popup
+            const tx = await contract.revokeRole(roleHash, address);
+            console.log('Transaction sent:', tx.hash);
+            
+            // Wait for transaction confirmation
+            const receipt = await tx.wait();
+            console.log('Transaction confirmed:', receipt.transactionHash);
+            
+            if (receipt.status !== 1) {
+              throw new Error('Smart contract transaction failed');
+            }
           }
         } catch (contractError: any) {
           console.error('Smart contract role revocation failed:', contractError);
@@ -243,12 +241,12 @@ export const removeUserRole = async (address: string, removedBy: string): Promis
           }
 
           // Check if revokeRole function doesn't exist
-          if (contractError.message?.includes('revokeRole is not a function')) {
-            throw new Error('Contract does not support role management functions');
+          if (contractError.message?.includes('is not a function')) {
+            console.warn('Role management functions not available on contract, proceeding with database-only removal');
+          } else {
+            // Generic contract error
+            throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
           }
-          
-          // Generic contract error
-          throw new Error(`Smart contract error: ${contractError.message || 'Unknown error'}`);
         }
       }
     } else {

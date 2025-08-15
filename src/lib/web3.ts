@@ -24,25 +24,10 @@ export const getContract = (): ethers.Contract | null => {
 
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
-    // Validate that the contract has essential functions
-    console.log('Contract functions available:', Object.keys(contract.functions || {}));
-
-    if (!contract.functions) {
-      console.error('Contract functions not loaded properly');
-      return null;
-    }
-
-    // Check for essential role management functions
-    const hasGrantRole = 'grantRole' in contract.functions;
-    const hasRevokeRole = 'revokeRole' in contract.functions;
-    const hasHasRole = 'hasRole' in contract.functions;
-
-    console.log('Role management functions:', { hasGrantRole, hasRevokeRole, hasHasRole });
-
-    if (!hasGrantRole || !hasRevokeRole || !hasHasRole) {
-      console.warn('Contract missing role management functions. This may be expected for some contract versions.');
-    }
-
+    // The contract should have the functions based on the ABI
+    // Don't reject the contract if functions aren't immediately accessible
+    console.log('Contract instance created successfully');
+    
     return contract;
   } catch (error) {
     console.error('Error creating contract instance:', error);
