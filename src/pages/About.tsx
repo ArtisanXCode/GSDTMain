@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { CheckIcon, ChartBarIcon, ShieldCheckIcon, GlobeAltIcon, CurrencyDollarIcon, UserGroupIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
@@ -15,7 +14,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Exact Design Match */}
-      <div 
+      <div
         className="relative overflow-hidden min-h-screen"
         style={{
           backgroundImage: "url('/hero_why_gsdc.png')",
@@ -47,7 +46,7 @@ export default function About() {
             >
               <div>
                 <h1 className="text-5xl font-bold tracking-tight sm:text-6xl mb-4 leading-tight">
-                  <span 
+                  <span
                     className="font-bold"
                     style={{
                       background: "linear-gradient(135deg, #f6b62e 0%, #fbbf24 100%)",
@@ -60,7 +59,7 @@ export default function About() {
                   </span>
                   <br />
                   <span className="text-white">Beyond the </span>
-                  <span 
+                  <span
                     className="font-bold"
                     style={{
                       background: "linear-gradient(135deg, #e74134 0%, #dc2626 100%)",
@@ -73,7 +72,7 @@ export default function About() {
                   </span>
                 </h1>
               </div>
-              
+
               <div className="space-y-4 text-lg leading-relaxed">
                 <p className="text-white/90">
                   A multi-currency stablecoin beyond the US Dollar, collateralized by a basket of BRICS+ Real-World Assets held in reserve.
@@ -110,7 +109,7 @@ export default function About() {
               <div className="relative">
                 {/* Outer dotted circle */}
                 <div className="rounded-full flex items-center justify-center relative" style={{ width: '30rem', height: '35rem', right: '6rem' }}>
-                  
+
                   {/* Phone mockup positioned in the center-right */}
                   <div className="absolute right-8 top-12">
                     <motion.img
@@ -123,7 +122,7 @@ export default function About() {
                       transition={{ duration: 0.8, delay: 0.4 }}
                     />
                   </div>
-                  
+
                   {/* Phoenix icon positioned at bottom right of circle */}
                   <div className="absolute bottom-8 right-8">
                     <motion.img
@@ -152,7 +151,7 @@ export default function About() {
           <div className="relative w-80 h-48 rounded-2xl overflow-hidden shadow-2xl cursor-pointer group"
                onClick={handleVideoPlay}>
             {/* Video thumbnail background */}
-            <div 
+            <div
               className="w-full h-full bg-cover bg-center"
               style={{
                 backgroundImage: "url('/headers/about_us_header.png')"
@@ -160,7 +159,7 @@ export default function About() {
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
             </div>
-            
+
             {/* Play button */}
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
@@ -192,12 +191,12 @@ export default function About() {
                 The Alternative
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                GSDC represents a paradigm shift in digital currency design. Unlike traditional 
-                stablecoins pegged to a single currency, GSDC is backed by a carefully curated 
-                basket of Global South currencies, providing unprecedented stability and 
+                GSDC represents a paradigm shift in digital currency design. Unlike traditional
+                stablecoins pegged to a single currency, GSDC is backed by a carefully curated
+                basket of Global South currencies, providing unprecedented stability and
                 diversification for emerging markets.
               </p>
-              
+
               <div className="space-y-4">
                 {[
                   "Multi-currency backing reduces volatility",
@@ -230,7 +229,7 @@ export default function About() {
                   Empowering Global South
                 </h3>
                 <p className="text-gray-600">
-                  Our mission is to create financial infrastructure that serves the unique 
+                  Our mission is to create financial infrastructure that serves the unique
                   needs of emerging economies worldwide.
                 </p>
               </div>
@@ -291,7 +290,7 @@ export default function About() {
       </div>
 
       {/* Market Opportunities Section */}
-      <div 
+      <div
         className="py-24 sm:py-32 relative"
         style={{
           background: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)",
@@ -348,14 +347,14 @@ export default function About() {
       </div>
 
       {/* Empowering the Global South Section */}
-      <div 
+      <div
         className="py-24 sm:py-32 relative"
         style={{
           background: "linear-gradient(to bottom, #1e40af, #1e3a8a)",
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
-        
+
         {/* Phoenix Icon */}
         <div className="absolute bottom-16 right-8 z-20">
           <div className="phoenix-icon-parent">
@@ -379,12 +378,12 @@ export default function About() {
                 Empowering the Global South
               </h2>
               <p className="text-lg text-white/90 mb-8 leading-relaxed">
-                GSDC is more than a digital currency—it's a movement towards financial 
-                sovereignty for emerging economies. By leveraging blockchain technology 
-                and innovative economic design, we're building the infrastructure for 
+                GSDC is more than a digital currency—it's a movement towards financial
+                sovereignty for emerging economies. By leveraging blockchain technology
+                and innovative economic design, we're building the infrastructure for
                 the next generation of global finance.
               </p>
-              
+
               <div className="space-y-6">
                 {[
                   {
@@ -449,7 +448,7 @@ export default function About() {
       </div>
 
       {/* Contact Section */}
-      <div 
+      <div
         className="py-16 relative"
         style={{
           background: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)",
@@ -462,7 +461,7 @@ export default function About() {
               CONTACT GSDC
             </h2>
             <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-              Ready to be part of the financial revolution? Get in touch with our team 
+              Ready to be part of the financial revolution? Get in touch with our team
               to learn more about GSDC and how you can participate in the future of Global South finance.
             </p>
             <motion.div
@@ -481,7 +480,7 @@ export default function About() {
       </div>
 
       {/* Bottom Logo Section */}
-      <div 
+      <div
         className="py-12"
         style={{
           background: "linear-gradient(to bottom, #1e3a8a, #1e40af)",
