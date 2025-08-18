@@ -61,120 +61,103 @@ function UsageSlider() {
     },
   ];
 
+  const maxSlides = usageItems.length - 2; // Since we're showing 2.5 boxes, we need length - 2 as max
+
   const nextSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev + 1) % Math.ceil(usageItems.length / getItemsPerSlide()),
-    );
+    setCurrentSlide((prev) => Math.min(prev + 2, maxSlides));
   };
 
   const prevSlide = () => {
-    setCurrentSlide(
-      (prev) =>
-        (prev - 1 + Math.ceil(usageItems.length / getItemsPerSlide())) %
-        Math.ceil(usageItems.length / getItemsPerSlide()),
-    );
-  };
-
-  const getItemsPerSlide = () => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth >= 1024 ? 3 : 1;
-    }
-    return 3;
+    setCurrentSlide((prev) => Math.max(prev - 2, 0));
   };
 
   return (
-    <div className="relative">
-      {/* Slider Container */}
-      <div className="">
+    <div className="relative max-w-7xl mx-auto">
+      {/* Slider Container with overflow hidden */}
+      <div className="overflow-hidden">
         <div
-          className="flex transition-transform duration-300 ease-in-out"
+          className="flex transition-transform duration-300 ease-in-out gap-8"
           style={{
-            transform: `translateX(-${currentSlide * 100}%)`,
+            transform: `translateX(-${currentSlide * (100 / 2.5)}%)`,
+            width: `${(usageItems.length / 2.5) * 100}%`,
           }}
         >
-          {Array.from({
-            length: Math.ceil(usageItems.length / getItemsPerSlide()),
-          }).map((_, slideIndex) => (
-            <div key={slideIndex} className="w-full flex-shrink-0">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {usageItems
-                  .slice(
-                    slideIndex * getItemsPerSlide(),
-                    (slideIndex + 1) * getItemsPerSlide(),
-                  )
-                  .map((item, index) => (
-                    <motion.div
-                      key={item.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="relative group cursor-pointer"
-                    >
-                      {/* Card with #2a4661 background and box shadow */}
-                      <div
-                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 relative"
-                        style={{
-                          backgroundColor: "#2a4661",
-                          minHeight: "300px",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3), 0 4px 15px rgba(0, 0, 0, 0.2)",
-                        }}
-                      >
-                        {/* Orange-red icon in top-left corner */}
-                        <div className="absolute top-4 left-4" style={{top:'-2rem', left: '-1.5rem'}}>
-                          <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold"
-                            style={{
-                              background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
-                              boxShadow: "0 4px 12px rgba(231, 65, 52, 0.4)",
-                            }}
-                          >
-                            {item.icon}
-                          </div>
-                        </div>
+          {usageItems.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative group cursor-pointer flex-shrink-0"
+              style={{ width: `${100 / 2.5}%` }}
+            >
+              {/* Card with #2a4661 background and box shadow */}
+              <div
+                className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 relative mr-8"
+                style={{
+                  backgroundColor: "#2a4661",
+                  minHeight: "300px",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3), 0 4px 15px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                {/* Orange-red icon in top-left corner */}
+                <div className="absolute top-4 left-4" style={{top:'-2rem', left: '-1.5rem'}}>
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold"
+                    style={{
+                      background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                      boxShadow: "0 4px 12px rgba(231, 65, 52, 0.4)",
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                </div>
 
-                        {/* Main icon at center (removed from here since it's now in corner) */}
-                        <div className="mt-8 mb-6">
-                          {/* Empty space for better layout */}
-                        </div>
+                {/* Main icon at center (removed from here since it's now in corner) */}
+                <div className="mt-8 mb-6">
+                  {/* Empty space for better layout */}
+                </div>
 
-                        {/* Title */}
-                        <h3 className="text-white text-xl font-bold mb-4 leading-tight">
-                          {item.title}
-                        </h3>
+                {/* Title */}
+                <h3 className="text-white text-xl font-bold mb-4 leading-tight">
+                  {item.title}
+                </h3>
 
-                        {/* Description */}
-                        <p className="text-white text-sm leading-relaxed mb-4 opacity-90">
-                          {item.description}
-                        </p>
+                {/* Description */}
+                <p className="text-white text-sm leading-relaxed mb-4 opacity-90">
+                  {item.description}
+                </p>
 
-                        {/* Details */}
-                        <p className="text-white text-sm leading-relaxed opacity-80">
-                          {item.details}
-                        </p>
+                {/* Details */}
+                <p className="text-white text-sm leading-relaxed opacity-80">
+                  {item.details}
+                </p>
 
-                        {/* Hover effect overlay */}
-                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                      </div>
-                    </motion.div>
-                  ))}
+                {/* Hover effect overlay */}
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
       {/* Navigation Arrows - Desktop */}
       <div className="hidden lg:block">
-        {Math.ceil(usageItems.length / 3) > 1 && (
+        {usageItems.length > 2 && (
           <>
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm"
+              disabled={currentSlide <= 0}
+              className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm ${
+                currentSlide <= 0 
+                  ? 'bg-white/10 text-gray-500 cursor-not-allowed' 
+                  : 'bg-white/20 hover:bg-white/30 text-gray-700'
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-700"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -189,10 +172,15 @@ function UsageSlider() {
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm"
+              disabled={currentSlide >= maxSlides}
+              className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm ${
+                currentSlide >= maxSlides 
+                  ? 'bg-white/10 text-gray-500 cursor-not-allowed' 
+                  : 'bg-white/20 hover:bg-white/30 text-gray-700'
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-700"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -211,12 +199,12 @@ function UsageSlider() {
 
       {/* Navigation Dots - Mobile */}
       <div className="lg:hidden flex justify-center mt-8 space-x-2">
-        {Array.from({ length: Math.ceil(usageItems.length / getItemsPerSlide()) }).map((_, index) => (
+        {Array.from({ length: usageItems.length }).map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentSlide(index)}
+            onClick={() => setCurrentSlide(Math.max(0, Math.min(index, maxSlides)))}
             className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-              currentSlide === index ? "bg-gray-600" : "bg-gray-300"
+              index >= currentSlide && index < currentSlide + 3 ? "bg-gray-600" : "bg-gray-300"
             }`}
           />
         ))}
