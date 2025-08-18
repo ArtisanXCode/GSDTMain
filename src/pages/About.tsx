@@ -15,16 +15,23 @@ export default function About() {
     <div className="min-h-screen bg-white">
       {/* Hero Section - Exact Design Match */}
       <div
-        className="relative overflow-hidden min-h-screen"
+        className="relative overflow-hidden"
         style={{
+          height: "100vh",
           backgroundImage: "url('/hero_why_gsdc.png')",
           backgroundSize: "cover",
           backgroundPosition: "left",
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Dark overlay for better text contrast */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        {/* Background overlay with specified color and opacity */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            backgroundColor: "#446c93", 
+            opacity: 0.7 
+          }}
+        ></div>
 
         {/* Top-left logo */}
         <div className="absolute top-8 left-8 z-20">
@@ -35,7 +42,7 @@ export default function About() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 h-screen flex items-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 h-full flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
             {/* Left Content */}
             <motion.div
