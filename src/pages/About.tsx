@@ -600,7 +600,7 @@ export default function About() {
         className="relative overflow-hidden"
         style={{
           minHeight: "100vh",
-          background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 100%)",
+          background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #446c93 50%, #446c93 100%)",
         }}
       >
         {/* Usage Title */}
@@ -611,7 +611,8 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="text-4xl font-bold text-gray-600 mb-8"
+              className="text-4xl font-bold text-gray-600 mb-8 inline-block px-3 py-1 rounded-md"
+              style={{ backgroundColor: "rgba(230, 230, 230, 0.7)" }}
             >
               Usage
             </motion.h2>
