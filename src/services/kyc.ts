@@ -91,6 +91,36 @@ export const getKYCStats = async (): Promise<KYCStats> => {
   }
 };
 
+// Monitor RPC health for better debugging
+const logRPCHealth = async () => {
+  try {
+    // Only import when needed to avoid circular dependencies
+    const { testRPCHealth } = await import('../lib/web3');
+    const healthCheck = await testRPCHealth();
+    
+    console.log('BSC Testnet RPC Health Status:');
+    console.log(`Healthy endpoints: ${healthCheck.healthy.length}/${healthCheck.results.length}`);
+    
+    if (healthCheck.unhealthy.length > 0) {
+      console.warn('Unhealthy RPC endpoints:', healthCheck.unhealthy);
+    }
+    
+    // Log detailed results for debugging
+    healthCheck.results.forEach(result => {
+      if (result.status === 'healthy') {
+        console.log(`✅ ${result.url} - ${result.latency}ms`);
+      } else {
+        console.warn(`❌ ${result.url} - ${result.error}`);
+      }
+    });
+    
+    return healthCheck;
+  } catch (error) {
+    console.warn('Unable to check RPC health:', error);
+    return null;
+  }
+};
+
 export const getUserKYCStatus = async (
   userAddress: string,
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
@@ -124,6 +154,9 @@ export const getUserKYCStatus = async (
       console.warn("Database check failed, falling back to NFT contract:", dbError);
     }
 
+    // Check RPC health before attempting contract calls
+    await logRPCHealth();
+    
     // Check NFT contract for KYC approval
     const contract_NFT = getReadOnlyNFTContract();
     console.log("NFT Contract instance:", {
@@ -159,8 +192,8 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
 
-        // Retry logic for network issues
-        const maxRetries = 3;
+        // Enhanced retry logic for BSC testnet RPC issues
+        const maxRetries = 5; // Increased retries for BSC testnet
         let userBalance;
         
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -168,31 +201,41 @@ export const getUserKYCStatus = async (
             console.log(`Making balanceOf call (attempt ${attempt}/${maxRetries}):`, {
               contractAddress: contract_NFT.address,
               userAddress: userAddress,
-              isValidAddress: ethers.utils.isAddress(userAddress)
+              isValidAddress: ethers.utils.isAddress(userAddress),
+              provider: contract_NFT.provider.constructor.name
             });
 
-            // Add timeout to prevent hanging calls
+            // Progressive timeout increases for BSC testnet
+            const timeoutDuration = Math.min(5000 + (attempt * 2000), 15000); // 5s to 15s
             const timeoutPromise = new Promise<never>((_, reject) => {
-              setTimeout(() => reject(new Error('Contract call timeout after 8 seconds')), 8000);
+              setTimeout(() => reject(new Error(`Contract call timeout after ${timeoutDuration}ms`)), timeoutDuration);
             });
 
             const balancePromise = contract_NFT.balanceOf(userAddress);
             userBalance = await Promise.race([balancePromise, timeoutPromise]);
             
             // If successful, break out of retry loop
+            console.log(`Attempt ${attempt} succeeded after ${timeoutDuration}ms timeout`);
             break;
             
           } catch (retryError: any) {
-            console.log(`Attempt ${attempt} failed:`, retryError.message);
+            console.log(`Attempt ${attempt} failed:`, {
+              error: retryError.message,
+              code: retryError.code,
+              remainingAttempts: maxRetries - attempt
+            });
             
             if (attempt === maxRetries) {
               // Last attempt failed, throw the error to be handled below
               throw retryError;
             }
             
-            // Wait before retrying (exponential backoff)
-            const waitTime = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
-            console.log(`Waiting ${waitTime}ms before retry...`);
+            // Progressive backoff with jitter for BSC testnet
+            const baseWait = Math.pow(2, attempt - 1) * 1500; // 1.5s, 3s, 6s, 12s
+            const jitter = Math.random() * 1000; // Add up to 1s random delay
+            const waitTime = baseWait + jitter;
+            
+            console.log(`Waiting ${Math.round(waitTime)}ms before retry (attempt ${attempt + 1})...`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
           }
         }
@@ -222,14 +265,21 @@ export const getUserKYCStatus = async (
           stack: nftError.stack?.split('\n')[0] // First line of stack trace
         });
         
-        // Handle specific error cases
+        // Handle specific BSC testnet RPC error cases
         if (nftError.message?.includes('missing revert data') || 
             nftError.message?.includes('call exception') ||
-            nftError.message?.includes('missing trie node')) {
-          console.warn("Blockchain connectivity issue detected:");
-          console.warn("1. RPC node may be experiencing issues");
-          console.warn("2. Network connectivity problems");
-          console.warn("3. Contract state synchronization issues");
+            nftError.message?.includes('missing trie node') ||
+            nftError.message?.includes('header not found') ||
+            nftError.message?.includes('could not detect network') ||
+            nftError.message?.includes('provider destroyed') ||
+            nftError.message?.includes('bad response') ||
+            nftError.code === 'SERVER_ERROR' ||
+            nftError.code === 'NETWORK_ERROR') {
+          console.warn("BSC Testnet RPC connectivity issue detected:");
+          console.warn("1. RPC node synchronization problems");
+          console.warn("2. High network load on BSC testnet");
+          console.warn("3. Temporary blockchain state inconsistencies");
+          console.warn("4. Provider connection issues");
           console.warn("Falling back to database-only KYC status");
           
           // Return NOT_SUBMITTED since we couldn't verify on-chain

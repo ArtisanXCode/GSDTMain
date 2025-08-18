@@ -9,26 +9,83 @@ const NFT_CONTRACT_ABI = GSDC_NFT_ABI;
 
 // BSC Testnet RPC endpoints (multiple for reliability)
 const BSC_TESTNET_RPCS = [
+  // Official Binance RPC endpoints
   'https://data-seed-prebsc-1-s1.binance.org:8545/',
   'https://data-seed-prebsc-2-s1.binance.org:8545/',
   'https://data-seed-prebsc-1-s2.binance.org:8545/',
   'https://data-seed-prebsc-2-s2.binance.org:8545/',
   'https://data-seed-prebsc-1-s3.binance.org:8545/',
+  
+  // Alternative RPC providers for BSC testnet
+  'https://bsc-testnet.publicnode.com',
+  'https://bsc-testnet-rpc.publicnode.com',
+  'https://endpoints.omniatech.io/v1/bsc/testnet/public',
+  'https://bsc-testnet.nodereal.io/v1/e9a36765eb8a40b9bd12e680a1fd2bc5',
+  'https://bsctestapi.terminet.io/rpc',
 ];
 
 // Create a fallback provider that tries multiple RPC endpoints
 const createFallbackProvider = () => {
-  const providers = BSC_TESTNET_RPCS.map((rpc, index) => ({
-    provider: new ethers.providers.JsonRpcProvider(rpc),
-    priority: index + 1,
-    weight: 1
-  }));
+  const providers = BSC_TESTNET_RPCS.map((rpc, index) => {
+    // Configure each provider with timeout and retry settings
+    const provider = new ethers.providers.JsonRpcProvider({
+      url: rpc,
+      timeout: 8000, // 8 second timeout
+    });
+    
+    return {
+      provider,
+      priority: index + 1,
+      weight: index < 5 ? 2 : 1, // Give higher weight to official Binance RPCs
+      stallTimeout: 3000, // 3 second stall timeout
+    };
+  });
   
-  return new ethers.providers.FallbackProvider(providers);
+  return new ethers.providers.FallbackProvider(providers, 1); // Quorum of 1
 };
 
 // Default provider for read-only operations
 const defaultProvider = createFallbackProvider();
+
+// Test RPC endpoint health
+export const testRPCHealth = async (): Promise<{ 
+  healthy: string[]; 
+  unhealthy: string[]; 
+  results: Array<{ url: string; status: string; latency?: number; error?: string }> 
+}> => {
+  const results = [];
+  const healthy = [];
+  const unhealthy = [];
+
+  for (const rpcUrl of BSC_TESTNET_RPCS) {
+    const startTime = Date.now();
+    try {
+      const provider = new ethers.providers.JsonRpcProvider({
+        url: rpcUrl,
+        timeout: 5000
+      });
+      
+      // Test basic connectivity with getBlockNumber
+      await provider.getBlockNumber();
+      const latency = Date.now() - startTime;
+      
+      results.push({ url: rpcUrl, status: 'healthy', latency });
+      healthy.push(rpcUrl);
+      
+    } catch (error: any) {
+      const latency = Date.now() - startTime;
+      results.push({ 
+        url: rpcUrl, 
+        status: 'unhealthy', 
+        latency,
+        error: error.message 
+      });
+      unhealthy.push(rpcUrl);
+    }
+  }
+
+  return { healthy, unhealthy, results };
+};
 
 export const getContract = (): ethers.Contract | null => {
   try {
