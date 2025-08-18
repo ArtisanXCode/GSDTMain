@@ -213,8 +213,8 @@ export default function About() {
         </div>
 
         <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pt-24" style={{ minHeight: "150vh" }}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full h-full">
-            {/* Left Content - Transparent Background, Top Positioned */}
+          <div className="flex flex-col lg:flex-row items-start justify-center gap-16 w-full h-full">
+            {/* Left Content - GSDC The Alternative */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -249,15 +249,15 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Right Content - Feature Points Positioned at Top */}
-            <div className="flex flex-col justify-start pt-16">
-              {/* All Features in One Section */}
+            {/* Center Content - Feature Points */}
+            <div className="flex flex-col justify-start pt-16 flex-1 max-w-lg">
+              {/* All Features in One Section - Centered */}
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="space-y-4"
+                className="space-y-4 flex flex-col items-center"
               >
                 {[
                   "Multi-currency stability serving as backbone architecture",
@@ -297,7 +297,7 @@ export default function About() {
                       style={{ 
                         background: "linear-gradient(to right, #446c93 0%, #2a4661 100%)",
                         width: '100%',
-                        maxWidth: '450px'
+                        maxWidth: '400px'
                       }}
                     >
                       <span className="text-sm font-medium leading-relaxed flex-1">{feature}</span>
