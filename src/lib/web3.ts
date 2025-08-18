@@ -3,9 +3,9 @@ import { ethers } from 'ethers';
 import { abi, NFT_abi, contractAddress, NFT_contractAddress } from './constants';
 import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 
-// Use the imported constants if the ones from constants.ts are not working
-const NFT_ADDRESS = NFT_contractAddress || GSDC_NFT_ADDRESS;
-const NFT_CONTRACT_ABI = NFT_abi || GSDC_NFT_ABI;
+// Use the exported constants from GSDC_NFT.ts as primary source
+const NFT_ADDRESS = GSDC_NFT_ADDRESS;
+const NFT_CONTRACT_ABI = GSDC_NFT_ABI;
 
 // BSC Testnet RPC
 const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
@@ -62,30 +62,53 @@ export const getNFTContract = (): ethers.Contract | null => {
 
 export const getReadOnlyNFTContract = (): ethers.Contract | null => {
   try {
+    console.log('Creating NFT contract with:', {
+      address: NFT_ADDRESS,
+      abiLength: NFT_CONTRACT_ABI ? NFT_CONTRACT_ABI.length : 0,
+      hasWindow: typeof window !== 'undefined',
+      hasEthereum: typeof window !== 'undefined' && !!window.ethereum
+    });
+
     if (!NFT_ADDRESS) {
-      console.error('NFT contract address not configured');
+      console.error('NFT contract address not configured:', NFT_ADDRESS);
       return null;
     }
 
     if (!NFT_CONTRACT_ABI || NFT_CONTRACT_ABI.length === 0) {
-      console.error('NFT contract ABI not configured');
+      console.error('NFT contract ABI not configured:', NFT_CONTRACT_ABI);
+      return null;
+    }
+
+    // Validate the address format
+    if (!ethers.utils.isAddress(NFT_ADDRESS)) {
+      console.error('Invalid NFT contract address format:', NFT_ADDRESS);
       return null;
     }
 
     let provider;
-    if (window.ethereum) {
+    if (typeof window !== 'undefined' && window.ethereum) {
       provider = new ethers.providers.Web3Provider(window.ethereum as any);
+      console.log('Using Web3Provider for NFT contract');
     } else {
       provider = defaultProvider;
+      console.log('Using default provider for NFT contract');
     }
 
     const contract = new ethers.Contract(NFT_ADDRESS, NFT_CONTRACT_ABI, provider);
     
     // Verify the contract has the expected functions
     if (typeof contract.balanceOf !== 'function') {
-      console.error('NFT contract ABI does not include balanceOf function');
+      console.error('NFT contract ABI does not include balanceOf function. Available functions:', 
+        Object.getOwnPropertyNames(contract).filter(name => typeof contract[name] === 'function')
+      );
       return null;
     }
+
+    console.log('NFT contract created successfully:', {
+      address: contract.address,
+      hasBalanceOf: typeof contract.balanceOf === 'function',
+      provider: provider.constructor.name
+    });
 
     return contract;
   } catch (error) {

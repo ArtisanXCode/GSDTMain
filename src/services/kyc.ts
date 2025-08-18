@@ -103,6 +103,12 @@ export const getUserKYCStatus = async (
 
     // Check NFT contract for KYC approval
     const contract_NFT = getReadOnlyNFTContract();
+    console.log("NFT Contract instance:", {
+      contractExists: !!contract_NFT,
+      contractAddress: contract_NFT?.address,
+      hasBalanceOf: contract_NFT ? typeof contract_NFT.balanceOf === 'function' : false
+    });
+    
     if (contract_NFT) {
       try {
         // Verify contract has the balanceOf function
