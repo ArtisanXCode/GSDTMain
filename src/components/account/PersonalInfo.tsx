@@ -21,7 +21,8 @@ export default function PersonalInfo() {
     const result = await setManualAddress(walletAddress.trim());
     if (result) {
       setIsEditing(false);
-      // Show success message with admin check notice      
+      // Reload page to update menu access and admin permissions
+      window.location.reload();
     }
   };
 
@@ -29,6 +30,8 @@ export default function PersonalInfo() {
     await disconnect();
     setWalletAddress('');
     setIsEditing(false);
+    // Reload page to update menu access
+    window.location.reload();
   };
 
   return (

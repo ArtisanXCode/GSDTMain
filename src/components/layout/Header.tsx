@@ -42,8 +42,8 @@ const Header = () => {
       localStorage.removeItem("adminAuth");
       localStorage.removeItem("adminRole");
       localStorage.removeItem("adminAddress");
-      await disconnect();
-      await signOut(); // Sign out from auth context as well
+      // Keep wallet connected, only sign out from auth
+      await signOut();
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -101,7 +101,7 @@ const Header = () => {
                 {/* Navigation */}
                 <div className="hidden md:flex items-center space-x-8">
                   {navigation
-                    .filter(item => !item.requireAuth || isAuthenticated)
+                    .filter(item => !item.requireAuth || (isAuthenticated && isConnected))
                     .map((item) => (
                     <Link
                       key={item.name}
@@ -295,7 +295,7 @@ const Header = () => {
                                   } flex w-full px-4 py-2 text-sm text-red-600 items-center hover:bg-red-50 transition-colors`}
                                 >
                                   <ArrowRightOnRectangleIcon className="h-5 w-5 mr-3" />
-                                  Disconnect & Sign Out
+                                  Sign Out
                                 </button>
                               )}
                             </Menu.Item>
@@ -324,7 +324,7 @@ const Header = () => {
             <Disclosure.Panel className="md:hidden">
               <div className="space-y-2 px-4 pb-6">
                 {navigation
-                  .filter(item => !item.requireAuth || isAuthenticated)
+                  .filter(item => !item.requireAuth || (isAuthenticated && isConnected))
                   .map((item) => (
                   <Link
                     key={item.name}
@@ -409,7 +409,7 @@ const Header = () => {
                       }}
                       className="w-full bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
                     >
-                      Disconnect & Sign Out
+                      Sign Out
                     </button>
                   </div>
                 )}
