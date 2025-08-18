@@ -139,9 +139,16 @@ const Header = () => {
                             {user?.email?.split('@')[0]}
                           </span>
                           {isConnected && (
-                            <span className="text-xs leading-tight opacity-75">
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(address);
+                                // You could add a toast notification here if desired
+                              }}
+                              className="text-xs leading-tight opacity-75 hover:opacity-100 transition-opacity"
+                              title="Click to copy full address"
+                            >
                               {`${address.slice(0, 6)}...${address.slice(-4)}`}
-                            </span>
+                            </button>
                           )}
                         </div>
                         <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
@@ -161,7 +168,16 @@ const Header = () => {
                             <p className="text-xs text-gray-500 uppercase tracking-wide">Logged in as</p>
                             <p className="text-sm font-medium text-gray-900 truncate mt-1">{user?.email}</p>
                             {isConnected && (
-                              <p className="text-xs text-gray-500 truncate font-mono mt-1">{address}</p>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(address);
+                                  // You could add a toast notification here if desired
+                                }}
+                                className="text-xs text-gray-500 font-mono mt-1 hover:text-gray-700 transition-colors text-left"
+                                title="Click to copy full address"
+                              >
+                                {`${address.slice(0, 6)}...${address.slice(-4)}`}
+                              </button>
                             )}
                           </div>
                           <div className="py-1">
@@ -331,9 +347,16 @@ const Header = () => {
                       Signed in as: {user?.email}
                     </div>
                     {isConnected && (
-                      <div className="text-sm text-white-600">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(address);
+                          // You could add a toast notification here if desired
+                        }}
+                        className="text-sm text-white-600 hover:text-white transition-colors text-left"
+                        title="Click to copy full address"
+                      >
                         Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
-                      </div>
+                      </button>
                     )}
                     
                     {/* Mobile menu items */}
