@@ -85,11 +85,11 @@ function UsageSlider() {
   return (
     <div className="relative">
       {/* Slider Container */}
-      <div className="overflow-hidden">
+      <div className="">
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{
-            transform: `translateX(-${currentSlide * 100}%)`,
+            transform: `translateX(-${curdfdfdfrentSlide * 100}%)`,
           }}
         >
           {Array.from({
@@ -113,7 +113,7 @@ function UsageSlider() {
                     >
                       {/* Card with #2a4661 background and box shadow */}
                       <div
-                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 relative overflow-hidden"
+                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 relative"
                         style={{
                           backgroundColor: "#2a4661",
                           minHeight: "300px",
@@ -122,7 +122,7 @@ function UsageSlider() {
                         }}
                       >
                         {/* Orange-red icon in top-left corner */}
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-4 left-4" style={{top:'-2rem', left: '-1.5rem'}}>
                           <div 
                             className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold"
                             style={{
@@ -616,8 +616,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="text-4xl font-bold text-gray-600 mb-8 inline-block px-3 py-1 rounded-md"
-              style={{ backgroundColor: "rgba(230, 230, 230, 0.7)" }}
+              className="text-4xl font-bold text-gray-600 mb-8 inline-block px-3 py-1 rounded-md"              
             >
               Usage
             </motion.h2>
