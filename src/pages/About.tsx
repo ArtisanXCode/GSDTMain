@@ -212,7 +212,7 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-lg shadow-lg max-w-lg"
+              className="p-8 rounded-lg max-w-lg"
             >
               <div className="mb-8">
                 <h2 className="text-4xl font-bold text-blue-600 mb-2">
