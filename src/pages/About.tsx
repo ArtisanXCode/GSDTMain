@@ -17,7 +17,7 @@ export default function About() {
       <div
         className="relative overflow-hidden"
         style={{
-          height: "100vh",
+          height: "140vh",
           backgroundImage: "url('/hero_why_gsdc.png')",
           backgroundSize: "cover",
           backgroundPosition: "left",
