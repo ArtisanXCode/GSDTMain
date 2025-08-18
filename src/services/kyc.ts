@@ -135,8 +135,11 @@ export const getUserKYCStatus = async (
             break;
 
           } catch (retryError: any) {
-            console.log(`Attempt ${attempt} failed:`, retryError.message);
-
+            console.group(`🔄 Retry Attempt ${attempt}/${maxRetries} Failed:`);
+            console.error("Error message:", retryError.message);
+            console.error("Error code:", retryError.code);
+            console.error("Error type:", retryError.constructor.name);
+            
             // Check for specific BSC RPC errors that indicate we should stop retrying
             const isFatalRpcError = retryError.message?.includes('missing trie node') ||
                                   retryError.message?.includes('missing revert data') ||
@@ -145,23 +148,38 @@ export const getUserKYCStatus = async (
                                   retryError.code === -32000;
 
             if (isFatalRpcError) {
-              console.warn("BSC RPC node error detected, skipping retries:", retryError.message);
+              console.warn("🚫 Fatal BSC RPC error detected - stopping retries");
+              console.warn("Error classification: Known BSC testnet infrastructure issue");
+              console.warn("Action: Skipping remaining retry attempts");
+              console.groupEnd();
               throw retryError;
             }
 
             if (attempt === maxRetries) {
-              // Last attempt failed, throw the error to be handled below
+              console.error("❌ All retry attempts exhausted");
+              console.error("Action: Propagating error to main handler");
+              console.groupEnd();
               throw retryError;
             }
 
             // Wait before retrying (exponential backoff)
             const waitTime = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
-            console.log(`Waiting ${waitTime}ms before retry...`);
+            console.log(`⏳ Waiting ${waitTime}ms before next attempt...`);
+            console.log(`📊 Retry strategy: Exponential backoff (${attempt + 1}/${maxRetries})`);
+            console.groupEnd();
             await new Promise(resolve => setTimeout(resolve, waitTime));
           }
         }
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-        console.log("NFT Balance:", readableBalance);
+        
+        console.group("✅ NFT Balance Check Successful:");
+        console.log("Raw balance:", userBalance.toString());
+        console.log("Readable balance:", readableBalance);
+        console.log("User address:", userAddress);
+        console.log("Contract address:", contract_NFT.address);
+        console.log("Has NFT (balance > 0):", parseInt(readableBalance) > 0);
+        console.log("KYC Status:", parseInt(readableBalance) > 0 ? "APPROVED" : "NOT_SUBMITTED");
+        console.groupEnd();
 
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
@@ -169,7 +187,17 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
       } catch (nftError: any) {
-        console.error("Error checking NFT balance:", nftError);
+        // Detailed error logging
+        console.group("🔍 NFT Balance Check Error Details:");
+        console.error("Full error object:", nftError);
+        console.log("Error message:", nftError.message);
+        console.log("Error code:", nftError.code);
+        console.log("Error reason:", nftError.reason);
+        console.log("Error data:", nftError.data);
+        console.log("Transaction details:", nftError.transaction);
+        console.log("User address:", userAddress);
+        console.log("Contract address:", contract_NFT.address);
+        console.groupEnd();
 
         // Handle specific error cases - BSC RPC node issues
         if (nftError.message?.includes('missing revert data') || 
@@ -178,18 +206,61 @@ export const getUserKYCStatus = async (
             nftError.message?.includes('Internal JSON-RPC error') ||
             nftError.code === -32603 ||
             nftError.code === -32000) {
-          console.warn("BSC testnet RPC node issue detected:");
-          console.warn("- Error type:", nftError.message || nftError.code);
-          console.warn("- This is a known BSC testnet infrastructure issue");
-          console.warn("- The RPC node is missing blockchain state data");
-          console.warn("- Falling back to database-only KYC status");
+          
+          console.group("⚠️ BSC Testnet RPC Issue Detected:");
+          console.warn("Error classification: Known BSC testnet infrastructure issue");
+          console.warn("Root cause: RPC node missing blockchain state data");
+          console.warn("Impact: Cannot verify NFT balance on-chain");
+          console.warn("Action: Falling back to database-only KYC status");
+          
+          // Extract more details if available
+          if (nftError.transaction) {
+            console.warn("Failed transaction details:");
+            console.warn("- To address:", nftError.transaction.to);
+            console.warn("- Data:", nftError.transaction.data);
+          }
+          
+          if (nftError.error) {
+            console.warn("Underlying RPC error:");
+            console.warn("- Code:", nftError.error.code);
+            console.warn("- Message:", nftError.error.message);
+            if (nftError.error.data) {
+              console.warn("- Data code:", nftError.error.data.code);
+              console.warn("- Data message:", nftError.error.data.message);
+            }
+          }
+          
+          console.warn("This is a temporary BSC testnet issue and should resolve automatically");
+          console.warn("User experience: KYC status will show as NOT_SUBMITTED until RPC recovers");
+          console.groupEnd();
 
           // Return NOT_SUBMITTED since we couldn't verify on-chain due to RPC issues
           return { status: KYCStatus.NOT_SUBMITTED };
         } else if (nftError.message?.includes('timeout')) {
-          console.warn("Contract call timed out - network or RPC issues");
+          console.group("⏱️ Contract Call Timeout:");
+          console.warn("Type: Network timeout");
+          console.warn("Cause: Slow RPC response or network connectivity issues");
+          console.warn("Action: Returning NOT_SUBMITTED status");
+          console.groupEnd();
         } else if (nftError.code === 'NETWORK_ERROR') {
-          console.warn("Network error when calling NFT contract");
+          console.group("🌐 Network Error:");
+          console.warn("Type: Network connectivity issue");
+          console.warn("Cause: Cannot reach BSC testnet RPC endpoint");
+          console.warn("Action: Returning NOT_SUBMITTED status");
+          console.groupEnd();
+        } else if (nftError.message?.includes('invalid address')) {
+          console.group("📧 Invalid Address Error:");
+          console.error("Type: Address validation failed");
+          console.error("User address:", userAddress);
+          console.error("Is valid address:", ethers.utils.isAddress(userAddress));
+          console.error("Action: Returning NOT_SUBMITTED status");
+          console.groupEnd();
+        } else {
+          console.group("❓ Unknown NFT Balance Error:");
+          console.error("Type: Unhandled error case");
+          console.error("This error type needs investigation");
+          console.error("Please report this error for further analysis");
+          console.groupEnd();
         }
 
         return { status: KYCStatus.NOT_SUBMITTED };
