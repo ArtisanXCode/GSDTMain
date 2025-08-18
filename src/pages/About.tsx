@@ -108,7 +108,7 @@ export default function About() {
               {/* Large circular background with dotted border */}
               <div className="relative">
                 {/* Outer dotted circle */}
-                <div className="rounded-full flex items-center justify-center relative" style={{ width: '30rem', height: '35rem', right: '6rem' }}>
+                <div className="rounded-full flex items-center justify-center relative" style={{ width: '30rem', height: '35rem', right: '6rem', top: '7rem' }}>
 
                   {/* Phone mockup positioned in the center-right */}
                   <div className="absolute right-8 top-12">
@@ -249,7 +249,7 @@ export default function About() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="space-y-4 mb-12"
+                className="space-y-4 mb-4"
               >
                 {[
                   "Multi-currency stability serving as backbone architecture",
