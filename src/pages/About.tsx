@@ -89,7 +89,7 @@ function UsageSlider() {
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{
-            transform: `translateX(-${curdfdfdfrentSlide * 100}%)`,
+            transform: `translateX(-${currentSlide * 100}%)`,
           }}
         >
           {Array.from({
