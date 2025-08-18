@@ -159,21 +159,43 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
 
-        // Add timeout to prevent hanging calls
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Contract call timeout after 10 seconds')), 10000);
-        });
-
-        // Try the balanceOf call with timeout protection
-        console.log("Making balanceOf call with parameters:", {
-          contractAddress: contract_NFT.address,
-          userAddress: userAddress,
-          isValidAddress: ethers.utils.isAddress(userAddress)
-        });
-
-        const balancePromise = contract_NFT.balanceOf(userAddress);
+        // Retry logic for network issues
+        const maxRetries = 3;
+        let userBalance;
         
-        const userBalance = await Promise.race([balancePromise, timeoutPromise]);
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            console.log(`Making balanceOf call (attempt ${attempt}/${maxRetries}):`, {
+              contractAddress: contract_NFT.address,
+              userAddress: userAddress,
+              isValidAddress: ethers.utils.isAddress(userAddress)
+            });
+
+            // Add timeout to prevent hanging calls
+            const timeoutPromise = new Promise<never>((_, reject) => {
+              setTimeout(() => reject(new Error('Contract call timeout after 8 seconds')), 8000);
+            });
+
+            const balancePromise = contract_NFT.balanceOf(userAddress);
+            userBalance = await Promise.race([balancePromise, timeoutPromise]);
+            
+            // If successful, break out of retry loop
+            break;
+            
+          } catch (retryError: any) {
+            console.log(`Attempt ${attempt} failed:`, retryError.message);
+            
+            if (attempt === maxRetries) {
+              // Last attempt failed, throw the error to be handled below
+              throw retryError;
+            }
+            
+            // Wait before retrying (exponential backoff)
+            const waitTime = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+            console.log(`Waiting ${waitTime}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+          }
+        }
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
         
         console.log("NFT Balance check successful:", {

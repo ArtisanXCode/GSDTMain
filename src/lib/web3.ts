@@ -7,11 +7,28 @@ import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 const NFT_ADDRESS = GSDC_NFT_ADDRESS;
 const NFT_CONTRACT_ABI = GSDC_NFT_ABI;
 
-// BSC Testnet RPC
-const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
+// BSC Testnet RPC endpoints (multiple for reliability)
+const BSC_TESTNET_RPCS = [
+  'https://data-seed-prebsc-1-s1.binance.org:8545/',
+  'https://data-seed-prebsc-2-s1.binance.org:8545/',
+  'https://data-seed-prebsc-1-s2.binance.org:8545/',
+  'https://data-seed-prebsc-2-s2.binance.org:8545/',
+  'https://data-seed-prebsc-1-s3.binance.org:8545/',
+];
+
+// Create a fallback provider that tries multiple RPC endpoints
+const createFallbackProvider = () => {
+  const providers = BSC_TESTNET_RPCS.map((rpc, index) => ({
+    provider: new ethers.providers.JsonRpcProvider(rpc),
+    priority: index + 1,
+    weight: 1
+  }));
+  
+  return new ethers.providers.FallbackProvider(providers);
+};
 
 // Default provider for read-only operations
-const defaultProvider = new ethers.providers.JsonRpcProvider(BSC_TESTNET_RPC);
+const defaultProvider = createFallbackProvider();
 
 export const getContract = (): ethers.Contract | null => {
   try {
@@ -96,7 +113,7 @@ export const getReadOnlyNFTContract = (): ethers.Contract | null => {
       }
     } else {
       provider = defaultProvider;
-      console.log('Using default provider for NFT contract');
+      console.log('Using fallback provider for NFT contract');
     }
 
     // Test provider connectivity
