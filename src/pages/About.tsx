@@ -115,7 +115,7 @@ function UsageSlider() {
                       <div
                         className="rounded-2xl p-8 text-white h-full hover:scale-105 transition-transform duration-300 shadow-xl"
                         style={{
-                          background: "linear-gradient(to top, white 50%, #446c93 50%)",
+                          background: "linear-gradient(to top, #446c93 50%)",
                           minHeight: "320px",
                           border: "1px solid rgba(255,255,255,0.1)",
                         }}
@@ -123,7 +123,7 @@ function UsageSlider() {
                         {/* Icon Circle */}
                         <div className="absolute top-0 left-0 -mt-4 ml-4">
                           <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
+                            className="text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
                             style={{
                               background:
                                 "linear-gradient(to bottom, #f6b62e, #e74134)",
@@ -134,18 +134,13 @@ function UsageSlider() {
                           </div>
                         </div>
 
-                        {/* Title */}
-                        <h3 className="text-xl font-bold mb-4 text-center text-black pt-8">
-                          {item.title}
-                        </h3>
-
                         {/* Description */}
-                        <p className="text-gray-700 text-sm leading-relaxed text-center mb-4">
+                        <p className="text-white text-md leading-relaxed mb-4">
                           {item.description}
                         </p>
 
                         {/* Details */}
-                        <p className="text-gray-500 text-xs leading-relaxed text-center italic">
+                        <p className="text-white text-md leading-relaxed">
                           {item.details}
                         </p>
 
@@ -218,13 +213,13 @@ function UsageSlider() {
       </div>
 
       {/* Bottom Description */}
-      <div className="mt-12 max-w-4xl mx-auto text-center space-y-4">
+      <div className="mt-12 max-w-4xl mx-auto space-y-4">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           By leveraging this diversc mix, GSDC reduces its reliance on any
           single currency (eg USD), thereby distributing risk across diverse
@@ -236,7 +231,7 @@ function UsageSlider() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           GSDC enables an adaptable to US dollar pegged cryptocurrencies (USDT,
           USDC, DAI, etc.), representing a perpetual and economic shift from
@@ -249,7 +244,7 @@ function UsageSlider() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           GSDC is an alternative to US dollar pegged cryptocurrencies (USDT,
           USDC, DAI, etc.), representing a paradigmatic and economic shift from
