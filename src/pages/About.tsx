@@ -2,6 +2,236 @@ import { motion } from 'framer-motion';
 import { CheckIcon, ChartBarIcon, ShieldCheckIcon, GlobeAltIcon, CurrencyDollarIcon, UserGroupIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
+// Usage Slider Component
+function UsageSlider() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const usageItems = [
+    {
+      icon: "🌍",
+      title: "Global Remittances",
+      description: "GSDC may be preferred as foreign portfolio into any of the currency within The Global South's basket adjustment portfolio by The Global South's Saving Model Account.",
+      details: "Once GSDC is adopted/tested, it can be used like any other cryptocurrency."
+    },
+    {
+      icon: "🔒", 
+      title: "Secure Storage",
+      description: "GSDC can be used in a grap decentralised and secure environment.",
+      details: "In portfolio integrate with individual, exchange and wallets as currency supermundial."
+    },
+    {
+      icon: "📊",
+      title: "Financial Analytics", 
+      description: "The Global South of business liquidity business business Reserves, without business model financial wealth. This plugs market/listed by private group or public Financial International Trade.",
+      details: "GSDC measures in any countries."
+    },
+    {
+      icon: "🔄",
+      title: "Cross-Border Trade",
+      description: "Facilitate international trade with reduced fees and faster settlement times.",
+      details: "Enable seamless global commerce with GSDC as the settlement currency."
+    },
+    {
+      icon: "🏛️",
+      title: "Institutional Banking",
+      description: "Provide institutional-grade banking services with transparent reserves.",
+      details: "Support large-scale financial operations with regulatory compliance."
+    },
+    {
+      icon: "💱",
+      title: "Currency Exchange",
+      description: "Offer stable currency exchange without volatility risks.",
+      details: "Maintain purchasing power across Global South currencies."
+    }
+  ];
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % Math.ceil(usageItems.length / getItemsPerSlide()));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(
+      (prev) => (prev - 1 + Math.ceil(usageItems.length / getItemsPerSlide())) % Math.ceil(usageItems.length / getItemsPerSlide())
+    );
+  };
+
+  const getItemsPerSlide = () => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth >= 1024 ? 3 : 1;
+    }
+    return 3;
+  };
+
+  return (
+    <div className="relative">
+      {/* Slider Container */}
+      <div className="overflow-hidden">
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(-${currentSlide * 100}%)`,
+          }}
+        >
+          {Array.from({
+            length: Math.ceil(usageItems.length / getItemsPerSlide()),
+          }).map((_, slideIndex) => (
+            <div key={slideIndex} className="w-full flex-shrink-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {usageItems
+                  .slice(
+                    slideIndex * getItemsPerSlide(),
+                    (slideIndex + 1) * getItemsPerSlide(),
+                  )
+                  .map((item, index) => (
+                    <motion.div
+                      key={item.title}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="relative group cursor-pointer"
+                    >
+                      {/* Card with gradient background matching the design */}
+                      <div 
+                        className="rounded-2xl p-8 text-white h-full hover:scale-105 transition-transform duration-300 shadow-xl"
+                        style={{
+                          background: "linear-gradient(135deg, #446c93 0%, #2a4661 100%)",
+                          minHeight: "320px",
+                          border: "1px solid rgba(255,255,255,0.1)"
+                        }}
+                      >
+                        {/* Icon Circle */}
+                        <div className="flex justify-center mb-6">
+                          <div 
+                            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
+                            style={{ 
+                              background: "linear-gradient(to bottom, #f6b62e, #e74134)",
+                              border: "2px solid rgba(255,255,255,0.2)"
+                            }}
+                          >
+                            {item.icon}
+                          </div>
+                        </div>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-bold mb-4 text-center text-white">
+                          {item.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-white/90 text-sm leading-relaxed text-center mb-4">
+                          {item.description}
+                        </p>
+
+                        {/* Details */}
+                        <p className="text-white/80 text-xs leading-relaxed text-center italic">
+                          {item.details}
+                        </p>
+
+                        {/* Hover effect overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </div>
+                    </motion.div>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation Arrows - Desktop */}
+      <div className="hidden lg:block">
+        {Math.ceil(usageItems.length / 3) > 1 && (
+          <>
+            <button
+              onClick={prevSlide}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm"
+            >
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-colors duration-200 shadow-lg backdrop-blur-sm"
+            >
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Navigation Dots - Mobile */}
+      <div className="lg:hidden flex justify-center mt-8 space-x-2">
+        {Array.from({ length: usageItems.length }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+              currentSlide === index ? "bg-gray-600" : "bg-gray-300"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Bottom Description */}
+      <div className="mt-12 max-w-4xl mx-auto text-center space-y-4">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="text-gray-700 text-lg leading-relaxed"
+        >
+          By leveraging this diversc mix, GSDC reduces its reliance on any single currency (eg USD), thereby distributing risk across diverse economic regions.
+        </motion.p>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="text-gray-700 text-lg leading-relaxed"
+        >
+          GSDC enables an adaptable to US dollar pegged cryptocurrencies (USDT, USDC, DAI, etc.), representing a perpetual and economic shift from full dollar-backed crypto assets in a BUS dollar dominated financial system.
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          viewport={{ once: true }}
+          className="text-gray-700 text-lg leading-relaxed"
+        >
+          GSDC is an alternative to US dollar pegged cryptocurrencies (USDT, USDC, DAI, etc.), representing a paradigmatic and economic shift from full dollar-backed crypto assets in a US dollar dominated financial system.
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
 export default function About() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
@@ -195,6 +425,32 @@ export default function About() {
         </div>
       </div>
 
+      {/* Usage Section - Slider with Cards */}
+      <div className="relative overflow-hidden" style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 100%)"
+      }}>
+        {/* Usage Title */}
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pt-16 pb-8">
+          <div className="text-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-4xl font-bold text-gray-600 mb-8"
+            >
+              Usage
+            </motion.h2>
+          </div>
+        </div>
+
+        {/* Usage Cards Slider */}
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pb-16">
+          <UsageSlider />
+        </div>
+      </div>
+
       {/* GSDC The Alternative Section - Updated Layout */}
       <div className="relative overflow-hidden" style={{
         minHeight: "150vh",
@@ -308,21 +564,7 @@ export default function About() {
           </div>
         </div>
 
-        {/* Bottom section with "Usage" text */}
-        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
-          <motion.h4
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            viewport={{ once: true }}
-            className="text-3xl font-bold text-white/90 text-center"
-            style={{
-              textShadow: "0 2px 4px rgba(0,0,0,0.3)"
-            }}
-          >
-            Usage
-          </motion.h4>
-        </div>
+        
       </div>
 
       {/* The Alternative Section */}
