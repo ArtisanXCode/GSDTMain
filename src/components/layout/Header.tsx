@@ -139,40 +139,42 @@ const Header = () => {
                       </Menu.Button>
                       <Transition
                         as={Fragment}
-                        enter="transition ease-out duration-100"
+                        enter="transition ease-out duration-200"
                         enterFrom="transform opacity-0 scale-95"
                         enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
+                        leave="transition ease-in duration-150"
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={() => navigate('/my-account')}
-                                className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
-                              >
-                                <UserIcon className="h-5 w-5 mr-2" />
-                                My Account
-                              </button>
-                            )}
-                          </Menu.Item>
-                          
-                          {isConnected && (
+                        <Menu.Items className="origin-top-right absolute right-0 z-50 mt-2 w-56 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-10 focus:outline-none border border-gray-200">
+                          <div className="py-1">
                             <Menu.Item>
                               {({ active }) => (
-                                <div className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } px-4 py-2 text-sm text-gray-700 flex items-center`}>
-                                  <WalletIcon className="h-5 w-5 mr-2" />
-                                  <span className="font-mono text-xs">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
-                                </div>
+                                <button
+                                  onClick={() => navigate('/my-account')}
+                                  className={`${
+                                    active ? 'bg-gray-100' : ''
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
+                                >
+                                  <UserIcon className="h-5 w-5 mr-3" />
+                                  My Account
+                                </button>
                               )}
                             </Menu.Item>
-                          )}
+                            
+                            {isConnected && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <div className={`${
+                                    active ? 'bg-gray-100' : ''
+                                  } px-4 py-2 text-sm text-gray-700 flex items-center`}>
+                                    <WalletIcon className="h-5 w-5 mr-3" />
+                                    <span className="font-mono text-xs">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
+                                  </div>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </div>
                         </Menu.Items>
                       </Transition>
                     </Menu>
@@ -197,105 +199,107 @@ const Header = () => {
                         enter="transition ease-out duration-200"
                         enterFrom="transform opacity-0 scale-95"
                         enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
+                        leave="transition ease-in duration-150"
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="px-4 py-2 border-b border-gray-100">
-                            <p className="text-sm text-gray-500">Connected as</p>
-                            <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
-                            <p className="text-xs text-gray-500 truncate">{address}</p>
+                        <Menu.Items className="absolute right-0 z-50 mt-2 w-64 origin-top-right rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-10 focus:outline-none border border-gray-200">
+                          <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 rounded-t-lg">
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">Connected as</p>
+                            <p className="text-sm font-medium text-gray-900 truncate mt-1">{user?.email}</p>
+                            <p className="text-xs text-gray-500 truncate font-mono mt-1">{address}</p>
                           </div>
+                          <div className="py-1">
                           <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                to="/dashboard"
-                                className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } flex w-full px-4 py-2 text-sm text-gray-700`}
-                              >
-                                <HomeIcon className="h-5 w-5 mr-2" />
-                                Dashboard
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                to="/my-account"
-                                className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } flex w-full px-4 py-2 text-sm text-gray-700`}
-                              >
-                                <UserIcon className="h-5 w-5 mr-2" />
-                                My Account
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                to="/transactions"
-                                className={`${
-                                  active ? "bg-gray-100" : ""
-                                } flex px-4 py-2 text-sm text-gray-700 items-center`}
-                              >
-                                <DocumentTextIcon className="h-5 w-5 mr-2" />
-                                Transactions
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                to="/token-minting"
-                                className={`${
-                                  active ? "bg-gray-100" : ""
-                                } flex px-4 py-2 text-sm text-gray-700 items-center`}
-                                onClick={(e) => {
-                                  if (location.pathname === "/token-minting") {
-                                    e.preventDefault();
-                                    window.location.reload();
-                                  }
-                                }}
-                              >
-                                <PlusCircleIcon className="h-5 w-5 mr-2" />
-                                Mint Token
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          {isAdmin && (
-                            <Menu.Item>
                               {({ active }) => (
                                 <Link
-                                  to="/admin/dashboard"
+                                  to="/dashboard"
                                   className={`${
-                                    active ? "bg-gray-100" : ""
-                                  } flex px-4 py-2 text-sm text-gray-700 items-center`}
+                                    active ? 'bg-gray-100' : ''
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
                                 >
-                                  <ShieldCheckIcon className="h-5 w-5 mr-2" />
-                                  Admin Dashboard
+                                  <HomeIcon className="h-5 w-5 mr-3" />
+                                  Dashboard
                                 </Link>
                               )}
                             </Menu.Item>
-                          )}
-                          <div className="border-t border-gray-100 my-1"></div>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={() => {
-                                  handleLogout();
-                                }}
-                                className={`${
-                                  active ? "bg-gray-100" : ""
-                                } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
-                              >
-                                <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                                Disconnect & Sign Out
-                              </button>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  to="/my-account"
+                                  className={`${
+                                    active ? 'bg-gray-100' : ''
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
+                                >
+                                  <UserIcon className="h-5 w-5 mr-3" />
+                                  My Account
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  to="/transactions"
+                                  className={`${
+                                    active ? "bg-gray-100" : ""
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
+                                >
+                                  <DocumentTextIcon className="h-5 w-5 mr-3" />
+                                  Transactions
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  to="/token-minting"
+                                  className={`${
+                                    active ? "bg-gray-100" : ""
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
+                                  onClick={(e) => {
+                                    if (location.pathname === "/token-minting") {
+                                      e.preventDefault();
+                                      window.location.reload();
+                                    }
+                                  }}
+                                >
+                                  <PlusCircleIcon className="h-5 w-5 mr-3" />
+                                  Mint Token
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            {isAdmin && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <Link
+                                    to="/admin/dashboard"
+                                    className={`${
+                                      active ? "bg-gray-100" : ""
+                                    } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
+                                  >
+                                    <ShieldCheckIcon className="h-5 w-5 mr-3" />
+                                    Admin Dashboard
+                                  </Link>
+                                )}
+                              </Menu.Item>
                             )}
-                          </Menu.Item>
+                            <div className="border-t border-gray-100 my-1"></div>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => {
+                                    handleLogout();
+                                  }}
+                                  className={`${
+                                    active ? "bg-gray-100" : ""
+                                  } flex w-full px-4 py-2 text-sm text-red-600 items-center hover:bg-red-50 transition-colors`}
+                                >
+                                  <ArrowRightOnRectangleIcon className="h-5 w-5 mr-3" />
+                                  Disconnect & Sign Out
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
                         </Menu.Items>
                       </Transition>
                     </Menu>
