@@ -111,20 +111,32 @@ function UsageSlider() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="relative group cursor-pointer"
                     >
-                      {/* Card with exact gradient matching GSDC Stability Benefits */}
+                      {/* Card with #2a4661 background and box shadow */}
                       <div
-                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 shadow-xl relative overflow-hidden"
+                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 relative overflow-hidden"
                         style={{
-                          background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)",
+                          backgroundColor: "#2a4661",
                           minHeight: "300px",
                           border: "1px solid rgba(255,255,255,0.1)",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3), 0 4px 15px rgba(0, 0, 0, 0.2)",
                         }}
                       >
-                        {/* Icon at top center */}
-                        <div className="flex justify-center mb-6">
-                          <div className="text-white text-4xl font-bold">
+                        {/* Orange-red icon in top-left corner */}
+                        <div className="absolute top-4 left-4">
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold"
+                            style={{
+                              background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                              boxShadow: "0 4px 12px rgba(231, 65, 52, 0.4)",
+                            }}
+                          >
                             {item.icon}
                           </div>
+                        </div>
+
+                        {/* Main icon at center (removed from here since it's now in corner) */}
+                        <div className="mt-8 mb-6">
+                          {/* Empty space for better layout */}
                         </div>
 
                         {/* Title */}
