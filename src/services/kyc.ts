@@ -103,6 +103,27 @@ export const getUserKYCStatus = async (
 
     console.log("Checking KYC status for address:", userAddress);
 
+    // First check database for existing KYC request
+    try {
+      const { data: existingRequest, error: dbError } = await supabase
+        .from('kyc_requests')
+        .select('*')
+        .eq('user_address', userAddress)
+        .order('submitted_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!dbError && existingRequest) {
+        console.log("Found existing KYC request in database:", existingRequest.status);
+        return {
+          status: existingRequest.status as KYCStatus,
+          request: existingRequest as KYCRequest
+        };
+      }
+    } catch (dbError) {
+      console.warn("Database check failed, falling back to NFT contract:", dbError);
+    }
+
     // Check NFT contract for KYC approval
     const contract_NFT = getReadOnlyNFTContract();
     console.log("NFT Contract instance:", {
@@ -122,12 +143,28 @@ export const getUserKYCStatus = async (
 
         console.log("Attempting to call balanceOf for address:", userAddress);
 
+        // First check if the contract exists by getting its code
+        try {
+          const provider = contract_NFT.provider;
+          const contractCode = await provider.getCode(contract_NFT.address);
+          
+          if (contractCode === '0x') {
+            console.error("No contract deployed at address:", contract_NFT.address);
+            return { status: KYCStatus.NOT_SUBMITTED };
+          }
+          
+          console.log("Contract verified - code length:", contractCode.length);
+        } catch (codeError) {
+          console.error("Error checking contract code:", codeError);
+          return { status: KYCStatus.NOT_SUBMITTED };
+        }
+
         // Add timeout to prevent hanging calls
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Contract call timeout after 15 seconds')), 15000);
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Contract call timeout after 10 seconds')), 10000);
         });
 
-        // Try the balanceOf call with additional logging
+        // Try the balanceOf call with timeout protection
         console.log("Making balanceOf call with parameters:", {
           contractAddress: contract_NFT.address,
           userAddress: userAddress,
@@ -164,34 +201,30 @@ export const getUserKYCStatus = async (
         });
         
         // Handle specific error cases
-        if (nftError.message?.includes('missing revert data') || nftError.message?.includes('call exception')) {
-          console.warn("Contract call failed - possible causes:");
-          console.warn("1. Contract not deployed at the specified address");
-          console.warn("2. Function doesn't exist or has different signature");
-          console.warn("3. Network connectivity issues");
-          console.warn("4. RPC provider limitations");
+        if (nftError.message?.includes('missing revert data') || 
+            nftError.message?.includes('call exception') ||
+            nftError.message?.includes('missing trie node')) {
+          console.warn("Blockchain connectivity issue detected:");
+          console.warn("1. RPC node may be experiencing issues");
+          console.warn("2. Network connectivity problems");
+          console.warn("3. Contract state synchronization issues");
+          console.warn("Falling back to database-only KYC status");
           
-          // Try to determine the specific cause
-          try {
-            const provider = contract_NFT.provider;
-            const network = await provider.getNetwork();
-            console.log("Current network:", network);
-            
-            const block = await provider.getBlockNumber();
-            console.log("Latest block number:", block);
-          } catch (providerError) {
-            console.error("Provider error:", providerError);
-          }
+          // Return NOT_SUBMITTED since we couldn't verify on-chain
+          return { status: KYCStatus.NOT_SUBMITTED };
           
         } else if (nftError.message?.includes('timeout')) {
           console.warn("Contract call timed out - network or RPC issues");
-        } else if (nftError.code === 'NETWORK_ERROR') {
+          return { status: KYCStatus.NOT_SUBMITTED };
+        } else if (nftError.code === 'NETWORK_ERROR' || nftError.code === -32603) {
           console.warn("Network error when calling NFT contract");
+          return { status: KYCStatus.NOT_SUBMITTED };
         } else if (nftError.code === 'CALL_EXCEPTION') {
           console.warn("Call exception - contract function call failed");
+          return { status: KYCStatus.NOT_SUBMITTED };
         }
         
-        // Return default status instead of throwing
+        // Return default status for any other errors
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
