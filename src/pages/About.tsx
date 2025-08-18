@@ -121,7 +121,7 @@ function UsageSlider() {
                         }}
                       >
                         {/* Icon Circle */}
-                        <div className="flex justify-center mb-6">
+                        <div className="absolute top-0 left-0 -mt-4 ml-4">
                           <div
                             className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
                             style={{
@@ -135,7 +135,7 @@ function UsageSlider() {
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-xl font-bold mb-4 text-center text-black">
+                        <h3 className="text-xl font-bold mb-4 text-center text-black pt-8">
                           {item.title}
                         </h3>
 
