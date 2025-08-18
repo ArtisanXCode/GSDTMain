@@ -129,67 +129,20 @@ const Header = () => {
                     >
                       Login / Sign Up
                     </button>
-                  ) : !isConnected ? (
-                    /* Show User Menu with Wallet Connect after authentication */
-                    <Menu as="div" className="relative">
-                      <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-lg transition-colors">
-                        <UserIcon className="h-5 w-5" />
-                        <span>{user?.email?.split('@')[0]}</span>
-                        <ChevronDownIcon className="h-4 w-4" />
-                      </Menu.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="origin-top-right absolute right-0 z-50 mt-2 w-56 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-10 focus:outline-none border border-gray-200">
-                          <div className="py-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={() => navigate('/my-account')}
-                                  className={`${
-                                    active ? 'bg-gray-100' : ''
-                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center hover:bg-gray-50 transition-colors`}
-                                >
-                                  <UserIcon className="h-5 w-5 mr-3" />
-                                  My Account
-                                </button>
-                              )}
-                            </Menu.Item>
-                            
-                            {isConnected && (
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <div className={`${
-                                    active ? 'bg-gray-100' : ''
-                                  } px-4 py-2 text-sm text-gray-700 flex items-center`}>
-                                    <WalletIcon className="h-5 w-5 mr-3" />
-                                    <span className="font-mono text-xs">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
-                                  </div>
-                                )}
-                              </Menu.Item>
-                            )}
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
                   ) : (
-                    /* Show Full Menu after wallet connection */
+                    /* Show Full Menu after authentication */
                     <Menu as="div" className="relative">
                       <Menu.Button className="flex items-center rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 transition-all duration-200">
-                        <WalletIcon className="h-4 w-4 mr-2" />
+                        <UserIcon className="h-4 w-4 mr-2" />
                         <div className="flex flex-col items-start">
                           <span className="text-xs leading-tight">
                             {user?.email?.split('@')[0]}
                           </span>
-                          <span className="text-xs leading-tight opacity-75">
-                            {`${address.slice(0, 6)}...${address.slice(-4)}`}
-                          </span>
+                          {isConnected && (
+                            <span className="text-xs leading-tight opacity-75">
+                              {`${address.slice(0, 6)}...${address.slice(-4)}`}
+                            </span>
+                          )}
                         </div>
                         <ChevronDownIcon className="ml-2 -mr-1 h-4 w-4" />
                       </Menu.Button>
@@ -205,12 +158,14 @@ const Header = () => {
                       >
                         <Menu.Items className="absolute right-0 z-50 mt-2 w-64 origin-top-right rounded-lg bg-white shadow-xl ring-1 ring-black ring-opacity-10 focus:outline-none border border-gray-200">
                           <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 rounded-t-lg">
-                            <p className="text-xs text-gray-500 uppercase tracking-wide">Connected as</p>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">Logged in as</p>
                             <p className="text-sm font-medium text-gray-900 truncate mt-1">{user?.email}</p>
-                            <p className="text-xs text-gray-500 truncate font-mono mt-1">{address}</p>
+                            {isConnected && (
+                              <p className="text-xs text-gray-500 truncate font-mono mt-1">{address}</p>
+                            )}
                           </div>
                           <div className="py-1">
-                          <Menu.Item>
+                            <Menu.Item>
                               {({ active }) => (
                                 <Link
                                   to="/dashboard"
@@ -268,6 +223,7 @@ const Header = () => {
                                 </Link>
                               )}
                             </Menu.Item>
+                            {/* Only show Admin Dashboard if user is admin (requires both authentication and admin role) */}
                             {isAdmin && (
                               <Menu.Item>
                                 {({ active }) => (
@@ -354,7 +310,7 @@ const Header = () => {
                 )}
               </div>
               <div className="border-t border-gray-200 px-4 py-6 space-y-4">
-                {/* Auth and Wallet Flow */}
+                {/* Auth Flow */}
                 {!isAuthenticated ? (
                   <button
                     onClick={() => {
@@ -369,45 +325,64 @@ const Header = () => {
                   >
                     Login / Sign Up
                   </button>
-                ) : !isConnected ? (
-                  <div className="space-y-2">
-                    <div className="text-sm text-white-600">
-                      Signed in as: {user?.email}
-                    </div>
-                    <button
-                      onClick={() => {
-                        connect();
-                        setMobileMenuOpen(false);
-                      }}
-                      disabled={loading || connectionAttemptInProgress}
-                      className="w-full bg-gradient-to-r from-yellow-400 to-red-500 text-white px-6 py-3 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-200 disabled:opacity-50"
-                    >
-                      {loading || connectionAttemptInProgress ? 'Connecting...' : 'Connect Wallet'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
                 ) : (
                   <div className="space-y-2">
                     <div className="text-sm text-white-600">
                       Signed in as: {user?.email}
                     </div>
-                    <div className="text-sm text-white-600">
-                      Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+                    {isConnected && (
+                      <div className="text-sm text-white-600">
+                        Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+                      </div>
+                    )}
+                    
+                    {/* Mobile menu items */}
+                    <div className="space-y-1 pt-2 border-t border-white/20">
+                      <Link
+                        to="/dashboard"
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        to="/my-account"
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        My Account
+                      </Link>
+                      <Link
+                        to="/transactions"
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Transactions
+                      </Link>
+                      <Link
+                        to="/token-minting"
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Mint Token
+                      </Link>
+                      {isAdmin && (
+                        <Link
+                          to="/admin/dashboard"
+                          className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      )}
                     </div>
+                    
                     <button
                       onClick={() => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                      className="w-full bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors mt-4"
                     >
                       Sign Out
                     </button>
