@@ -188,6 +188,90 @@ export default function About() {
         </div>
       </div>
 
+      {/* GSDC The Alternative Section - New Design */}
+      <div className="relative overflow-hidden py-24 sm:py-32" style={{
+        background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 60%, #f59e0b 60%, #dc2626 100%)"
+      }}>
+        {/* Phoenix Icon - Bottom Center */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10">
+          <img
+            src="/logo_gsdc_icon.png"
+            alt="Phoenix Icon"
+            className="h-32 w-32 opacity-80"
+          />
+        </div>
+
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <div>
+                <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                  GSDC
+                </h2>
+                <h3 className="text-3xl font-bold text-gray-700 mb-6">
+                  The Alternative
+                </h3>
+              </div>
+
+              <div className="text-gray-600 space-y-4 text-base leading-relaxed max-w-lg">
+                <p>
+                  In our vision, GSDC will be issued on blockchains 
+                  serving as a cryptocurrency token.
+                </p>
+                <p>
+                  Each GSDC issued token position will be equal to the 
+                  sum of each selected Global South currencies 
+                  (CNY, INR, BRL, ZAR, THB, EGP), and backed by a basket 
+                  of BRICS+ Government bonds, liquid securities, etc.)
+                </p>
+                <p>
+                  held as reserves by institutional custodians selected 
+                  by The Global South SMA.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Right Content - Feature Badges */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="space-y-4"
+            >
+              {/* Feature badges with staggered animation */}
+              {[
+                "Multi-currency stability serving as backbone architecture",
+                "Collateralized by a basket of BRICS+ PLUS advancing US Dollar hegemony",
+                "Proof of Reserves & institutional-grade custody",
+                "Multi-chain compatibility",
+                "Low-cost, scalable transaction fees",
+                "Designed for remittances, DeFi, and international trade"
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-blue-900/90 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-sm border border-blue-800/50"
+                  style={{ maxWidth: 'fit-content' }}
+                >
+                  <span className="text-sm font-medium">{feature}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
       {/* The Alternative Section */}
       <div className="bg-gray-50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
