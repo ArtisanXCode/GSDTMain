@@ -28,9 +28,10 @@ ChartJS.register(
 // Predefined Y-axis ranges for GSDC exchange rates
 const GSDC_RATE_RANGES: Record<string, { min: number; max: number }> = {
   'USD': { min: 0.00, max: 1.00 },
+  'RUB': { min: 30.00, max: 40.00 },
   'CNY': { min: 1.00, max: 6.00 },
   'THB': { min: 10.00, max: 15.00 },
-  'INR': { min: 33.00, max: 38.00 },
+  'INR': { min: 33.00, max: 40.00 },
   'BRL': { min: 1.5, max: 3.00 },
   'ZAR': { min: 6.0, max: 9.0 },
   'IDR': { min: 6000, max: 8000 }
