@@ -146,39 +146,32 @@ const Header = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="px-4 py-2 border-b border-gray-100">
-                            <p className="text-sm text-gray-500">Signed in as</p>
-                            <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
-                          </div>
+                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <Menu.Item>
                             {({ active }) => (
                               <button
-                                onClick={connect}
-                                disabled={loading || connectionAttemptInProgress}
-                                className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } flex w-full px-4 py-2 text-sm text-gray-700 items-center disabled:opacity-50`}
-                              >
-                                <WalletIcon className="h-5 w-5 mr-2" />
-                                {loading || connectionAttemptInProgress ? 'Connecting...' : 'Connect Wallet'}
-                              </button>
-                            )}
-                          </Menu.Item>
-                          <div className="border-t border-gray-100 my-1"></div>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={handleLogout}
+                                onClick={() => navigate('/my-account')}
                                 className={`${
                                   active ? 'bg-gray-100' : ''
                                 } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
                               >
-                                <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                                Sign Out
+                                <UserIcon className="h-5 w-5 mr-2" />
+                                My Account
                               </button>
                             )}
                           </Menu.Item>
+                          {isConnected && (
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div className={`${
+                                  active ? 'bg-gray-100' : ''
+                                } px-4 py-2 text-sm text-gray-700 flex items-center`}>
+                                  <WalletIcon className="h-5 w-5 mr-2" />
+                                  <span className="font-mono text-xs">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
+                                </div>
+                              )}
+                            </Menu.Item>
+                          )}
                         </Menu.Items>
                       </Transition>
                     </Menu>

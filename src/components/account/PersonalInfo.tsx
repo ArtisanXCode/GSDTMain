@@ -1,322 +1,160 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useWallet } from '../../hooks/useWallet';
-import { toast } from 'react-hot-toast';
-import { supabase } from '../../lib/supabase';
-
-interface UserProfile {
-  id?: string;
-  email: string;
-  first_name?: string;
-  last_name?: string;
-  phone?: string;
-  date_of_birth?: string;
-  address_line_1?: string;
-  address_line_2?: string;
-  city?: string;
-  state?: string;
-  postal_code?: string;
-  country?: string;
-  updated_at?: string;
-}
 
 export default function PersonalInfo() {
   const { user } = useAuth();
-  const { address, isConnected } = useWallet();
-  const [profile, setProfile] = useState<UserProfile>({
-    email: user?.email || '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { address, isConnected, setManualAddress, disconnect, loading, error } = useWallet();
+  const [walletAddress, setWalletAddress] = useState(address || '');
   const [isEditing, setIsEditing] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, [user]);
-
-  const loadProfile = async () => {
-    if (!user?.id) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-
-      if (data) {
-        setProfile({
-          ...data,
-          email: user.email || '',
-        });
-      } else {
-        setProfile({
-          email: user.email || '',
-        });
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      toast.error('Failed to load profile');
-    } finally {
-      setLoading(false);
+  const handleSaveWalletAddress = async () => {
+    setLocalError(null);
+    
+    if (!walletAddress.trim()) {
+      setLocalError('Wallet address cannot be empty');
+      return;
     }
-  };
 
-  const handleSave = async () => {
-    if (!user?.id) return;
-
-    try {
-      setSaving(true);
-
-      // Prepare data to be saved, mapping from component state to database fields
-      const formData = {
-        firstName: profile.first_name,
-        lastName: profile.last_name,
-        phone: profile.phone,
-        dateOfBirth: profile.date_of_birth,
-        addressLine1: profile.address_line_1,
-        addressLine2: profile.address_line_2,
-        city: profile.city,
-        state: profile.state,
-        postalCode: profile.postal_code,
-        country: profile.country,
-      };
-
-      const { error } = await supabase
-        .from('user_profiles')
-        .upsert([{
-          user_id: user.id,
-          email: user.email,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone,
-          date_of_birth: formData.dateOfBirth || null,
-          address_line_1: formData.addressLine1,
-          address_line_2: formData.addressLine2,
-          city: formData.city,
-          state: formData.state,
-          postal_code: formData.postalCode,
-          country: formData.country,
-        }], {
-          onConflict: 'user_id'
-        });
-
-      if (error) throw error;
-
-      toast.success('Profile updated successfully');
+    const result = await setManualAddress(walletAddress.trim());
+    if (result) {
       setIsEditing(false);
-      loadProfile();
-    } catch (error) {
-      console.error('Error saving profile:', error);
-      toast.error('Failed to update profile');
-    } finally {
-      setSaving(false);
     }
   };
 
-  const handleCancel = () => {
+  const handleDisconnectWallet = async () => {
+    await disconnect();
+    setWalletAddress('');
     setIsEditing(false);
-    loadProfile();
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
-          <p className="text-gray-600">Manage your personal details and contact information</p>
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+      
+      <div className="space-y-6">
+        {/* Basic Info */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Details</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <p className="text-gray-900">{user?.email}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Account Created</label>
+              <p className="text-gray-900">
+                {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex space-x-3">
-          {isEditing ? (
-            <>
+
+        {/* Wallet Address Management */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
+          
+          {!isConnected && !isEditing ? (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                No wallet address configured. Add your wallet address to enable blockchain transactions.
+              </p>
               <button
-                onClick={handleCancel}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                Cancel
+                Add Wallet Address
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </>
+            </div>
+          ) : isEditing ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Wallet Address
+                </label>
+                <input
+                  type="text"
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                  placeholder="0x..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Enter a valid Ethereum wallet address (42 characters, starting with 0x)
+                </p>
+              </div>
+              
+              {(localError || error) && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-sm text-red-600">{localError || error}</p>
+                </div>
+              )}
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleSaveWalletAddress}
+                  disabled={loading}
+                  className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  {loading ? 'Saving...' : 'Save Address'}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setWalletAddress(address || '');
+                    setLocalError(null);
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Edit Profile
-            </button>
+            <div className="space-y-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-green-800">Wallet Address Configured</p>
+                    <p className="text-sm text-green-700 font-mono break-all">{address}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setIsEditing(true);
+                    setWalletAddress(address || '');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Edit Address
+                </button>
+                <button
+                  onClick={handleDisconnectWallet}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Remove Address
+                </button>
+              </div>
+            </div>
           )}
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={profile.email}
-              disabled
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              value={profile.first_name || ''}
-              onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              value={profile.last_name || ''}
-              onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-            <input
-              type="tel"
-              value={profile.phone || ''}
-              onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-            <input
-              type="date"
-              value={profile.date_of_birth || ''}
-              onChange={(e) => setProfile({ ...profile, date_of_birth: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        {/* Address Information */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Address Information</h3>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
-            <input
-              type="text"
-              value={profile.address_line_1 || ''}
-              onChange={(e) => setProfile({ ...profile, address_line_1: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address Line 2</label>
-            <input
-              type="text"
-              value={profile.address_line_2 || ''}
-              onChange={(e) => setProfile({ ...profile, address_line_2: e.target.value })}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">City</label>
-              <input
-                type="text"
-                value={profile.city || ''}
-                onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">State/Province</label>
-              <input
-                type="text"
-                value={profile.state || ''}
-                onChange={(e) => setProfile({ ...profile, state: e.target.value })}
-                disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Postal Code</label>
-              <input
-                type="text"
-                value={profile.postal_code || ''}
-                onChange={(e) => setProfile({ ...profile, postal_code: e.target.value })}
-                disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Country</label>
-              <input
-                type="text"
-                value={profile.country || ''}
-                onChange={(e) => setProfile({ ...profile, country: e.target.value })}
-                disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50 text-gray-900 placeholder-gray-500"
-              />
-            </div>
-          </div>
+        {/* Additional Info Notice */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800">
+            <strong>Note:</strong> Your wallet address is used for blockchain transactions and admin role verification. 
+            Make sure to enter the correct address that you control.
+          </p>
         </div>
       </div>
-
-      {/* Connected Wallet */}
-      {isConnected && (
-        <div className="border-t pt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Connected Wallet</h3>
-          <div className="bg-green-50 border border-green-200 rounded-md p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">Wallet Connected</p>
-                <p className="text-sm text-green-700 font-mono">{address}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
