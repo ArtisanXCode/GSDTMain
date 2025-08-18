@@ -111,17 +111,58 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
 
-        // Add timeout to prevent hanging calls
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Contract call timeout')), 10000);
-        });
+        // Retry logic for network issues
+        const maxRetries = 3;
+        let userBalance;
 
-        const balancePromise = contract_NFT.balanceOf(userAddress);
-        
-        const userBalance = await Promise.race([balancePromise, timeoutPromise]);
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            console.log(`Making balanceOf call (attempt ${attempt}/${maxRetries}):`, {
+              contractAddress: contract_NFT.address,
+              userAddress: userAddress,
+              isValidAddress: ethers.utils.isAddress(userAddress)
+            });
+
+            // Add timeout to prevent hanging calls
+            const timeoutPromise = new Promise<never>((_, reject) => {
+              setTimeout(() => reject(new Error('Contract call timeout after 6 seconds')), 6000);
+            });
+
+            const balancePromise = contract_NFT.balanceOf(userAddress);
+            userBalance = await Promise.race([balancePromise, timeoutPromise]);
+
+            // If successful, break out of retry loop
+            break;
+
+          } catch (retryError: any) {
+            console.log(`Attempt ${attempt} failed:`, retryError.message);
+
+            // Check for specific BSC RPC errors that indicate we should stop retrying
+            const isFatalRpcError = retryError.message?.includes('missing trie node') ||
+                                  retryError.message?.includes('missing revert data') ||
+                                  retryError.message?.includes('call exception') ||
+                                  retryError.code === -32603 ||
+                                  retryError.code === -32000;
+
+            if (isFatalRpcError) {
+              console.warn("BSC RPC node error detected, skipping retries:", retryError.message);
+              throw retryError;
+            }
+
+            if (attempt === maxRetries) {
+              // Last attempt failed, throw the error to be handled below
+              throw retryError;
+            }
+
+            // Wait before retrying (exponential backoff)
+            const waitTime = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+            console.log(`Waiting ${waitTime}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+          }
+        }
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
         console.log("NFT Balance:", readableBalance);
-        
+
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
         } else {
@@ -129,16 +170,28 @@ export const getUserKYCStatus = async (
         }
       } catch (nftError: any) {
         console.error("Error checking NFT balance:", nftError);
-        
-        // Handle specific error cases
-        if (nftError.message?.includes('call exception') || nftError.message?.includes('revert')) {
-          console.warn("Contract call reverted - this might indicate the contract is not deployed or the address is invalid");
+
+        // Handle specific error cases - BSC RPC node issues
+        if (nftError.message?.includes('missing revert data') || 
+            nftError.message?.includes('call exception') ||
+            nftError.message?.includes('missing trie node') ||
+            nftError.message?.includes('Internal JSON-RPC error') ||
+            nftError.code === -32603 ||
+            nftError.code === -32000) {
+          console.warn("BSC testnet RPC node issue detected:");
+          console.warn("- Error type:", nftError.message || nftError.code);
+          console.warn("- This is a known BSC testnet infrastructure issue");
+          console.warn("- The RPC node is missing blockchain state data");
+          console.warn("- Falling back to database-only KYC status");
+
+          // Return NOT_SUBMITTED since we couldn't verify on-chain due to RPC issues
+          return { status: KYCStatus.NOT_SUBMITTED };
         } else if (nftError.message?.includes('timeout')) {
           console.warn("Contract call timed out - network or RPC issues");
         } else if (nftError.code === 'NETWORK_ERROR') {
           console.warn("Network error when calling NFT contract");
         }
-        
+
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
@@ -310,7 +363,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       if (!ethers.utils.isAddress(userAddress)) {
         throw new Error("Invalid user address format.");
       }
-      
+
       await contract.estimateGas.updateKYCStatus(userAddress, true);
     } catch (gasError: any) {
       console.error("Gas estimation failed:", gasError);
@@ -372,7 +425,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       // Get current gas price from network
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const gasPrice = await provider.getGasPrice();
-      
+
       // Estimate gas limit for the transaction
       let gasLimit = 100000; // Default fallback
       try {
@@ -392,7 +445,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
       console.log("KYC transaction confirmed:", receipt.transactionHash);
     } catch (txError: any) {
       console.error("Transaction execution failed:", txError);
-      
+
       if (txError.code === "CALL_EXCEPTION") {
         throw new Error(
           "Smart contract call failed. This might be due to insufficient permissions or contract state issues. Please check your admin role permissions."
@@ -444,7 +497,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
             console.log("Successfully called mint API for GSDC_NFT:", userAddress, responseData);
           } catch (fetchError: any) {
             clearTimeout(timeoutId);
-            
+
             if (fetchError.name === 'AbortError') {
               console.warn("Mint API call timed out after 10 seconds - continuing with KYC approval");
             } else {
@@ -537,7 +590,7 @@ export const approveKYCRequest = async (requestId: string): Promise<void> => {
             }
           })
         });
-        
+
         if (!emailResponse.ok) {
           console.warn('Failed to send KYC approval email');
         }
@@ -689,7 +742,7 @@ export const rejectKYCRequest = async (
       // Get current gas price from network
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const gasPrice = await provider.getGasPrice();
-      
+
       // Estimate gas limit for the transaction
       let gasLimit = 100000; // Default fallback
       try {
@@ -709,7 +762,7 @@ export const rejectKYCRequest = async (
       console.log("KYC rejection transaction confirmed:", receipt.transactionHash);
     } catch (txError: any) {
       console.error("KYC rejection transaction execution failed:", txError);
-      
+
       if (txError.code === "CALL_EXCEPTION") {
         throw new Error(
           "Smart contract call failed. This might be due to insufficient permissions or contract state issues. Please check your admin role permissions."
