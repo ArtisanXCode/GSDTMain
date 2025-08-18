@@ -832,21 +832,93 @@ export default function About() {
         </div>
       </div>
 
-      {/* Bottom Logo Section */}
+      {/* Coming Soon Section */}
       <div
-        className="py-12"
+        className="py-16 relative"
         style={{
-          background: "linear-gradient(to bottom, #1e3a8a, #1e40af)",
+          background: "linear-gradient(to bottom, #1e40af, #1e3a8a)",
         }}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-          <img
-            src="/logo_gsdc_white.png"
-            alt="GSDC Logo"
-            className="h-16 mx-auto opacity-80"
-          />
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold text-white mb-4">COMING SOON</h2>
+            <p className="text-white/90 mb-8 max-w-2xl mx-auto">
+              We are working hard to bring you an even better experience. Stay tuned for our upcoming features and updates!
+            </p>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <button
+                className="inline-flex items-center px-8 py-4 bg-white text-blue-800 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg"
+              >
+                Notify Me
+              </button>
+            </motion.div>
+          </div>
         </div>
       </div>
+
+      {/* Footer Section */}
+      <footer
+        className="py-12 relative"
+        style={{
+          background: "#0a192f", // Dark background color
+        }}
+      >
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-white/80">
+            {/* Column 1: Logo and Description */}
+            <div>
+              <img
+                src="/logo_gsdc_white.png"
+                alt="GSDC Logo"
+                className="h-12 mb-4 opacity-80"
+              />
+              <p className="text-sm leading-relaxed">
+                GSDC is a multi-currency stablecoin designed for financial sovereignty and inclusion in the Global South.
+              </p>
+            </div>
+
+            {/* Column 2: Quick Links */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-lg">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Roadmap</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Whitepaper</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Column 3: Legal */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-lg">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Disclaimer</a></li>
+              </ul>
+            </div>
+
+            {/* Column 4: Social Media & Contact */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-lg">Connect</h4>
+              <div className="flex space-x-4 mb-4">
+                {/* Add social media icons here */}
+                <a href="#" className="hover:text-white transition-colors"><img src="/icons/twitter.svg" alt="Twitter" className="h-6 w-6"/></a>
+                <a href="#" className="hover:text-white transition-colors"><img src="/icons/linkedin.svg" alt="LinkedIn" className="h-6 w-6"/></a>
+                <a href="#" className="hover:text-white transition-colors"><img src="/icons/telegram.svg" alt="Telegram" className="h-6 w-6"/></a>
+                <a href="#" className="hover:text-white transition-colors"><img src="/icons/discord.svg" alt="Discord" className="h-6 w-6"/></a>
+              </div>
+              <p className="text-sm">info@gsdc.com</p>
+            </div>
+          </div>
+          {/* Copyright */}
+          <div className="mt-8 pt-8 border-t border-white/20 text-center text-sm text-white/70">
+            © {new Date().getFullYear()} GSDC. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
