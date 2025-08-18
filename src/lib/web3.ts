@@ -87,12 +87,27 @@ export const getReadOnlyNFTContract = (): ethers.Contract | null => {
 
     let provider;
     if (typeof window !== 'undefined' && window.ethereum) {
-      provider = new ethers.providers.Web3Provider(window.ethereum as any);
-      console.log('Using Web3Provider for NFT contract');
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum as any);
+        console.log('Using Web3Provider for NFT contract');
+      } catch (providerError) {
+        console.error('Error creating Web3Provider, falling back to default:', providerError);
+        provider = defaultProvider;
+      }
     } else {
       provider = defaultProvider;
       console.log('Using default provider for NFT contract');
     }
+
+    // Test provider connectivity
+    provider.getNetwork().then(network => {
+      console.log('Provider network info:', {
+        name: network.name,
+        chainId: network.chainId
+      });
+    }).catch(networkError => {
+      console.error('Provider network error:', networkError);
+    });
 
     const contract = new ethers.Contract(NFT_ADDRESS, NFT_CONTRACT_ABI, provider);
     
@@ -104,15 +119,34 @@ export const getReadOnlyNFTContract = (): ethers.Contract | null => {
       return null;
     }
 
+    // Check if ABI has the expected balanceOf signature
+    const balanceOfFragment = NFT_CONTRACT_ABI.find(item => 
+      item.type === 'function' && 
+      item.name === 'balanceOf' &&
+      item.inputs?.length === 1 &&
+      item.inputs[0].type === 'address'
+    );
+
+    if (!balanceOfFragment) {
+      console.error('NFT contract ABI missing correct balanceOf function signature');
+      console.error('Expected: balanceOf(address) returns (uint256)');
+      return null;
+    }
+
     console.log('NFT contract created successfully:', {
       address: contract.address,
       hasBalanceOf: typeof contract.balanceOf === 'function',
-      provider: provider.constructor.name
+      provider: provider.constructor.name,
+      balanceOfSignature: balanceOfFragment
     });
 
     return contract;
   } catch (error) {
     console.error('Error creating NFT contract instance:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack?.split('\n')[0]
+    });
     return null;
   }
 };
