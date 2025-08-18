@@ -101,7 +101,7 @@ const Header = () => {
                 {/* Navigation */}
                 <div className="hidden md:flex items-center space-x-8">
                   {navigation
-                    .filter(item => !item.requireAuth || (isAuthenticated && isConnected))
+                    .filter(item => !item.requireAuth || isAuthenticated)
                     .map((item) => (
                     <Link
                       key={item.name}
@@ -324,7 +324,7 @@ const Header = () => {
             <Disclosure.Panel className="md:hidden">
               <div className="space-y-2 px-4 pb-6">
                 {navigation
-                  .filter(item => !item.requireAuth || (isAuthenticated && isConnected))
+                  .filter(item => !item.requireAuth || isAuthenticated)
                   .map((item) => (
                   <Link
                     key={item.name}

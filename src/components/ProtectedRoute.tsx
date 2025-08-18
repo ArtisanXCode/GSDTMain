@@ -41,5 +41,6 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
     return <Navigate to="/dashboard" replace />;
   }
 
+  // Allow authenticated users to access protected routes even without wallet connection
   return <>{children}</>;
 }
