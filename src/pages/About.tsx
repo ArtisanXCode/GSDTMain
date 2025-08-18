@@ -11,55 +11,8 @@ import {
 import { useState } from "react";
 
 // Usage Slider Component
-function UsageSlider() {
+function UsageSlider({ usageItems }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const usageItems = [
-    {
-      icon: "🌍",
-      title: "Global Remittances",
-      description:
-        "GSDC may be preferred as foreign portfolio into any of the currency within The Global South's basket adjustment portfolio by The Global South's Saving Model Account.",
-      details:
-        "Once GSDC is adopted/tested, it can be used like any other cryptocurrency.",
-    },
-    {
-      icon: "🔒",
-      title: "Secure Storage",
-      description:
-        "GSDC can be used in a grap decentralised and secure environment.",
-      details:
-        "In portfolio integrate with individual, exchange and wallets as currency supermundial.",
-    },
-    {
-      icon: "📊",
-      title: "Financial Analytics",
-      description:
-        "The Global South of business liquidity business business Reserves, without business model financial wealth. This plugs market/listed by private group or public Financial International Trade.",
-      details: "GSDC measures in any countries.",
-    },
-    {
-      icon: "🔄",
-      title: "Cross-Border Trade",
-      description:
-        "Facilitate international trade with reduced fees and faster settlement times.",
-      details:
-        "Enable seamless global commerce with GSDC as the settlement currency.",
-    },
-    {
-      icon: "🏛️",
-      title: "Institutional Banking",
-      description:
-        "Provide institutional-grade banking services with transparent reserves.",
-      details: "Support large-scale financial operations with regulatory compliance.",
-    },
-    {
-      icon: "💱",
-      title: "Currency Exchange",
-      description: "Offer stable currency exchange without volatility risks.",
-      details: "Maintain purchasing power across Global South currencies.",
-    },
-  ];
 
   const nextSlide = () => {
     setCurrentSlide(
@@ -263,6 +216,53 @@ function UsageSlider() {
 
 export default function About() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const usageItems = [
+    {
+      icon: "🌍",
+      title: "Global Remittances",
+      description:
+        "GSDC may be preferred as foreign portfolio into any of the currency within The Global South's basket adjustment portfolio by The Global South's Saving Model Account.",
+      details:
+        "Once GSDC is adopted/tested, it can be used like any other cryptocurrency.",
+    },
+    {
+      icon: "🔒",
+      title: "Secure Storage",
+      description:
+        "GSDC can be used in a grap decentralised and secure environment.",
+      details:
+        "In portfolio integrate with individual, exchange and wallets as currency supermundial.",
+    },
+    {
+      icon: "📊",
+      title: "Financial Analytics",
+      description:
+        "The Global South of business liquidity business business Reserves, without business model financial wealth. This plugs market/listed by private group or public Financial International Trade.",
+      details: "GSDC measures in any countries.",
+    },
+    {
+      icon: "🔄",
+      title: "Cross-Border Trade",
+      description:
+        "Facilitate international trade with reduced fees and faster settlement times.",
+      details:
+        "Enable seamless global commerce with GSDC as the settlement currency.",
+    },
+    {
+      icon: "🏛️",
+      title: "Institutional Banking",
+      description:
+        "Provide institutional-grade banking services with transparent reserves.",
+      details: "Support large-scale financial operations with regulatory compliance.",
+    },
+    {
+      icon: "💱",
+      title: "Currency Exchange",
+      description: "Offer stable currency exchange without volatility risks.",
+      details: "Maintain purchasing power across Global South currencies.",
+    },
+  ];
 
   const handleVideoPlay = () => {
     setIsVideoPlaying(true);
