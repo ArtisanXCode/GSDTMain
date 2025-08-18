@@ -122,23 +122,6 @@ export const getUserKYCStatus = async (
 
         console.log("Attempting to call balanceOf for address:", userAddress);
 
-        // First, try to validate that the contract exists by calling a simple view function
-        try {
-          // Try to get contract code to verify it exists
-          const provider = contract_NFT.provider;
-          const contractCode = await provider.getCode(contract_NFT.address);
-          
-          if (contractCode === '0x') {
-            console.error("No contract deployed at address:", contract_NFT.address);
-            return { status: KYCStatus.NOT_SUBMITTED };
-          }
-          
-          console.log("Contract code found, length:", contractCode.length);
-        } catch (codeError) {
-          console.error("Error checking contract code:", codeError);
-          return { status: KYCStatus.NOT_SUBMITTED };
-        }
-
         // Add timeout to prevent hanging calls
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Contract call timeout after 15 seconds')), 15000);
