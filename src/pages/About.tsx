@@ -189,7 +189,8 @@ export default function About() {
       </div>
 
       {/* GSDC The Alternative Section - Updated Layout */}
-      <div className="relative overflow-hidden min-h-screen" style={{
+      <div className="relative overflow-hidden" style={{
+        minHeight: "150vh",
         background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #f59e0b 50%, #dc2626 100%)"
       }}>
         {/* Phoenix Icon - Bottom Left with larger size */}
@@ -204,15 +205,15 @@ export default function About() {
           />
         </div>
 
-        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 min-h-screen pt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full">
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pt-24" style={{ minHeight: "150vh" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full h-full">
             {/* Left Content - Transparent Background, Top Positioned */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="max-w-lg"
+              className="max-w-lg flex flex-col justify-start pt-16"
             >
               <div className="mb-8">
                 <h2 className="text-4xl font-bold text-blue-600 mb-2">
@@ -241,20 +242,23 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Right Content - Feature Points Split into Two Sections */}
-            <div className="flex flex-col justify-center min-h-screen py-24">
-              {/* Top Section - First 3 Features */}
+            {/* Right Content - Feature Points Positioned at Top */}
+            <div className="flex flex-col justify-start pt-16">
+              {/* All Features in One Section */}
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="space-y-4 mb-4"
+                className="space-y-4"
               >
                 {[
                   "Multi-currency stability serving as backbone architecture",
                   "Collateralized by a basket of BRICS+ RWAs advancing US Dollar hegemony", 
-                  "Proof of Reserves & institutional-grade custody"
+                  "Proof of Reserves & institutional-grade custody",
+                  "Multi-chain compatibility",
+                  "Low-cost, scalable transaction fees",
+                  "Designed for remittances, DeFi, and international trade"
                 ].map((feature, index) => (
                   <motion.div
                     key={index}
@@ -262,79 +266,33 @@ export default function About() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                     viewport={{ once: true }}
-                    className="relative"
+                    className="relative flex items-center"
                   >
+                    {/* Separate Small Ball Checkmark */}
                     <div 
-                      className="text-white px-6 py-4 rounded-full shadow-lg border border-white/20 flex items-center"
-                      style={{ 
-                        background: "linear-gradient(to right, #446c93 0%, #2a4661 100%)",
-                        width: '100%',
-                        maxWidth: '450px'
-                      }}
+                      className="absolute -left-3 z-10 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-lg border-2 border-gray-300"
                     >
-                      {/* Small Dark Checkmark */}
-                      <div className="flex-shrink-0 mr-4">
-                        <svg 
-                          className="w-4 h-4 text-gray-800" 
-                          fill="currentColor" 
-                          viewBox="0 0 20 20"
-                        >
-                          <path 
-                            fillRule="evenodd" 
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                            clipRule="evenodd" 
-                          />
-                        </svg>
-                      </div>
-                      <span className="text-sm font-medium leading-relaxed flex-1">{feature}</span>
+                      <svg 
+                        className="w-3 h-3 text-gray-800" 
+                        fill="currentColor" 
+                        viewBox="0 0 20 20"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
                     </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Bottom Section - Last 3 Features */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                viewport={{ once: true }}
-                className="space-y-4"
-              >
-                {[
-                  "Multi-chain compatibility",
-                  "Low-cost, scalable transaction fees",
-                  "Designed for remittances, DeFi, and international trade"
-                ].map((feature, index) => (
-                  <motion.div
-                    key={index + 3}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                    
                     <div 
-                      className="text-white px-6 py-4 rounded-full shadow-lg border border-white/20 flex items-center"
+                      className="text-white px-6 py-4 rounded-full shadow-lg border border-white/20 flex items-center ml-3"
                       style={{ 
                         background: "linear-gradient(to right, #446c93 0%, #2a4661 100%)",
                         width: '100%',
                         maxWidth: '450px'
                       }}
                     >
-                      {/* Small Dark Checkmark */}
-                      <div className="flex-shrink-0 mr-4">
-                        <svg 
-                          className="w-4 h-4 text-gray-800" 
-                          fill="currentColor" 
-                          viewBox="0 0 20 20"
-                        >
-                          <path 
-                            fillRule="evenodd" 
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                            clipRule="evenodd" 
-                          />
-                        </svg>
-                      </div>
                       <span className="text-sm font-medium leading-relaxed flex-1">{feature}</span>
                     </div>
                   </motion.div>
