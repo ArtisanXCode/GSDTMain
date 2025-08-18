@@ -1,6 +1,11 @@
 
 import { ethers } from 'ethers';
 import { abi, NFT_abi, contractAddress, NFT_contractAddress } from './constants';
+import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
+
+// Use the imported constants if the ones from constants.ts are not working
+const NFT_ADDRESS = NFT_contractAddress || GSDC_NFT_ADDRESS;
+const NFT_CONTRACT_ABI = NFT_abi || GSDC_NFT_ABI;
 
 // BSC Testnet RPC
 const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
@@ -51,17 +56,42 @@ export const getNFTContract = (): ethers.Contract | null => {
   }
   const provider = new ethers.providers.Web3Provider(window.ethereum as any);
   const signer = provider.getSigner();
-  const NFTContract = new ethers.Contract(NFT_contractAddress, NFT_abi, signer);
+  const NFTContract = new ethers.Contract(NFT_ADDRESS, NFT_CONTRACT_ABI, signer);
   return NFTContract;
 };
 
 export const getReadOnlyNFTContract = (): ethers.Contract | null => {
-  if (window.ethereum) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(NFT_contractAddress, NFT_abi, provider);
+  try {
+    if (!NFT_ADDRESS) {
+      console.error('NFT contract address not configured');
+      return null;
+    }
+
+    if (!NFT_CONTRACT_ABI || NFT_CONTRACT_ABI.length === 0) {
+      console.error('NFT contract ABI not configured');
+      return null;
+    }
+
+    let provider;
+    if (window.ethereum) {
+      provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    } else {
+      provider = defaultProvider;
+    }
+
+    const contract = new ethers.Contract(NFT_ADDRESS, NFT_CONTRACT_ABI, provider);
+    
+    // Verify the contract has the expected functions
+    if (typeof contract.balanceOf !== 'function') {
+      console.error('NFT contract ABI does not include balanceOf function');
+      return null;
+    }
+
+    return contract;
+  } catch (error) {
+    console.error('Error creating NFT contract instance:', error);
+    return null;
   }
-  // Fallback to default provider if no wallet
-  return new ethers.Contract(NFT_contractAddress, NFT_abi, defaultProvider);
 };
 
 // Get manually set wallet address

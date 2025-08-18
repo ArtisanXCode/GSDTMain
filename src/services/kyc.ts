@@ -95,6 +95,12 @@ export const getUserKYCStatus = async (
   userAddress: string,
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
   try {
+    // Validate user address format first
+    if (!userAddress || !ethers.utils.isAddress(userAddress)) {
+      console.error("Invalid user address format:", userAddress);
+      return { status: KYCStatus.NOT_SUBMITTED };
+    }
+
     // Check NFT contract for KYC approval
     const contract_NFT = getReadOnlyNFTContract();
     if (contract_NFT) {
@@ -105,7 +111,14 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
 
-        const userBalance = await contract_NFT.balanceOf(userAddress);
+        // Add timeout to prevent hanging calls
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Contract call timeout')), 10000);
+        });
+
+        const balancePromise = contract_NFT.balanceOf(userAddress);
+        
+        const userBalance = await Promise.race([balancePromise, timeoutPromise]);
         const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
         console.log("NFT Balance:", readableBalance);
         
@@ -114,8 +127,18 @@ export const getUserKYCStatus = async (
         } else {
           return { status: KYCStatus.NOT_SUBMITTED };
         }
-      } catch (nftError) {
+      } catch (nftError: any) {
         console.error("Error checking NFT balance:", nftError);
+        
+        // Handle specific error cases
+        if (nftError.message?.includes('call exception') || nftError.message?.includes('revert')) {
+          console.warn("Contract call reverted - this might indicate the contract is not deployed or the address is invalid");
+        } else if (nftError.message?.includes('timeout')) {
+          console.warn("Contract call timed out - network or RPC issues");
+        } else if (nftError.code === 'NETWORK_ERROR') {
+          console.warn("Network error when calling NFT contract");
+        }
+        
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
