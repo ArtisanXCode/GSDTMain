@@ -43,21 +43,3 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
 
   return <>{children}</>;
 }
-
-  if (shouldRedirect || !isAuthenticated) {
-    // Store the intended destination and redirect to home with a message
-    sessionStorage.setItem('redirectAfterLogin', location.pathname);
-    return <Navigate to="/" state={{ 
-      from: location, 
-      message: 'Please log in to access this page',
-      showLogin: true 
-    }} replace />;
-  }
-
-  if (requireAdmin && !isAdmin) {
-    // Redirect to home if admin access is required but user is not admin
-    return <Navigate to="/" state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
-}
