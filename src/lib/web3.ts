@@ -3,6 +3,19 @@ import { ethers } from 'ethers';
 import { abi, NFT_abi, contractAddress, NFT_contractAddress } from './constants';
 import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 
+// Browser compatibility fixes
+if (typeof window !== 'undefined') {
+  if (!window.global) {
+    window.global = window;
+  }
+  if (!window.process) {
+    window.process = { env: {} };
+  }
+  if (!window.Buffer && typeof Buffer !== 'undefined') {
+    window.Buffer = Buffer;
+  }
+}
+
 // Use the imported constants if the ones from constants.ts are not working
 const NFT_ADDRESS = NFT_contractAddress || GSDC_NFT_ADDRESS;
 const NFT_CONTRACT_ABI = NFT_abi || GSDC_NFT_ABI;
