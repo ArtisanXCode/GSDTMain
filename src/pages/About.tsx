@@ -74,12 +74,12 @@ function UsageSlider() {
   return (
     <div className="relative max-w-7xl mx-auto">
       {/* Slider Container with overflow hidden */}
-      <div className="overflow-hidden">
+      <div className="">
         <div
           className="flex transition-transform duration-300 ease-in-out gap-8"
           style={{
             transform: `translateX(-${currentSlide * (100 / 2.5)}%)`,
-            width: `${(usageItems.length / 2.5) * 100}%`,
+            width: `${(usageItems.length / 5) * 100}%`,
           }}
         >
           {usageItems.map((item, index) => (
@@ -472,9 +472,9 @@ export default function About() {
       <div
         className="relative overflow-hidden"
         style={{
-          minHeight: "150vh",
+          minHeight: "50vh",
           background:
-            "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #f59e0b 50%, #dc2626 100%)",
+            "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 40%, #f59e0b 40%, #dc2626 100%)",
         }}
       >
         {/* Phoenix Icon - Bottom Left with larger size */}
@@ -491,7 +491,7 @@ export default function About() {
 
         <div
           className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pt-24"
-          style={{ minHeight: "150vh" }}
+          style={{ minHeight: "100vh" }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full">
             {/* Left Content - GSDC The Alternative */}
@@ -593,7 +593,7 @@ export default function About() {
         className="relative overflow-hidden"
         style={{
           minHeight: "100vh",
-          background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #446c93 50%, #446c93 100%)",
+          background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 35%, #446c93 35%, #446c93 100%)",
         }}
       >
         {/* Usage Title */}
