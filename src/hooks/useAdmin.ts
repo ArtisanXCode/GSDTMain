@@ -25,7 +25,7 @@ export const useAdmin = () => {
 
   useEffect(() => {
     const checkRoles = async () => {
-      if (!isConnected || !address) {
+      if (!address) {
         setIsAdmin(false);
         setAdminRole(null);
         setIsMinter(false);
@@ -183,7 +183,7 @@ export const useAdmin = () => {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [address, isConnected]);
+  }, [address]);
 
   // Manual role check method that bypasses circuit breaker
   const checkRoleManually = useCallback(async (targetAddress?: string): Promise<AdminRole | null> => {

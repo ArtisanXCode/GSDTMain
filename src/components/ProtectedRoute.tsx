@@ -10,35 +10,18 @@ interface Props {
 }
 
 export default function ProtectedRoute({ children, requireAdmin = false }: Props) {
-  const { isConnected, loading: walletLoading, address } = useWallet();
+  const { address } = useWallet();
   const { isAdmin, loading: adminLoading } = useAdmin();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
-    // Wait until all auth checks are complete
-    if (!authLoading && !walletLoading && (!requireAdmin || !adminLoading)) {
+    // Wait until auth check is complete
+    if (!authLoading && (!requireAdmin || !adminLoading)) {
       setIsChecking(false);
-      
-      // Check if we should redirect due to missing authentication
-      if (!isAuthenticated) {
-        setShouldRedirect(true);
-      } else {
-        setShouldRedirect(false);
-      }
     }
-  }, [authLoading, walletLoading, adminLoading, requireAdmin, isAuthenticated]);
-
-  // Real-time check for authentication status
-  useEffect(() => {
-    if (!isChecking) {
-      if (!isAuthenticated) {
-        setShouldRedirect(true);
-      }
-    }
-  }, [isAuthenticated, isChecking]);
+  }, [authLoading, adminLoading, requireAdmin]);
 
   if (isChecking) {
     return (
@@ -47,6 +30,19 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Props
       </div>
     );
   }
+
+  // First check: User must be authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
+
+  // Second check: If admin route is required, check admin status
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
 
   if (shouldRedirect || !isAuthenticated) {
     // Store the intended destination and redirect to home with a message

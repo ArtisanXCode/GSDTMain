@@ -113,6 +113,16 @@ const Header = () => {
                       {item.name}
                     </Link>
                   ))}
+                  {isAuthenticated && isAdmin && (
+                    <Link
+                      to="/admin/dashboard"
+                      className={`text-sm font-medium tracking-wide transition-colors duration-200 hover:text-orange-300 ${
+                        location.pathname.startsWith('/admin') ? "text-orange-300" : "text-white"
+                      }`}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                 </div>
 
                 {/* Desktop Auth and Wallet Buttons */}
@@ -160,6 +170,21 @@ const Header = () => {
                               </button>
                             )}
                           </Menu.Item>
+                          {isAdmin && (
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => navigate('/admin/dashboard')}
+                                  className={`${
+                                    active ? 'bg-gray-100' : ''
+                                  } flex w-full px-4 py-2 text-sm text-gray-700 items-center`}
+                                >
+                                  <ShieldCheckIcon className="h-5 w-5 mr-2" />
+                                  Admin Dashboard
+                                </button>
+                              )}
+                            </Menu.Item>
+                          )}
                           {isConnected && (
                             <Menu.Item>
                               {({ active }) => (
@@ -334,6 +359,19 @@ const Header = () => {
                     {item.name}
                   </Link>
                 ))}
+                {isAuthenticated && isAdmin && (
+                  <Link
+                    to="/admin/dashboard"
+                    className={`block px-4 py-2 rounded-lg text-base font-medium transition-colors ${
+                      location.pathname.startsWith('/admin')
+                        ? 'bg-primary-100 text-primary-900'
+                        : 'text-white-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
               </div>
               <div className="border-t border-gray-200 px-4 py-6 space-y-4">
                 {/* Auth and Wallet Flow */}

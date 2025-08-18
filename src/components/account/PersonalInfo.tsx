@@ -21,6 +21,10 @@ export default function PersonalInfo() {
     const result = await setManualAddress(walletAddress.trim());
     if (result) {
       setIsEditing(false);
+      // Show success message with admin check notice
+      setTimeout(() => {
+        alert('Wallet address saved successfully! If this is an admin wallet, you will now have access to the admin dashboard.');
+      }, 500);
     }
   };
 
