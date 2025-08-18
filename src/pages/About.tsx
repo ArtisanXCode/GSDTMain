@@ -188,8 +188,8 @@ export default function About() {
         </div>
       </div>
 
-      {/* GSDC The Alternative Section - Improved Design */}
-      <div className="relative overflow-hidden py-24 sm:py-32 min-h-screen" style={{
+      {/* GSDC The Alternative Section - Exact Design Match */}
+      <div className="relative overflow-hidden min-h-screen" style={{
         background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #f59e0b 50%, #dc2626 100%)"
       }}>
         {/* Phoenix Icon - Bottom Left with larger size */}
@@ -204,26 +204,26 @@ export default function About() {
           />
         </div>
 
-        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 min-h-screen flex items-center">
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 min-h-screen flex items-start pt-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start w-full">
-            {/* Left Content */}
+            {/* Left Content - White Background Section */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-8 pt-8"
+              className="bg-white p-8 rounded-lg shadow-lg max-w-lg"
             >
-              <div>
-                <h2 className="text-5xl font-bold text-gray-900 mb-3">
+              <div className="mb-8">
+                <h2 className="text-4xl font-bold text-blue-600 mb-2">
                   GSDC
                 </h2>
-                <h3 className="text-4xl font-bold text-gray-700 mb-8">
+                <h3 className="text-3xl font-bold text-blue-500 mb-6">
                   The Alternative
                 </h3>
               </div>
 
-              <div className="text-gray-700 space-y-6 text-lg leading-relaxed max-w-xl">
+              <div className="text-gray-700 space-y-4 text-base leading-relaxed">
                 <p>
                   In our vision, GSDC will be issued on blockchains 
                   serving as a cryptocurrency token.
@@ -241,18 +241,17 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Right Content - Feature Badges with better positioning */}
+            {/* Right Content - Feature Points with Checkmarks */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
-              className="space-y-6 pt-8"
+              className="space-y-4 pt-8"
             >
-              {/* Feature badges with improved styling */}
               {[
                 "Multi-currency stability serving as backbone architecture",
-                "Collateralized by a basket of BRICS+ PLUS advancing US Dollar hegemony",
+                "Collateralized by a basket of BRICS+ PLUS advancing US Dollar hegemony", 
                 "Proof of Reserves & institutional-grade custody",
                 "Multi-chain compatibility",
                 "Low-cost, scalable transaction fees",
@@ -267,13 +266,28 @@ export default function About() {
                   className="relative"
                 >
                   <div 
-                    className="bg-blue-900/95 text-white px-8 py-4 rounded-full shadow-xl backdrop-blur-sm border border-blue-800/30 hover:bg-blue-800/95 transition-all duration-300"
+                    className="text-white px-6 py-4 rounded-full shadow-lg border border-white/20 flex items-center"
                     style={{ 
-                      maxWidth: '480px',
-                      transform: index % 2 === 0 ? 'translateX(0)' : 'translateX(20px)'
+                      background: "linear-gradient(to right, #446c93 0%, #2a4661 100%)",
+                      width: '100%',
+                      maxWidth: '500px'
                     }}
                   >
-                    <span className="text-sm font-medium leading-relaxed">{feature}</span>
+                    {/* Checkmark Arrow Icon */}
+                    <div className="flex-shrink-0 mr-4">
+                      <svg 
+                        className="w-5 h-5 text-white" 
+                        fill="currentColor" 
+                        viewBox="0 0 20 20"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium leading-relaxed flex-1">{feature}</span>
                   </div>
                 </motion.div>
               ))}
