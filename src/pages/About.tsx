@@ -188,39 +188,42 @@ export default function About() {
         </div>
       </div>
 
-      {/* GSDC The Alternative Section - New Design */}
-      <div className="relative overflow-hidden py-24 sm:py-32" style={{
-        background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 60%, #f59e0b 60%, #dc2626 100%)"
+      {/* GSDC The Alternative Section - Improved Design */}
+      <div className="relative overflow-hidden py-24 sm:py-32 min-h-screen" style={{
+        background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #f59e0b 50%, #dc2626 100%)"
       }}>
-        {/* Phoenix Icon - Bottom Center */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-10">
+        {/* Phoenix Icon - Bottom Left with larger size */}
+        <div className="absolute bottom-8 left-8 z-10">
           <img
             src="/logo_gsdc_icon.png"
             alt="Phoenix Icon"
-            className="h-32 w-32 opacity-80"
+            className="h-48 w-48 opacity-90"
+            style={{
+              filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.3))"
+            }}
           />
         </div>
 
-        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 min-h-screen flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start w-full">
             {/* Left Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-8 pt-8"
             >
               <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                <h2 className="text-5xl font-bold text-gray-900 mb-3">
                   GSDC
                 </h2>
-                <h3 className="text-3xl font-bold text-gray-700 mb-6">
+                <h3 className="text-4xl font-bold text-gray-700 mb-8">
                   The Alternative
                 </h3>
               </div>
 
-              <div className="text-gray-600 space-y-4 text-base leading-relaxed max-w-lg">
+              <div className="text-gray-700 space-y-6 text-lg leading-relaxed max-w-xl">
                 <p>
                   In our vision, GSDC will be issued on blockchains 
                   serving as a cryptocurrency token.
@@ -238,15 +241,15 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Right Content - Feature Badges */}
+            {/* Right Content - Feature Badges with better positioning */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
-              className="space-y-4"
+              className="space-y-6 pt-8"
             >
-              {/* Feature badges with staggered animation */}
+              {/* Feature badges with improved styling */}
               {[
                 "Multi-currency stability serving as backbone architecture",
                 "Collateralized by a basket of BRICS+ PLUS advancing US Dollar hegemony",
@@ -261,14 +264,37 @@ export default function About() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-blue-900/90 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-sm border border-blue-800/50"
-                  style={{ maxWidth: 'fit-content' }}
+                  className="relative"
                 >
-                  <span className="text-sm font-medium">{feature}</span>
+                  <div 
+                    className="bg-blue-900/95 text-white px-8 py-4 rounded-full shadow-xl backdrop-blur-sm border border-blue-800/30 hover:bg-blue-800/95 transition-all duration-300"
+                    style={{ 
+                      maxWidth: '480px',
+                      transform: index % 2 === 0 ? 'translateX(0)' : 'translateX(20px)'
+                    }}
+                  >
+                    <span className="text-sm font-medium leading-relaxed">{feature}</span>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
           </div>
+        </div>
+
+        {/* Bottom section with "Usage" text */}
+        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
+          <motion.h4
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            viewport={{ once: true }}
+            className="text-3xl font-bold text-white/90 text-center"
+            style={{
+              textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+            }}
+          >
+            Usage
+          </motion.h4>
         </div>
       </div>
 
