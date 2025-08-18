@@ -56,7 +56,7 @@ export default function About() {
                   <span
                     className="font-bold"
                     style={{
-                      background: "linear-gradient(135deg, #f6b62e 0%, #fbbf24 100%)",
+                      background: "linear-gradient(to right, #f6b62e 0%, #e74134 100%)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text"
@@ -69,7 +69,7 @@ export default function About() {
                   <span
                     className="font-bold"
                     style={{
-                      background: "linear-gradient(135deg, #e74134 0%, #dc2626 100%)",
+                      background: "linear-gradient(to right, #f6b62e 0%, #e74134 100%)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text"
@@ -94,13 +94,13 @@ export default function About() {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 rounded-full font-semibold text-white transition-all duration-300 shadow-lg"
                 style={{
-                  background: "linear-gradient(135deg, #f6b62e 0%, #e74134 100%)",
+                  background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)",
                 }}
               >
                 WATCH VIDEO
               </motion.button>
 
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-white/80">
                 Our early access and opinions are not financial advice.
               </p>
             </motion.div>
