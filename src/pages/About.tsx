@@ -286,13 +286,13 @@ export default function About() {
         ></div>
 
         {/* Top-left logo */}
-        <div className="absolute top-8 left-8 z-20">
+        { /*<div className="absolute top-8 left-8 z-20">
           <img
             src="/logo_gsdc_white.png"
             alt="GSDC Logo"
             className="h-12 opacity-90"
           />
-        </div>
+        </div> */ }
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 h-full flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full" style={{ position: 'relative', top: "-5rem" }}>
