@@ -111,41 +111,39 @@ function UsageSlider() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="relative group cursor-pointer"
                     >
-                      {/* Card with gradient background matching the design */}
+                      {/* Card with exact gradient matching GSDC Stability Benefits */}
                       <div
-                        className="rounded-2xl p-8 text-white h-full hover:scale-105 transition-transform duration-300 shadow-xl"
+                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 shadow-xl relative overflow-hidden"
                         style={{
-                          background: "linear-gradient(to top, #446c93 50%)",
-                          minHeight: "320px",
+                          background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)",
+                          minHeight: "300px",
                           border: "1px solid rgba(255,255,255,0.1)",
                         }}
                       >
-                        {/* Icon Circle */}
-                        <div className="absolute top-0 left-0 -mt-4 ml-4">
-                          <div
-                            className="text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
-                            style={{
-                              background:
-                                "linear-gradient(to bottom, #f6b62e, #e74134)",
-                              border: "2px solid rgba(255,255,255,0.2)",
-                            }}
-                          >
+                        {/* Icon at top center */}
+                        <div className="flex justify-center mb-6">
+                          <div className="text-white text-4xl font-bold">
                             {item.icon}
                           </div>
                         </div>
 
+                        {/* Title */}
+                        <h3 className="text-white text-xl font-bold mb-4 leading-tight">
+                          {item.title}
+                        </h3>
+
                         {/* Description */}
-                        <p className="text-white text-md leading-relaxed mb-4">
+                        <p className="text-white text-sm leading-relaxed mb-4 opacity-90">
                           {item.description}
                         </p>
 
                         {/* Details */}
-                        <p className="text-white text-md leading-relaxed">
+                        <p className="text-white text-sm leading-relaxed opacity-80">
                           {item.details}
                         </p>
 
                         {/* Hover effect overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                       </div>
                     </motion.div>
                   ))}
