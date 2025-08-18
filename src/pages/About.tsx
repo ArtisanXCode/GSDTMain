@@ -212,7 +212,7 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="p-8 rounded-lg max-w-lg"
+              className="bg-white p-8 rounded-lg max-w-lg shadow-lg"
             >
               <div className="mb-8">
                 <h2 className="text-4xl font-bold text-blue-600 mb-2">
@@ -251,7 +251,7 @@ export default function About() {
             >
               {[
                 "Multi-currency stability serving as backbone architecture",
-                "Collateralized by a basket of BRICS+ PLUS advancing US Dollar hegemony", 
+                "Collateralized by a basket of BRICS+ RWAs advancing US Dollar hegemony", 
                 "Proof of Reserves & institutional-grade custody",
                 "Multi-chain compatibility",
                 "Low-cost, scalable transaction fees",
@@ -270,7 +270,7 @@ export default function About() {
                     style={{ 
                       background: "linear-gradient(to right, #446c93 0%, #2a4661 100%)",
                       width: '100%',
-                      maxWidth: '500px'
+                      maxWidth: '450px'
                     }}
                   >
                     {/* Checkmark Arrow Icon */}
