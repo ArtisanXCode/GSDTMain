@@ -91,36 +91,6 @@ export const getKYCStats = async (): Promise<KYCStats> => {
   }
 };
 
-// Monitor RPC health for better debugging
-const logRPCHealth = async () => {
-  try {
-    // Only import when needed to avoid circular dependencies
-    const { testRPCHealth } = await import('../lib/web3');
-    const healthCheck = await testRPCHealth();
-    
-    console.log('BSC Testnet RPC Health Status:');
-    console.log(`Healthy endpoints: ${healthCheck.healthy.length}/${healthCheck.results.length}`);
-    
-    if (healthCheck.unhealthy.length > 0) {
-      console.warn('Unhealthy RPC endpoints:', healthCheck.unhealthy);
-    }
-    
-    // Log detailed results for debugging
-    healthCheck.results.forEach(result => {
-      if (result.status === 'healthy') {
-        console.log(`✅ ${result.url} - ${result.latency}ms`);
-      } else {
-        console.warn(`❌ ${result.url} - ${result.error}`);
-      }
-    });
-    
-    return healthCheck;
-  } catch (error) {
-    console.warn('Unable to check RPC health:', error);
-    return null;
-  }
-};
-
 export const getUserKYCStatus = async (
   userAddress: string,
 ): Promise<{ status: KYCStatus; request?: KYCRequest } | null> => {
@@ -131,41 +101,8 @@ export const getUserKYCStatus = async (
       return { status: KYCStatus.NOT_SUBMITTED };
     }
 
-    console.log("Checking KYC status for address:", userAddress);
-
-    // First check database for existing KYC request
-    try {
-      const { data: existingRequest, error: dbError } = await supabase
-        .from('kyc_requests')
-        .select('*')
-        .eq('user_address', userAddress)
-        .order('submitted_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (!dbError && existingRequest) {
-        console.log("Found existing KYC request in database:", existingRequest.status);
-        return {
-          status: existingRequest.status as KYCStatus,
-          request: existingRequest as KYCRequest
-        };
-      }
-    } catch (dbError) {
-      console.warn("Database check failed, falling back to NFT contract:", dbError);
-    }
-
-    // Check RPC health before attempting contract calls
-    await logRPCHealth();
-    
     // Check NFT contract for KYC approval
     const contract_NFT = getReadOnlyNFTContract();
-    console.log("NFT Contract instance:", {
-      contractExists: !!contract_NFT,
-      contractAddress: contract_NFT?.address,
-      hasBalanceOf: contract_NFT ? typeof contract_NFT.balanceOf === 'function' : false,
-      provider: contract_NFT?.provider?.constructor?.name
-    });
-    
     if (contract_NFT) {
       try {
         // Verify contract has the balanceOf function
@@ -174,79 +111,16 @@ export const getUserKYCStatus = async (
           return { status: KYCStatus.NOT_SUBMITTED };
         }
 
-        console.log("Attempting to call balanceOf for address:", userAddress);
-
-        // First check if the contract exists by getting its code
-        try {
-          const provider = contract_NFT.provider;
-          const contractCode = await provider.getCode(contract_NFT.address);
-          
-          if (contractCode === '0x') {
-            console.error("No contract deployed at address:", contract_NFT.address);
-            return { status: KYCStatus.NOT_SUBMITTED };
-          }
-          
-          console.log("Contract verified - code length:", contractCode.length);
-        } catch (codeError) {
-          console.error("Error checking contract code:", codeError);
-          return { status: KYCStatus.NOT_SUBMITTED };
-        }
-
-        // Enhanced retry logic for BSC testnet RPC issues
-        const maxRetries = 5; // Increased retries for BSC testnet
-        let userBalance;
-        
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          try {
-            console.log(`Making balanceOf call (attempt ${attempt}/${maxRetries}):`, {
-              contractAddress: contract_NFT.address,
-              userAddress: userAddress,
-              isValidAddress: ethers.utils.isAddress(userAddress),
-              provider: contract_NFT.provider.constructor.name
-            });
-
-            // Progressive timeout increases for BSC testnet
-            const timeoutDuration = Math.min(5000 + (attempt * 2000), 15000); // 5s to 15s
-            const timeoutPromise = new Promise<never>((_, reject) => {
-              setTimeout(() => reject(new Error(`Contract call timeout after ${timeoutDuration}ms`)), timeoutDuration);
-            });
-
-            const balancePromise = contract_NFT.balanceOf(userAddress);
-            userBalance = await Promise.race([balancePromise, timeoutPromise]);
-            
-            // If successful, break out of retry loop
-            console.log(`Attempt ${attempt} succeeded after ${timeoutDuration}ms timeout`);
-            break;
-            
-          } catch (retryError: any) {
-            console.log(`Attempt ${attempt} failed:`, {
-              error: retryError.message,
-              code: retryError.code,
-              remainingAttempts: maxRetries - attempt
-            });
-            
-            if (attempt === maxRetries) {
-              // Last attempt failed, throw the error to be handled below
-              throw retryError;
-            }
-            
-            // Progressive backoff with jitter for BSC testnet
-            const baseWait = Math.pow(2, attempt - 1) * 1500; // 1.5s, 3s, 6s, 12s
-            const jitter = Math.random() * 1000; // Add up to 1s random delay
-            const waitTime = baseWait + jitter;
-            
-            console.log(`Waiting ${Math.round(waitTime)}ms before retry (attempt ${attempt + 1})...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-          }
-        }
-        const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
-        
-        console.log("NFT Balance check successful:", {
-          userAddress,
-          rawBalance: userBalance.toString(),
-          readableBalance,
-          hasTokens: parseInt(readableBalance) > 0
+        // Add timeout to prevent hanging calls
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Contract call timeout')), 10000);
         });
+
+        const balancePromise = contract_NFT.balanceOf(userAddress);
+        
+        const userBalance = await Promise.race([balancePromise, timeoutPromise]);
+        const readableBalance = ethers.utils.formatUnits(userBalance, 0); // NFTs are usually whole numbers
+        console.log("NFT Balance:", readableBalance);
         
         if (parseInt(readableBalance) > 0) {
           return { status: KYCStatus.APPROVED };
@@ -256,51 +130,19 @@ export const getUserKYCStatus = async (
       } catch (nftError: any) {
         console.error("Error checking NFT balance:", nftError);
         
-        // Detailed error logging
-        console.error("NFT Error details:", {
-          message: nftError.message,
-          code: nftError.code,
-          reason: nftError.reason,
-          data: nftError.data,
-          stack: nftError.stack?.split('\n')[0] // First line of stack trace
-        });
-        
-        // Handle specific BSC testnet RPC error cases
-        if (nftError.message?.includes('missing revert data') || 
-            nftError.message?.includes('call exception') ||
-            nftError.message?.includes('missing trie node') ||
-            nftError.message?.includes('header not found') ||
-            nftError.message?.includes('could not detect network') ||
-            nftError.message?.includes('provider destroyed') ||
-            nftError.message?.includes('bad response') ||
-            nftError.code === 'SERVER_ERROR' ||
-            nftError.code === 'NETWORK_ERROR') {
-          console.warn("BSC Testnet RPC connectivity issue detected:");
-          console.warn("1. RPC node synchronization problems");
-          console.warn("2. High network load on BSC testnet");
-          console.warn("3. Temporary blockchain state inconsistencies");
-          console.warn("4. Provider connection issues");
-          console.warn("Falling back to database-only KYC status");
-          
-          // Return NOT_SUBMITTED since we couldn't verify on-chain
-          return { status: KYCStatus.NOT_SUBMITTED };
-          
+        // Handle specific error cases
+        if (nftError.message?.includes('call exception') || nftError.message?.includes('revert')) {
+          console.warn("Contract call reverted - this might indicate the contract is not deployed or the address is invalid");
         } else if (nftError.message?.includes('timeout')) {
           console.warn("Contract call timed out - network or RPC issues");
-          return { status: KYCStatus.NOT_SUBMITTED };
-        } else if (nftError.code === 'NETWORK_ERROR' || nftError.code === -32603) {
+        } else if (nftError.code === 'NETWORK_ERROR') {
           console.warn("Network error when calling NFT contract");
-          return { status: KYCStatus.NOT_SUBMITTED };
-        } else if (nftError.code === 'CALL_EXCEPTION') {
-          console.warn("Call exception - contract function call failed");
-          return { status: KYCStatus.NOT_SUBMITTED };
         }
         
-        // Return default status for any other errors
         return { status: KYCStatus.NOT_SUBMITTED };
       }
     } else {
-      console.warn("NFT contract not available - contract initialization failed");
+      console.warn("NFT contract not available");
       return { status: KYCStatus.NOT_SUBMITTED };
     }
   } catch (error) {

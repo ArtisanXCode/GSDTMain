@@ -3,89 +3,15 @@ import { ethers } from 'ethers';
 import { abi, NFT_abi, contractAddress, NFT_contractAddress } from './constants';
 import { GSDC_NFT_ADDRESS, GSDC_NFT_ABI } from '../contracts/GSDC_NFT';
 
-// Use the exported constants from GSDC_NFT.ts as primary source
-const NFT_ADDRESS = GSDC_NFT_ADDRESS;
-const NFT_CONTRACT_ABI = GSDC_NFT_ABI;
+// Use the imported constants if the ones from constants.ts are not working
+const NFT_ADDRESS = NFT_contractAddress || GSDC_NFT_ADDRESS;
+const NFT_CONTRACT_ABI = NFT_abi || GSDC_NFT_ABI;
 
-// BSC Testnet RPC endpoints (multiple for reliability)
-const BSC_TESTNET_RPCS = [
-  // Official Binance RPC endpoints
-  'https://data-seed-prebsc-1-s1.binance.org:8545/',
-  'https://data-seed-prebsc-2-s1.binance.org:8545/',
-  'https://data-seed-prebsc-1-s2.binance.org:8545/',
-  'https://data-seed-prebsc-2-s2.binance.org:8545/',
-  'https://data-seed-prebsc-1-s3.binance.org:8545/',
-  
-  // Alternative RPC providers for BSC testnet
-  'https://bsc-testnet.publicnode.com',
-  'https://bsc-testnet-rpc.publicnode.com',
-  'https://endpoints.omniatech.io/v1/bsc/testnet/public',
-  'https://bsc-testnet.nodereal.io/v1/e9a36765eb8a40b9bd12e680a1fd2bc5',
-  'https://bsctestapi.terminet.io/rpc',
-];
-
-// Create a fallback provider that tries multiple RPC endpoints
-const createFallbackProvider = () => {
-  const providers = BSC_TESTNET_RPCS.map((rpc, index) => {
-    // Configure each provider with timeout and retry settings
-    const provider = new ethers.providers.JsonRpcProvider({
-      url: rpc,
-      timeout: 8000, // 8 second timeout
-    });
-    
-    return {
-      provider,
-      priority: index + 1,
-      weight: index < 5 ? 2 : 1, // Give higher weight to official Binance RPCs
-      stallTimeout: 3000, // 3 second stall timeout
-    };
-  });
-  
-  return new ethers.providers.FallbackProvider(providers, 1); // Quorum of 1
-};
+// BSC Testnet RPC
+const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 
 // Default provider for read-only operations
-const defaultProvider = createFallbackProvider();
-
-// Test RPC endpoint health
-export const testRPCHealth = async (): Promise<{ 
-  healthy: string[]; 
-  unhealthy: string[]; 
-  results: Array<{ url: string; status: string; latency?: number; error?: string }> 
-}> => {
-  const results = [];
-  const healthy = [];
-  const unhealthy = [];
-
-  for (const rpcUrl of BSC_TESTNET_RPCS) {
-    const startTime = Date.now();
-    try {
-      const provider = new ethers.providers.JsonRpcProvider({
-        url: rpcUrl,
-        timeout: 5000
-      });
-      
-      // Test basic connectivity with getBlockNumber
-      await provider.getBlockNumber();
-      const latency = Date.now() - startTime;
-      
-      results.push({ url: rpcUrl, status: 'healthy', latency });
-      healthy.push(rpcUrl);
-      
-    } catch (error: any) {
-      const latency = Date.now() - startTime;
-      results.push({ 
-        url: rpcUrl, 
-        status: 'unhealthy', 
-        latency,
-        error: error.message 
-      });
-      unhealthy.push(rpcUrl);
-    }
-  }
-
-  return { healthy, unhealthy, results };
-};
+const defaultProvider = new ethers.providers.JsonRpcProvider(BSC_TESTNET_RPC);
 
 export const getContract = (): ethers.Contract | null => {
   try {
@@ -136,91 +62,34 @@ export const getNFTContract = (): ethers.Contract | null => {
 
 export const getReadOnlyNFTContract = (): ethers.Contract | null => {
   try {
-    console.log('Creating NFT contract with:', {
-      address: NFT_ADDRESS,
-      abiLength: NFT_CONTRACT_ABI ? NFT_CONTRACT_ABI.length : 0,
-      hasWindow: typeof window !== 'undefined',
-      hasEthereum: typeof window !== 'undefined' && !!window.ethereum
-    });
-
     if (!NFT_ADDRESS) {
-      console.error('NFT contract address not configured:', NFT_ADDRESS);
+      console.error('NFT contract address not configured');
       return null;
     }
 
     if (!NFT_CONTRACT_ABI || NFT_CONTRACT_ABI.length === 0) {
-      console.error('NFT contract ABI not configured:', NFT_CONTRACT_ABI);
-      return null;
-    }
-
-    // Validate the address format
-    if (!ethers.utils.isAddress(NFT_ADDRESS)) {
-      console.error('Invalid NFT contract address format:', NFT_ADDRESS);
+      console.error('NFT contract ABI not configured');
       return null;
     }
 
     let provider;
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        provider = new ethers.providers.Web3Provider(window.ethereum as any);
-        console.log('Using Web3Provider for NFT contract');
-      } catch (providerError) {
-        console.error('Error creating Web3Provider, falling back to default:', providerError);
-        provider = defaultProvider;
-      }
+    if (window.ethereum) {
+      provider = new ethers.providers.Web3Provider(window.ethereum as any);
     } else {
       provider = defaultProvider;
-      console.log('Using fallback provider for NFT contract');
     }
-
-    // Test provider connectivity
-    provider.getNetwork().then(network => {
-      console.log('Provider network info:', {
-        name: network.name,
-        chainId: network.chainId
-      });
-    }).catch(networkError => {
-      console.error('Provider network error:', networkError);
-    });
 
     const contract = new ethers.Contract(NFT_ADDRESS, NFT_CONTRACT_ABI, provider);
     
     // Verify the contract has the expected functions
     if (typeof contract.balanceOf !== 'function') {
-      console.error('NFT contract ABI does not include balanceOf function. Available functions:', 
-        Object.getOwnPropertyNames(contract).filter(name => typeof contract[name] === 'function')
-      );
+      console.error('NFT contract ABI does not include balanceOf function');
       return null;
     }
-
-    // Check if ABI has the expected balanceOf signature
-    const balanceOfFragment = NFT_CONTRACT_ABI.find(item => 
-      item.type === 'function' && 
-      item.name === 'balanceOf' &&
-      item.inputs?.length === 1 &&
-      item.inputs[0].type === 'address'
-    );
-
-    if (!balanceOfFragment) {
-      console.error('NFT contract ABI missing correct balanceOf function signature');
-      console.error('Expected: balanceOf(address) returns (uint256)');
-      return null;
-    }
-
-    console.log('NFT contract created successfully:', {
-      address: contract.address,
-      hasBalanceOf: typeof contract.balanceOf === 'function',
-      provider: provider.constructor.name,
-      balanceOfSignature: balanceOfFragment
-    });
 
     return contract;
   } catch (error) {
     console.error('Error creating NFT contract instance:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack?.split('\n')[0]
-    });
     return null;
   }
 };
