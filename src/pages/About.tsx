@@ -11,8 +11,55 @@ import {
 import { useState } from "react";
 
 // Usage Slider Component
-function UsageSlider({ usageItems }) {
+function UsageSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const usageItems = [
+    {
+      icon: "🌍",
+      title: "Global Remittances",
+      description:
+        "GSDC may be preferred as foreign portfolio into any of the currency within The Global South's basket adjustment portfolio by The Global South's Saving Model Account.",
+      details:
+        "Once GSDC is adopted/tested, it can be used like any other cryptocurrency.",
+    },
+    {
+      icon: "🔒",
+      title: "Secure Storage",
+      description:
+        "GSDC can be used in a grap decentralised and secure environment.",
+      details:
+        "In portfolio integrate with individual, exchange and wallets as currency supermundial.",
+    },
+    {
+      icon: "📊",
+      title: "Financial Analytics",
+      description:
+        "The Global South of business liquidity business business Reserves, without business model financial wealth. This plugs market/listed by private group or public Financial International Trade.",
+      details: "GSDC measures in any countries.",
+    },
+    {
+      icon: "🔄",
+      title: "Cross-Border Trade",
+      description:
+        "Facilitate international trade with reduced fees and faster settlement times.",
+      details:
+        "Enable seamless global commerce with GSDC as the settlement currency.",
+    },
+    {
+      icon: "🏛️",
+      title: "Institutional Banking",
+      description:
+        "Provide institutional-grade banking services with transparent reserves.",
+      details: "Support large-scale financial operations with regulatory compliance.",
+    },
+    {
+      icon: "💱",
+      title: "Currency Exchange",
+      description: "Offer stable currency exchange without volatility risks.",
+      details: "Maintain purchasing power across Global South currencies.",
+    },
+  ];
 
   const nextSlide = () => {
     setCurrentSlide(
@@ -64,46 +111,39 @@ function UsageSlider({ usageItems }) {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="relative group cursor-pointer"
                     >
-                      {/* Card with gradient background matching the design */}
+                      {/* Card with exact gradient matching GSDC Stability Benefits */}
                       <div
-                        className="rounded-2xl p-8 text-white h-full hover:scale-105 transition-transform duration-300 shadow-xl"
+                        className="rounded-2xl p-8 text-center h-full hover:scale-105 transition-transform duration-300 shadow-xl relative overflow-hidden"
                         style={{
-                          background: "linear-gradient(to top, white 50%, #446c93 50%)",
-                          minHeight: "320px",
+                          background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)",
+                          minHeight: "300px",
                           border: "1px solid rgba(255,255,255,0.1)",
                         }}
                       >
-                        {/* Icon Circle */}
-                        <div className="absolute top-0 left-0 -mt-4 ml-4">
-                          <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-lg"
-                            style={{
-                              background:
-                                "linear-gradient(to bottom, #f6b62e, #e74134)",
-                              border: "2px solid rgba(255,255,255,0.2)",
-                            }}
-                          >
+                        {/* Icon at top center */}
+                        <div className="flex justify-center mb-6">
+                          <div className="text-white text-4xl font-bold">
                             {item.icon}
                           </div>
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-xl font-bold mb-4 text-center text-black pt-8">
+                        <h3 className="text-white text-xl font-bold mb-4 leading-tight">
                           {item.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="text-gray-700 text-sm leading-relaxed text-center mb-4">
+                        <p className="text-white text-sm leading-relaxed mb-4 opacity-90">
                           {item.description}
                         </p>
 
                         {/* Details */}
-                        <p className="text-gray-500 text-xs leading-relaxed text-center italic">
+                        <p className="text-white text-sm leading-relaxed opacity-80">
                           {item.details}
                         </p>
 
                         {/* Hover effect overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                       </div>
                     </motion.div>
                   ))}
@@ -171,13 +211,13 @@ function UsageSlider({ usageItems }) {
       </div>
 
       {/* Bottom Description */}
-      <div className="mt-12 max-w-4xl mx-auto text-center space-y-4">
+      <div className="mt-12 max-w-4xl mx-auto space-y-4">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           By leveraging this diversc mix, GSDC reduces its reliance on any
           single currency (eg USD), thereby distributing risk across diverse
@@ -189,7 +229,7 @@ function UsageSlider({ usageItems }) {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           GSDC enables an adaptable to US dollar pegged cryptocurrencies (USDT,
           USDC, DAI, etc.), representing a perpetual and economic shift from
@@ -202,7 +242,7 @@ function UsageSlider({ usageItems }) {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true }}
-          className="text-gray-700 text-lg leading-relaxed"
+          className="text-white text-lg leading-relaxed"
         >
           GSDC is an alternative to US dollar pegged cryptocurrencies (USDT,
           USDC, DAI, etc.), representing a paradigmatic and economic shift from
@@ -216,53 +256,6 @@ function UsageSlider({ usageItems }) {
 
 export default function About() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
-  const usageItems = [
-    {
-      icon: "🌍",
-      title: "Global Remittances",
-      description:
-        "GSDC may be preferred as foreign portfolio into any of the currency within The Global South's basket adjustment portfolio by The Global South's Saving Model Account.",
-      details:
-        "Once GSDC is adopted/tested, it can be used like any other cryptocurrency.",
-    },
-    {
-      icon: "🔒",
-      title: "Secure Storage",
-      description:
-        "GSDC can be used in a grap decentralised and secure environment.",
-      details:
-        "In portfolio integrate with individual, exchange and wallets as currency supermundial.",
-    },
-    {
-      icon: "📊",
-      title: "Financial Analytics",
-      description:
-        "The Global South of business liquidity business business Reserves, without business model financial wealth. This plugs market/listed by private group or public Financial International Trade.",
-      details: "GSDC measures in any countries.",
-    },
-    {
-      icon: "🔄",
-      title: "Cross-Border Trade",
-      description:
-        "Facilitate international trade with reduced fees and faster settlement times.",
-      details:
-        "Enable seamless global commerce with GSDC as the settlement currency.",
-    },
-    {
-      icon: "🏛️",
-      title: "Institutional Banking",
-      description:
-        "Provide institutional-grade banking services with transparent reserves.",
-      details: "Support large-scale financial operations with regulatory compliance.",
-    },
-    {
-      icon: "💱",
-      title: "Currency Exchange",
-      description: "Offer stable currency exchange without volatility risks.",
-      details: "Maintain purchasing power across Global South currencies.",
-    },
-  ];
 
   const handleVideoPlay = () => {
     setIsVideoPlaying(true);
@@ -358,7 +351,7 @@ export default function About() {
                 className="px-8 py-3 rounded-full font-semibold text-white transition-all duration-300 shadow-lg"
                 style={{
                   background:
-                    "linear-gradient(to bottom, #f6b62e 0%, #e74134 0%, #e74134 100%)",
+                    "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)",
                 }}
               >
                 WATCH VIDEO
@@ -595,70 +588,33 @@ export default function About() {
         </div>
       </div>
 
-      {/* Usage Section - Matching GSDC Stability Benefits Style */}
-      <div className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">How GSDC is Used</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Discover the diverse applications and use cases of GSDC across different sectors
-              and financial ecosystems worldwide.
-            </p>
+      {/* Usage Section - Slider with Cards */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(to bottom, #f8f9fa 0%, #f8f9fa 50%, #446c93 50%, #446c93 100%)",
+        }}
+      >
+        {/* Usage Title */}
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pt-16 pb-8">
+          <div className="text-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-4xl font-bold text-gray-600 mb-8 inline-block px-3 py-1 rounded-md"
+              style={{ backgroundColor: "rgba(230, 230, 230, 0.7)" }}
+            >
+              Usage
+            </motion.h2>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {usageItems.slice(0, 3).map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl"
-                  style={{
-                    background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)"
-                  }}
-                >
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-400">
-                  {item.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-
-          {usageItems.length > 3 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-              {usageItems.slice(3).map((item, index) => (
-                <motion.div
-                  key={index + 3}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: (index + 3) * 0.2 }}
-                  viewport={{ once: true }}
-                  className="text-center"
-                >
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl"
-                    style={{
-                      background: "linear-gradient(to bottom, #f6b62e 0%, #e74134 100%)"
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-400">
-                    {item.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          )}
+        {/* Usage Cards Slider */}
+        <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8 pb-16">
+          <UsageSlider />
         </div>
       </div>
 
