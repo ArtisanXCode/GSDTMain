@@ -51,8 +51,7 @@ function UsageSlider() {
       title: "Institutional Banking",
       description:
         "Provide institutional-grade banking services with transparent reserves.",
-      details:
-        "Support large-scale financial operations with regulatory compliance.",
+      details: "Support large-scale financial operations with regulatory compliance.",
     },
     {
       icon: "💱",
@@ -116,8 +115,7 @@ function UsageSlider() {
                       <div
                         className="rounded-2xl p-8 text-white h-full hover:scale-105 transition-transform duration-300 shadow-xl"
                         style={{
-                          background:
-                            "linear-gradient(135deg, #446c93 0%, #2a4661 100%)",
+                          background: "linear-gradient(to top, white 50%, #446c93 50%)",
                           minHeight: "320px",
                           border: "1px solid rgba(255,255,255,0.1)",
                         }}
@@ -137,17 +135,17 @@ function UsageSlider() {
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-xl font-bold mb-4 text-center text-white">
+                        <h3 className="text-xl font-bold mb-4 text-center text-black">
                           {item.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="text-white/90 text-sm leading-relaxed text-center mb-4">
+                        <p className="text-gray-700 text-sm leading-relaxed text-center mb-4">
                           {item.description}
                         </p>
 
                         {/* Details */}
-                        <p className="text-white/80 text-xs leading-relaxed text-center italic">
+                        <p className="text-gray-500 text-xs leading-relaxed text-center italic">
                           {item.details}
                         </p>
 
@@ -208,7 +206,7 @@ function UsageSlider() {
 
       {/* Navigation Dots - Mobile */}
       <div className="lg:hidden flex justify-center mt-8 space-x-2">
-        {Array.from({ length: usageItems.length }).map((_, index) => (
+        {Array.from({ length: Math.ceil(usageItems.length / getItemsPerSlide()) }).map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
