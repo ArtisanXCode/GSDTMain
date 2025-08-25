@@ -71,10 +71,10 @@ export default function FiatMintRequests() {
 
       const minMintAmt = await contract.MIN_MINT_AMOUNT();
       const decimals = await contract.decimals();
-      const minMintAmnt = await minMintAmt.div(
+      const minMintAmnt = minMintAmt.div(
         BigNumber.from(10).pow(decimals),
       ); // Dividing by 10^18 for ERC20 tokens
-      await setMinMintAmount(minMintAmnt.toNumber());
+      setMinMintAmount(minMintAmnt.toString());
 
       await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
 
