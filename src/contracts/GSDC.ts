@@ -1,15 +1,9 @@
 
 // GSDC Smart Contract Configuration
-//export const GSDC_ADDRESS = "0x5589660F31F3229EA268AFa65e412Cd16666E83b" as const;
-
-//GSDC Implementation Contract
-//0xC4FC66496Cbf3a7Fade244ee6dA4ae75C934B876
-//GSDC Proxy Contract
-//0xB6C0354F0081A63BFf08Cc7e7e193796b7907F0E
 export const GSDC_ADDRESS = "0xB6C0354F0081A63BFf08Cc7e7e193796b7907F0E" as const;
 
-// MultiSig Administrative Contract (deploy this after GSDC)
-export const MULTISIG_ADMIN_ADDRESS = "0x7fDc6358B2195a2efaA1D81AC646ff150cd3Ea76" as const; // Update after deployment
+// MultiSig Administrative Contract
+export const MULTISIG_ADMIN_ADDRESS = "0x7fDc6358B2195a2efaA1D81AC646ff150cd3Ea76" as const;
 
 export const GSDC_PROXY_ABI = [{"inputs":[{"internalType":"address","name":"implementation","type":"address"},{"internalType":"bytes","name":"_data","type":"bytes"}],"stateMutability":"payable","type":"constructor"},{"inputs":[{"internalType":"address","name":"target","type":"address"}],"name":"AddressEmptyCode","type":"error"},{"inputs":[{"internalType":"address","name":"implementation","type":"address"}],"name":"ERC1967InvalidImplementation","type":"error"},{"inputs":[],"name":"ERC1967NonPayable","type":"error"},{"inputs":[],"name":"FailedInnerCall","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"implementation","type":"address"}],"name":"Upgraded","type":"event"},{"stateMutability":"payable","type":"fallback"}] as const;
 

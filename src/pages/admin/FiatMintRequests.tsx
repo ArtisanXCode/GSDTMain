@@ -65,28 +65,22 @@ export default function FiatMintRequests() {
   }, [filterStatus]);
 
   const handleApprove = async () => {
-    if (!selectedRequest || !address || !multiSigContract || !gsdcContract.contract) return;
+    if (!selectedRequest || !address || !multiSigContract) return;
 
     try {
       setActionLoading(true);
 
-      // Get minimum mint amount from GSDC contract
-      const minMintAmt = await gsdcContract.contract.MIN_MINT_AMOUNT();
-      const decimals = await gsdcContract.contract.decimals();
-      const minMintAmnt = minMintAmt.div(
-        BigNumber.from(10).pow(decimals),
-      ); // Dividing by 10^18 for ERC20 tokens
-      setMinMintAmount(minMintAmnt.toString());
+      // First approve the fiat mint request in the database
+      await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
 
-      // Queue mint transaction through MultiSig contract
+      // Then queue the mint transaction through MultiSig (this will be pending for approval)
+      const decimals = 18; // GSDC has 18 decimals
       const amount = BigNumber.from(selectedRequest.amount).mul(
         BigNumber.from(10).pow(decimals)
       );
       
       const tx = await multiSigContract.mintTokens(selectedRequest.user_address, amount);
       await tx.wait();
-
-      await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
 
       // Update the local state
       setRequests((prev) =>
@@ -107,29 +101,23 @@ export default function FiatMintRequests() {
       setAdminNotes("");
     } catch (error: any) {
       console.error("Error approving request:", error);
-      //setError(err.message || 'Error approving request');
 
-      if (error.message?.includes("missing role")) {
-        setError(
-          "You do not have permission to mint tokens. Only users with MINTER_ROLE can mint.",
-        );
-      } else if (error.message?.includes("execution reverted")) {
-        const revertReason = error.data?.message || error.message;
-        if (revertReason.includes("KYC")) {
-          setError("KYC verification required before minting tokens.");
-        } else if (revertReason.includes("amount below minimum")) {
-          setError(`Amount must be at least ${minMintAmount} GSDC.`);
-        } else if (revertReason.includes("amount above maximum")) {
-          setError("Amount exceeds maximum minting limit.");
-        } else if (revertReason.includes("daily mint limit")) {
-          setError("Daily minting limit exceeded. Please try again tomorrow.");
-        } else {
-          setError(revertReason || "Transaction failed. Please try again.");
-        }
-      } else if (error.code === "ACTION_REJECTED") {
+      if (error.message?.includes("missing role") || error.message?.includes("AccessControlUnauthorizedAccount")) {
+        setError("You do not have permission to queue mint transactions. Only users with MINTER_ROLE can mint.");
+      } else if (error.message?.includes("Blacklisted")) {
+        setError("Cannot mint to a blacklisted address.");
+      } else if (error.message?.includes("Frozen")) {
+        setError("Cannot mint to a frozen address.");
+      } else if (error.message?.includes("ZeroAmount")) {
+        setError("Mint amount cannot be zero.");
+      } else if (error.message?.includes("InvalidAddress")) {
+        setError("Invalid recipient address.");
+      } else if (error.code === "ACTION_REJECTED" || error.code === 4001) {
         setError("Transaction was rejected by user.");
+      } else if (error.message?.includes("missing revert data") || error.message?.includes("call exception")) {
+        setError("Transaction failed. Please ensure you have the correct role permissions and try again.");
       } else {
-        setError("Error minting tokens. Please try again.");
+        setError(error.message || "Error processing mint request. Please try again.");
       }
     } finally {
       setActionLoading(false);
