@@ -6,41 +6,80 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
 // Fallback values for development if environment variables are not available
-const fallbackUrl = '';
-const fallbackKey = '';
+const fallbackUrl = 'https://qzgzyonbdosbvjjkuecl.supabase.co'; // Hardcoded fallback URL
+const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6Z3p5b25iZG9zYnZqamt1ZWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzNDQ0MzYsImV4cCI6MjA0OTkyMDQzNn0.YJoFGaAg4j1SQPE8IKdq5SFZmfLkDwOgfZ6-Gg15fqM'; // Hardcoded fallback key
 
 // Use environment variables or fallback to hardcoded values
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
-// Create and export the Supabase client with retries
-export const supabase = createClient(url, key, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
-  },
-  global: {
-    headers: {
-      'x-client-info': 'supabase-js/2.39.3'
-    }
-  },
-  db: {
-    schema: 'public'
-  }
-});
+// Use global reference to ensure singleton across hot reloads
+declare global {
+  var __supabaseClient: any;
+  var __supabaseAdminClient: any;
+}
 
-// Service role client for admin operations (bypasses RLS)
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  supabaseServiceKey || supabaseAnonKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+// Create clients with global singleton pattern
+const createSupabaseClient = () => {
+  if (typeof window !== 'undefined' && window.__supabaseClient) {
+    return window.__supabaseClient;
   }
-);
+
+  const client = createClient(url, key, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'gsdc-auth-token'
+    },
+    global: {
+      headers: {
+        'x-client-info': 'supabase-js/2.39.3'
+      }
+    },
+    db: {
+      schema: 'public'
+    }
+  });
+
+  if (typeof window !== 'undefined') {
+    window.__supabaseClient = client;
+  } else if (typeof global !== 'undefined') {
+    global.__supabaseClient = client;
+  }
+
+  return client;
+};
+
+const createSupabaseAdminClient = () => {
+  if (typeof window !== 'undefined' && window.__supabaseAdminClient) {
+    return window.__supabaseAdminClient;
+  }
+
+  const adminClient = createClient(
+    supabaseUrl || fallbackUrl,
+    supabaseServiceKey || supabaseAnonKey || fallbackKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        storageKey: 'gsdc-admin-auth-token'
+      }
+    }
+  );
+
+  if (typeof window !== 'undefined') {
+    window.__supabaseAdminClient = adminClient;
+  } else if (typeof global !== 'undefined') {
+    global.__supabaseAdminClient = adminClient;
+  }
+
+  return adminClient;
+};
+
+// Export singleton instances
+export const supabase = createSupabaseClient();
+export const supabaseAdmin = createSupabaseAdminClient();
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {

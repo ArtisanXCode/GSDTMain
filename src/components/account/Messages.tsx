@@ -3,18 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
 import { format } from 'date-fns';
-import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
-import { sendEmail } from '../../services/email';
-import { toast as toastify } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {
-  getUserMessages,
-  sendUserMessage,
-  markMessageAsRead,
-  getUserEmailNotificationSettings,
-  updateEmailNotificationSettings
-} from '../../services/messaging';
+import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
 
 interface Message {
   id: string;
@@ -27,11 +16,6 @@ interface Message {
   admin_id?: string;
   submitted_at: string;
   admin_reply_date?: string | null;
-  user_id: string;
-  sender: 'user' | 'admin';
-  read_by_user?: boolean;
-  replied_by?: string;
-  replied_at?: string;
 }
 
 interface UserReply {
@@ -53,46 +37,56 @@ export default function Messages() {
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [userEmail, setUserEmail] = useState<string>('');
 
   useEffect(() => {
-    if (user?.id) {
-      loadMessages();
-      loadUserSettings();
-    }
-  }, [user?.id]);
+    const fetchMessages = async () => {
+      if (!user?.email) return;
 
-  const loadMessages = async () => {
-    try {
-      setLoading(true);
-      const messagesData = await getUserMessages(user?.id);
-      setMessages(messagesData);
+      try {
+        setLoading(true);
 
-      // Mark unread messages as read
-      const unreadMessages = messagesData.filter(msg => !msg.read_by_user && msg.admin_reply);
-      for (const msg of unreadMessages) {
-        await markMessageAsRead(msg.id, 'user');
+        // Fetch messages with replies
+        const { data: messagesData, error: messagesError } = await supabase
+          .from('contact_submissions')
+          .select(`
+            *,
+            contact_replies (
+              reply_text,
+              admin_email,
+              sent_at
+            )
+          `)
+          .eq('email', user.email)
+          .order('submitted_at', { ascending: false });
+
+        if (messagesError) throw messagesError;
+
+        // Transform data to include admin_reply field for compatibility
+        const transformedMessages = (messagesData || []).map(message => ({
+          ...message,
+          admin_reply: message.contact_replies?.[0]?.reply_text || null,
+          admin_reply_date: message.contact_replies?.[0]?.sent_at || null
+        }));
+
+        setMessages(transformedMessages);
+
+        // Fetch user replies
+        const submissionIds = transformedMessages.map(m => m.id);
+        if (submissionIds.length > 0) {
+          // The logic for fetching user replies has been updated to fetch both user and admin replies
+          // and combine them into a single `userReplies` state.
+          // This block is effectively replaced by the `handleMessageSelect` logic.
+        }
+      } catch (err: any) {
+        setError(err.message);
+        toast.error('Failed to load messages');
+      } finally {
+        setLoading(false);
       }
-    } catch (error: any) {
-      console.error('Error loading messages:', error);
-      toast.error('Failed to load messages');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const loadUserSettings = async () => {
-    try {
-      const notificationSetting = await getUserEmailNotificationSettings(user?.id);
-      setEmailNotifications(notificationSetting);
-      setUserEmail(user?.email || '');
-    } catch (error: any) {
-      console.error('Error loading user settings:', error);
-    }
-  };
+    fetchMessages();
+  }, [user?.email]);
 
   // Scroll to bottom when userReplies updates - only scroll within the container
   useEffect(() => {
@@ -235,41 +229,6 @@ export default function Messages() {
     }
   };
 
-  const toggleEmailNotifications = async () => {
-    try {
-      const newValue = !emailNotifications;
-      await updateEmailNotificationSettings(user?.id, newValue);
-      setEmailNotifications(newValue);
-      toastify.success(`Email notifications ${newValue ? 'enabled' : 'disabled'}`);
-    } catch (error: any) {
-      console.error('Error updating email notifications:', error);
-      toastify.error('Failed to update notification settings');
-    }
-  };
-
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !user?.id) return;
-
-    try {
-      setSending(true);
-      await sendUserMessage(
-        user.id,
-        newMessage.trim(),
-        userEmail,
-        emailNotifications
-      );
-
-      setNewMessage('');
-      await loadMessages(); // Reload messages
-      toastify.success('Message sent successfully');
-    } catch (error: any) {
-      console.error('Error sending message:', error);
-      toastify.error('Failed to send message');
-    } finally {
-      setSending(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -289,37 +248,9 @@ export default function Messages() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Messages</h2>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <ChatBubbleLeftRightIcon className="h-6 w-6 text-gray-500" />
-            <span className="text-sm text-gray-600">{messages.length} messages</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Email Notification Settings */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <EnvelopeIcon className="h-5 w-5 text-blue-600" />
-            <div>
-              <h3 className="text-sm font-medium text-blue-900">Email Notifications</h3>
-              <p className="text-xs text-blue-700">Get notified via email when you send messages</p>
-            </div>
-          </div>
-          <button
-            onClick={toggleEmailNotifications}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-              emailNotifications ? 'bg-blue-600' : 'bg-gray-200'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                emailNotifications ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
-          </button>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Messages</h2>
+          <p className="text-gray-600">View your communication history with our support team</p>
         </div>
       </div>
 
@@ -356,7 +287,7 @@ export default function Messages() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-gray-900 truncate">
-                        {message.subject || message.message.substring(0, 30)}
+                        {message.subject}
                       </h4>
                       <p className="text-xs text-gray-500 mt-1">
                         {format(new Date(message.submitted_at), 'MMM d, yyyy')}
@@ -382,7 +313,7 @@ export default function Messages() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
-                        {selectedMessage.subject || selectedMessage.message.substring(0, 50)}
+                        {selectedMessage.subject}
                       </h3>
                       <p className="text-sm text-gray-500">
                         Sent on {format(new Date(selectedMessage.submitted_at), 'MMMM d, yyyy at h:mm a')}
@@ -561,62 +492,6 @@ export default function Messages() {
           </div>
         </div>
       )}
-
-      {/* New Message Input */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Send a New Message</h4>
-
-        {error && (
-          <div className="mb-3 bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-
-        <textarea
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          className="block w-full rounded-md border-0 bg-gray-50 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-          rows={4}
-          placeholder="Type your message here..."
-          disabled={sending}
-        />
-
-        <div className="flex justify-end mt-3">
-          <button
-            onClick={sendMessage}
-            disabled={sending || !newMessage.trim()}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            {sending ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Sending...
-              </>
-            ) : (
-              'Send Message'
-            )}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
