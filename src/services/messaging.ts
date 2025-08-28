@@ -1,251 +1,334 @@
 
 import { supabase } from '../lib/supabase';
-import { sendEmail } from './email';
 
 export interface UserMessage {
   id: string;
-  user_id: string;
+  name: string;
+  email: string;
+  subject: string;
   message: string;
-  sender: 'user' | 'admin';
+  status: 'new' | 'read' | 'replied' | 'archived';
   admin_reply?: string;
+  admin_id?: string;
+  submitted_at: string;
+  admin_reply_date?: string | null;
+  user_id: string;
+  sender: 'user' | 'admin';
+  read_by_user?: boolean;
   replied_by?: string;
   replied_at?: string;
-  created_at: string;
-  read_by_user: boolean;
-  read_by_admin: boolean;
 }
 
-export const getUserMessages = async (userId: string): Promise<UserMessage[]> => {
-  const { data, error } = await supabase
-    .from('user_messages')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+export interface EmailNotificationSettings {
+  email_notifications: boolean;
+  transaction_notifications: boolean;
+  kyc_notifications: boolean;
+  marketing_emails: boolean;
+}
 
-  if (error) throw error;
-  return data || [];
-};
-
-export const sendUserMessage = async (
-  userId: string, 
-  message: string,
-  userEmail?: string,
-  emailNotificationsEnabled: boolean = true
-): Promise<void> => {
-  const { error } = await supabase
-    .from('user_messages')
-    .insert([
-      {
-        user_id: userId,
-        message: message.trim(),
-        sender: 'user',
-        read_by_admin: false,
-        read_by_user: true,
-        created_at: new Date().toISOString()
-      }
-    ]);
-
-  if (error) throw error;
-
-  // Send confirmation email if enabled
-  if (emailNotificationsEnabled && userEmail) {
-    try {
-      await sendMessageConfirmationEmail(userEmail, message);
-    } catch (emailError) {
-      console.warn('Failed to send confirmation email:', emailError);
-    }
-  }
-};
-
-export const replyToUserMessage = async (
-  messageId: string,
-  reply: string,
-  adminId: string,
-  adminName: string,
-  userEmail: string
-): Promise<void> => {
-  // Update the message with admin reply
-  const { error: updateError } = await supabase
-    .from('user_messages')
-    .update({
-      admin_reply: reply,
-      replied_by: adminName,
-      replied_at: new Date().toISOString(),
-      read_by_user: false
-    })
-    .eq('id', messageId);
-
-  if (updateError) throw updateError;
-
-  // Get the original message for email context
-  const { data: messageData, error: fetchError } = await supabase
-    .from('user_messages')
-    .select('message, created_at')
-    .eq('id', messageId)
-    .single();
-
-  if (fetchError) throw fetchError;
-
-  // Send notification email to user
+// Get user messages (using contact_submissions table)
+export async function getUserMessages(userId: string): Promise<UserMessage[]> {
   try {
-    await sendAdminReplyNotificationEmail(
-      userEmail,
-      messageData.message,
-      reply,
-      adminName
-    );
-  } catch (emailError) {
-    console.warn('Failed to send reply notification email:', emailError);
-  }
-};
+    // Get user email first
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user?.email) {
+      throw new Error('User not authenticated');
+    }
 
-export const markMessageAsRead = async (
-  messageId: string,
-  readBy: 'user' | 'admin'
-): Promise<void> => {
-  const updateField = readBy === 'user' ? 'read_by_user' : 'read_by_admin';
-  
-  const { error } = await supabase
-    .from('user_messages')
-    .update({ [updateField]: true })
-    .eq('id', messageId);
+    const userEmail = userData.user.email;
 
-  if (error) throw error;
-};
+    // Get contact submissions for this user
+    const { data: submissions, error: submissionsError } = await supabase
+      .from('contact_submissions')
+      .select(`
+        id,
+        name,
+        email,
+        subject,
+        message,
+        status,
+        submitted_at,
+        created_at
+      `)
+      .eq('email', userEmail)
+      .order('submitted_at', { ascending: false });
 
-const sendMessageConfirmationEmail = async (userEmail: string, message: string) => {
-  const template = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Message Sent - GSDC</title>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
-        .container { padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        .header { background-color: #2a4661; color: white; padding: 15px 20px; border-radius: 5px 5px 0 0; margin: -20px -20px 20px -20px; }
-        .content { padding: 20px 0; }
-        .message-preview { background-color: #f9f9f9; padding: 15px; border-left: 4px solid #2a4661; margin: 15px 0; }
-        .footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
-        .cta-button { display: inline-block; background-color: #2a4661; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 15px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1 class="header">Message Sent Successfully</h1>
-        <div class="content">
-          <p>Your message has been successfully sent to our support team.</p>
-          
-          <h3>Your Message:</h3>
-          <div class="message-preview">${message}</div>
-          
-          <p>Our support team will review your message and respond as soon as possible. You will receive an email notification when we reply.</p>
-          
-          <p>You can also check your messages anytime in your account dashboard.</p>
-          
-          <a href="${process.env.NODE_ENV === 'production' ? 'https://gsdc.replit.app' : 'http://localhost:3000'}/my-account" class="cta-button">View My Account</a>
-        </div>
-        <div class="footer">
-          <p>This is an automated confirmation from GSDC Support.</p>
-          <p>© ${new Date().getFullYear()} Global South Digital Token. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+    if (submissionsError) {
+      throw submissionsError;
+    }
 
-  await sendEmail({
-    to: userEmail,
-    subject: 'Message Sent Successfully - GSDC Support',
-    html: template,
-    from: 'support@gsdc.com'
-  });
-};
+    // Get admin replies for these submissions
+    const submissionIds = submissions?.map(s => s.id) || [];
+    const { data: adminReplies, error: repliesError } = await supabase
+      .from('contact_replies')
+      .select('*')
+      .in('submission_id', submissionIds)
+      .order('sent_at', { ascending: false });
 
-const sendAdminReplyNotificationEmail = async (
-  userEmail: string,
-  originalMessage: string,
-  reply: string,
-  adminName: string
-) => {
-  const template = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>New Reply from GSDC Support</title>
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
-        .container { padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        .header { background-color: #2a4661; color: white; padding: 15px 20px; border-radius: 5px 5px 0 0; margin: -20px -20px 20px -20px; }
-        .content { padding: 20px 0; }
-        .original-message { background-color: #f0f0f0; padding: 15px; border-left: 4px solid #ccc; margin: 15px 0; }
-        .reply-message { background-color: #e8f5e8; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; }
-        .footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
-        .cta-button { display: inline-block; background-color: #2a4661; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 15px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1 class="header">New Reply from GSDC Support</h1>
-        <div class="content">
-          <p>You have received a new reply from our support team regarding your message:</p>
-          
-          <h3>Your Original Message:</h3>
-          <div class="original-message">${originalMessage}</div>
-          
-          <h3>Our Reply:</h3>
-          <div class="reply-message">${reply}</div>
-          
-          <p><strong>Replied by:</strong> ${adminName}</p>
-          
-          <p>You can view all your messages and continue the conversation in your account dashboard.</p>
-          
-          <a href="${process.env.NODE_ENV === 'production' ? 'https://gsdc.replit.app' : 'http://localhost:3000'}/my-account" class="cta-button">View Messages</a>
-        </div>
-        <div class="footer">
-          <p>This email was sent from GSDC Support Team.</p>
-          <p>© ${new Date().getFullYear()} Global South Digital Token. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+    if (repliesError) {
+      throw repliesError;
+    }
 
-  await sendEmail({
-    to: userEmail,
-    subject: 'New Reply from GSDC Support',
-    html: template,
-    from: 'support@gsdc.com'
-  });
-};
+    // Get user replies for these submissions
+    const { data: userReplies, error: userRepliesError } = await supabase
+      .from('user_replies')
+      .select('*')
+      .in('submission_id', submissionIds)
+      .order('sent_at', { ascending: false });
 
-export const getUserEmailNotificationSettings = async (userId: string): Promise<boolean> => {
-  const { data, error } = await supabase
-    .from('user_settings')
-    .select('email_notifications')
-    .eq('user_id', userId)
-    .single();
+    if (userRepliesError) {
+      throw userRepliesError;
+    }
 
-  if (error || !data) return true; // Default to enabled
-  return data.email_notifications;
-};
+    // Combine and format the messages
+    const messages: UserMessage[] = [];
 
-export const updateEmailNotificationSettings = async (
-  userId: string,
-  enabled: boolean
-): Promise<void> => {
-  const { error } = await supabase
-    .from('user_settings')
-    .upsert([
-      {
+    // Add original submissions
+    submissions?.forEach(submission => {
+      messages.push({
+        id: submission.id,
+        name: submission.name,
+        email: submission.email,
+        subject: submission.subject,
+        message: submission.message,
+        status: submission.status as 'new' | 'read' | 'replied' | 'archived',
+        submitted_at: submission.submitted_at || submission.created_at,
         user_id: userId,
-        email_notifications: enabled,
-        updated_at: new Date().toISOString()
-      }
-    ], { 
-      onConflict: 'user_id' 
+        sender: 'user',
+        read_by_user: true
+      });
     });
 
-  if (error) throw error;
-};
+    // Add admin replies as separate messages
+    adminReplies?.forEach(reply => {
+      const originalSubmission = submissions?.find(s => s.id === reply.submission_id);
+      if (originalSubmission) {
+        messages.push({
+          id: `admin_${reply.id}`,
+          name: 'Admin',
+          email: reply.admin_email,
+          subject: `Re: ${originalSubmission.subject}`,
+          message: reply.reply_text,
+          status: 'replied',
+          submitted_at: reply.sent_at,
+          admin_reply_date: reply.sent_at,
+          user_id: userId,
+          sender: 'admin',
+          read_by_user: false,
+          replied_by: reply.admin_email,
+          replied_at: reply.sent_at
+        });
+      }
+    });
+
+    // Add user replies as separate messages
+    userReplies?.forEach(reply => {
+      const originalSubmission = submissions?.find(s => s.id === reply.submission_id);
+      if (originalSubmission) {
+        messages.push({
+          id: `user_reply_${reply.id}`,
+          name: originalSubmission.name,
+          email: reply.user_email,
+          subject: `Re: ${originalSubmission.subject}`,
+          message: reply.reply_text,
+          status: 'replied',
+          submitted_at: reply.sent_at,
+          user_id: userId,
+          sender: 'user',
+          read_by_user: true
+        });
+      }
+    });
+
+    // Sort by date (newest first)
+    return messages.sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime());
+
+  } catch (error) {
+    console.error('Error fetching user messages:', error);
+    throw error;
+  }
+}
+
+// Send a new user message (creates a contact submission)
+export async function sendUserMessage(
+  subject: string,
+  message: string,
+  name?: string
+): Promise<void> {
+  try {
+    // Get user data
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user?.email) {
+      throw new Error('User not authenticated');
+    }
+
+    const userEmail = userData.user.email;
+
+    // Get user profile for name if not provided
+    let userName = name;
+    if (!userName) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('first_name, last_name')
+        .eq('user_id', userData.user.id)
+        .single();
+      
+      if (profile) {
+        userName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User';
+      } else {
+        userName = 'User';
+      }
+    }
+
+    // Create contact submission
+    const { error: insertError } = await supabase
+      .from('contact_submissions')
+      .insert([
+        {
+          name: userName,
+          email: userEmail,
+          subject: subject,
+          message: message,
+          status: 'new'
+        }
+      ]);
+
+    if (insertError) {
+      throw insertError;
+    }
+
+  } catch (error) {
+    console.error('Error sending user message:', error);
+    throw error;
+  }
+}
+
+// Reply to an existing conversation (adds to user_replies table)
+export async function replyToMessage(
+  submissionId: string,
+  replyMessage: string
+): Promise<void> {
+  try {
+    // Get user data
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user?.email) {
+      throw new Error('User not authenticated');
+    }
+
+    const userEmail = userData.user.email;
+
+    // Insert user reply
+    const { error: insertError } = await supabase
+      .from('user_replies')
+      .insert([
+        {
+          submission_id: submissionId,
+          reply_text: replyMessage,
+          user_email: userEmail
+        }
+      ]);
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    // Update the original submission status to 'replied'
+    const { error: updateError } = await supabase
+      .from('contact_submissions')
+      .update({ status: 'replied' })
+      .eq('id', submissionId);
+
+    if (updateError) {
+      console.error('Error updating submission status:', updateError);
+    }
+
+  } catch (error) {
+    console.error('Error replying to message:', error);
+    throw error;
+  }
+}
+
+// Mark message as read (update contact submission status)
+export async function markMessageAsRead(messageId: string): Promise<void> {
+  try {
+    // If it's an admin message, we don't need to mark it as read in the database
+    // since read status is tracked client-side for admin messages
+    if (messageId.startsWith('admin_') || messageId.startsWith('user_reply_')) {
+      return;
+    }
+
+    // Update contact submission status to 'read'
+    const { error } = await supabase
+      .from('contact_submissions')
+      .update({ status: 'read' })
+      .eq('id', messageId);
+
+    if (error) {
+      throw error;
+    }
+
+  } catch (error) {
+    console.error('Error marking message as read:', error);
+    throw error;
+  }
+}
+
+// Get user email notification settings
+export async function getUserEmailNotificationSettings(userId: string): Promise<EmailNotificationSettings> {
+  try {
+    const { data, error } = await supabase
+      .from('user_settings')
+      .select('email_notifications, transaction_notifications, kyc_notifications, marketing_emails')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      // If no settings exist, return defaults
+      if (error.code === 'PGRST116') {
+        return {
+          email_notifications: true,
+          transaction_notifications: true,
+          kyc_notifications: true,
+          marketing_emails: false
+        };
+      }
+      throw error;
+    }
+
+    return {
+      email_notifications: data.email_notifications ?? true,
+      transaction_notifications: data.transaction_notifications ?? true,
+      kyc_notifications: data.kyc_notifications ?? true,
+      marketing_emails: data.marketing_emails ?? false
+    };
+
+  } catch (error) {
+    console.error('Error fetching email notification settings:', error);
+    throw error;
+  }
+}
+
+// Update user email notification settings
+export async function updateEmailNotificationSettings(
+  userId: string,
+  settings: Partial<EmailNotificationSettings>
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('user_settings')
+      .upsert([
+        {
+          user_id: userId,
+          ...settings
+        }
+      ]);
+
+    if (error) {
+      throw error;
+    }
+
+  } catch (error) {
+    console.error('Error updating email notification settings:', error);
+    throw error;
+  }
+}
