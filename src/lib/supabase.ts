@@ -13,37 +13,50 @@ const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
-// Create and export the Supabase client with retries
+// Create and export the Supabase client with proper singleton pattern
 let supabaseInstance: any = null;
+let supabaseAdminInstance: any = null;
 
-export const supabase = supabaseInstance || (supabaseInstance = createClient(url, key, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storageKey: 'gsdc-auth-token' // Added storageKey for explicit session management
-  },
-  global: {
-    headers: {
-      'x-client-info': 'supabase-js/2.39.3'
-    }
-  },
-  db: {
-    schema: 'public'
+// Regular client instance
+export const supabase = (() => {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: 'gsdc-auth-token'
+      },
+      global: {
+        headers: {
+          'x-client-info': 'supabase-js/2.39.3'
+        }
+      },
+      db: {
+        schema: 'public'
+      }
+    });
   }
-}));
+  return supabaseInstance;
+})();
 
 // Service role client for admin operations (bypasses RLS)
-export const supabaseAdmin = createClient(
-  supabaseUrl || fallbackUrl, // Use fallback URL if VITE_SUPABASE_URL is not set
-  supabaseServiceKey || supabaseAnonKey || fallbackKey, // Use fallback key if service key or anon key are not set
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
+export const supabaseAdmin = (() => {
+  if (!supabaseAdminInstance) {
+    supabaseAdminInstance = createClient(
+      supabaseUrl || fallbackUrl,
+      supabaseServiceKey || supabaseAnonKey || fallbackKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+          storageKey: 'gsdc-admin-auth-token' // Different storage key to avoid conflicts
+        }
+      }
+    );
   }
-);
+  return supabaseAdminInstance;
+})();
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {
