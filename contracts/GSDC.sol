@@ -7,63 +7,115 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./MultiSigAdministrative.sol";
 
 /**
- * @title GSDC Stablecoin - Simplified Version
- * @notice Implementation of the Global South Digital Currency (GSDC) stablecoin.
- * @dev Upgradeable ERC20 token with pausable, mint, and burn capabilities controlled by the contract owner.
- * Uses OpenZeppelin's upgradeable contract modules.
+ * @title GSDC Stablecoin
+ * @notice Upgradeable implementation of the Global South Digital Currency (GSDC).
+ * @dev Based on ERC20 with pausing, minting, burning, blacklist, and freezing features.
+ * Access is controlled by `AccessControlUpgradeable` roles rather than a single owner.
  */
 contract GSDC is 
+    IGSDC,
     Initializable,
     ERC20PausableUpgradeable, 
     OwnableUpgradeable, 
     ReentrancyGuardUpgradeable,
-    UUPSUpgradeable 
+    UUPSUpgradeable,
+    AccessControlUpgradeable
 {
+    // -------------------------------------------------------------------------
+    // Events
+    // -------------------------------------------------------------------------
+
     /// @notice Emitted when new tokens are minted.
-    /// @param to The address receiving the minted tokens.
-    /// @param amount The amount of tokens minted.
+    /// @param to Address receiving the minted tokens.
+    /// @param amount Amount of tokens minted.
     event Mint(address indexed to, uint256 amount);
 
     /// @notice Emitted when tokens are burned.
-    /// @param from The address from which tokens were burned.
-    /// @param amount The amount of tokens burned.
+    /// @param from Address whose tokens were burned.
+    /// @param amount Amount of tokens burned.
     event Burn(address indexed from, uint256 amount);
 
     /// @notice Emitted when an address is blacklisted or unblacklisted.
-    /// @param account The address that was blacklisted/unblacklisted.
-    /// @param status The new blacklist status.
+    /// @param account The target address.
+    /// @param status `true` if blacklisted, `false` otherwise.
     event AddressBlacklisted(address indexed account, bool status);
 
     /// @notice Emitted when an address is frozen or unfrozen.
-    /// @param account The address that was frozen/unfrozen.
-    /// @param status The new frozen status.
+    /// @param account The target address.
+    /// @param status `true` if frozen, `false` otherwise.
     event AddressFrozen(address indexed account, bool status);
 
-    /// @notice Minimum amount of tokens allowed for minting in one operation.
-    uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18; // 100 GSDC
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
 
-    /// @notice Maximum amount of tokens allowed for minting in one operation.
-    uint256 public constant MAX_MINT_AMOUNT = 1000000 * 10**18; // 1M GSDC
+    /// @notice Minimum amount of tokens that can be minted in a single call.
+    uint256 public constant MIN_MINT_AMOUNT = 100 * 10**18;
 
-    /// @notice Mapping to track blacklisted addresses
-    mapping(address => bool) public blacklisted;
+    /// @notice Maximum amount of tokens that can be minted in a single call.
+    uint256 public constant MAX_MINT_AMOUNT = 1_000_000 * 10**18;
 
-    /// @notice Mapping to track frozen addresses
-    mapping(address => bool) public frozen;
+    // -------------------------------------------------------------------------
+    // Storage
+    // -------------------------------------------------------------------------
 
-    /// @notice Ensures the given address is not blacklisted
-    /// @param account Address to check
-    modifier notBlacklisted(address account) {
-        require(!blacklisted[account], "GSDC: Address is blacklisted");
-        _;
-    }
+    /// @notice Tracks blacklisted addresses.
+    mapping(address => bool) private blacklisted;
 
-    /// @notice Ensures the given address is not frozen
-    /// @param account Address to check
-    modifier notFrozen(address account) {
-        require(!frozen[account], "GSDC: Address is frozen");
+    /// @notice Tracks frozen addresses.
+    mapping(address => bool) private frozen;
+
+    // -------------------------------------------------------------------------
+    // Roles
+    // -------------------------------------------------------------------------
+
+    /// @notice Role identifier for upgrade authorization.
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+    /// @notice Role identifier for minting new tokens.
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    /// @notice Role identifier for blacklist management.
+    bytes32 public constant BLACKLIST_MANAGER_ROLE = keccak256("BLACKLIST_MANAGER_ROLE");
+    /// @notice Role identifier for freezing/unfreezing accounts.
+    bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
+    /// @notice Role identifier for pausing/unpausing the contract.
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");    
+
+    // -------------------------------------------------------------------------
+    // Custom Errors
+    // -------------------------------------------------------------------------
+    error BlacklistedAddress(address account);
+    error FrozenAddress(address account);
+    error MintToZeroAddress();
+    error AmountBelowMinimum(uint256 amount, uint256 min);
+    error AmountAboveMaximum(uint256 amount, uint256 max);
+    error InsufficientBalance(address account, uint256 balance, uint256 required);
+    error InsufficientAllowance(address from, address spender, uint256 allowance, uint256 required);
+    error NotBlacklisted(address account);
+    error ZeroAddressNotAllowed();
+    error CannotBlacklistOwner();
+    error AlreadyFrozen(address account);
+    error NotFrozen(address account);
+    error SenderBlacklisted(address sender);
+    error RecipientBlacklisted(address recipient);
+    error SenderFrozen(address sender);
+    error RecipientFrozen(address recipient);
+    error DecreasedAllowanceBelowZero(); 
+
+    // -------------------------------------------------------------------------
+    // Modifiers
+    // -------------------------------------------------------------------------
+
+    /**
+     * @notice Ensures an account is not blacklisted or frozen.
+     * @param account Address being validated.
+     */
+    modifier notBlacklistedOrFrozen(address account) {
+        if (blacklisted[account]) revert BlacklistedAddress(account);
+        if (frozen[account]) revert FrozenAddress(account);
         _;
     }
 
@@ -72,45 +124,76 @@ contract GSDC is
         _disableInitializers();
     }
 
+    // -------------------------------------------------------------------------
+    // Initialization & Upgrades
+    // -------------------------------------------------------------------------
+
     /**
      * @notice Initializes the GSDC contract.
-     * @dev Sets up ERC20 parameters, pausable state, ownership, reentrancy guard, and UUPS upgradeability.
-     * Can only be called once.
-     * @param initialOwner Address that will become the owner of the contract.
+     * @dev Grants all roles to the admin initially. Can only be called once.
+     * @param admin Address that will be the default admin and initial role holder.
+     * @param upgrader Address that will be allowed to upgrade the contract.
      */
-    function initialize(address initialOwner) external initializer {
+    function initialize(address admin, address upgrader) external initializer {
         __ERC20_init("Global South Digital Currency", "GSDC");
         __ERC20Pausable_init();
-        __Ownable_init(initialOwner);
+        __Ownable_init(admin);
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
+        __AccessControl_init();
+
+        // Assign roles        
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(UPGRADER_ROLE, upgrader);
+        _grantRole(PAUSER_ROLE, admin);
+        _grantRole(MINTER_ROLE, admin);
+        _grantRole(BLACKLIST_MANAGER_ROLE, admin);
+        _grantRole(FREEZER_ROLE, admin);
     }
 
     /**
-     * @dev Authorizes an upgrade of the contract implementation.
-     * @param newImplementation Address of the new contract implementation.
+     * @notice Restricts upgrades to addresses with `UPGRADER_ROLE`.
+     * @dev Used by UUPS proxy mechanism.
+     * @param newImplementation Address of new implementation.
      */
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+    function _authorizeUpgrade(address newImplementation) 
+        internal 
+        override 
+        onlyRole(UPGRADER_ROLE)
+    {}
+
+    /**
+     * @inheritdoc IGSDC
+     */
+    function transferOwnership(address newOwner) 
+        public 
+        override(OwnableUpgradeable, IGSDC) 
+    {
+        super.transferOwnership(newOwner);
+    }
+
+    // -------------------------------------------------------------------------
+    // Minting & Burning
+    // -------------------------------------------------------------------------
 
     /**
      * @notice Mints new tokens to a specified address.
-     * @dev Only callable by the contract owner. Enforces min and max mint limits.
-     * @param to Address to receive minted tokens.
-     * @param amount Number of tokens to mint (must be between MIN_MINT_AMOUNT and MAX_MINT_AMOUNT).
+     * @dev Only callable by accounts with `MINTER_ROLE`. 
+     * Reverts if `amount` is outside min/max bounds.
+     * @param to Recipient address.
+     * @param amount Amount of tokens to mint.
      *
      * Emits a {Mint} event.
      */
     function mint(address to, uint256 amount) 
         external 
-        onlyOwner 
+        onlyRole(MINTER_ROLE) 
         whenNotPaused 
-        nonReentrant 
-        notBlacklisted(to)
-        notFrozen(to)
+        nonReentrant        
     {
-        require(to != address(0), "GSDC: Mint to the zero address");
-        require(amount >= MIN_MINT_AMOUNT, "GSDC: Amount below minimum");
-        require(amount <= MAX_MINT_AMOUNT, "GSDC: Amount above maximum");
+        if (to == address(0)) revert MintToZeroAddress();
+        if (amount < MIN_MINT_AMOUNT) revert AmountBelowMinimum(amount, MIN_MINT_AMOUNT);
+        if (amount > MAX_MINT_AMOUNT) revert AmountAboveMaximum(amount, MAX_MINT_AMOUNT);
 
         _mint(to, amount);
         emit Mint(to, amount);
@@ -118,159 +201,247 @@ contract GSDC is
 
     /**
      * @notice Burns tokens from the caller's balance.
-     * @dev Caller must have at least the specified amount of tokens.
-     * @param amount Number of tokens to burn.
+     * @param amount Amount of tokens to burn.
      *
      * Emits a {Burn} event.
      */
-    function burn(uint256 amount) external whenNotPaused nonReentrant notBlacklisted(msg.sender) notFrozen(msg.sender) {
-        require(balanceOf(msg.sender) >= amount, "GSDC: Insufficient balance");
-
+    function burn(uint256 amount) external whenNotPaused nonReentrant {
+        uint256 bal = balanceOf(msg.sender);
+        if (bal < amount) revert InsufficientBalance(msg.sender, bal, amount);
         _burn(msg.sender, amount);
         emit Burn(msg.sender, amount);
     }
 
     /**
      * @notice Burns tokens from another account using allowance.
-     * @dev Caller must have sufficient allowance from the token holder.
+     * @dev Caller must have allowance from `from`.
      * @param from Address whose tokens will be burned.
-     * @param amount Number of tokens to burn.
+     * @param amount Amount of tokens to burn.
      *
      * Emits a {Burn} event.
      */
-    function burnFrom(address from, uint256 amount) 
-        external         
-        whenNotPaused 
-        nonReentrant 
-        notBlacklisted(from)
-        notFrozen(from)
+    function burnFrom(address from, uint256 amount)
+        external
+        whenNotPaused
+        nonReentrant
     {
-        require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
-
-        uint256 currentAllowance = allowance(from, msg.sender);
-        require(currentAllowance >= amount, "GSDC: Insufficient allowance");
-
-        _approve(from, msg.sender, currentAllowance - amount);
+        uint256 bal = balanceOf(from);
+        if (bal < amount) revert InsufficientBalance(from, bal, amount);
+        _spendAllowance(from, msg.sender, amount);
         _burn(from, amount);
         emit Burn(from, amount);
     }
 
     /**
-     * @notice Burns tokens from any address, including blacklisted addresses.
-     * @dev Only callable by the contract owner. This function bypasses blacklist checks
-     * and is intended for emergency situations where tokens need to be burned from 
-     * blacklisted or compromised addresses.
-     * @param from Address whose tokens will be burned.
-     * @param amount Number of tokens to burn.
-     *
-     * Emits a {Burn} event.
+     * @inheritdoc IGSDC
      */
     function burnBlacklisted(address from, uint256 amount) 
         external 
-        onlyOwner 
-        whenNotPaused 
-        nonReentrant 
-    {
-        require(from != address(0), "GSDC: Burn from the zero address");
-        require(balanceOf(from) >= amount, "GSDC: Insufficient balance");
-
+        override 
+        onlyRole(BLACKLIST_MANAGER_ROLE) 
+    {        
+        if (!blacklisted[from]) revert NotBlacklisted(from);
         _burn(from, amount);
         emit Burn(from, amount);
     }
 
+    // -------------------------------------------------------------------------
+    // Pausing
+    // -------------------------------------------------------------------------
+
     /**
-     * @notice Pauses all token transfers, minting, and burning.
-     * @dev Only callable by the contract owner.
+     * @notice Pauses transfers, minting, and burning.
      */
-    function pause() external onlyOwner {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
-     * @notice Unpauses all token transfers, minting, and burning.
-     * @dev Only callable by the contract owner.
+     * @notice Unpauses transfers, minting, and burning.
      */
-    function unpause() external onlyOwner {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
-    /**
-     * @notice Sets the blacklist status for an address.
-     * @dev Only callable by the contract owner.
-     * @param account Address to blacklist/unblacklist.
-     * @param status True to blacklist, false to unblacklist.
-     */
-    function setBlacklistStatus(address account, bool status) external onlyOwner {
-        require(account != address(0), "GSDC: Cannot blacklist zero address");
-        require(account != owner(), "GSDC: Cannot blacklist owner");
+    // -------------------------------------------------------------------------
+    // Blacklist
+    // -------------------------------------------------------------------------
 
-        blacklisted[account] = status;
-        emit AddressBlacklisted(account, status);
+    /**
+     * @notice Updates blacklist status of an address.
+     * @param account Target address.
+     * @param status `true` to blacklist, `false` to unblacklist.
+     */
+    function setBlacklistStatus(address account, bool status) 
+        external 
+        onlyRole(BLACKLIST_MANAGER_ROLE)
+    {
+        if (account == address(0)) revert ZeroAddressNotAllowed();
+        if (account == owner()) revert CannotBlacklistOwner();
+
+        if (blacklisted[account] != status) {
+            blacklisted[account] = status;
+            emit AddressBlacklisted(account, status);
+        }
     }
 
     /**
-     * @notice Checks if an address is blacklisted.
+     * @notice Checks blacklist status.
      * @param account Address to check.
-     * @return True if the address is blacklisted, false otherwise.
+     * @return `true` if blacklisted.
      */
     function isBlacklisted(address account) external view returns (bool) {
         return blacklisted[account];
     }
 
+    // -------------------------------------------------------------------------
+    // Freezing
+    // -------------------------------------------------------------------------
+
     /**
-     * @notice Freezes an address, preventing all token operations.
-     * @dev Only callable by the contract owner.
+     * @notice Freezes an account, blocking all transfers.
      * @param account Address to freeze.
      */
-    function freeze(address account) external onlyOwner {
-        require(account != address(0), "GSDC: Cannot freeze zero address");
-        require(account != owner(), "GSDC: Cannot freeze owner");
-        require(!frozen[account], "GSDC: Address already frozen");
+    function freeze(address account) 
+        external
+        onlyRole(FREEZER_ROLE) 
+    {
+        if (account == address(0)) revert ZeroAddressNotAllowed();
+        if (account == owner()) revert CannotBlacklistOwner();
+        if (frozen[account]) revert AlreadyFrozen(account);
 
         frozen[account] = true;
         emit AddressFrozen(account, true);
     }
 
     /**
-     * @notice Unfreezes an address, allowing token operations again.
-     * @dev Only callable by the contract owner.
-     * @param account Address to unfreeze.
+     * @inheritdoc IGSDC
      */
-    function unfreeze(address account) external onlyOwner {
-        require(account != address(0), "GSDC: Cannot unfreeze zero address");
-        require(frozen[account], "GSDC: Address not frozen");
+    function unfreeze(address account) 
+        external 
+        override 
+        onlyRole(FREEZER_ROLE) 
+    {
+        if (account == address(0)) revert ZeroAddressNotAllowed();
+        if (!frozen[account]) revert NotFrozen(account);
 
         frozen[account] = false;
         emit AddressFrozen(account, false);
     }
 
     /**
-     * @dev Override transfer to check blacklist and frozen status
+     * @inheritdoc IGSDC
+     */
+    function isFrozen(address account) 
+        external 
+        view 
+        override 
+        returns (bool) 
+    {
+        return frozen[account];
+    }
+
+    // -------------------------------------------------------------------------
+    // ERC20 Overrides
+    // -------------------------------------------------------------------------
+
+    /**
+     * @notice Approves spender to spend tokens on behalf of caller.
+     * @dev Reverts if caller or spender is blacklisted/frozen.
+     */
+    function approve(address spender, uint256 amount)
+        public
+        override
+        notBlacklistedOrFrozen(msg.sender)
+        notBlacklistedOrFrozen(spender)
+        returns (bool)
+    {
+        _approve(msg.sender, spender, amount);
+        return true;
+    }
+
+    /**
+     * @notice Increases spender’s allowance.
+     * @dev Reverts if caller or spender is blacklisted/frozen.
+     */
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        notBlacklistedOrFrozen(msg.sender)
+        notBlacklistedOrFrozen(spender)
+        returns (bool)
+    {
+        _approve(
+            msg.sender,
+            spender,
+            allowance(msg.sender, spender) + addedValue
+        );
+        return true;
+    }
+
+    /**
+     * @notice Decreases spender’s allowance.
+     * @dev Allowed even if spender is blacklisted/frozen.
+     */
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        returns (bool)
+    {
+        uint256 currentAllowance = allowance(msg.sender, spender);
+        if (currentAllowance < subtractedValue) revert DecreasedAllowanceBelowZero();
+        unchecked {
+            _approve(msg.sender, spender, currentAllowance - subtractedValue);
+        }
+        return true;
+    }
+
+    /**
+     * @inheritdoc ERC20Upgradeable
      */
     function transfer(address to, uint256 amount) 
         public 
-        override 
-        notBlacklisted(msg.sender) 
-        notBlacklisted(to)
-        notFrozen(msg.sender)
-        notFrozen(to)
+        override         
         returns (bool) 
     {
         return super.transfer(to, amount);
     }
 
     /**
-     * @dev Override transferFrom to check blacklist and frozen status
+     * @inheritdoc ERC20Upgradeable
      */
     function transferFrom(address from, address to, uint256 amount) 
         public 
-        override 
-        notBlacklisted(from) 
-        notBlacklisted(to)
-        notFrozen(from)
-        notFrozen(to)
+        override         
         returns (bool) 
     {
         return super.transferFrom(from, to, amount);
     }
+
+    /**
+     * @dev Internal hook overriding OpenZeppelin to enforce blacklist/freeze rules.
+     */
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal override(ERC20PausableUpgradeable) {
+
+        // If spender != from (transferFrom case), check spender
+        if (from != msg.sender && msg.sender != address(0)) {
+            if (blacklisted[msg.sender]) revert SenderBlacklisted(msg.sender);
+            if (frozen[msg.sender]) revert SenderFrozen(msg.sender);
+        }
+
+        if (from != address(0)) {
+            if (blacklisted[from]) revert SenderBlacklisted(from);
+            if (frozen[from]) revert SenderFrozen(from);
+        }
+        if (to != address(0)) {
+            if (blacklisted[to]) revert RecipientBlacklisted(to);
+            if (frozen[to]) revert RecipientFrozen(to);
+        }
+        super._update(from, to, value);
+    }
+
+    // Storage gap for upgrade safety
+    uint256[50] private __gap;
 }

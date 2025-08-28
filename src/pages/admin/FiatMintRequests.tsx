@@ -26,7 +26,7 @@ import {
 
 export default function FiatMintRequests() {
   const { address, isConnected } = useWallet();
-  const contract = useGSDCContract();
+  const contract = useGSDCContract();  
   const { isSuperAdmin } = useAdmin();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<FiatMintRequest[]>([]);

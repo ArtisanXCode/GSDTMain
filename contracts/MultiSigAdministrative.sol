@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
+/// @title GSDC Token Interface
+/// @notice Defines functions that the MultiSigAdministrative contract interacts with.
 interface IGSDC {
     function mint(address to, uint256 amount) external;
     function burnFrom(address from, uint256 amount) external;
@@ -21,28 +23,52 @@ interface IGSDC {
 
 /**
  * @title MultiSig Administrative Contract for GSDC
- * @notice Handles all administrative functions for the GSDC token with cooldown periods and multi-signature approvals.
- * @dev Implements queued transactions, approval/rejection, and execution logic for sensitive operations.
+ * @notice Handles sensitive administrative functions for the GSDC token using a multi-signature approval system.
+ * @dev Features include queued transactions, cooldown enforcement, approval/rejection logic,
+ * role-based access control, blacklist/freeze management, and emergency controls.
  */
 contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
     // ---------------------
     // Role definitions
     // ---------------------
+    /// @notice Role identifier for administrators
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    /// @notice Role identifier for minters
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    /// @notice Role identifier for burners
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    /// @notice Role identifier for pausers
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+
+    /// @notice Role identifier for blacklist managers
     bytes32 public constant BLACKLIST_MANAGER_ROLE = keccak256("BLACKLIST_MANAGER_ROLE");
+
+    /// @notice Role identifier for freeze managers
     bytes32 public constant FREEZE_MANAGER_ROLE = keccak256("FREEZE_MANAGER_ROLE");
+
+    /// @notice Role identifier for transaction approvers
     bytes32 public constant APPROVER_ROLE = keccak256("APPROVER_ROLE");
+
+    /// @notice Role identifier for contract upgraders
+    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     /// @notice Cooldown period for queued transactions (90 minutes)
     uint256 public constant COOLDOWN_PERIOD = 90 minutes;
 
+    /// @notice Number of distinct approvals required before execution
+    uint8 public requiredApprovals = 2;
+
     /// @notice Reference to the GSDC token contract
     IGSDC public gsdcToken;
 
-    /// @notice Types of transactions handled by the queue
+    // ---------------------
+    // Transaction Structs and Enums
+    // ---------------------
+
+    /// @notice Types of transactions supported by this contract
     enum TransactionType {
         MINT,
         BURN,
@@ -54,71 +80,150 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         ROLE_GRANT,
         ROLE_REVOKE,
         PAUSE_TOKEN,
-        UNPAUSE_TOKEN
+        UNPAUSE_TOKEN,
+        UPDATE_TOKEN_CONTRACT
     }
 
     /// @notice Status of a queued transaction
     enum TransactionStatus {
         PENDING,
-        APPROVED,
         REJECTED,
         EXECUTED,
         AUTO_EXECUTED
     }
 
-    /// @notice Structure representing a queued transaction
+    /// @notice Represents details of a pending transaction
     struct PendingTransaction {
-        uint256 id;
-        TransactionType txType;
-        TransactionStatus status;
-        address initiator;
-        address target;
-        uint256 amount;
-        bytes data;
-        uint256 timestamp;
-        uint256 executeAfter;
-        string rejectionReason;
-        address approver;
-        bool exists;
-    }
-
-    /// @notice Structure for redemption requests
-    struct RedemptionRequest {
-        address user;
-        uint256 amount;
-        uint256 timestamp;
-        bool processed;
-        bool approved;
+        uint256 id;                 ///< Unique transaction ID
+        TransactionType txType;     ///< Type of transaction
+        TransactionStatus status;   ///< Current status
+        address initiator;          ///< Address that queued the transaction
+        address target;             ///< Target address for the transaction
+        uint256 amount;             ///< Amount involved, if applicable
+        bytes data;                 ///< Encoded parameters for execution
+        uint256 timestamp;          ///< Time when queued
+        uint256 executeAfter;       ///< Earliest timestamp when executable
+        string rejectionReason;     ///< Reason for rejection (if any)
+        address approver;           ///< Address that rejected (if applicable)
+        bool exists;                ///< Existence flag
     }
 
     // ---------------------
-    // State variables
+    // State Variables
     // ---------------------
+
+    /// @notice Mapping of transaction ID to PendingTransaction details
     mapping(uint256 => PendingTransaction) public pendingTransactions;
+
+    /// @notice Counter for the next transaction ID
     uint256 public nextTransactionId;
+
+    /// @notice List of currently pending transaction IDs
     uint256[] public pendingTransactionIds;
 
-    mapping(uint256 => RedemptionRequest) public redemptionRequests;
-    uint256 public nextRedemptionId;
+    /// @dev Tracks index of transaction ID in pendingTransactionIds array (index + 1 for existence check)
+    mapping(uint256 => uint256) private txIdIndex;
+
+    /// @dev Count of approvals for each transaction
+    mapping(uint256 => uint256) public approvalCount;
+
+    /// @dev Tracks whether an approver has already approved a transaction
+    mapping(uint256 => mapping(address => bool)) public hasApproved;
 
     // ---------------------
     // Events
     // ---------------------
+
+    /// @notice Emitted when a transaction is queued
     event TransactionQueued(uint256 indexed txId, TransactionType indexed txType, address indexed initiator);
+
+    /// @notice Emitted when a transaction is approved
     event TransactionApproved(uint256 indexed txId, address indexed approver);
+
+    /// @notice Emitted when a transaction is rejected
     event TransactionRejected(uint256 indexed txId, address indexed approver, string reason);
+
+    /// @notice Emitted when a transaction is executed
     event TransactionExecuted(uint256 indexed txId, bool autoExecuted);
+
+    /// @notice Emitted when an address is blacklisted or removed from blacklist
     event AddressBlacklisted(address indexed account, bool status);
+
+    /// @notice Emitted when the GSDC token contract reference is updated
     event TokenContractUpdated(address indexed newTokenContract);
+
+    /// @notice Emitted when a pending transaction is removed
+    event PendingTransactionRemoved(uint256 indexed txId);
+
+    /// @notice Emitted when required approvals value is changed
+    event RequiredApprovalsChanged(uint256 oldValue, uint256 newValue);
+
+    // ---------------------
+    // Custom Errors
+    // ---------------------
+
+    /// @custom:error InvalidAddress Thrown when zero address is provided
+    error InvalidAddress();
+
+    /// @custom:error Blacklisted Thrown when an action targets a blacklisted account
+    error Blacklisted(address account);
+
+    /// @custom:error NotBlacklisted Thrown when an account is not blacklisted but expected to be
+    error NotBlacklisted(address account);
+
+    /// @custom:error Frozen Thrown when an action targets a frozen account
+    error Frozen(address account);
+
+    /// @custom:error InsufficientPermissions Thrown when caller lacks proper role
+    error InsufficientPermissions();
+
+    /// @custom:error TransactionNotFound Thrown when transaction ID does not exist
+    error TransactionNotFound(uint256 txId);
+
+    /// @custom:error TransactionNotPending Thrown when a transaction is not in pending state
+    error TransactionNotPending(uint256 txId);
+
+    /// @custom:error CooldownNotExpired Thrown when attempting to execute before cooldown
+    error CooldownNotExpired(uint256 txId, uint256 executeAfter);
+
+    /// @custom:error ZeroAmount Thrown when provided amount is zero
+    error ZeroAmount();
+
+    /// @custom:error AlreadyFrozen Thrown when attempting to freeze an already frozen account
+    error AlreadyFrozen(address account);
+
+    /// @custom:error NotFrozen Thrown when attempting to unfreeze a non-frozen account
+    error NotFrozen(address account);
+
+    /// @custom:error CannotBlacklistAdmin Thrown when trying to blacklist an admin
+    error CannotBlacklistAdmin();
+
+    /// @custom:error CannotFreezeAdmin Thrown when trying to freeze an admin
+    error CannotFreezeAdmin();
+
+    /// @custom:error RejectionReasonRequired Thrown when no rejection reason is provided
+    error RejectionReasonRequired();
+
+    /// @custom:error InvalidApprovalRequirement Thrown when required approvals is set to zero
+    error InvalidApprovalRequirement();
+
+    /// @custom:error AlreadyApproved Thrown when approver attempts to approve again
+    error AlreadyApproved(uint256 txId, address approver);
+
+    // ---------------------
+    // Constructor
+    // ---------------------
 
     /**
      * @notice Deploys the MultiSigAdministrative contract
-     * @param _gsdcToken The address of the GSDC token contract
+     * @param _gsdcToken Address of the GSDC token contract
      */
     constructor(address _gsdcToken) {
-        require(_gsdcToken != address(0), "Invalid token contract address");
+        if (_gsdcToken == address(0)) revert InvalidAddress();
+
         gsdcToken = IGSDC(_gsdcToken);
 
+        // Grant all roles to deployer initially
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
@@ -127,9 +232,9 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         _grantRole(BLACKLIST_MANAGER_ROLE, msg.sender);
         _grantRole(FREEZE_MANAGER_ROLE, msg.sender);
         _grantRole(APPROVER_ROLE, msg.sender);
+        _grantRole(UPGRADER_ROLE, msg.sender);
 
-        nextTransactionId = 1;
-        nextRedemptionId = 1;
+        nextTransactionId = 1;        
     }
 
     // ---------------------
@@ -140,9 +245,9 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Ensures the given address is not blacklisted or frozen
      * @param account Address to check
      */
-    modifier notBlacklisted(address account) {
-        require(!gsdcToken.isBlacklisted(account), "Address is blacklisted");
-        require(!gsdcToken.isFrozen(account), "Address is frozen");
+    modifier notBlacklistedOrFrozen(address account) {
+        if (gsdcToken.isBlacklisted(account)) revert Blacklisted(account);
+        if (gsdcToken.isFrozen(account)) revert Frozen(account);
         _;
     }
 
@@ -150,10 +255,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Ensures the caller has permission to approve/reject transactions
      */
     modifier canApprove() {
-        require(
-            hasRole(APPROVER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
-            "Insufficient approval permissions"
-        );
+        // Allow either APPROVER_ROLE OR ADMIN_ROLE (if you want both, change to && and adjust docs)
+        if (!(hasRole(APPROVER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender))) revert InsufficientPermissions();
         _;
     }
 
@@ -194,6 +297,7 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         });
 
         pendingTransactionIds.push(txId);
+        txIdIndex[txId] = pendingTransactionIds.length;
         emit TransactionQueued(txId, txType, msg.sender);
         return txId;
     }
@@ -202,14 +306,25 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Removes a transaction from the pending list
      * @param txId ID of the transaction to remove
      */
-     function _removePendingTransaction(uint256 txId) internal {
-        for (uint256 i = 0; i < pendingTransactionIds.length; i++) {
-            if (pendingTransactionIds[i] == txId) {
-                pendingTransactionIds[i] = pendingTransactionIds[pendingTransactionIds.length - 1];
-                pendingTransactionIds.pop();
-                break;
-            }
+    function _removePendingTransaction(uint256 txId) internal {
+        uint256 indexPlusOne = txIdIndex[txId];
+        if (indexPlusOne == 0) return; // not found
+
+        uint256 index = indexPlusOne - 1;
+        uint256 lastTxId = pendingTransactionIds[pendingTransactionIds.length - 1];
+
+        // Swap with last element if not removing last
+        if (index != pendingTransactionIds.length - 1) {
+            pendingTransactionIds[index] = lastTxId;
+            txIdIndex[lastTxId] = index + 1;
         }
+
+        // Remove last
+        pendingTransactionIds.pop();
+        delete pendingTransactions[txId];
+        delete txIdIndex[txId];
+
+        emit PendingTransactionRemoved(txId);
     }
 
     /**
@@ -245,6 +360,9 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
             gsdcToken.unpause();
         } else if (txn.txType == TransactionType.TRANSFER_OWNERSHIP) {
             gsdcToken.transferOwnership(txn.target);
+        } else if (txn.txType == TransactionType.UPDATE_TOKEN_CONTRACT) { 
+            address newToken = abi.decode(txn.data, (address));         
+            gsdcToken = IGSDC(newToken);         
         }
 
         txn.status = txn.status == TransactionStatus.AUTO_EXECUTED ? 
@@ -262,16 +380,27 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Approves and executes a pending transaction
      * @param txId ID of the transaction
      */
-    function approveTransaction(uint256 txId) external canApprove {
-        PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "Transaction does not exist");
-        require(txn.status == TransactionStatus.PENDING, "Transaction not pending");
+    function approveTransaction(uint256 txId) external whenNotPaused canApprove {
+        PendingTransaction storage txn = pendingTransactions[txId];        
+        if (!txn.exists) revert TransactionNotFound(txId);
+        if (txn.status != TransactionStatus.PENDING) revert TransactionNotPending(txId);        
+        if (hasApproved[txId][msg.sender]) revert AlreadyApproved(txId, msg.sender);
 
-        txn.status = TransactionStatus.APPROVED;
-        txn.approver = msg.sender;
+        hasApproved[txId][msg.sender] = true;
+        approvalCount[txId] += 1;
 
         emit TransactionApproved(txId, msg.sender);
-        _executeTransaction(txId);
+
+        // Only execute if enough approvals
+        if (approvalCount[txId] >= requiredApprovals && block.timestamp >= txn.executeAfter) {
+            _executeTransaction(txId);
+        }
+    }
+
+    function setRequiredApprovals(uint8 _required) external onlyRole(ADMIN_ROLE) {
+        if (_required == 0) revert InvalidApprovalRequirement();
+        emit RequiredApprovalsChanged(requiredApprovals, _required);
+        requiredApprovals = _required;
     }
 
     /**
@@ -279,11 +408,11 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param txId ID of the transaction
      * @param reason Reason for rejection
      */
-    function rejectTransaction(uint256 txId, string memory reason) external canApprove {
+    function rejectTransaction(uint256 txId, string memory reason) external canApprove nonReentrant {
         PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "Transaction does not exist");
-        require(txn.status == TransactionStatus.PENDING, "Transaction not pending");
-        require(bytes(reason).length > 0, "Rejection reason required");
+        if (!txn.exists) revert TransactionNotFound(txId);
+        if (!(txn.status == TransactionStatus.PENDING)) revert TransactionNotPending(txId);        
+        if(bytes(reason).length <= 0) revert RejectionReasonRequired();
 
         txn.status = TransactionStatus.REJECTED;
         txn.rejectionReason = reason;
@@ -297,18 +426,15 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Executes a transaction if cooldown expired or already approved
      * @param txId ID of the transaction
      */
-    function executeTransaction(uint256 txId) external {
+    function executeTransaction(uint256 txId) external whenNotPaused nonReentrant {
         PendingTransaction storage txn = pendingTransactions[txId];
-        require(txn.exists, "Transaction does not exist");
-        require(
-            txn.status == TransactionStatus.APPROVED || 
-            (txn.status == TransactionStatus.PENDING && block.timestamp >= txn.executeAfter),
-            "Transaction not ready for execution"
-        );
-
-        if (txn.status == TransactionStatus.PENDING) {
-            txn.status = TransactionStatus.AUTO_EXECUTED;
+        if (!txn.exists) revert TransactionNotFound(txId);
+        if (!(txn.status == TransactionStatus.PENDING && block.timestamp >= txn.executeAfter)) {
+            revert CooldownNotExpired(txId, txn.executeAfter);
         }
+
+        // Mark as auto-executed before performing the call
+        txn.status = TransactionStatus.AUTO_EXECUTED;
 
         _executeTransaction(txId);
     }
@@ -327,9 +453,10 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         onlyRole(MINTER_ROLE) 
         whenNotPaused 
         nonReentrant 
-        notBlacklisted(to)
+        notBlacklistedOrFrozen(to)
     {
-        require(to != address(0), "Mint to the zero address");
+        if (to == address(0)) revert InvalidAddress();
+        if (amount == 0) revert ZeroAmount();
         _queueTransaction(TransactionType.MINT, to, amount, "");
     }
 
@@ -343,9 +470,10 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         onlyRole(BURNER_ROLE)
         whenNotPaused
         nonReentrant
-        notBlacklisted(from)
-    {
-        require(from != address(0), "Burn from the zero address");
+        notBlacklistedOrFrozen(from)
+    {        
+        if (from == address(0)) revert InvalidAddress();
+        if (amount == 0) revert ZeroAmount();
         _queueTransaction(TransactionType.BURN, from, amount, "");
     }
 
@@ -356,60 +484,15 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param from Address to burn from (can be blacklisted)
      * @param amount Amount to burn
      */
-    function burnBlacklistedTokens(address from, uint256 amount)
-        external
-        whenNotPaused
+    function destroyBlackFunds(address from, uint256 amount)
+        external        
         nonReentrant
-    {
-        require(
-            hasRole(BURNER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
-            "Insufficient permissions for blacklisted burn"
-        );
-        require(from != address(0), "Burn from the zero address");
+        onlyRole(BLACKLIST_MANAGER_ROLE)
+    {                
+        if (from == address(0)) revert InvalidAddress();
+        if (!gsdcToken.isBlacklisted(from)) revert NotBlacklisted(from);
+        if (amount == 0) revert ZeroAmount();
         _queueTransaction(TransactionType.BURN_BLACKLISTED, from, amount, "");
-    }
-
-    /**
-     * @notice Requests redemption of tokens
-     * @param amount Amount to redeem
-     */
-    function requestRedemption(uint256 amount)
-        external
-        whenNotPaused
-        nonReentrant
-        notBlacklisted(msg.sender)
-    {
-        uint256 requestId = nextRedemptionId++;
-        redemptionRequests[requestId] = RedemptionRequest({
-            user: msg.sender,
-            amount: amount,
-            timestamp: block.timestamp,
-            processed: false,
-            approved: false
-        });
-    }
-
-    /**
-     * @notice Processes a redemption request
-     * @param requestId ID of the redemption request
-     * @param approved Whether the request is approved
-     */
-    function processRedemption(uint256 requestId, bool approved)
-        external
-        onlyRole(ADMIN_ROLE)
-        nonReentrant
-    {
-        RedemptionRequest storage request = redemptionRequests[requestId];
-        require(!request.processed, "Request already processed");
-        require(request.user != address(0), "Invalid request");
-        require(!gsdcToken.isBlacklisted(request.user), "User is blacklisted");
-
-        request.processed = true;
-        request.approved = approved;
-
-        if (approved) {
-            _queueTransaction(TransactionType.BURN, request.user, request.amount, "");
-        }
     }
 
     // ---------------------
@@ -421,9 +504,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param account Address to blacklist/unblacklist
      * @param status Blacklist status (true = blacklist, false = unblacklist)
      */
-    function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {
-        require(account != address(0), "Cannot blacklist zero address");
-        require(!hasRole(ADMIN_ROLE, account), "Cannot blacklist admin");
+    function setBlacklistStatus(address account, bool status) external onlyRole(BLACKLIST_MANAGER_ROLE) {        
+        if(hasRole(ADMIN_ROLE, account)) revert CannotBlacklistAdmin();
 
         bytes memory data = abi.encode(account, status);
         _queueTransaction(TransactionType.BLACKLIST, account, 0, data);
@@ -433,10 +515,11 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Queues a freeze operation
      * @param account Address to freeze
      */
-    function freezeAddress(address account) external onlyRole(FREEZE_MANAGER_ROLE) {
-        require(account != address(0), "Cannot freeze zero address");
-        require(!hasRole(ADMIN_ROLE, account), "Cannot freeze admin");
-        require(!gsdcToken.isFrozen(account), "Address already frozen");
+    function freezeAddress(address account) external onlyRole(FREEZE_MANAGER_ROLE) {        
+        if (account == address(0)) revert InvalidAddress();
+        if(hasRole(ADMIN_ROLE, account)) revert CannotFreezeAdmin();
+        if(gsdcToken.isFrozen(account)) revert AlreadyFrozen(account);
+
 
         _queueTransaction(TransactionType.FREEZE, account, 0, "");
     }
@@ -446,8 +529,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @param account Address to unfreeze
      */
     function unfreezeAddress(address account) external onlyRole(FREEZE_MANAGER_ROLE) {
-        require(account != address(0), "Cannot unfreeze zero address");
-        require(gsdcToken.isFrozen(account), "Address not frozen");
+        if (account == address(0)) revert InvalidAddress();
+        if(!gsdcToken.isFrozen(account)) revert NotFrozen(account);
 
         _queueTransaction(TransactionType.UNFREEZE, account, 0, "");
     }
@@ -488,8 +571,8 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Transfers ownership of the GSDC token contract
      * @param newOwner Address of the new owner
      */
-    function transferTokenOwnership(address newOwner) external onlyRole(ADMIN_ROLE) {
-        require(newOwner != address(0), "New owner is the zero address");
+    function transferTokenOwnership(address newOwner) external onlyRole(ADMIN_ROLE) {        
+        if (newOwner == address(0)) revert InvalidAddress();
         _queueTransaction(TransactionType.TRANSFER_OWNERSHIP, newOwner, 0, "");
     }
 
@@ -497,10 +580,14 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
      * @notice Updates the GSDC token contract address
      * @param newTokenContract Address of the new token contract
      */
-    function updateTokenContract(address newTokenContract) external onlyRole(ADMIN_ROLE) {
-        require(newTokenContract != address(0), "Invalid token contract address");
-        gsdcToken = IGSDC(newTokenContract);
-        emit TokenContractUpdated(newTokenContract);
+    function updateTokenContract(address newTokenContract) 
+        external 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+    {        
+        if (newTokenContract == address(0)) revert InvalidAddress();
+
+        bytes memory data = abi.encode(newTokenContract);
+        _queueTransaction(TransactionType.UPDATE_TOKEN_CONTRACT, newTokenContract, 0, data);
     }
 
     // ---------------------
@@ -556,15 +643,15 @@ contract MultiSigAdministrative is AccessControl, ReentrancyGuard, Pausable {
         _unpause();
     }
 
-    /**
-     * @dev Pause token contract (with cooldown)
+    /**     
+     * @notice Pause token contract (paused with cooldown)
      */
     function pauseToken() external onlyRole(PAUSER_ROLE) {
         _queueTransaction(TransactionType.PAUSE_TOKEN, address(0), 0, "");
     }
 
     /**
-     * @dev Unpause token contract (with cooldown)
+     * @notice Unpause token contract (paused with cooldown)
      */
     function unpauseToken() external onlyRole(PAUSER_ROLE) {
         _queueTransaction(TransactionType.UNPAUSE_TOKEN, address(0), 0, "");
