@@ -9,7 +9,7 @@ let signer: ethers.Signer | null = null;
 export const initWeb3 = async () => {
   if (typeof window !== 'undefined' && window.ethereum) {
     provider = new ethers.providers.Web3Provider(window.ethereum);
-    
+
     try {
       // Request account access
       await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -26,47 +26,36 @@ export const initWeb3 = async () => {
 };
 
 // Get provider
-export const useProvider = () => {
-  const [currentProvider, setCurrentProvider] = useState<ethers.providers.Web3Provider | null>(null);
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-      setCurrentProvider(web3Provider);
-    }
-  }, []);
-  
-  return currentProvider;
-};
+export function useProvider() {
+  if (!window.ethereum) return null;
+
+  try {
+    return new ethers.providers.Web3Provider(window.ethereum);
+  } catch (error) {
+    console.warn('Failed to get provider:', error);
+    return null;
+  }
+}
 
 // Get signer
-export const useSigner = () => {
-  const [currentSigner, setCurrentSigner] = useState<ethers.Signer | null>(null);
-  
-  useEffect(() => {
-    const getSigner = async () => {
-      if (typeof window !== 'undefined' && window.ethereum) {
-        try {
-          const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = web3Provider.getSigner();
-          setCurrentSigner(signer);
-        } catch (error) {
-          console.error('Error getting signer:', error);
-        }
-      }
-    };
-    
-    getSigner();
-  }, []);
-  
-  return currentSigner;
-};
+export function useSigner() {
+  const { address, isConnected } = useAccount(); // Assuming useAccount is defined elsewhere and returns { address, isConnected }
+
+  if (!isConnected || !address || !window.ethereum) return null;
+
+  try {
+    return new ethers.providers.Web3Provider(window.ethereum).getSigner();
+  } catch (error) {
+    console.warn('Failed to get signer:', error);
+    return null;
+  }
+}
 
 // Get account
 export const useAccount = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  
+
   useEffect(() => {
     const getAccount = async () => {
       if (typeof window !== 'undefined' && window.ethereum) {
@@ -86,9 +75,9 @@ export const useAccount = () => {
         }
       }
     };
-    
+
     getAccount();
-    
+
     // Listen for account changes
     if (typeof window !== 'undefined' && window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts: string[]) => {
@@ -101,14 +90,14 @@ export const useAccount = () => {
         }
       });
     }
-    
+
     return () => {
       if (typeof window !== 'undefined' && window.ethereum) {
         window.ethereum.removeListener('accountsChanged', () => {});
       }
     };
   }, []);
-  
+
   const connect = async () => {
     if (typeof window !== 'undefined' && window.ethereum) {
       try {
@@ -124,6 +113,6 @@ export const useAccount = () => {
     }
     return null;
   };
-  
+
   return { address, isConnected, connect };
 };

@@ -6,19 +6,22 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
 // Fallback values for development if environment variables are not available
-const fallbackUrl = '';
-const fallbackKey = '';
+const fallbackUrl = 'https://qzgzyonbdosbvjjkuecl.supabase.co'; // Hardcoded fallback URL
+const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6Z3p5b25iZG9zYnZqamt1ZWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzNDQ0MzYsImV4cCI6MjA0OTkyMDQzNn0.YJoFGaAg4j1SQPE8IKdq5SFZmfLkDwOgfZ6-Gg15fqM'; // Hardcoded fallback key
 
 // Use environment variables or fallback to hardcoded values
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
 // Create and export the Supabase client with retries
-export const supabase = createClient(url, key, {
+let supabaseInstance: any = null;
+
+export const supabase = supabaseInstance || (supabaseInstance = createClient(url, key, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    storageKey: 'gsdc-auth-token' // Added storageKey for explicit session management
   },
   global: {
     headers: {
@@ -28,12 +31,12 @@ export const supabase = createClient(url, key, {
   db: {
     schema: 'public'
   }
-});
+}));
 
 // Service role client for admin operations (bypasses RLS)
 export const supabaseAdmin = createClient(
-  supabaseUrl,
-  supabaseServiceKey || supabaseAnonKey,
+  supabaseUrl || fallbackUrl, // Use fallback URL if VITE_SUPABASE_URL is not set
+  supabaseServiceKey || supabaseAnonKey || fallbackKey, // Use fallback key if service key or anon key are not set
   {
     auth: {
       autoRefreshToken: false,
