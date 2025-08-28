@@ -9,18 +9,17 @@ export interface EmailData {
 }
 
 /**
- * Global function to send emails using a Supabase Edge Function or external service
- * TEMPORARY: Email sending is bypassed, only storing in database for future integration
+ * Global function to send emails using the email API server
  */
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
   try {
-    console.log("Email functionality bypassed - storing in database only:", {
+    console.log("Sending email via API server:", {
       to: emailData.to,
       subject: emailData.subject,
       from: emailData.from || "noreply@gsdc.com"
     });
 
-    // Save the email to database (this is what we keep for now)
+    // Save the email to database first
     try {
       const { error: dbError } = await supabase.from("emails").insert([
         {
@@ -29,7 +28,7 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
           subject: emailData.subject,
           html: emailData.html,
           sent_at: new Date().toISOString(),
-          status: 'stored' // Changed from 'pending' to indicate it's stored but not sent
+          status: 'pending' // Mark as pending while we try to send
         },
       ]);
 
@@ -38,80 +37,56 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         return false;
       }
 
-      console.log("Email stored successfully in database (not sent)");
-      console.log("EMAIL CONTENT STORED:", {
-        to: emailData.to,
-        subject: emailData.subject,
-        from: emailData.from || "noreply@gsdc.com",
-        preview: emailData.html.substring(0, 100) + "..."
-      });
+      console.log("Email saved to database, attempting to send...");
 
-      return true; // Return true since we successfully stored it
-
-    } catch (logError) {
-      console.error("Failed to store email to database:", logError);
+    } catch (dbError) {
+      console.error("Failed to store email to database:", dbError);
       return false;
     }
 
-    // TODO: Future email integration will go here
-    // Uncomment and modify the sections below when ready to implement actual email sending:
-    
-    /*
-    // Try to send via Supabase Edge Function
+    // Try to send via the email API server on port 5001
     try {
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: emailData
+      const emailApiUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5001/api/send-email'
+        : `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
+          
+      const response = await fetch(emailApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
       });
 
-      if (error) throw error;
+      if (response.ok) {
+        console.log("Email sent successfully via API");
+        
+        // Update database status to 'sent'
+        await supabase
+          .from("emails")
+          .update({ status: 'sent' })
+          .eq('to_email', emailData.to)
+          .eq('subject', emailData.subject)
+          .eq('status', 'pending');
+        
+        return true;
+      } else {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+    } catch (apiError) {
+      console.error("API email failed:", apiError);
       
-      console.log("Email sent successfully via Edge Function");
-      
-      // Update database status to 'sent'
+      // Update database status to 'failed'
       await supabase
         .from("emails")
-        .update({ status: 'sent' })
+        .update({ status: 'failed' })
         .eq('to_email', emailData.to)
-        .eq('subject', emailData.subject);
+        .eq('subject', emailData.subject)
+        .eq('status', 'pending');
       
-      return true;
-    } catch (edgeFunctionError) {
-      console.warn("Edge Function email failed, trying alternative method:", edgeFunctionError);
-      
-      // Alternative: Use the email API server on port 5001
-      try {
-        const emailApiUrl = window.location.hostname === 'localhost' 
-          ? 'http://localhost:5001/api/send-email'
-          : `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
-          
-        const response = await fetch(emailApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(emailData),
-        });
-
-        if (response.ok) {
-          console.log("Email sent successfully via API");
-          
-          // Update database status to 'sent'
-          await supabase
-            .from("emails")
-            .update({ status: 'sent' })
-            .eq('to_email', emailData.to)
-            .eq('subject', emailData.subject);
-          
-          return true;
-        } else {
-          throw new Error(`API responded with status: ${response.status}`);
-        }
-      } catch (apiError) {
-        console.warn("API email failed:", apiError);
-        return false;
-      }
+      return false;
     }
-    */
+    
 
   } catch (error) {
     console.error("Error in email service:", error);
