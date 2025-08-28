@@ -3,10 +3,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
 import { format } from 'date-fns';
-import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import { sendEmail } from '../../services/email';
 import { toast as toastify } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   getUserMessages,
   sendUserMessage,
