@@ -13,65 +13,73 @@ const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
-// Create singleton instances with proper initialization
-class SupabaseManager {
-  private static instance: SupabaseManager;
-  private supabaseClient: any = null;
-  private supabaseAdminClient: any = null;
-
-  private constructor() {}
-
-  public static getInstance(): SupabaseManager {
-    if (!SupabaseManager.instance) {
-      SupabaseManager.instance = new SupabaseManager();
-    }
-    return SupabaseManager.instance;
-  }
-
-  public getClient() {
-    if (!this.supabaseClient) {
-      this.supabaseClient = createClient(url, key, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          storageKey: 'gsdc-auth-token'
-        },
-        global: {
-          headers: {
-            'x-client-info': 'supabase-js/2.39.3'
-          }
-        },
-        db: {
-          schema: 'public'
-        }
-      });
-    }
-    return this.supabaseClient;
-  }
-
-  public getAdminClient() {
-    if (!this.supabaseAdminClient) {
-      this.supabaseAdminClient = createClient(
-        supabaseUrl || fallbackUrl,
-        supabaseServiceKey || supabaseAnonKey || fallbackKey,
-        {
-          auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-            storageKey: 'gsdc-admin-auth-token'
-          }
-        }
-      );
-    }
-    return this.supabaseAdminClient;
-  }
+// Use global reference to ensure singleton across hot reloads
+declare global {
+  var __supabaseClient: any;
+  var __supabaseAdminClient: any;
 }
 
+// Create clients with global singleton pattern
+const createSupabaseClient = () => {
+  if (typeof window !== 'undefined' && window.__supabaseClient) {
+    return window.__supabaseClient;
+  }
+
+  const client = createClient(url, key, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'gsdc-auth-token'
+    },
+    global: {
+      headers: {
+        'x-client-info': 'supabase-js/2.39.3'
+      }
+    },
+    db: {
+      schema: 'public'
+    }
+  });
+
+  if (typeof window !== 'undefined') {
+    window.__supabaseClient = client;
+  } else if (typeof global !== 'undefined') {
+    global.__supabaseClient = client;
+  }
+
+  return client;
+};
+
+const createSupabaseAdminClient = () => {
+  if (typeof window !== 'undefined' && window.__supabaseAdminClient) {
+    return window.__supabaseAdminClient;
+  }
+
+  const adminClient = createClient(
+    supabaseUrl || fallbackUrl,
+    supabaseServiceKey || supabaseAnonKey || fallbackKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        storageKey: 'gsdc-admin-auth-token'
+      }
+    }
+  );
+
+  if (typeof window !== 'undefined') {
+    window.__supabaseAdminClient = adminClient;
+  } else if (typeof global !== 'undefined') {
+    global.__supabaseAdminClient = adminClient;
+  }
+
+  return adminClient;
+};
+
 // Export singleton instances
-const manager = SupabaseManager.getInstance();
-export const supabase = manager.getClient();
-export const supabaseAdmin = manager.getAdminClient();
+export const supabase = createSupabaseClient();
+export const supabaseAdmin = createSupabaseAdminClient();
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {
