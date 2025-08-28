@@ -7,14 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Email configuration
+// Gmail SMTP configuration
 const transporter = nodemailer.createTransporter({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT || 587,
+  host: 'smtp.gmail.com',
+  port: 587,
   secure: false,
   auth: {
-    user: process.env.SMTP_USERNAME || '',
-    pass: process.env.SMTP_PASSWORD || ''
+    user: process.env.GMAIL_EMAIL || process.env.SMTP_USERNAME || '',
+    pass: process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASSWORD || ''
   }
 });
 
