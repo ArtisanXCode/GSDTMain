@@ -1,5 +1,6 @@
-
 import { ethers, run } from "hardhat";
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function main() {
   console.log("Deploying Simplified GSDC Architecture...");
@@ -18,7 +19,7 @@ async function main() {
     const GSDC = await ethers.getContractFactory("GSDC");
     const gsdcImplementation = await GSDC.deploy();
     await gsdcImplementation.waitForDeployment();
-    
+
     const implementationAddress = await gsdcImplementation.getAddress();
     console.log("✅ GSDC Implementation deployed to:", implementationAddress);
 
@@ -31,7 +32,7 @@ async function main() {
     const GSDCProxy = await ethers.getContractFactory("GSDCProxy");
     const gsdcProxy = await GSDCProxy.deploy(implementationAddress, initializeData);
     await gsdcProxy.waitForDeployment();
-    
+
     const proxyAddress = await gsdcProxy.getAddress();
     console.log("✅ GSDC Proxy deployed to:", proxyAddress);
 
@@ -40,7 +41,7 @@ async function main() {
     const MultiSigAdmin = await ethers.getContractFactory("MultiSigAdministrative");
     const multiSigAdmin = await MultiSigAdmin.deploy(proxyAddress);
     await multiSigAdmin.waitForDeployment();
-    
+
     const multiSigAddress = await multiSigAdmin.getAddress();
     console.log("✅ MultiSig Administrative deployed to:", multiSigAddress);
 
@@ -58,7 +59,7 @@ async function main() {
     const owner = await gsdcContract.owner();
     const totalSupply = await gsdcContract.totalSupply();
 
-    console.log("\n✅ Contract verification:");
+    console.log("✅ Contract verification:");
     console.log("- Name:", name);
     console.log("- Symbol:", symbol);
     console.log("- Owner:", owner);
@@ -104,13 +105,33 @@ async function main() {
       console.log("⚠️ Skipping verification - BSCSCAN_API_KEY not set");
     }
 
+    // Step 9: Update frontend contract addresses
+    console.log("\n📝 Updating frontend contract addresses...");
+    const contractsFilePath = path.join(__dirname, "..", "..", "src", "contracts", "GSDC.ts");
+    let contractsContent = fs.readFileSync(contractsFilePath, 'utf8');
+
+    // Update GSDC address
+    contractsContent = contractsContent.replace(
+      /export const GSDC_ADDRESS = ".*"/,
+      `export const GSDC_ADDRESS = "${proxyAddress}"`
+    );
+
+    // Update MultiSig address
+    contractsContent = contractsContent.replace(
+      /export const MULTISIG_ADMIN_ADDRESS = ".*"/,
+      `export const MULTISIG_ADMIN_ADDRESS = "${multiSigAddress}"`
+    );
+
+    fs.writeFileSync(contractsFilePath, contractsContent);
+    console.log("✅ Frontend contract addresses updated");
+
     console.log("\n🎉 Deployment Summary:");
     console.log("==========================================");
     console.log("GSDC Implementation:", implementationAddress);
     console.log("GSDC Proxy (Main Contract):", proxyAddress);
     console.log("MultiSig Administrative:", multiSigAddress);
     console.log("==========================================");
-    
+
     console.log("\n📝 Next Steps:");
     console.log("1. Update GSDC_ADDRESS in src/contracts/GSDC.ts with:", proxyAddress);
     console.log("2. Update MULTISIG_ADMIN_ADDRESS in src/contracts/GSDC.ts with:", multiSigAddress);

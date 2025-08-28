@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface AdminNavigationProps {
   className?: string;

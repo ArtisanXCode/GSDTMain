@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useWallet } from "../../hooks/useWallet";
 import { useAdmin } from "../../hooks/useAdmin";
 import AdminNavigation from "../../components/admin/AdminNavigation";
-import { useGSDCContract } from "../../hooks/useContract";
+import { useGSDCContract, useMultiSigAdminContract } from "../../hooks/useContract";
 import AdminHeroSection from "../../components/admin/AdminHeroSection";
 import AccessDenied from "../../components/admin/AccessDenied";
 
@@ -26,7 +26,8 @@ import {
 
 export default function FiatMintRequests() {
   const { address, isConnected } = useWallet();
-  const contract = useGSDCContract();  
+  const gsdcContract = useGSDCContract();
+  const multiSigContract = useMultiSigAdminContract();
   const { isSuperAdmin } = useAdmin();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<FiatMintRequest[]>([]);
@@ -64,17 +65,26 @@ export default function FiatMintRequests() {
   }, [filterStatus]);
 
   const handleApprove = async () => {
-    if (!selectedRequest || !address) return;
+    if (!selectedRequest || !address || !multiSigContract || !gsdcContract.contract) return;
 
     try {
       setActionLoading(true);
 
-      const minMintAmt = await contract.MIN_MINT_AMOUNT();
-      const decimals = await contract.decimals();
+      // Get minimum mint amount from GSDC contract
+      const minMintAmt = await gsdcContract.contract.MIN_MINT_AMOUNT();
+      const decimals = await gsdcContract.contract.decimals();
       const minMintAmnt = minMintAmt.div(
         BigNumber.from(10).pow(decimals),
       ); // Dividing by 10^18 for ERC20 tokens
       setMinMintAmount(minMintAmnt.toString());
+
+      // Queue mint transaction through MultiSig contract
+      const amount = BigNumber.from(selectedRequest.amount).mul(
+        BigNumber.from(10).pow(decimals)
+      );
+      
+      const tx = await multiSigContract.mintTokens(selectedRequest.user_address, amount);
+      await tx.wait();
 
       await approveFiatMintRequest(selectedRequest.id, address, adminNotes);
 
