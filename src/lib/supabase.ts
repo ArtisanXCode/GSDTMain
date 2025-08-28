@@ -13,50 +13,65 @@ const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const url = supabaseUrl || fallbackUrl;
 const key = supabaseAnonKey || fallbackKey;
 
-// Create and export the Supabase client with proper singleton pattern
-let supabaseInstance: any = null;
-let supabaseAdminInstance: any = null;
+// Create singleton instances with proper initialization
+class SupabaseManager {
+  private static instance: SupabaseManager;
+  private supabaseClient: any = null;
+  private supabaseAdminClient: any = null;
 
-// Regular client instance
-export const supabase = (() => {
-  if (!supabaseInstance) {
-    supabaseInstance = createClient(url, key, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: 'gsdc-auth-token'
-      },
-      global: {
-        headers: {
-          'x-client-info': 'supabase-js/2.39.3'
-        }
-      },
-      db: {
-        schema: 'public'
-      }
-    });
+  private constructor() {}
+
+  public static getInstance(): SupabaseManager {
+    if (!SupabaseManager.instance) {
+      SupabaseManager.instance = new SupabaseManager();
+    }
+    return SupabaseManager.instance;
   }
-  return supabaseInstance;
-})();
 
-// Service role client for admin operations (bypasses RLS)
-export const supabaseAdmin = (() => {
-  if (!supabaseAdminInstance) {
-    supabaseAdminInstance = createClient(
-      supabaseUrl || fallbackUrl,
-      supabaseServiceKey || supabaseAnonKey || fallbackKey,
-      {
+  public getClient() {
+    if (!this.supabaseClient) {
+      this.supabaseClient = createClient(url, key, {
         auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-          storageKey: 'gsdc-admin-auth-token' // Different storage key to avoid conflicts
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storageKey: 'gsdc-auth-token'
+        },
+        global: {
+          headers: {
+            'x-client-info': 'supabase-js/2.39.3'
+          }
+        },
+        db: {
+          schema: 'public'
         }
-      }
-    );
+      });
+    }
+    return this.supabaseClient;
   }
-  return supabaseAdminInstance;
-})();
+
+  public getAdminClient() {
+    if (!this.supabaseAdminClient) {
+      this.supabaseAdminClient = createClient(
+        supabaseUrl || fallbackUrl,
+        supabaseServiceKey || supabaseAnonKey || fallbackKey,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+            storageKey: 'gsdc-admin-auth-token'
+          }
+        }
+      );
+    }
+    return this.supabaseAdminClient;
+  }
+}
+
+// Export singleton instances
+const manager = SupabaseManager.getInstance();
+export const supabase = manager.getClient();
+export const supabaseAdmin = manager.getAdminClient();
 
 // Helper function to handle Supabase errors
 export const handleSupabaseError = (error: any): string => {
