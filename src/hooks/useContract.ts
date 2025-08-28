@@ -9,18 +9,13 @@ export function useGSDCContract() {
 
   if (!provider) return { contract: null };
 
-  try {
-    const contract = new Contract(
-      GSDC_ADDRESS,
-      GSDC_ABI,
-      signer || provider
-    );
+  const contract = new Contract(
+    GSDC_ADDRESS,
+    GSDC_ABI,
+    signer || provider
+  );
 
-    return { contract };
-  } catch (error) {
-    console.warn('Failed to create GSDC contract:', error);
-    return { contract: null };
-  }
+  return { contract };
 }
 
 export function useMultiSigAdminContract() {
@@ -29,18 +24,13 @@ export function useMultiSigAdminContract() {
 
   if (!provider) return null;
 
-  try {
-    const contract = new Contract(
-      MULTISIG_ADMIN_ADDRESS,
-      MULTISIG_ADMIN_ABI,
-      signer || provider
-    );
+  const contract = new Contract(
+    MULTISIG_ADMIN_ADDRESS,
+    MULTISIG_ADMIN_ABI,
+    signer || provider
+  );
 
-    return contract;
-  } catch (error) {
-    console.warn('Failed to create MultiSig contract:', error);
-    return null;
-  }
+  return contract;
 }
 
 // Add the missing useContract export for compatibility
