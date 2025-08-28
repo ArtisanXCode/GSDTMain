@@ -20,23 +20,24 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
     });
 
     // Save the email to database first
+    let emailId: string | null = null;
     try {
-      const { error: dbError } = await supabase.from("emails").insert([
+      const { data, error: dbError } = await supabase.from("emails").insert([
         {
           to_email: emailData.to,
           from_email: emailData.from || "noreply@gsdc.com",
           subject: emailData.subject,
           html: emailData.html,
-          sent_at: new Date().toISOString(),
           status: 'pending' // Mark as pending while we try to send
         },
-      ]);
+      ]).select('id').single();
 
       if (dbError) {
         console.error("Error saving email to database:", dbError);
         return false;
       }
 
+      emailId = data?.id;
       console.log("Email saved to database, attempting to send...");
 
     } catch (dbError) {
@@ -62,12 +63,12 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         console.log("Email sent successfully via API");
         
         // Update database status to 'sent'
-        await supabase
-          .from("emails")
-          .update({ status: 'sent' })
-          .eq('to_email', emailData.to)
-          .eq('subject', emailData.subject)
-          .eq('status', 'pending');
+        if (emailId) {
+          await supabase
+            .from("emails")
+            .update({ status: 'sent' })
+            .eq('id', emailId);
+        }
         
         return true;
       } else {
@@ -77,12 +78,12 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       console.error("API email failed:", apiError);
       
       // Update database status to 'failed'
-      await supabase
-        .from("emails")
-        .update({ status: 'failed' })
-        .eq('to_email', emailData.to)
-        .eq('subject', emailData.subject)
-        .eq('status', 'pending');
+      if (emailId) {
+        await supabase
+          .from("emails")
+          .update({ status: 'failed' })
+          .eq('id', emailId);
+      }
       
       return false;
     }
