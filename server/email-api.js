@@ -75,4 +75,5 @@ const PORT = process.env.EMAIL_API_PORT || 5005;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
+  console.log(`In Replit, access via: https://${process.env.REPL_ID || 'your-repl'}-${PORT}.${process.env.REPLIT_CLUSTER || 'cluster'}.replit.dev/api/send-email`);
 });

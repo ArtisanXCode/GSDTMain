@@ -42,10 +42,19 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       
       if (window.location.hostname === 'localhost') {
         emailApiUrl = 'http://localhost:5005/api/send-email';
-      } else if (window.location.hostname.includes('replit')) {
-        // For Replit, use the specific port URL format
-        const replitDomain = window.location.hostname;
-        emailApiUrl = `https://${replitDomain.replace('-3000', '-5005')}/api/send-email`;
+      } else if (window.location.hostname.includes('replit.dev')) {
+        // For Replit, each port gets its own subdomain
+        // Extract the repl ID from the current URL
+        const urlParts = window.location.hostname.split('.');
+        if (urlParts.length >= 3) {
+          // Format: replid-port.cluster.replit.dev
+          const replId = urlParts[0].split('-')[0];
+          const cluster = urlParts[1];
+          emailApiUrl = `https://${replId}-5005.${cluster}.replit.dev/api/send-email`;
+        } else {
+          // Fallback to standard port format
+          emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+        }
       } else {
         emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
       }
