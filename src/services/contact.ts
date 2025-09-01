@@ -231,9 +231,9 @@ export const sendContactReply = async (
       return false;
     }
 
-    // Store email in database (email sending is temporarily bypassed)
+    // Send email notification to user
     try {
-      console.log("Storing reply email to database (not sending actual email)...");
+      console.log("Sending reply email to user...");
       
       const emailHtml = getContactReplyTemplate(
         submission.name,
@@ -249,12 +249,12 @@ export const sendContactReply = async (
       });
 
       if (emailResult) {
-        console.log("Email stored successfully in database (email sending bypassed)");
+        console.log("Email sent successfully to user");
       } else {
-        console.warn("Failed to store email in database");
+        console.warn("Failed to send email to user");
       }
     } catch (emailError) {
-      console.warn("Email storage failed, but reply was saved:", emailError);
+      console.warn("Email sending failed, but reply was saved:", emailError);
     }
 
     // Update submission status to replied
