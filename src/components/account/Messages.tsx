@@ -328,7 +328,7 @@ export default function Messages() {
                 {/* All Messages - Single Scrollable Container */}
                 <div className="space-y-4">
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="max-h-[600px] overflow-y-auto overscroll-contain scroll-smooth">
+                    <div className="max-h-[400px] overflow-y-auto overscroll-contain scroll-smooth">
                       <div className="space-y-4 p-4">
                         {/* Original Message */}
                         <div className="bg-gray-50 rounded-lg p-4">
