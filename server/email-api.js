@@ -60,4 +60,5 @@ const PORT = process.env.EMAIL_API_PORT || 5001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
+  console.log(`SMTP Config: ${process.env.SMTP_USERNAME ? 'Configured' : 'Not configured (dev mode)'}`);
 });

@@ -38,9 +38,14 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
     // Try to send via the email API server
     try {
-      const emailApiUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5001/api/send-email'
-        : `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
+      // Use the correct API URL for Replit environment
+      const emailApiUrl = window.location.hostname.includes('replit') 
+        ? `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`
+        : window.location.hostname === 'localhost' 
+          ? 'http://localhost:5001/api/send-email'
+          : `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
+        
+      console.log("Sending email to API:", emailApiUrl);
         
       const response = await fetch(emailApiUrl, {
         method: 'POST',
@@ -49,6 +54,9 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         },
         body: JSON.stringify(emailData),
       });
+
+      const responseData = await response.json();
+      console.log("API Response:", responseData);
 
       if (response.ok) {
         console.log("Email sent successfully via API");
@@ -62,8 +70,7 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         
         return true;
       } else {
-        const errorData = await response.json();
-        console.error(`API responded with status: ${response.status}`, errorData);
+        console.error(`API responded with status: ${response.status}`, responseData);
         
         // Update database status to 'failed'
         await supabase

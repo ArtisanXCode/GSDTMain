@@ -180,91 +180,65 @@ export const deleteContactSubmission = async (id: string): Promise<boolean> => {
  */
 export const sendContactReply = async (
   submissionId: string,
-  replyText: string,
-  adminEmail: string,
+  replyMessage: string,
+  adminEmail: string
 ): Promise<boolean> => {
   try {
-    console.log("Starting sendContactReply for submission:", submissionId);
+    console.log('Sending reply for submission:', submissionId);
 
-    // Get the original submission to get user's email
-    const { data: submission, error: fetchError } = await supabase
-      .from("contact_submissions")
-      .select("email, name, subject, id")
-      .eq("id", submissionId)
+    // Get the original submission
+    const { data: submission, error } = await supabase
+      .from('contact_submissions')
+      .select('*')
+      .eq('id', submissionId)
       .single();
 
-    if (fetchError || !submission) {
-      console.error("Error fetching submission:", fetchError);
+    if (error || !submission) {
+      console.error('Error fetching submission:', error);
       return false;
     }
 
-    console.log("Found submission:", submission);
+    console.log('Found submission:', submission);
 
-    // Save the reply to database
-    try {
-      console.log("Attempting to save reply to database...");
-      
-      const replyData = {
-        submission_id: submissionId,
-        reply_text: replyText,
-        admin_email: adminEmail,
-        sent_at: new Date().toISOString(),
-      };
+    // Send reply email using the email service
+    const emailHtml = getContactReplyTemplate(
+      submission.name,
+      submission.subject,
+      replyMessage
+    );
 
-      console.log("Reply data:", replyData);
+    console.log('Sending email reply...');
+    const emailResult = await sendEmail({
+      to: submission.email,
+      subject: `Re: ${submission.subject}`,
+      html: emailHtml,
+      from: adminEmail
+    });
 
-      const { data: insertedReply, error: replyError } = await supabaseAdmin
-        .from("contact_replies")
-        .insert([replyData])
-        .select()
-        .single();
+    console.log('Email result:', emailResult);
+
+    if (emailResult) {
+      // Log the reply in contact_replies table
+      const { error: replyError } = await supabase
+        .from('contact_replies')
+        .insert([{
+          contact_submission_id: submissionId,
+          reply_message: replyMessage,
+          replied_by: adminEmail,
+          replied_at: new Date().toISOString()
+        }]);
 
       if (replyError) {
-        console.error("Error saving reply:", replyError);
-        console.error("Error details:", JSON.stringify(replyError, null, 2));
-        return false;
+        console.error('Error logging reply:', replyError);
+        // Don't return false here as email was sent successfully
       }
 
-      console.log("Reply saved successfully:", insertedReply);
-    } catch (dbError) {
-      console.error("Database insert failed:", dbError);
-      return false;
+      return true;
     }
 
-    // Send email notification to user
-    try {
-      console.log("Sending reply email to user...");
-      
-      const emailHtml = getContactReplyTemplate(
-        submission.name,
-        submission.subject,
-        replyText,
-      );
-
-      const emailResult = await sendEmail({
-        to: submission.email,
-        subject: `Re: ${submission.subject}`,
-        html: emailHtml,
-        from: "support@gsdc.com",
-      });
-
-      if (emailResult) {
-        console.log("Email sent successfully to user");
-      } else {
-        console.warn("Failed to send email to user");
-      }
-    } catch (emailError) {
-      console.warn("Email sending failed, but reply was saved:", emailError);
-    }
-
-    // Update submission status to replied
-    console.log("Updating submission status to replied...");
-    const updated = await updateContactStatus(submissionId, "replied");
-    console.log("Status update result:", updated);
-    
-    return updated;
+    return false;
   } catch (error) {
-    console.error("Error sending reply:", error);
+    console.error('Error sending contact reply:', error);
     return false;
   }
 };
@@ -298,7 +272,7 @@ export const sendUserReply = async (
     // Save the user reply to database using admin client
     try {
       console.log("Attempting to save user reply to database...");
-      
+
       const replyData = {
         submission_id: submissionId,
         reply_text: replyText,
