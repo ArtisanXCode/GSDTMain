@@ -4,8 +4,20 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const app = express();
 
-app.use(cors());
+// Enable CORS for all origins in development
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
+// Add logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // Email configuration
 const transporter = nodemailer.createTransport({
