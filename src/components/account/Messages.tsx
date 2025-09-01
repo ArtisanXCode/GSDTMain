@@ -206,7 +206,7 @@ export default function Messages() {
       // Send email notification to admin
       try {
         const emailSent = await sendEmail({
-          to: 'admin@gsdc.com', // You can change this to your admin email
+          to: 'laljij@etherauthority.io', // You can change this to your admin email
           subject: `User Reply: ${selectedMessage.subject}`,
           html: `
             <h3>User Reply Received</h3>
