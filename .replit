@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "python-3.12", "web"]
+modules = ["nodejs-20", "web", "python-3.11"]
 run = "npm run dev"
 
 [nix]
@@ -35,8 +35,12 @@ externalPort = 4200
 localPort = 5001
 externalPort = 5000
 
+[[ports]]
+localPort = 5006
+externalPort = 5173
+
 [workflows]
-runButton = "Development with Email API"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Development Server"
@@ -59,3 +63,27 @@ args = "npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node server/email-api.js"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Email Server"
+
+[[workflows.workflow]]
+name = "Email Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd api && python send-email.py"
+waitForPort = 5006
+
+[agent]
+integrations = ["javascript_sendgrid==1.0.0"]
