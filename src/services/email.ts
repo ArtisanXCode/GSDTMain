@@ -43,16 +43,18 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       
       if (window.location.hostname.includes('replit.dev')) {
         // For Replit development environment, use the external port mapping
-        const baseUrl = window.location.origin.replace(':80', '').replace(':443', '');
-        emailApiUrl = `${baseUrl}:5000/api/send-email`;
+        // Port 5001 internal maps to 5000 external
+        const hostname = window.location.hostname;
+        emailApiUrl = `https://${hostname.replace('80-', '5000-').replace('443-', '5000-')}/api/send-email`;
       } else if (window.location.hostname === 'localhost') {
         emailApiUrl = 'http://localhost:5001/api/send-email';
       } else {
-        // For other environments, try the same host with port 5001
-        emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5001/api/send-email`;
+        // For other environments, try the same host with external port 5000
+        emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/send-email`;
       }
         
       console.log("Sending email to API:", emailApiUrl);
+      console.log("Email payload:", emailData);
         
       const response = await fetch(emailApiUrl, {
         method: 'POST',
