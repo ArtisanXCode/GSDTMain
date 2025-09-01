@@ -36,59 +36,6 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       return false;
     }
 
-    // Try to send via the email API server
-    try {
-      const emailApiUrl = 'https://5523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev:5002/api/send-email';
-        
-      const response = await fetch(emailApiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(emailData),
-      });
-
-      if (response.ok) {
-        console.log("Email sent successfully via API");
-        
-        // Update database status to 'sent'
-        await supabase
-          .from("emails")
-          .update({ status: 'sent' })
-          .eq('to_email', emailData.to)
-          .eq('subject', emailData.subject);
-        
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error(`API responded with status: ${response.status}`, errorData);
-        
-        // Update database status to 'failed'
-        await supabase
-          .from("emails")
-          .update({ status: 'failed' })
-          .eq('to_email', emailData.to)
-          .eq('subject', emailData.subject);
-        
-        return false;
-      }
-    } catch (apiError) {
-      console.error("API email failed:", apiError);
-      
-      // Update database status to 'failed'
-      await supabase
-        .from("emails")
-        .update({ status: 'failed' })
-        .eq('to_email', emailData.to)
-        .eq('subject', emailData.subject);
-      
-      return false;
-    }
-
-    // TODO: Future email integration will go here
-    // Uncomment and modify the sections below when ready to implement actual email sending:
-    
-    /*
     // Try to send via Supabase Edge Function
     try {
       const { data, error } = await supabase.functions.invoke('send-email', {
@@ -143,7 +90,6 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         return false;
       }
     }
-    */
 
   } catch (error) {
     console.error("Error in email service:", error);
