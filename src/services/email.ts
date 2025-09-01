@@ -36,11 +36,11 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       return false;
     }
 
-    // Send via the email API server on port 5002
+    // Send via the email API server on port 5005
     try {
       const emailApiUrl = window.location.hostname === 'localhost' 
         ? 'http://localhost:5005/api/send-email'
-        : 'http://localhost:5005/api/send-email';                 //`${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+        : `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
         
       const response = await fetch(emailApiUrl, {
         method: 'POST',

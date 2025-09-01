@@ -63,7 +63,7 @@ app.get("/health", (req, res) => {
 });
 
 const PORT = process.env.EMAIL_API_PORT || 5005;
-app.listen(PORT, "localhost", () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Email API server running on port ${PORT}`);
-  console.log(`Email API accessible at http://localhost:${PORT}/api/send-email`);
+  console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
 });
