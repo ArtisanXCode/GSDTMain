@@ -3,11 +3,20 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 
 // Load environment variables
 require("dotenv").config();
+
+// Add request logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // Email configuration - load from environment variables only
 const transporter = nodemailer.createTransport({

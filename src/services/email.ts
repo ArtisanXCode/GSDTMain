@@ -38,9 +38,19 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
     // Send via the email API server on port 5005
     try {
-      const emailApiUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5005/api/send-email'
-        : `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+      let emailApiUrl;
+      
+      if (window.location.hostname === 'localhost') {
+        emailApiUrl = 'http://localhost:5005/api/send-email';
+      } else if (window.location.hostname.includes('replit')) {
+        // For Replit, use the specific port URL format
+        const replitDomain = window.location.hostname;
+        emailApiUrl = `https://${replitDomain.replace('-3000', '-5005')}/api/send-email`;
+      } else {
+        emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+      }
+      
+      console.log('Attempting to send email to:', emailApiUrl);
         
       const response = await fetch(emailApiUrl, {
         method: 'POST',
