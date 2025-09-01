@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // Email configuration
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: process.env.SMTP_PORT || 587,
   secure: false,
@@ -56,7 +56,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK' });
 });
 
-const PORT = process.env.EMAIL_API_PORT || 5002;
+const PORT = process.env.EMAIL_API_PORT || 5001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);

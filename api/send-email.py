@@ -7,13 +7,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
 
-# Try to load .env file if available
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
 app = Flask(__name__)
 CORS(app)
 
@@ -79,5 +72,4 @@ def health():
     return jsonify({'status': 'OK'}), 200
 
 if __name__ == '__main__':
-    port = int(os.getenv('EMAIL_API_PORT', 5006))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
