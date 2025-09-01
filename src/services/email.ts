@@ -53,11 +53,11 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
           emailApiUrl = `https://${replId}-5005.${cluster}.replit.dev/api/send-email`;
         } else {
           // Fallback for Replit environments
-          emailApiUrl = `https://5523ee8c-5005.sisko.replit.dev/api/send-email`;
+          emailApiUrl = `https://${window.location.hostname}:5005/api/send-email`;
         }
       } else {
-        // For Replit deployment, use the port 5005 endpoint
-        emailApiUrl = `https://5523ee8c-5005.sisko.replit.dev/api/send-email`;
+        // For Replit deployment, use the same hostname but with port 5005
+        emailApiUrl = `https://${window.location.hostname}:5005/api/send-email`;
       }
       
       console.log('Attempting to send email to:', emailApiUrl);

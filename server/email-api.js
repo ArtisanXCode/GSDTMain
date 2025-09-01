@@ -4,12 +4,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    /\.replit\.dev$/,
-    /\.repl\.co$/
-  ],
+  origin: true, // Allow all origins for development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
