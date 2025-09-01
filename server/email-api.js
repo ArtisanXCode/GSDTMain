@@ -1,81 +1,63 @@
-const express = require("express");
-const cors = require("cors");
-const nodemailer = require("nodemailer");
+
+const express = require('express');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
 const app = express();
 
-app.use(cors({
-  origin: true, // Allow all origins for development
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
 app.use(express.json());
 
-// Load environment variables
-require("dotenv").config();
-
-// Add request logging
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
-
-// Email configuration - load from environment variables only
+// Email configuration
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === "true",
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT || 587,
+  secure: false,
   auth: {
-    user: process.env.SMTP_USERNAME,
-    pass: process.env.SMTP_PASSWORD,
-  },
+    user: process.env.SMTP_USERNAME || '',
+    pass: process.env.SMTP_PASSWORD || ''
+  }
 });
 
-app.post("/api/send-email", async (req, res) => {
+app.post('/api/send-email', async (req, res) => {
   try {
     const { to, subject, html, from } = req.body;
-
+    
     if (!to || !subject || !html) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // For development, if no SMTP credentials, just log
     if (!process.env.SMTP_USERNAME || !process.env.SMTP_PASSWORD) {
-      console.log("EMAIL WOULD BE SENT:");
-      console.log("To:", to);
-      console.log("Subject:", subject);
-      console.log("Content:", html);
-      return res.json({
-        success: true,
-        message: "Email logged (development mode)",
-      });
+      console.log('EMAIL WOULD BE SENT:');
+      console.log('To:', to);
+      console.log('Subject:', subject);
+      console.log('Content:', html);
+      return res.json({ success: true, message: 'Email logged (development mode)' });
     }
 
     const mailOptions = {
-      from: from || process.env.SMTP_FROM_EMAIL,
+      from: from || process.env.SMTP_FROM_EMAIL || 'noreply@gsdc.com',
       to,
       subject,
-      html,
+      html
     };
 
     await transporter.sendMail(mailOptions);
     console.log(`Email sent successfully to ${to}`);
-    res.json({ success: true, message: "Email sent successfully" });
+    res.json({ success: true, message: 'Email sent successfully' });
+    
   } catch (error) {
-    console.error("Email error:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to send email", details: error.message });
+    console.error('Email error:', error);
+    res.status(500).json({ error: 'Failed to send email', details: error.message });
   }
 });
 
-app.get("/health", (req, res) => {
-  res.json({ status: "OK" });
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK' });
 });
 
-const PORT = process.env.EMAIL_API_PORT || 5005;
-app.listen(PORT, "0.0.0.0", () => {
+const PORT = process.env.EMAIL_API_PORT || 5002;
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
-  console.log(`In Replit, access via: https://${process.env.REPL_ID || 'your-repl'}-${PORT}.${process.env.REPLIT_CLUSTER || 'cluster'}.replit.dev/api/send-email`);
 });

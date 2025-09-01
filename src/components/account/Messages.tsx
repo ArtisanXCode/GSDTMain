@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
 import { format } from 'date-fns';
 import { ChatBubbleLeftIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
-import { sendEmail } from '../../services/email';
 
 interface Message {
   id: string;
@@ -203,30 +202,6 @@ export default function Messages() {
       // Add the new reply to local state with the correct type
       setUserReplies(prev => [...prev, { ...replyData, type: 'user_reply' }]);
 
-      // Send email notification to admin
-      try {
-        const emailSent = await sendEmail({
-          to: 'laljij@etherauthority.io', // You can change this to your admin email
-          subject: `User Reply: ${selectedMessage.subject}`,
-          html: `
-            <h3>User Reply Received</h3>
-            <p><strong>From:</strong> ${user.email}</p>
-            <p><strong>Original Subject:</strong> ${selectedMessage.subject}</p>
-            <p><strong>Reply:</strong></p>
-            <p>${replyText.replace(/\n/g, '<br>')}</p>
-            <p><a href="${window.location.origin}/admin/contact-submissions">View in Admin Panel</a></p>
-          `
-        });
-
-        if (emailSent) {
-          console.log('Admin notification email sent successfully');
-        } else {
-          console.log('Failed to send admin notification email');
-        }
-      } catch (emailError) {
-        console.error('Error sending admin notification:', emailError);
-      }
-
       // Clear reply text
       setReplyText('');
 
@@ -353,7 +328,7 @@ export default function Messages() {
                 {/* All Messages - Single Scrollable Container */}
                 <div className="space-y-4">
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="max-h-[400px] overflow-y-auto overscroll-contain scroll-smooth">
+                    <div className="max-h-[600px] overflow-y-auto overscroll-contain scroll-smooth">
                       <div className="space-y-4 p-4">
                         {/* Original Message */}
                         <div className="bg-gray-50 rounded-lg p-4">

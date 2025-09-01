@@ -77,7 +77,7 @@ export default function ContactDetails() {
       setError(null);
       
       // Send reply email
-      const result = await sendContactReply(submission.id, replyText, "laljij@etherauthority.io");
+      const result = await sendContactReply(submission.id, replyText, "admin@gsdc.com");
       
       if (result) {
         setSuccess('Reply sent successfully!');
