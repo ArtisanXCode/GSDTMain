@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // Load environment variables
-require('dotenv').config();
+require("dotenv").config();
 
 // Email configuration - load from environment variables only
 const transporter = nodemailer.createTransport({
@@ -63,9 +63,13 @@ app.get("/health", (req, res) => {
 });
 
 const PORT = process.env.EMAIL_API_PORT;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Email API server running on port ${PORT}`);
-  console.log(
-    `Email API accessible at http://0.0.0.0:${PORT}/api/send-email`,
-  );
-});
+app.listen(
+  PORT,
+  "523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev",
+  () => {
+    console.log(`Email API server running on port ${PORT}`);
+    console.log(
+      `Email API accessible at http://523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev:${PORT}/api/send-email`,
+    );
+  },
+);
