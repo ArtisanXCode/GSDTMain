@@ -7,14 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Email configuration
+// Email configuration - load from environment variables only
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT || 587,
-  secure: false,
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === 'true',
   auth: {
-    user: process.env.SMTP_USERNAME || '',
-    pass: process.env.SMTP_PASSWORD || ''
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD
   }
 });
 
@@ -36,7 +36,7 @@ app.post('/api/send-email', async (req, res) => {
     }
 
     const mailOptions = {
-      from: from || process.env.SMTP_FROM_EMAIL || 'noreply@gsdc.com',
+      from: from || process.env.SMTP_FROM_EMAIL,
       to,
       subject,
       html
