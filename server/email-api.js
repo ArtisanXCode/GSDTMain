@@ -6,14 +6,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Load environment variables
+require('dotenv').config();
+
 // Email configuration - load from environment variables only
 const transporter = nodemailer.createTransport({
-  host: import.meta.env.SMTP_HOST,
-  port: parseInt(import.meta.env.SMTP_PORT) || 587,
-  secure: import.meta.env.SMTP_SECURE === "true",
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === "true",
   auth: {
-    user: import.meta.env.SMTP_USERNAME,
-    pass: import.meta.env.SMTP_PASSWORD,
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD,
   },
 });
 
@@ -26,7 +29,7 @@ app.post("/api/send-email", async (req, res) => {
     }
 
     // For development, if no SMTP credentials, just log
-    if (!import.meta.env.SMTP_USERNAME || !import.meta.env.SMTP_PASSWORD) {
+    if (!process.env.SMTP_USERNAME || !process.env.SMTP_PASSWORD) {
       console.log("EMAIL WOULD BE SENT:");
       console.log("To:", to);
       console.log("Subject:", subject);
@@ -38,7 +41,7 @@ app.post("/api/send-email", async (req, res) => {
     }
 
     const mailOptions = {
-      from: from || import.meta.env.SMTP_FROM_EMAIL,
+      from: from || process.env.SMTP_FROM_EMAIL,
       to,
       subject,
       html,
@@ -59,10 +62,10 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
-const PORT = import.meta.env.EMAIL_API_PORT;
-app.listen(PORT, "localhost", () => {
+const PORT = process.env.EMAIL_API_PORT;
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(
-    `Email API accessible at http://localhost:${PORT}/api/send-email`,
+    `Email API accessible at http://0.0.0.0:${PORT}/api/send-email`,
   );
 });
