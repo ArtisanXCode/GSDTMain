@@ -62,14 +62,8 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
-const PORT = process.env.EMAIL_API_PORT;
-app.listen(
-  PORT,
-  "523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev",
-  () => {
-    console.log(`Email API server running on port ${PORT}`);
-    console.log(
-      `Email API accessible at http://523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev:${PORT}/api/send-email`,
-    );
-  },
-);
+const PORT = process.env.EMAIL_API_PORT || 5002;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Email API server running on port ${PORT}`);
+  console.log(`Email API accessible at http://localhost:${PORT}/api/send-email`);
+});
