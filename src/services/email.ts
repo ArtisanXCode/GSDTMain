@@ -36,7 +36,7 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       return false;
     }
 
-    // Send via the email API server on port 5005
+    // Send via the email API server on port 5005 (Replit environment only)
     try {
       let emailApiUrl;
       
@@ -52,11 +52,12 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
           const cluster = urlParts[1];
           emailApiUrl = `https://${replId}-5005.${cluster}.replit.dev/api/send-email`;
         } else {
-          // Fallback to standard port format
-          emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+          // Fallback for Replit environments
+          emailApiUrl = `https://5523ee8c-5005.sisko.replit.dev/api/send-email`;
         }
       } else {
-        emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5005/api/send-email`;
+        // For Replit deployment, use the port 5005 endpoint
+        emailApiUrl = `https://5523ee8c-5005.sisko.replit.dev/api/send-email`;
       }
       
       console.log('Attempting to send email to:', emailApiUrl);
