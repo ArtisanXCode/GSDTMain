@@ -9,10 +9,23 @@ const app = express();
 
 // Enable CORS for all origins in development
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    // Allow all replit.dev domains
+    if (origin.includes('.replit.dev') || origin.includes('.replit.co')) {
+      return callback(null, true);
+    }
+    // Allow localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    // Allow all origins in development
+    return callback(null, true);
+  },
   credentials: false,
-  methods: ['GET', 'POST', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  methods: ['GET', 'POST', 'OPTIONS', 'HEAD', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'Access-Control-Allow-Origin'],
   optionsSuccessStatus: 200
 }));
 
@@ -104,5 +117,6 @@ const PORT = process.env.EMAIL_API_PORT || 5001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
+  console.log(`External URL: https://${process.env.REPL_SLUG || 'localhost'}:5000/api/send-email`);
   console.log(`SMTP Config: ${process.env.SMTP_USERNAME ? 'Configured' : 'Not configured (dev mode)'}`);
 });
