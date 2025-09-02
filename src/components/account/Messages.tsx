@@ -185,7 +185,7 @@ export default function Messages() {
       setSendingReply(true);
       setError(null);
 
-      // Save user reply to database
+      // Save user reply to database first
       const { data: replyData, error: replyError } = await supabase
         .from('user_replies')
         .insert([{
@@ -199,6 +199,33 @@ export default function Messages() {
 
       if (replyError) throw replyError;
 
+      // Send email notification to admin about user reply
+      try {
+        const { sendEmail, getContactReplyTemplate } = await import('../../services/email');
+        
+        const emailHtml = getContactReplyTemplate(
+          selectedMessage.name,
+          selectedMessage.subject,
+          `User has replied to their message:\n\n${replyText.trim()}`
+        );
+
+        const emailResult = await sendEmail({
+          to: 'laljij@etherauthority.io', // Admin email
+          subject: `User Reply: Re: ${selectedMessage.subject}`,
+          html: emailHtml,
+          from: user.email
+        });
+
+        if (emailResult) {
+          console.log('Admin notification email sent successfully');
+        } else {
+          console.warn('Failed to send admin notification email, but reply was saved');
+        }
+      } catch (emailError) {
+        console.error('Error sending admin notification email:', emailError);
+        // Don't fail the whole operation if email fails
+      }
+
       // Add the new reply to local state with the correct type
       setUserReplies(prev => [...prev, { ...replyData, type: 'user_reply' }]);
 
@@ -210,7 +237,7 @@ export default function Messages() {
         duration: 3000, // Hide after 3 seconds
       });
 
-      // Optionally update message status to indicate user has replied
+      // Update message status to indicate user has replied
       const { error: updateError } = await supabase
         .from('contact_submissions')
         .update({ status: 'replied' })
