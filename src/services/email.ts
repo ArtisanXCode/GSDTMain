@@ -19,16 +19,10 @@ export const testEmailAPI = async (): Promise<boolean> => {
     
     if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.co')) {
       const hostname = window.location.hostname;
-      // Check if hostname already has port prefix, if not add 5000-
-      let cleanHostname;
-      if (hostname.match(/^\d+-/)) {
-        // Already has port prefix, replace with 5000
-        cleanHostname = hostname.replace(/^\d+-/, '5000-');
-      } else {
-        // No port prefix, add 5000-
-        cleanHostname = `5000-${hostname}`;
-      }
-      testApiUrl = `https://${cleanHostname}/api/test`;
+      // Remove any existing port prefix to get clean hostname
+      const cleanHostname = hostname.replace(/^\d+-/, '');
+      // Replit format: https://hostname:port/path
+      testApiUrl = `https://${cleanHostname}:5000/api/test`;
     } else if (window.location.hostname === 'localhost') {
       testApiUrl = 'http://localhost:5001/api/test';
     } else {
@@ -96,18 +90,12 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         const hostname = window.location.hostname;
         console.log("Original hostname:", hostname);
         
-        // Check if hostname already has port prefix, if not add 5000-
-        let cleanHostname;
-        if (hostname.match(/^\d+-/)) {
-          // Already has port prefix, replace with 5000
-          cleanHostname = hostname.replace(/^\d+-/, '5000-');
-        } else {
-          // No port prefix, add 5000-
-          cleanHostname = `5000-${hostname}`;
-        }
+        // Remove any existing port prefix to get clean hostname
+        const cleanHostname = hostname.replace(/^\d+-/, '');
         console.log("Clean hostname for API:", cleanHostname);
         
-        emailApiUrl = `https://${cleanHostname}/api/send-email`;
+        // Replit format: https://hostname:port/path
+        emailApiUrl = `https://${cleanHostname}:5000/api/send-email`;
       } else if (window.location.hostname === 'localhost') {
         emailApiUrl = 'http://localhost:5001/api/send-email';
       } else {
