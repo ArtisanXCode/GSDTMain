@@ -130,7 +130,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-const PORT = process.env.EMAIL_API_PORT || 5000;
+const PORT = process.env.EMAIL_API_PORT || 5001;
 
 // Add a health check endpoint for production
 app.get('/api/health', (req, res) => {

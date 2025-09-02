@@ -3,8 +3,8 @@ import { supabase } from "../lib/supabase";
 // Assuming EMAIL_API_PORT is available in the environment, e.g., from a .env file.
 // For demonstration purposes, we'll define it here. In a real app, import it.
 // const EMAIL_API_PORT = process.env.EMAIL_API_PORT || '5001'; // Or whatever the default/correct port is.
-// Use port 5000 which is the recommended port for Replit web applications
-const EMAIL_API_PORT = '5000';
+// Use port 5001 which matches your production server configuration
+const EMAIL_API_PORT = '5001';
 
 
 export interface EmailData {
