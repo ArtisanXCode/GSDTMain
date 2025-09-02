@@ -57,7 +57,7 @@ app.post('/api/send-email', async (req, res) => {
     if (!to || !subject || !html) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-
+    
     // For development, if no SMTP credentials, just log
     if (!process.env.SMTP_USERNAME || !process.env.SMTP_PASSWORD) {
       console.log('EMAIL WOULD BE SENT:');
