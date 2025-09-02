@@ -9,6 +9,39 @@ export interface EmailData {
 }
 
 /**
+ * Test if the email API is accessible
+ */
+export const testEmailAPI = async (): Promise<boolean> => {
+  try {
+    console.log("🧪 TESTING EMAIL API ACCESSIBILITY");
+    
+    let testApiUrl;
+    
+    if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.co')) {
+      const hostname = window.location.hostname;
+      const cleanHostname = hostname.replace(/^\d+-/, '5000-');
+      testApiUrl = `https://${cleanHostname}/api/test`;
+    } else if (window.location.hostname === 'localhost') {
+      testApiUrl = 'http://localhost:5001/api/test';
+    } else {
+      testApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/test`;
+    }
+    
+    console.log("🧪 TEST API URL:", testApiUrl);
+    
+    const response = await fetch(testApiUrl);
+    const data = await response.json();
+    
+    console.log("🧪 TEST API RESPONSE:", data);
+    
+    return response.ok;
+  } catch (error) {
+    console.error("🧪 EMAIL API TEST FAILED:", error);
+    return false;
+  }
+};
+
+/**
  * Global function to send emails using the email API server
  */
 export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
@@ -38,6 +71,14 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
     // Try to send via the email API server
     try {
+      console.log("🚀 ATTEMPTING TO SEND EMAIL VIA API");
+      console.log("Current window location:", {
+        hostname: window.location.hostname,
+        protocol: window.location.protocol,
+        port: window.location.port,
+        origin: window.location.origin
+      });
+      
       // Use the correct API URL for Replit environment
       let emailApiUrl;
       
@@ -45,8 +86,12 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         // For Replit environment, use the external port mapping
         // Port 5001 internal maps to 5000 external  
         const hostname = window.location.hostname;
+        console.log("Original hostname:", hostname);
+        
         // Replace any existing port prefix with 5000
         const cleanHostname = hostname.replace(/^\d+-/, '5000-');
+        console.log("Clean hostname for API:", cleanHostname);
+        
         emailApiUrl = `https://${cleanHostname}/api/send-email`;
       } else if (window.location.hostname === 'localhost') {
         emailApiUrl = 'http://localhost:5001/api/send-email';
@@ -55,8 +100,9 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/send-email`;
       }
         
-      console.log("Sending email to API:", emailApiUrl);
-      console.log("Email payload:", emailData);
+      console.log("📧 EMAIL API URL:", emailApiUrl);
+      console.log("📦 EMAIL PAYLOAD:", emailData);
+      console.log("🔄 ATTEMPTING API CALL FOR EMAIL SEND...");
         
       const response = await fetch(emailApiUrl, {
         method: 'POST',
@@ -66,11 +112,14 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         body: JSON.stringify(emailData),
       });
 
+      console.log("📡 API RESPONSE STATUS:", response.status);
+      console.log("📡 API RESPONSE HEADERS:", Object.fromEntries(response.headers.entries()));
+
       const responseData = await response.json();
-      console.log("API Response:", responseData);
+      console.log("📡 API RESPONSE DATA:", responseData);
 
       if (response.ok) {
-        console.log("Email sent successfully via API server");
+        console.log("✅ EMAIL SENT SUCCESSFULLY VIA API SERVER");
         
         // Update database status to 'sent'
         await supabase
@@ -81,11 +130,20 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         
         return true;
       } else {
-        console.error(`API server responded with status: ${response.status}`, responseData);
-        throw new Error(`API server error: ${response.status}`);
+        console.error("❌ API SERVER ERROR RESPONSE:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: responseData
+        });
+        throw new Error(`API server error: ${response.status} - ${responseData.error || responseData.message || 'Unknown error'}`);
       }
     } catch (apiError) {
-      console.warn("API server email failed, trying Edge Function fallback:", apiError);
+      console.error("❌ API SERVER EMAIL FAILED:", {
+        error: apiError,
+        message: apiError.message,
+        emailApiUrl: emailApiUrl
+      });
+      console.warn("🔄 TRYING EDGE FUNCTION FALLBACK...");
       
       // Fallback: Try to send via Supabase Edge Function
       try {

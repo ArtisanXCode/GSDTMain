@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ContactSubmission, getContactSubmission, updateContactStatus, sendContactReply, deleteContactSubmission } from '../../services/contact';
+import { testEmailAPI } from '../../services/email';
 import { useWallet } from '../../hooks/useWallet';
 import AdminNavigation from '../../components/admin/AdminNavigation';
 import { 
@@ -155,6 +156,27 @@ export default function ContactDetails() {
     } catch (err: any) {
       console.error('Error unarchiving message:', err);
       setError(err.message || 'Error unarchiving message');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTestEmailAPI = async () => {
+    try {
+      setActionLoading(true);
+      setError(null);
+      
+      console.log("🧪 Testing Email API accessibility...");
+      const result = await testEmailAPI();
+      
+      if (result) {
+        setSuccess('Email API is accessible and working!');
+      } else {
+        setError('Email API test failed. Check console for details.');
+      }
+    } catch (err: any) {
+      console.error('Error testing email API:', err);
+      setError(err.message || 'Error testing email API');
     } finally {
       setActionLoading(false);
     }
@@ -356,14 +378,24 @@ export default function ContactDetails() {
                 )}
                 
                 <div className="mt-4 flex justify-between">
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    disabled={actionLoading}
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  >
-                    <TrashIcon className="h-5 w-5 mr-2" />
-                    Delete Message
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      disabled={actionLoading}
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      <TrashIcon className="h-5 w-5 mr-2" />
+                      Delete Message
+                    </button>
+                    
+                    <button
+                      onClick={handleTestEmailAPI}
+                      disabled={actionLoading}
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      🧪 Test Email API
+                    </button>
+                  </div>
                   
                   <div className="flex space-x-4">
                     {submission.status === 'archived' ? (
