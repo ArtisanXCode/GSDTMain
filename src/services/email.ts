@@ -22,8 +22,9 @@ const getEmailAPIUrl = () => {
     // In browser environment, use the current domain with port at the end
     const { protocol, hostname } = window.location;
 
-    // For Replit, the port goes at the end of the URL, not in subdomain
+    // For Replit, construct the URL with port at the end
     if (hostname.includes('replit.dev')) {
+      // Use the same hostname but with the email API port
       return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
     }
 

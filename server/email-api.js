@@ -100,6 +100,19 @@ app.post('/api/send-email', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'Email API Server Running',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    endpoints: {
+      test: '/api/test',
+      sendEmail: '/api/send-email',
+      health: '/health'
+    }
+  });
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'OK' });
 });
