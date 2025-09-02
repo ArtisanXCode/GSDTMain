@@ -222,10 +222,10 @@ export const sendContactReply = async (
       const { error: replyError } = await supabase
         .from('contact_replies')
         .insert([{
-          contact_submission_id: submissionId,
-          reply_message: replyMessage,
-          replied_by: adminEmail,
-          replied_at: new Date().toISOString()
+          submission_id: submissionId,
+          reply_text: replyMessage,
+          admin_email: adminEmail,
+          sent_at: new Date().toISOString()
         }]);
 
       if (replyError) {
