@@ -19,7 +19,15 @@ export const testEmailAPI = async (): Promise<boolean> => {
     
     if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.co')) {
       const hostname = window.location.hostname;
-      const cleanHostname = hostname.replace(/^\d+-/, '5000-');
+      // Check if hostname already has port prefix, if not add 5000-
+      let cleanHostname;
+      if (hostname.match(/^\d+-/)) {
+        // Already has port prefix, replace with 5000
+        cleanHostname = hostname.replace(/^\d+-/, '5000-');
+      } else {
+        // No port prefix, add 5000-
+        cleanHostname = `5000-${hostname}`;
+      }
       testApiUrl = `https://${cleanHostname}/api/test`;
     } else if (window.location.hostname === 'localhost') {
       testApiUrl = 'http://localhost:5001/api/test';
@@ -88,8 +96,15 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         const hostname = window.location.hostname;
         console.log("Original hostname:", hostname);
         
-        // Replace any existing port prefix with 5000
-        const cleanHostname = hostname.replace(/^\d+-/, '5000-');
+        // Check if hostname already has port prefix, if not add 5000-
+        let cleanHostname;
+        if (hostname.match(/^\d+-/)) {
+          // Already has port prefix, replace with 5000
+          cleanHostname = hostname.replace(/^\d+-/, '5000-');
+        } else {
+          // No port prefix, add 5000-
+          cleanHostname = `5000-${hostname}`;
+        }
         console.log("Clean hostname for API:", cleanHostname);
         
         emailApiUrl = `https://${cleanHostname}/api/send-email`;
