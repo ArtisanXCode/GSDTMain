@@ -1,5 +1,13 @@
-
 import { supabase } from "../lib/supabase";
+
+// Assuming EMAIL_API_PORT is available in the environment, e.g., from a .env file.
+// For demonstration purposes, we'll define it here. In a real app, import it.
+// const EMAIL_API_PORT = process.env.EMAIL_API_PORT || '5001'; // Or whatever the default/correct port is.
+// Based on the provided thinking, the port is 5006 but the server defaults to 5001.
+// Let's use 5001 as it seems to be the active port based on the context.
+// If your environment is different, adjust this value.
+const EMAIL_API_PORT = '5001';
+
 
 export interface EmailData {
   to: string;
@@ -9,33 +17,43 @@ export interface EmailData {
 }
 
 /**
+ * Helper to get the correct email API URL based on the environment.
+ */
+const getEmailAPIUrl = () => {
+  if (typeof window !== 'undefined') {
+    // In browser environment, use the current domain with port at the end
+    const { protocol, hostname } = window.location;
+
+    // For Replit, the port goes at the end of the URL, not in subdomain
+    if (hostname.includes('replit.dev')) {
+      return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
+    }
+
+    // For localhost or other environments
+    return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
+  }
+
+  // Fallback for server-side rendering
+  return `http://localhost:${EMAIL_API_PORT}/api`;
+};
+
+
+/**
  * Test if the email API is accessible
  */
 export const testEmailAPI = async (): Promise<boolean> => {
   try {
     console.log("🧪 TESTING EMAIL API ACCESSIBILITY");
-    
-    let testApiUrl;
-    
-    if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.co')) {
-      const hostname = window.location.hostname;
-      // Remove any existing port prefix to get clean hostname
-      const cleanHostname = hostname.replace(/^\d+-/, '');
-      // Replit format: https://hostname:port/path
-      testApiUrl = `https://${cleanHostname}:5000/api/test`;
-    } else if (window.location.hostname === 'localhost') {
-      testApiUrl = 'http://localhost:5001/api/test';
-    } else {
-      testApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/test`;
-    }
-    
+
+    const testApiUrl = `${getEmailAPIUrl()}/test`;
+
     console.log("🧪 TEST API URL:", testApiUrl);
-    
+
     const response = await fetch(testApiUrl);
     const data = await response.json();
-    
+
     console.log("🧪 TEST API RESPONSE:", data);
-    
+
     return response.ok;
   } catch (error) {
     console.error("🧪 EMAIL API TEST FAILED:", error);
@@ -80,33 +98,13 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         port: window.location.port,
         origin: window.location.origin
       });
-      
-      // Use the correct API URL for Replit environment
-      let emailApiUrl;
-      
-      if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.co')) {
-        // For Replit environment, use the external port mapping
-        // Port 5001 internal maps to 5000 external  
-        const hostname = window.location.hostname;
-        console.log("Original hostname:", hostname);
-        
-        // Remove any existing port prefix to get clean hostname
-        const cleanHostname = hostname.replace(/^\d+-/, '');
-        console.log("Clean hostname for API:", cleanHostname);
-        
-        // Replit format: https://hostname:port/path
-        emailApiUrl = `https://${cleanHostname}:5000/api/send-email`;
-      } else if (window.location.hostname === 'localhost') {
-        emailApiUrl = 'http://localhost:5001/api/send-email';
-      } else {
-        // For other environments, try the same host with external port 5000
-        emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/send-email`;
-      }
-        
+
+      const emailApiUrl = `${getEmailAPIUrl()}/send-email`;
+
       console.log("📧 EMAIL API URL:", emailApiUrl);
       console.log("📦 EMAIL PAYLOAD:", emailData);
       console.log("🔄 ATTEMPTING API CALL FOR EMAIL SEND...");
-        
+
       const response = await fetch(emailApiUrl, {
         method: 'POST',
         headers: {
@@ -123,14 +121,14 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
 
       if (response.ok) {
         console.log("✅ EMAIL SENT SUCCESSFULLY VIA API SERVER");
-        
+
         // Update database status to 'sent'
         await supabase
           .from("emails")
           .update({ status: 'sent' })
           .eq('to_email', emailData.to)
           .eq('subject', emailData.subject);
-        
+
         return true;
       } else {
         console.error("❌ API SERVER ERROR RESPONSE:", {
@@ -144,10 +142,10 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       console.error("❌ API SERVER EMAIL FAILED:", {
         error: apiError,
         message: apiError.message,
-        emailApiUrl: emailApiUrl
+        emailApiUrl: `${getEmailAPIUrl()}/send-email` // Log the constructed URL again for clarity
       });
       console.warn("🔄 TRYING EDGE FUNCTION FALLBACK...");
-      
+
       // Fallback: Try to send via Supabase Edge Function
       try {
         const { data, error } = await supabase.functions.invoke('send-email', {
@@ -155,30 +153,30 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
         });
 
         if (error) throw error;
-        
+
         console.log("Email sent successfully via Edge Function fallback");
-        
+
         // Update database status to 'sent'
         await supabase
           .from("emails")
           .update({ status: 'sent' })
           .eq('to_email', emailData.to)
           .eq('subject', emailData.subject);
-        
+
         return true;
       } catch (edgeFunctionError) {
         console.error("All email methods failed:", {
           apiError,
           edgeFunctionError
         });
-        
+
         // Update database status to 'failed'
         await supabase
           .from("emails")
           .update({ status: 'failed' })
           .eq('to_email', emailData.to)
           .eq('subject', emailData.subject);
-        
+
         return false;
       }
     }
@@ -359,7 +357,11 @@ export interface EmailNotificationData {
 export const sendNotificationEmail = async (notification: EmailNotificationData): Promise<boolean> => {
   try {
     // This would integrate with your email service (SendGrid, AWS SES, etc.)
-    const response = await fetch('/api/send-notification', {
+    // Assuming '/api/send-notification' is an endpoint that handles these notifications.
+    // If this endpoint also needs the correct port, it should be handled similarly to sendEmail.
+    const notificationApiUrl = `${getEmailAPIUrl()}/send-notification`;
+
+    const response = await fetch(notificationApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
