@@ -39,6 +39,10 @@ externalPort = 5173
 localPort = 5001
 externalPort = 5000
 
+[[ports]]
+localPort = 5006
+externalPort = 6000
+
 [workflows]
 runButton = "Development with Email API"
 
