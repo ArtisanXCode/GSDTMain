@@ -30,9 +30,8 @@ const getEmailAPIUrl = () => {
 
     // For production domains, check if we're on a production server
     if (hostname.includes('etherauthority.io') || hostname.includes('gsdc.')) {
-      // For production, try without port first, then fallback to port 5000
-      // Most production setups use reverse proxy or different port configuration
-      return `${protocol}//${hostname}/api`;
+      // For production, use port 5000 directly since that's where our email API runs
+      return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
     }
 
     // For localhost or other environments
@@ -111,31 +110,13 @@ export const sendEmail = async (emailData: EmailData): Promise<boolean> => {
       console.log("📦 EMAIL PAYLOAD:", emailData);
       console.log("🔄 ATTEMPTING API CALL FOR EMAIL SEND...");
 
-      let response;
-      try {
-        response = await fetch(emailApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(emailData),
-        });
-      } catch (error) {
-        // If production URL fails, try with port 5000
-        if (window.location.hostname.includes('etherauthority.io') || window.location.hostname.includes('gsdc.')) {
-          console.warn("🔄 TRYING WITH PORT 5000...");
-          emailApiUrl = `${window.location.protocol}//${window.location.hostname}:5000/api/send-email`;
-          response = await fetch(emailApiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(emailData),
-          });
-        } else {
-          throw error;
-        }
-      }
+      const response = await fetch(emailApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
+      });
 
       console.log("📡 API RESPONSE STATUS:", response.status);
       console.log("📡 API RESPONSE HEADERS:", Object.fromEntries(response.headers.entries()));

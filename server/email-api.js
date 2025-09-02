@@ -131,9 +131,21 @@ app.get('/api/test', (req, res) => {
 });
 
 const PORT = process.env.EMAIL_API_PORT || 5000;
+
+// Add a health check endpoint for production
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Email API server running on port ${PORT}`);
   console.log(`Email API accessible at http://0.0.0.0:${PORT}/api/send-email`);
-  console.log(`External Replit URL: https://5523ee8c-6095-4917-91eb-f3ae44eaadee-00-ingex5miqur8.sisko.replit.dev:${PORT}/api/send-email`);
+  console.log(`Health check: http://0.0.0.0:${PORT}/api/health`);
+  console.log(`Production URL should be: https://gsdc.etherauthority.io:${PORT}/api/send-email`);
   console.log(`SMTP Config: ${process.env.SMTP_USERNAME ? 'Configured' : 'Not configured (dev mode)'}`);
 });
