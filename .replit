@@ -67,3 +67,12 @@ args = "npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node server/email-api.js"
+
+[[workflows.workflow]]
+name = "Email API Server"
+author = 40157750
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server/email-api.js"

@@ -70,6 +70,17 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Add GET endpoint for testing email API accessibility
+app.get('/api/send-email', (req, res) => {
+  res.json({ 
+    message: 'Email API is running',
+    method: 'Use POST to send emails',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    status: 'OK'
+  });
+});
+
 app.post('/api/send-email', async (req, res) => {
   try {
     const { to, subject, html, from } = req.body;
