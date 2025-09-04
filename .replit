@@ -76,3 +76,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node server/email-api.js"
+
+[agent]
+expertMode = true
