@@ -1,11 +1,8 @@
 import { supabase } from "../lib/supabase";
 
-// Assuming EMAIL_API_PORT is available in the environment, e.g., from a .env file.
-// For demonstration purposes, we'll define it here. In a real app, import it.
-// const EMAIL_API_PORT = process.env.EMAIL_API_PORT || '5000'; // Or whatever the default/correct port is.
-// Use port 5000 which is enabled on your production server
+// Email API configuration - use environment variable for production URL
+const EMAIL_API_URL = import.meta.env.VITE_EMAIL_API_URL || 'https://gsdc-send-mail.etherauthority.io';
 const EMAIL_API_PORT = '5000';
-
 
 export interface EmailData {
   to: string;
@@ -19,27 +16,30 @@ export interface EmailData {
  */
 const getEmailAPIUrl = () => {
   if (typeof window !== 'undefined') {
-    // In browser environment, use the current domain with port at the end
+    // In browser environment, check the current hostname
     const { protocol, hostname } = window.location;
 
-    // For Replit, construct the URL with port at the end
+    // For Replit development, use the replit domain with port
     if (hostname.includes('replit.dev')) {
-      // Use the same hostname but with the email API port
       return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
     }
 
-    // For production domains, check if we're on a production server
+    // For production domains, use the dedicated email subdomain
     if (hostname.includes('etherauthority.io') || hostname.includes('gsdc.')) {
-      // For production, use port 5000 directly since that's where our email API runs
+      return `${EMAIL_API_URL}/api`;
+    }
+
+    // For localhost development
+    if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
       return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
     }
 
-    // For localhost or other environments
-    return `${protocol}//${hostname}:${EMAIL_API_PORT}/api`;
+    // Default fallback to configured URL
+    return `${EMAIL_API_URL}/api`;
   }
 
-  // Fallback for server-side rendering
-  return `http://localhost:${EMAIL_API_PORT}/api`;
+  // Server-side rendering fallback
+  return `${EMAIL_API_URL}/api`;
 };
 
 

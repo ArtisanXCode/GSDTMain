@@ -20,8 +20,8 @@ app.use(cors({
     if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
       return callback(null, true);
     }
-    // Allow production domains
-    if (origin.includes('etherauthority.io') || origin.includes('gsdc.')) {
+    // Allow production domains and email subdomain
+    if (origin.includes('etherauthority.io') || origin.includes('gsdc.') || origin.includes('gsdc-send-mail.')) {
       return callback(null, true);
     }
     // Allow all origins in development

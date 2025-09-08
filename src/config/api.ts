@@ -2,6 +2,7 @@ export const API_CONFIG = {
   EXCHANGE_RATE_API_URL: import.meta.env.VITE_EXCHANGE_RATE_API_URL || 'https://api.exchangerate-api.com/v4/latest',
   SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
   SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  EMAIL_API_URL: import.meta.env.VITE_EMAIL_API_URL || 'https://gsdc-send-mail.etherauthority.io',
 } as const;
 
 // Parse environment variables for currency configuration
