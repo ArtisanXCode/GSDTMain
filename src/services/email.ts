@@ -1,8 +1,8 @@
 import { supabase } from "../lib/supabase";
 
 // Email API configuration - use environment variable for production URL
-const EMAIL_API_URL = import.meta.env.VITE_EMAIL_API_URL || 'https://gsdc-send-mail.etherauthority.io';
-const EMAIL_API_PORT = '5000';
+const EMAIL_API_URL = import.meta.env.EMAIL_API_URL || 'https://gsdc-send-mail.etherauthority.io';
+const EMAIL_API_PORT = import.meta.env.EMAIL_API_PORT || 5000;
 
 export interface EmailData {
   to: string;
@@ -26,7 +26,7 @@ const getEmailAPIUrl = () => {
 
     // For production domains, use the dedicated email subdomain
     if (hostname.includes('etherauthority.io') || hostname.includes('gsdc.')) {
-      return `${EMAIL_API_URL}/api`;
+      return `${EMAIL_API_URL}`;
     }
 
     // For localhost development
