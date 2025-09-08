@@ -26,7 +26,7 @@ const getEmailAPIUrl = () => {
 
     // For production domains, use the dedicated email subdomain
     if (hostname.includes('etherauthority.io') || hostname.includes('gsdc.')) {
-      return `${EMAIL_API_URL}`;
+      return `${EMAIL_API_URL}/api`;
     }
 
     // For localhost development
