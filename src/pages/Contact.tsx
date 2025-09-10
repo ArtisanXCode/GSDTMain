@@ -34,7 +34,9 @@ export default function Contact() {
     setError("");
 
     try {
-      const result = await submitContactForm(formData);
+      // Send to primary admin by default (change to true to send to all Super Admins)
+      const sendToAllAdmins = false; // Change this to true if you want to send to all Super Admins
+      const result = await submitContactForm(formData, sendToAllAdmins);
 
       if (result) {
         setSuccess(true);

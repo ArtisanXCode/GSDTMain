@@ -23,6 +23,32 @@ export interface ContactSubmission {
 }
 
 /**
+ * Fetches the email of the primary Super Admin.
+ * Assumes the first Super Admin in the list is the primary one.
+ * Returns undefined if no Super Admin is found or an error occurs.
+ */
+const getPrimarySuperAdminEmail = async (): Promise<string | undefined> => {
+  try {
+    const { data, error } = await supabase
+      .from("admin_roles")
+      .select("email")
+      .eq("role", "SUPER_ADMIN")
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.error("Error fetching primary super admin email:", error);
+      return undefined;
+    }
+
+    return data?.email;
+  } catch (error) {
+    console.error("Unexpected error fetching primary super admin email:", error);
+    return undefined;
+  }
+};
+
+/**
  * Submit contact form data to Supabase and send email notification
  */
 export const submitContactForm = async (
@@ -48,7 +74,23 @@ export const submitContactForm = async (
 
     // Store admin notification email in database (email sending is temporarily bypassed)
     try {
-      const adminEmail = "laljij@etherauthority.io";
+      // Fetch all super admin emails
+      const { data: adminEmails, error: adminError } = await supabase
+        .from("admin_roles")
+        .select("email")
+        .eq("role", "SUPER_ADMIN");
+
+      if (adminError) {
+        console.error("Error fetching super admin emails:", adminError);
+        return false; // Or handle this error differently, maybe fallback to a default admin email
+      }
+
+      if (!adminEmails || adminEmails.length === 0) {
+        console.warn("No super admin emails found.");
+        return true; // Form saved, but no admin to notify
+      }
+
+      // Get the template for the email
       const emailHtml = getContactFormEmailTemplate(
         formData.name,
         formData.email,
@@ -56,19 +98,24 @@ export const submitContactForm = async (
         formData.message,
       );
 
-      const emailResult = await sendEmail({
-        to: adminEmail,
-        subject: `New Contact Form: ${formData.subject}`,
-        html: emailHtml,
-        from: "noreply@gsdc.com",
-      });
+      // Send email to all super admins
+      for (const admin of adminEmails) {
+        const emailResult = await sendEmail({
+          to: admin.email,
+          subject: `New Contact Form: ${formData.subject}`,
+          html: emailHtml,
+          from: "noreply@gsdc.com",
+        });
 
-      if (emailResult) {
-        console.log("Admin notification email stored in database (email sending bypassed)");
+        if (emailResult) {
+          console.log(`Admin notification email sent to ${admin.email}`);
+        } else {
+          console.warn(`Failed to send admin notification email to ${admin.email}`);
+        }
       }
     } catch (emailError) {
       console.warn(
-        "Email storage failed, but form was saved:",
+        "Email sending failed, but form was saved:",
         emailError,
       );
     }
@@ -181,10 +228,12 @@ export const deleteContactSubmission = async (id: string): Promise<boolean> => {
 export const sendContactReply = async (
   submissionId: string,
   replyMessage: string,
-  adminEmail: string
+  adminEmail?: string
 ): Promise<boolean> => {
   try {
-    console.log('Sending reply for submission:', submissionId);
+    // Use provided admin email or get primary Super Admin email
+    const fromEmail = adminEmail || await getPrimarySuperAdminEmail();
+    console.log('Sending contact reply...', { submissionId, replyMessage, fromEmail });
 
     // Get the original submission
     const { data: submission, error } = await supabase
@@ -212,7 +261,7 @@ export const sendContactReply = async (
       to: submission.email,
       subject: `Re: ${submission.subject}`,
       html: emailHtml,
-      from: adminEmail
+      from: fromEmail
     });
 
     console.log('Email result:', emailResult);
@@ -224,7 +273,7 @@ export const sendContactReply = async (
         .insert([{
           submission_id: submissionId,
           reply_text: replyMessage,
-          admin_email: adminEmail,
+          admin_email: fromEmail,
           sent_at: new Date().toISOString()
         }]);
 
