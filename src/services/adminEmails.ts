@@ -25,13 +25,12 @@ export const getSuperAdminEmails = async (): Promise<string[]> => {
 
     if (error) {
       console.error('Error fetching super admin emails:', error);
-      // Fallback to hardcoded email if database query fails
-      return ['laljij@etherauthority.io'];
+      throw new Error('Failed to fetch super admin emails from database');
     }
 
     if (!data || data.length === 0) {
-      console.warn('No super admins found in database, using fallback');
-      return ['laljij@etherauthority.io'];
+      console.error('No super admins found in database');
+      throw new Error('No super admin emails found in database');
     }
 
     console.log('Found super admins:', data);
@@ -48,15 +47,14 @@ export const getSuperAdminEmails = async (): Promise<string[]> => {
     console.log('Valid emails found:', emails);
 
     if (emails.length === 0) {
-      console.warn('No super admins with valid email addresses found, using fallback');
-      return ['laljij@etherauthority.io'];
+      console.error('No super admins with valid email addresses found');
+      throw new Error('No super admin emails with valid email addresses found');
     }
 
     return emails;
   } catch (error) {
     console.error('Error in getSuperAdminEmails:', error);
-    // Fallback to hardcoded email
-    return ['laljij@etherauthority.io'];
+    throw error;
   }
 };
 
@@ -66,10 +64,13 @@ export const getSuperAdminEmails = async (): Promise<string[]> => {
 export const getPrimarySuperAdminEmail = async (): Promise<string> => {
   try {
     const emails = await getSuperAdminEmails();
-    return emails[0] || 'laljij@etherauthority.io';
+    if (!emails || emails.length === 0) {
+      throw new Error('No primary super admin email found');
+    }
+    return emails[0];
   } catch (error) {
     console.error('Error getting primary super admin email:', error);
-    return 'laljij@etherauthority.io';
+    throw error;
   }
 };
 
@@ -112,6 +113,6 @@ export const getAdminEmailTargets = async (sendToAll: boolean = false): Promise<
     }
   } catch (error) {
     console.error('Error getting admin email targets:', error);
-    return ['laljij@etherauthority.io'];
+    throw error;
   }
 };

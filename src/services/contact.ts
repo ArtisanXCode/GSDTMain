@@ -82,41 +82,11 @@ export const submitContactForm = async (
 
       if (adminError) {
         console.error("Error fetching admin emails:", adminError);
-        // Fallback: try to send to a hardcoded admin email
-        const fallbackEmail = "laljij@etherauthority.io";
-        console.log("Using fallback admin email:", fallbackEmail);
-
-        const adminEmailTemplate = getContactFormEmailTemplate(
-          formData.name,
-          formData.email,
-          formData.subject,
-          formData.message,
-        );
-
-        await sendEmail({
-          to: fallbackEmail,
-          subject: `New Contact Form Submission: ${formData.subject}`,
-          html: adminEmailTemplate,
-        });
+        throw new Error("Failed to fetch admin emails from database");
       } else {
         if (!adminEmails || adminEmails.length === 0) {
-          console.log("No admin emails found, using fallback");
-          const fallbackEmail = "laljij@etherauthority.io";
-          
-          const adminEmailTemplate = getContactFormEmailTemplate(
-            formData.name,
-            formData.email,
-            formData.subject,
-            formData.message,
-          );
-
-          await sendEmail({
-            to: fallbackEmail,
-            subject: `New Contact Form Submission: ${formData.subject}`,
-            html: adminEmailTemplate,
-          });
-          
-          return true;
+          console.error("No admin emails found in database");
+          throw new Error("No admin emails found - email notification cannot be sent");
         }
 
         console.log("Found admin emails:", adminEmails.map(admin => admin.email));
@@ -146,10 +116,12 @@ export const submitContactForm = async (
       }
       }
     } catch (emailError) {
-      console.warn(
-        "Email sending failed, but form was saved:",
+      console.error(
+        "Email sending failed:",
         emailError,
       );
+      // Form was saved successfully, but email notification failed
+      // This is acceptable - the form submission is still valid
     }
 
     // Return true if the form was saved successfully, regardless of email status
