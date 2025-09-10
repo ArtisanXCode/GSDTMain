@@ -99,16 +99,39 @@ export const submitContactForm = async (
           html: adminEmailTemplate,
         });
       } else {
-        // Create email template
-      const adminEmailTemplate = getContactFormEmailTemplate(
-        formData.name,
-        formData.email,
-        formData.subject,
-        formData.message,
-      );
+        if (!adminEmails || adminEmails.length === 0) {
+          console.log("No admin emails found, using fallback");
+          const fallbackEmail = "laljij@etherauthority.io";
+          
+          const adminEmailTemplate = getContactFormEmailTemplate(
+            formData.name,
+            formData.email,
+            formData.subject,
+            formData.message,
+          );
 
-      // Send to all admin emails
-      for (const email of adminEmails) {
+          await sendEmail({
+            to: fallbackEmail,
+            subject: `New Contact Form Submission: ${formData.subject}`,
+            html: adminEmailTemplate,
+          });
+          
+          return true;
+        }
+
+        console.log("Found admin emails:", adminEmails.map(admin => admin.email));
+        
+        // Create email template
+        const adminEmailTemplate = getContactFormEmailTemplate(
+          formData.name,
+          formData.email,
+          formData.subject,
+          formData.message,
+        );
+
+        // Send to all admin emails
+        for (const admin of adminEmails) {
+          const email = admin.email;
         try {
           await sendEmail({
             to: email,
