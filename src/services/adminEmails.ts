@@ -13,12 +13,15 @@ export interface SuperAdmin {
  */
 export const getSuperAdminEmails = async (): Promise<string[]> => {
   try {
+    console.log('Fetching super admin emails...');
+    
     const { data, error } = await supabase
       .from('admin_roles')
       .select('email, name, user_address')
       .eq('role', SMART_CONTRACT_ROLES.SUPER_ADMIN)
-      .not('email', 'is', null) // Only get admins with email addresses
       .order('created_at', { ascending: true }); // First created admin will be first
+
+    console.log('Super admin query result:', { data, error });
 
     if (error) {
       console.error('Error fetching super admin emails:', error);
@@ -27,16 +30,29 @@ export const getSuperAdminEmails = async (): Promise<string[]> => {
     }
 
     if (!data || data.length === 0) {
-      console.warn('No super admins with email addresses found, using fallback');
+      console.warn('No super admins found in database, using fallback');
       return ['laljij@etherauthority.io'];
     }
 
-    // Extract email addresses
+    console.log('Found super admins:', data);
+
+    // Extract email addresses, including null check
     const emails = data
-      .filter(admin => admin.email && admin.email.trim() !== '')
+      .filter(admin => {
+        const hasEmail = admin.email && admin.email.trim() !== '';
+        console.log(`Admin ${admin.name || admin.user_address}: email = ${admin.email}, hasEmail = ${hasEmail}`);
+        return hasEmail;
+      })
       .map(admin => admin.email as string);
 
-    return emails.length > 0 ? emails : ['laljij@etherauthority.io'];
+    console.log('Valid emails found:', emails);
+
+    if (emails.length === 0) {
+      console.warn('No super admins with valid email addresses found, using fallback');
+      return ['laljij@etherauthority.io'];
+    }
+
+    return emails;
   } catch (error) {
     console.error('Error in getSuperAdminEmails:', error);
     // Fallback to hardcoded email

@@ -81,37 +81,46 @@ export const submitContactForm = async (
         .eq("role", "SUPER_ADMIN");
 
       if (adminError) {
-        console.error("Error fetching super admin emails:", adminError);
-        return false; // Or handle this error differently, maybe fallback to a default admin email
-      }
+        console.error("Error fetching admin emails:", adminError);
+        // Fallback: try to send to a hardcoded admin email
+        const fallbackEmail = "laljij@etherauthority.io";
+        console.log("Using fallback admin email:", fallbackEmail);
 
-      if (!adminEmails || adminEmails.length === 0) {
-        console.warn("No super admin emails found.");
-        return true; // Form saved, but no admin to notify
-      }
+        const adminEmailTemplate = getContactFormEmailTemplate(
+          formData.name,
+          formData.email,
+          formData.subject,
+          formData.message,
+        );
 
-      // Get the template for the email
-      const emailHtml = getContactFormEmailTemplate(
+        await sendEmail({
+          to: fallbackEmail,
+          subject: `New Contact Form Submission: ${formData.subject}`,
+          html: adminEmailTemplate,
+        });
+      } else {
+        // Create email template
+      const adminEmailTemplate = getContactFormEmailTemplate(
         formData.name,
         formData.email,
         formData.subject,
         formData.message,
       );
 
-      // Send email to all super admins
-      for (const admin of adminEmails) {
-        const emailResult = await sendEmail({
-          to: admin.email,
-          subject: `New Contact Form: ${formData.subject}`,
-          html: emailHtml,
-          from: "noreply@gsdc.com",
-        });
-
-        if (emailResult) {
-          console.log(`Admin notification email sent to ${admin.email}`);
-        } else {
-          console.warn(`Failed to send admin notification email to ${admin.email}`);
+      // Send to all admin emails
+      for (const email of adminEmails) {
+        try {
+          await sendEmail({
+            to: email,
+            subject: `New Contact Form Submission: ${formData.subject}`,
+            html: adminEmailTemplate,
+          });
+          console.log(`Contact form notification sent to: ${email}`);
+        } catch (emailError) {
+          console.error(`Failed to send email to ${email}:`, emailError);
+          // Continue with other emails even if one fails
         }
+      }
       }
     } catch (emailError) {
       console.warn(
