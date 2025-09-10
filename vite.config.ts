@@ -6,21 +6,23 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 3000
+    port: 3000,
+    hmr: {
+      port: 3000,
+      host: '0.0.0.0'
+    }
   },
   define: {
     global: 'globalThis',
-    'process.env': {}
+    __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || 'dev-token'),
   },
   resolve: {
     alias: {
       buffer: 'buffer',
-      process: 'process/browser',
-      util: 'util'
     },
   },
   optimizeDeps: {
-    include: ['buffer', 'process', 'util'],
+    include: ['buffer'],
   },
   build: {
     rollupOptions: {
